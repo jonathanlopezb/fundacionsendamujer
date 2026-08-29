@@ -189,15 +189,7 @@ export default function BeneficiaryPortal({ onOpenSOS }: BeneficiaryPortalProps)
             
             {/* SOS Escape Button inside Login Header */}
             <div className="flex justify-end mb-2">
-              <button
-                type="button"
-                onClick={triggerSOS}
-                className="bg-amber-400 hover:bg-amber-300 text-senda-purple-dark font-extrabold text-[11px] px-3.5 py-1.5 rounded-full flex items-center space-x-1.5 transition-transform active:scale-95 shadow-md cursor-pointer"
-                title="Presiona ESC o clic para camuflar instantáneamente"
-              >
-                <ShieldAlert className="w-4 h-4 text-red-600" />
-                <span>MODO CAMUFLAJE SOS [ESC]</span>
-              </button>
+
             </div>
 
             <div className="w-14 h-14 bg-white/10 rounded-2xl flex items-center justify-center mx-auto mb-3 border border-white/20">
