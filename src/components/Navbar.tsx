@@ -1,118 +1,255 @@
 'use client';
 
-import React, { useState } from 'react';
+import React, { useState, useEffect, useRef } from 'react';
 import Link from 'next/link';
 import Image from 'next/image';
-import { ShieldAlert, Calendar, PhoneCall, Menu, X, Heart, Sparkles, UserCheck, BookOpen, Image as ImageIcon, Lock, Stethoscope, UserCog } from 'lucide-react';
+import {
+  ShieldAlert, Calendar, PhoneCall, Menu, X, Heart, Sparkles,
+  BookOpen, Lock, Stethoscope, UserCog, ChevronDown, MapPin,
+  GraduationCap, Users, Scale, EyeOff, Globe, ArrowRight,
+  AlertTriangle, Shield,
+} from 'lucide-react';
 
 interface NavbarProps {
   onOpenSOS: () => void;
+  onOpenIncognito?: () => void;
 }
 
-export default function Navbar({ onOpenSOS }: NavbarProps) {
+const PROGRAMAS = [
+  { icon: '🌷', label: 'Mujer Acompañada', href: '/programas#programa-1' },
+  { icon: '🕊️', label: 'Víctimas Violencia Sexual', href: '/programas#programa-2' },
+  { icon: '🧠', label: 'Contención Psicosocial', href: '/programas#programa-3' },
+  { icon: '⚕️', label: 'Ruta de Salud & Derechos', href: '/programas#programa-4' },
+  { icon: '🤰', label: 'Embarazo con Apoyo', href: '/programas#programa-5' },
+  { icon: '👩‍⚖️', label: 'Mujer y Justicia', href: '/programas#programa-6' },
+  { icon: '🎓', label: 'Proyecto de Vida', href: '/programas#programa-7' },
+];
+
+const PORTAL_LINKS = [
+  { icon: Lock, label: 'Mi Expediente Seguro', desc: 'Accede a tu historial confidencial', href: '/portal-beneficiaria', color: 'text-senda-pink' },
+  { icon: GraduationCap, label: 'SendaAcademia', desc: 'Cursos y material de formación', href: '/academia', color: 'text-amber-600' },
+  { icon: Stethoscope, label: 'Agendar Cita Médica', desc: 'Ginecología, Psicología, Odontología', href: '/agendar-cita', color: 'text-emerald-600' },
+  { icon: Sparkles, label: 'Test Psicológico', desc: 'Evaluación de bienestar SENDA EVAL', href: '/triaje-psicologico', color: 'text-purple-600' },
+];
+
+export default function Navbar({ onOpenSOS, onOpenIncognito }: NavbarProps) {
   const [mobileMenuOpen, setMobileMenuOpen] = useState(false);
+  const [programasOpen, setProgramasOpen] = useState(false);
+  const [portalOpen, setPortalOpen] = useState(false);
+  const [scrolled, setScrolled] = useState(false);
+  const programasRef = useRef<HTMLDivElement>(null);
+  const portalRef = useRef<HTMLDivElement>(null);
+
+  useEffect(() => {
+    const handleScroll = () => setScrolled(window.scrollY > 10);
+    window.addEventListener('scroll', handleScroll);
+    return () => window.removeEventListener('scroll', handleScroll);
+  }, []);
+
+  useEffect(() => {
+    const handleClickOutside = (e: MouseEvent) => {
+      if (programasRef.current && !programasRef.current.contains(e.target as Node)) setProgramasOpen(false);
+      if (portalRef.current && !portalRef.current.contains(e.target as Node)) setPortalOpen(false);
+    };
+    document.addEventListener('mousedown', handleClickOutside);
+    return () => document.removeEventListener('mousedown', handleClickOutside);
+  }, []);
 
   return (
-    <header className="sticky top-0 z-50 bg-white/95 backdrop-blur-md border-b border-pink-100 shadow-sm transition-all">
-      {/* Top Emergency & Cartagena Bar */}
-      <div className="bg-gradient-to-r from-senda-purple-dark via-senda-purple to-senda-pink text-white text-xs py-2 px-4 sm:px-8 flex justify-between items-center">
-        <div className="flex items-center space-x-3">
-          <span className="bg-amber-400 text-senda-purple-dark font-extrabold px-2 py-0.5 rounded-full text-[10px] uppercase tracking-wider">
-            Cartagena 24/7
-          </span>
-          <span className="hidden md:inline text-pink-100">
-            Línea Púrpura Cartagena & Urgencias Ginecológicas:
-          </span>
-          <a
-            href="tel:3176575800"
-            className="font-bold underline flex items-center gap-1 hover:text-amber-300 transition-colors"
-          >
-            <PhoneCall className="w-3 h-3" /> 317 657 5800 / 155
-          </a>
-        </div>
+    <header className={`sticky top-0 z-50 transition-all duration-300 ${scrolled ? 'shadow-lg' : 'shadow-sm'} bg-white/97 backdrop-blur-md border-b border-pink-100`}>
 
-        <div className="flex items-center space-x-3">
-          <Link
-            href="/portal-beneficiaria"
-            className="hidden sm:flex items-center space-x-1 text-[11px] font-bold text-amber-300 hover:text-white transition-colors"
-          >
-            <Lock className="w-3 h-3" />
-            <span>Mi Expediente Confidencial</span>
-          </Link>
-          <Link href="/portal-beneficiaria"
-            className="hidden sm:flex items-center space-x-1 text-[11px] font-bold text-pink-200 hover:text-white transition-colors"
-          >
-            <UserCog className="w-3 h-3 text-emerald-400" />
-            <span>Portal Beneficiaria</span>
-          </Link>
-          <Link
-            href="/admin"
-            className="hidden sm:flex items-center space-x-1 text-[11px] font-bold text-pink-200 hover:text-white transition-colors"
-          >
-            <UserCog className="w-3 h-3 text-emerald-400" />
-            <span>Panel Profesional</span>
-          </Link>
+      {/* ── Top Emergency Bar ── */}
+      <div className="bg-gradient-to-r from-[#3B0852] via-[#52166F] to-[#E12880] text-white text-xs py-2 px-4 sm:px-8">
+        <div className="max-w-7xl mx-auto flex justify-between items-center gap-3">
+
+          <div className="flex items-center gap-3 flex-wrap">
+            <span className="bg-amber-400 text-[#3B0852] font-extrabold px-2.5 py-0.5 rounded-full text-[10px] uppercase tracking-wider flex items-center gap-1">
+              <Shield className="w-3 h-3" /> Cartagena 24/7
+            </span>
+            <span className="hidden md:inline text-pink-100 font-medium">
+              Línea Púrpura Nacional:
+            </span>
+            <a href="tel:155" className="font-extrabold text-amber-300 hover:text-white transition-colors flex items-center gap-1">
+              <PhoneCall className="w-3 h-3" /> 155
+            </a>
+            <span className="text-pink-300 hidden md:inline">|</span>
+            <a href="tel:3176575800" className="font-bold text-pink-100 hover:text-amber-300 transition-colors hidden md:inline">
+              +57 317 657 5800
+            </a>
+          </div>
+
+          <div className="flex items-center gap-3">
+            {/* Incognito Mode */}
+            <button
+              type="button"
+              onClick={onOpenIncognito || onOpenSOS}
+              className="hidden sm:flex items-center gap-1.5 text-[10px] font-bold text-pink-200 hover:text-amber-300 transition-colors cursor-pointer"
+              title="Modo Incógnito — Protege tu privacidad"
+            >
+              <EyeOff className="w-3 h-3" />
+              <span>Modo Incógnito</span>
+            </button>
+            <span className="text-pink-400 hidden sm:inline">|</span>
+            <Link href="/admin" className="hidden sm:flex items-center gap-1 text-[10px] font-bold text-pink-200 hover:text-white transition-colors">
+              <UserCog className="w-3 h-3 text-emerald-400" />
+              <span>Panel Profesional</span>
+            </Link>
+          </div>
         </div>
       </div>
 
-      {/* Main Navbar */}
-      <div className="max-w-7xl mx-auto px-4 sm:px-8 py-3 flex items-center justify-between">
+      {/* ── Main Navbar ── */}
+      <div className="max-w-7xl mx-auto px-4 sm:px-8 py-3 flex items-center justify-between gap-4">
+
         {/* Logo */}
-        <Link href="/" className="flex items-center space-x-3 group">
-          <div className="relative w-44 h-12 sm:w-56 sm:h-14 transition-transform group-hover:scale-[1.02]">
-            <Image
-              src="/logo.png"
-              alt="Fundación Senda Mujer"
-              fill
-              className="object-contain"
-              priority
-            />
+        <Link href="/" className="flex items-center shrink-0 group">
+          <div className="relative w-40 h-11 sm:w-52 sm:h-13 transition-transform group-hover:scale-[1.02]">
+            <Image src="/logo.png" alt="Fundación Senda Mujer" fill className="object-contain" priority />
           </div>
         </Link>
 
-        {/* Desktop Nav Links */}
-        <nav className="hidden lg:flex items-center space-x-5 text-xs font-bold text-senda-purple">
-          <Link href="/" className="hover:text-senda-pink transition-colors">
-            Inicio
-          </Link>
-          <Link href="/nosotros" className="hover:text-senda-pink transition-colors">
-            Nosotros
-          </Link>
-          <Link href="/programas" className="hover:text-senda-pink transition-colors">
-            Programas (7)
-          </Link>
-          <Link href="/triaje-psicologico" className="text-senda-pink hover:underline flex items-center gap-1">
+        {/* Desktop Nav */}
+        <nav className="hidden lg:flex items-center gap-1 text-xs font-bold text-[#52166F]">
+
+          <Link href="/" className="px-3 py-2 rounded-lg hover:bg-pink-50 hover:text-[#E12880] transition-all">Inicio</Link>
+          <Link href="/nosotros" className="px-3 py-2 rounded-lg hover:bg-pink-50 hover:text-[#E12880] transition-all">Nosotros</Link>
+
+          {/* Programas Mega-Dropdown */}
+          <div ref={programasRef} className="relative">
+            <button
+              type="button"
+              onClick={() => { setProgramasOpen(!programasOpen); setPortalOpen(false); }}
+              className="px-3 py-2 rounded-lg hover:bg-pink-50 hover:text-[#E12880] transition-all flex items-center gap-1 cursor-pointer"
+            >
+              Programas
+              <ChevronDown className={`w-3.5 h-3.5 transition-transform duration-200 ${programasOpen ? 'rotate-180' : ''}`} />
+            </button>
+
+            {programasOpen && (
+              <div className="absolute top-full left-0 mt-2 w-72 bg-white rounded-2xl shadow-2xl border border-pink-100 p-3 z-50 animate-fadeIn">
+                <p className="text-[10px] font-extrabold text-slate-400 uppercase tracking-widest px-2 mb-2">7 Programas Integrales</p>
+                {PROGRAMAS.map((p) => (
+                  <Link
+                    key={p.href}
+                    href={p.href}
+                    onClick={() => setProgramasOpen(false)}
+                    className="flex items-center gap-3 px-3 py-2.5 rounded-xl hover:bg-pink-50 transition-all group"
+                  >
+                    <span className="text-base">{p.icon}</span>
+                    <span className="text-xs font-bold text-slate-700 group-hover:text-[#E12880] transition-colors">{p.label}</span>
+                  </Link>
+                ))}
+                <div className="mt-2 pt-2 border-t border-pink-50">
+                  <Link href="/programas" onClick={() => setProgramasOpen(false)} className="flex items-center justify-between px-3 py-2 text-xs font-extrabold text-[#E12880] hover:text-[#52166F] transition-colors">
+                    Ver todos los programas <ArrowRight className="w-3.5 h-3.5" />
+                  </Link>
+                </div>
+              </div>
+            )}
+          </div>
+
+          {/* Portal Dropdown */}
+          <div ref={portalRef} className="relative">
+            <button
+              type="button"
+              onClick={() => { setPortalOpen(!portalOpen); setProgramasOpen(false); }}
+              className="px-3 py-2 rounded-lg hover:bg-pink-50 hover:text-[#E12880] transition-all flex items-center gap-1 cursor-pointer"
+            >
+              <Lock className="w-3.5 h-3.5 text-amber-500" />
+              Portal
+              <ChevronDown className={`w-3.5 h-3.5 transition-transform duration-200 ${portalOpen ? 'rotate-180' : ''}`} />
+            </button>
+
+            {portalOpen && (
+              <div className="absolute top-full left-0 mt-2 w-80 bg-white rounded-2xl shadow-2xl border border-pink-100 p-3 z-50 animate-fadeIn">
+                <p className="text-[10px] font-extrabold text-slate-400 uppercase tracking-widest px-2 mb-2">Acceso Seguro Beneficiarias</p>
+                {PORTAL_LINKS.map((pl) => {
+                  const Icon = pl.icon;
+                  return (
+                    <Link
+                      key={pl.href}
+                      href={pl.href}
+                      onClick={() => setPortalOpen(false)}
+                      className="flex items-start gap-3 px-3 py-3 rounded-xl hover:bg-pink-50 transition-all group"
+                    >
+                      <div className="w-8 h-8 rounded-lg bg-pink-50 flex items-center justify-center shrink-0 group-hover:bg-pink-100 transition-colors">
+                        <Icon className={`w-4 h-4 ${pl.color}`} />
+                      </div>
+                      <div>
+                        <div className="text-xs font-extrabold text-slate-800 group-hover:text-[#E12880] transition-colors">{pl.label}</div>
+                        <div className="text-[10px] text-slate-500 mt-0.5">{pl.desc}</div>
+                      </div>
+                    </Link>
+                  );
+                })}
+                <div className="mt-2 pt-2 border-t border-pink-50 px-2">
+                  <Link
+                    href="/senda-sos"
+                    onClick={() => setPortalOpen(false)}
+                    className="flex items-center gap-2 p-3 rounded-xl bg-red-50 border border-red-100 hover:bg-red-100 transition-all"
+                  >
+                    <AlertTriangle className="w-4 h-4 text-red-600 shrink-0" />
+                    <div>
+                      <div className="text-xs font-extrabold text-red-700">SENDA SOS — Necesito Ayuda Ahora</div>
+                      <div className="text-[10px] text-red-500">Sin registro requerido</div>
+                    </div>
+                  </Link>
+                </div>
+              </div>
+            )}
+          </div>
+
+          <Link href="/triaje-psicologico" className="px-3 py-2 rounded-lg hover:bg-pink-50 text-[#E12880] flex items-center gap-1 transition-all">
             <Sparkles className="w-3.5 h-3.5 text-amber-500" />
             Test Psicológico
           </Link>
-          <Link href="/galeria" className="hover:text-senda-pink flex items-center gap-1">
-            <ImageIcon className="w-3.5 h-3.5 text-senda-purple" />
-            Galería
+          <Link href="/ruta-cartagena" className="px-3 py-2 rounded-lg hover:bg-pink-50 hover:text-[#E12880] flex items-center gap-1 transition-all">
+            <MapPin className="w-3.5 h-3.5" />
+            Ruta Cartagena
           </Link>
-          <Link href="/donar" className="text-amber-600 font-bold hover:text-amber-700 flex items-center gap-1">
+          <Link href="/donar" className="px-3 py-2 rounded-lg hover:bg-amber-50 text-amber-600 font-bold flex items-center gap-1 transition-all">
             <Heart className="w-3.5 h-3.5 fill-amber-500 text-amber-500" />
             Donar
           </Link>
         </nav>
 
-        {/* CTA Actions */}
-        <div className="hidden lg:flex items-center space-x-3">
+        {/* Right CTAs */}
+        <div className="hidden lg:flex items-center gap-2">
+          {/* SOS Panic Button — always visible, pulsing */}
+          <button
+            type="button"
+            onClick={onOpenSOS}
+            className="relative flex items-center gap-1.5 bg-red-600 hover:bg-red-700 text-white font-extrabold px-3 py-2 rounded-full text-[11px] shadow-md transition-all cursor-pointer animate-pulse-glow"
+            title="Activa modo camuflaje de emergencia [ESC]"
+          >
+            <ShieldAlert className="w-4 h-4" />
+            <span>SOS</span>
+          </button>
+
           <Link
             href="/agendar-cita"
-            className="bg-gradient-to-r from-senda-pink to-senda-purple text-white font-bold px-5 py-2.5 rounded-full shadow-glass-pink hover:shadow-glow transition-all flex items-center space-x-2 text-xs"
+            className="bg-gradient-to-r from-[#E12880] to-[#52166F] text-white font-bold px-5 py-2.5 rounded-full shadow-md hover:shadow-lg transition-all flex items-center gap-2 text-xs"
           >
             <Calendar className="w-4 h-4" />
-            <span>Cita Ginecología / Médica</span>
+            <span>Agendar Cita</span>
           </Link>
         </div>
 
-        {/* Mobile Menu Toggle */}
-        <div className="lg:hidden flex items-center space-x-2">
+        {/* Mobile toggle */}
+        <div className="lg:hidden flex items-center gap-2">
+          <button
+            type="button"
+            onClick={onOpenSOS}
+            className="p-2 bg-red-600 rounded-full text-white animate-pulse cursor-pointer"
+            title="SOS"
+          >
+            <ShieldAlert className="w-5 h-5" />
+          </button>
           <button
             type="button"
             onClick={() => setMobileMenuOpen(!mobileMenuOpen)}
-            className="p-2 rounded-lg text-senda-purple hover:bg-pink-50 transition-colors cursor-pointer"
-            aria-label="Abrir Menú"
+            className="p-2 rounded-lg text-[#52166F] hover:bg-pink-50 transition-colors cursor-pointer"
+            aria-label="Menú"
           >
             {mobileMenuOpen ? <X className="w-6 h-6" /> : <Menu className="w-6 h-6" />}
           </button>
@@ -121,88 +258,66 @@ export default function Navbar({ onOpenSOS }: NavbarProps) {
 
       {/* Mobile Drawer */}
       {mobileMenuOpen && (
-        <div className="lg:hidden bg-white border-t border-pink-100 px-6 py-6 space-y-4 shadow-xl font-medium text-senda-purple text-sm">
-          <Link
-            href="/"
-            onClick={() => setMobileMenuOpen(false)}
-            className="block py-1.5 hover:text-senda-pink"
-          >
-            Inicio
-          </Link>
-          <Link
-            href="/nosotros"
-            onClick={() => setMobileMenuOpen(false)}
-            className="block py-1.5 hover:text-senda-pink"
-          >
-            Nosotros
-          </Link>
-          <Link
-            href="/programas"
-            onClick={() => setMobileMenuOpen(false)}
-            className="block py-1.5 hover:text-senda-pink"
-          >
-            Los 7 Programas Integrales
-          </Link>
-          <Link
-            href="/triaje-psicologico"
-            onClick={() => setMobileMenuOpen(false)}
-            className="block py-1.5 font-bold text-senda-pink flex items-center gap-2"
-          >
-            <Sparkles className="w-4 h-4 text-amber-500" />
-            Test Psicológico & Triaje
-          </Link>
-          <Link
-            href="/portal-beneficiaria"
-            onClick={() => setMobileMenuOpen(false)}
-            className="block py-1.5 font-bold text-senda-purple flex items-center gap-2"
-          >
-            <Lock className="w-4 h-4 text-amber-500" />
-            Portal de Beneficiarias (SendaPass)
-          </Link>
-          <Link
-            href="/admin"
-            onClick={() => setMobileMenuOpen(false)}
-            className="block py-1.5 text-slate-700 flex items-center gap-2"
-          >
-            <UserCog className="w-4 h-4 text-emerald-600" />
-            Panel Profesional & Gestión
-          </Link>
-          <Link
-            href="/galeria"
-            onClick={() => setMobileMenuOpen(false)}
-            className="block py-1.5 hover:text-senda-pink flex items-center gap-2"
-          >
-            <ImageIcon className="w-4 h-4 text-senda-purple" />
-            Galería de Actividades Cartagena
-          </Link>
-          <Link
-            href="/donar"
-            onClick={() => setMobileMenuOpen(false)}
-            className="block py-1.5 text-amber-600 font-bold flex items-center gap-2"
-          >
-            <Heart className="w-4 h-4 text-amber-500 fill-amber-500" />
-            Portal de Donaciones
-          </Link>
+        <div className="lg:hidden bg-white border-t border-pink-100 px-5 py-5 space-y-1 shadow-xl animate-fadeIn">
+          {[
+            { href: '/', label: 'Inicio' },
+            { href: '/nosotros', label: 'Nosotros' },
+            { href: '/programas', label: '7 Programas Integrales' },
+            { href: '/triaje-psicologico', label: 'Test Psicológico SENDA EVAL', accent: true },
+            { href: '/ruta-cartagena', label: 'Ruta de Emergencia Cartagena' },
+            { href: '/galeria', label: 'Galería de Actividades' },
+            { href: '/donar', label: 'Portal de Donaciones', amber: true },
+          ].map((item) => (
+            <Link
+              key={item.href}
+              href={item.href}
+              onClick={() => setMobileMenuOpen(false)}
+              className={`block px-3 py-2.5 rounded-xl font-bold text-sm transition-all hover:bg-pink-50 ${item.accent ? 'text-[#E12880]' : item.amber ? 'text-amber-600' : 'text-[#52166F]'}`}
+            >
+              {item.label}
+            </Link>
+          ))}
 
-          <div className="pt-4 border-t border-pink-100 flex flex-col space-y-3">
+          <div className="pt-3 border-t border-pink-100 space-y-2">
+            <Link
+              href="/portal-beneficiaria"
+              onClick={() => setMobileMenuOpen(false)}
+              className="flex items-center gap-2 px-3 py-3 rounded-xl bg-pink-50 border border-pink-100 font-bold text-sm text-[#52166F]"
+            >
+              <Lock className="w-4 h-4 text-amber-500" />
+              Portal Beneficiaria — SendaPass
+            </Link>
+            <Link
+              href="/admin"
+              onClick={() => setMobileMenuOpen(false)}
+              className="flex items-center gap-2 px-3 py-3 rounded-xl bg-slate-50 border border-slate-100 font-bold text-sm text-slate-700"
+            >
+              <UserCog className="w-4 h-4 text-emerald-500" />
+              Panel Profesional
+            </Link>
             <Link
               href="/agendar-cita"
               onClick={() => setMobileMenuOpen(false)}
-              className="bg-senda-pink text-white font-bold py-3 rounded-full text-center shadow-md flex items-center justify-center space-x-2 text-xs"
+              className="flex items-center justify-center gap-2 py-3 rounded-full bg-gradient-to-r from-[#E12880] to-[#52166F] text-white font-extrabold text-sm shadow-md"
             >
               <Calendar className="w-4 h-4" />
-              <span>Agendar Cita (Ginecología, Medicina, Odontología)</span>
+              Agendar Cita Médica
             </Link>
             <button
               type="button"
-              onClick={() => {
-                setMobileMenuOpen(false);
-                onOpenSOS();
-              }}
-              className="bg-amber-400 text-senda-purple-dark font-extrabold py-3 rounded-full text-center flex items-center justify-center space-x-2 text-xs cursor-pointer"
+              onClick={() => { setMobileMenuOpen(false); onOpenIncognito ? onOpenIncognito() : onOpenSOS(); }}
+              className="w-full flex items-center justify-center gap-2 py-3 rounded-full bg-slate-800 text-white font-extrabold text-sm cursor-pointer"
             >
-              <ShieldAlert className="w-5 h-5 text-red-600" />
-              <span>ACTIVAR CAMUFLAJE SOS [ESC]</span>
+              <EyeOff className="w-4 h-4" />
+              Modo Incógnito
+            </button>
+            <button
+              type="button"
+              onClick={() => { setMobileMenuOpen(false); onOpenSOS(); }}
+              className="w-full flex items-center justify-center gap-2 py-3 rounded-full bg-red-600 text-white font-extrabold text-sm shadow-md cursor-pointer"
+            >
+              <ShieldAlert className="w-5 h-5" />
+              ACTIVAR CAMUFLAJE SOS [ESC]
             </button>
           </div>
         </div>

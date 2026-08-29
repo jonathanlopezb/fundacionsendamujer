@@ -1,60 +1,28 @@
 'use client';
 
 import React, { useState } from 'react';
-import Link from 'next/link';
-import { UserCheck, Shield, FileText, Upload, Calendar, CheckCircle2, Lock, Sparkles, BookOpen, Clock, Heart, Award, ArrowRight, Activity, Plus, ShieldAlert, LogOut, KeyRound, PlayCircle, Download, FileCheck, Check } from 'lucide-react';
-import confetti from 'canvas-confetti';
+import { GraduationCap, HeartPulse, ChevronRight, Lock, Shield, Star, Sparkles, LogOut, ShieldAlert, EyeOff, KeyRound, CheckCircle2 } from 'lucide-react';
+
+// Sub-panel imports
+import GestionAdministrativa from './GestionAdministrativa';
+import AcademiaPortal from './AcademiaPortal';
 
 interface BeneficiaryPortalProps {
   onOpenSOS?: () => void;
+  onOpenIncognito?: () => void;
 }
 
-const COURSES_DATA = [
-  {
-    id: 1,
-    title: 'Módulo 1: Ginecología Preventiva & Derechos Reproductivos',
-    duration: '25 min',
-    instructor: 'Dra. Elena Ruiz — Ginecóloga Especialista',
-    desc: 'Salud sexual, autocuidado femenino, ecografías preventivas y jurisprudencia colombiana (Sentencias C-055 de 2022 y C-355 de 2006).',
-    completed: true,
-  },
-  {
-    id: 2,
-    title: 'Módulo 2: Confección & Patronaje Textil Básico',
-    duration: '40 min',
-    instructor: 'Instructora Carmen Lora — SENA Aliado',
-    desc: 'Fundamentos de toma de medidas, trazado de patrones y costura a máquina para crear tu propia línea de prendas.',
-    completed: true,
-  },
-  {
-    id: 3,
-    title: 'Módulo 3: Marketing Digital & Ventas WhatsApp Cartagena',
-    duration: '30 min',
-    instructor: 'Lic. Mateo Gómez — Marketing Digital',
-    desc: 'Crea tu catálogo digital, atiende clientes por WhatsApp Business y promociona tus productos en la Costa Caribe.',
-    completed: false,
-  },
-  {
-    id: 4,
-    title: 'Módulo 4: Prevención de VBG & Autonomía Jurídica',
-    duration: '35 min',
-    instructor: 'Dra. Patricia Herrera — Abogada VBG',
-    desc: 'Cómo identificar la violencia de género y solicitar medidas de protección efectivas ante comisarías y fiscalía.',
-    completed: false,
-  },
-];
+type ActiveModule = 'home' | 'academia' | 'gestion';
 
-export default function BeneficiaryPortal({ onOpenSOS }: BeneficiaryPortalProps) {
+export default function BeneficiaryPortal({ onOpenSOS, onOpenIncognito }: BeneficiaryPortalProps) {
   const [isAuthenticated, setIsAuthenticated] = useState(false);
   const [documentId, setDocumentId] = useState('');
   const [secretPin, setSecretPin] = useState('');
   const [acceptedHabeasData, setAcceptedHabeasData] = useState(false);
   const [loginError, setLoginError] = useState('');
+  const [activeModule, setActiveModule] = useState<ActiveModule>('home');
 
-  const [activeTab, setActiveTab] = useState<'citas' | 'documentos' | 'seguimiento' | 'academia'>('citas');
-
-  // Simulated Beneficiary Profile State
-  const [profile, setProfile] = useState({
+  const profile = {
     name: 'María Alejandra Torres',
     code: 'SM-8842',
     docId: '1.047.892.411',
@@ -63,72 +31,34 @@ export default function BeneficiaryPortal({ onOpenSOS }: BeneficiaryPortalProps)
     assignedSpecialist: 'Dra. Elena Ruiz — Ginecología & Salud Reproductiva',
     primaryProgram: 'Programa 4 — Ruta de Salud y Derechos Reproductivos',
     status: 'Activa — Acompañamiento Continuo',
-  });
-
-  const [appointments, setAppointments] = useState([
-    {
-      id: 'APT-101',
-      specialty: 'Ginecología Especializada',
-      professional: 'Dra. Elena Ruiz',
-      date: '2026-09-02',
-      time: '10:00 AM',
-      location: 'Sede Cartagena (Pie de la Popa)',
-      status: 'CONFIRMADA',
-    },
-    {
-      id: 'APT-102',
-      specialty: 'Odontología Integral',
-      professional: 'Dr. Camilo Vargas',
-      date: '2026-09-05',
-      time: '02:00 PM',
-      location: 'Sede Cartagena (Pie de la Popa)',
-      status: 'PENDIENTE',
-    },
-    {
-      id: 'APT-103',
-      specialty: 'Psicología & Salud Mental',
-      professional: 'Lic. Claudia Morales',
-      date: '2026-08-20',
-      time: '09:00 AM',
-      location: 'Teleorientación Virtual',
-      status: 'ATENDIDA',
-    },
-  ]);
-
-  const [documents, setDocuments] = useState([
-    { name: 'Ecografía_Ginecológica_Semana12.pdf', size: '1.4 MB', date: '2026-08-15', status: 'Verificado' },
-    { name: 'Documento_Identidad_Cedula.pdf', size: '820 KB', date: '2026-08-10', status: 'Verificado' },
-    { name: 'Certificado_Asistencia_Taller_Textil.pdf', size: '640 KB', date: '2026-08-22', status: 'Aprobado' },
-  ]);
-
-  const [isUploading, setIsUploading] = useState(false);
-
-  // Academy Course Active State inside Portal
-  const [activeCourse, setActiveCourse] = useState(COURSES_DATA[0]);
-  const [showCertificateModal, setShowCertificateModal] = useState(false);
+    avatar: 'MA',
+    joinDate: 'Agosto 2026',
+    nextAppointment: '02 Sep 2026 — 10:00 AM',
+    sendaIndex: 34,
+    coursesCompleted: 2,
+    totalCourses: 6,
+  };
 
   const triggerSOS = () => {
-    if (onOpenSOS) {
-      onOpenSOS();
-    } else {
-      window.dispatchEvent(new KeyboardEvent('keydown', { key: 'Escape' }));
-    }
+    if (onOpenSOS) onOpenSOS();
+  };
+
+  const triggerIncognito = () => {
+    if (onOpenIncognito) onOpenIncognito();
+    else if (onOpenSOS) onOpenSOS();
   };
 
   const handleLogin = (e: React.FormEvent) => {
     e.preventDefault();
     setLoginError('');
-
     if (!acceptedHabeasData) {
-      setLoginError('Debes aceptar la autorización de tratamiento de datos personales de acuerdo con la Ley 1581 de 2012 de Colombia.');
+      setLoginError('Debes aceptar la autorización de datos personales (Ley 1581 de 2012).');
       return;
     }
-
     if (!documentId.trim() || !secretPin.trim()) {
-      setLoginError('Por favor ingresa tu número de documento/código de expediente y tu clave PIN secreta.');
+      setLoginError('Por favor ingresa tu documento/código de expediente y tu clave PIN.');
       return;
     }
-
     setIsAuthenticated(true);
   };
 
@@ -137,500 +67,367 @@ export default function BeneficiaryPortal({ onOpenSOS }: BeneficiaryPortalProps)
     setDocumentId('');
     setSecretPin('');
     setAcceptedHabeasData(false);
+    setActiveModule('home');
   };
 
-  const handleFileUpload = async (e: React.ChangeEvent<HTMLInputElement>) => {
-    const file = e.target.files?.[0];
-    if (!file) return;
+  // ─── LOGIN SCREEN ────────────────────────────────────────────────────────
+  if (!isAuthenticated) {
+    return (
+      <div className="min-h-screen bg-gradient-to-br from-[#FDF8FA] via-pink-50 to-purple-50 flex items-center justify-center px-4 py-12">
+        <div className="w-full max-w-md">
 
-    setIsUploading(true);
+          {/* Card */}
+          <div className="bg-white rounded-3xl border border-pink-200 shadow-2xl overflow-hidden">
 
-    try {
-      const res = await fetch(`/api/upload?filename=${encodeURIComponent(file.name)}`, {
-        method: 'POST',
-        body: file,
-      });
-
-      const data = await res.json();
-      setDocuments([
-        {
-          name: file.name,
-          size: `${(file.size / 1024).toFixed(0)} KB`,
-          date: new Date().toISOString().split('T')[0],
-          status: 'Cargado con Éxito',
-        },
-        ...documents,
-      ]);
-    } catch (err) {
-      console.error('Error cargando documento:', err);
-    } finally {
-      setIsUploading(false);
-    }
-  };
-
-  const handleGeneratePersonalCertificate = () => {
-    setShowCertificateModal(true);
-    confetti({
-      particleCount: 120,
-      spread: 80,
-      origin: { y: 0.5 },
-    });
-  };
-
-  return (
-    <div className="max-w-6xl mx-auto px-4 py-8 space-y-8">
-      
-      {/* If NOT Authenticated: Secure Login Screen */}
-      {!isAuthenticated ? (
-        <div className="max-w-xl mx-auto bg-white rounded-3xl border border-pink-200 shadow-2xl overflow-hidden animate-fadeIn">
-          
-          {/* Header */}
-          <div className="bg-gradient-to-r from-senda-purple-dark via-senda-purple to-senda-pink text-white p-6 sm:p-8 text-center relative">
-            
-            {/* SOS Escape Button inside Login Header */}
-            <div className="flex justify-end mb-2">
-
-            </div>
-
-            <div className="w-14 h-14 bg-white/10 rounded-2xl flex items-center justify-center mx-auto mb-3 border border-white/20">
-              <Lock className="w-7 h-7 text-amber-300" />
-            </div>
-
-            <h2 className="text-2xl font-extrabold text-white">
-              SendaPass — Acceso Seguro a tu Expediente
-            </h2>
-            <p className="text-xs text-pink-100 mt-1">
-              Portal confidencial de beneficiarias de la Fundación Senda Mujer en Cartagena.
-            </p>
-          </div>
-
-          {/* Form */}
-          <form onSubmit={handleLogin} className="p-6 sm:p-8 space-y-6">
-            
-            {loginError && (
-              <div className="p-3.5 bg-red-50 border border-red-200 rounded-xl text-xs font-bold text-red-600 leading-snug">
-                {loginError}
+            {/* Header */}
+            <div className="bg-gradient-to-r from-[#3B0852] via-[#52166F] to-[#E12880] text-white p-8 text-center relative">
+              <div className="w-16 h-16 bg-white/10 rounded-2xl flex items-center justify-center mx-auto mb-4 border border-white/20 backdrop-blur-sm">
+                <Lock className="w-8 h-8 text-amber-300" />
               </div>
-            )}
-
-            <div className="space-y-4">
-              <div>
-                <label className="block text-xs font-extrabold text-slate-700 mb-1">
-                  Número de Cédula / Documento o Código de Expediente *
-                </label>
-                <input
-                  type="text"
-                  value={documentId}
-                  onChange={(e) => setDocumentId(e.target.value)}
-                  placeholder="Ej: 1047892411 o SM-8842"
-                  required
-                  className="w-full px-4 py-3 rounded-xl border border-pink-200 focus:outline-none focus:ring-2 focus:ring-senda-pink text-sm"
-                />
-              </div>
-
-              <div>
-                <label className="block text-xs font-extrabold text-slate-700 mb-1">
-                  Clave PIN Secreta / Contraseña *
-                </label>
-                <input
-                  type="password"
-                  value={secretPin}
-                  onChange={(e) => setSecretPin(e.target.value)}
-                  placeholder="••••••••"
-                  required
-                  className="w-full px-4 py-3 rounded-xl border border-pink-200 focus:outline-none focus:ring-2 focus:ring-senda-pink text-sm"
-                />
-                <span className="text-[11px] text-slate-400 mt-1 block">
-                  Si no recuerdas tu PIN confidencial, solicítalo a tu trabajadora social o ginecóloga aliada.
+              <h2 className="text-2xl font-extrabold text-white">SendaPass</h2>
+              <p className="text-xs text-pink-100 mt-1">Portal Seguro de Beneficiarias — Fundación Senda Mujer</p>
+              <div className="flex items-center justify-center gap-2 mt-3">
+                <span className="bg-emerald-500/20 text-emerald-200 text-[10px] font-bold px-3 py-1 rounded-full border border-emerald-400/30">
+                  🔒 Cifrado SSL • Habeas Data Protegido
                 </span>
               </div>
             </div>
 
-            {/* Habeas Data & Protection of Personal Data Box (Ley 1581 de 2012 Colombia) */}
-            <div className="bg-pink-50/70 p-4 rounded-2xl border border-pink-200 space-y-2">
-              <div className="flex items-start space-x-2">
-                <input
-                  type="checkbox"
-                  id="habeasData"
-                  checked={acceptedHabeasData}
-                  onChange={(e) => setAcceptedHabeasData(e.target.checked)}
-                  className="w-4 h-4 text-senda-pink rounded focus:ring-senda-pink mt-0.5 cursor-pointer"
-                />
-                <label htmlFor="habeasData" className="text-[11px] text-slate-700 leading-relaxed font-semibold cursor-pointer">
-                  Autorizo a la <strong>Fundación Senda Mujer</strong> para el tratamiento confidencial y seguro de mis datos personales de salud y seguimiento, en estricto cumplimiento de la <strong>Ley 1581 de 2012 de Habeas Data y Protección de Datos Personales en Colombia</strong>. Mis datos no serán compartidos con terceros sin mi consentimiento explícito.
-                </label>
-              </div>
-            </div>
-
-            <button
-              type="submit"
-              className="w-full bg-gradient-to-r from-senda-pink to-senda-purple text-white font-extrabold py-3.5 rounded-full text-sm shadow-lg hover:shadow-glow transition-all flex items-center justify-center space-x-2 cursor-pointer"
-            >
-              <KeyRound className="w-4 h-4" />
-              <span>Ingresar a Mi Expediente Seguro</span>
-            </button>
-
-            <div className="text-center pt-2">
-              <button
-                type="button"
-                onClick={triggerSOS}
-                className="text-xs text-red-600 font-bold hover:underline inline-flex items-center gap-1 cursor-pointer"
-              >
-                <ShieldAlert className="w-3.5 h-3.5" />
-                <span>¿Peligro o agresor cerca? Salir inmediatamente a Modo Camuflaje [ESC]</span>
-              </button>
-            </div>
-          </form>
-
-        </div>
-      ) : (
-        /* Authenticated Beneficiary Dashboard */
-        <div className="space-y-8 animate-fadeIn">
-          
-          {/* Top Header Banner */}
-          <div className="bg-gradient-to-r from-senda-purple-dark via-senda-purple to-senda-pink text-white rounded-3xl p-6 sm:p-10 shadow-xl relative overflow-hidden">
-            <div className="relative z-10 flex flex-col md:flex-row justify-between items-start md:items-center gap-6">
-              <div className="space-y-2">
-                <div className="flex items-center space-x-3 flex-wrap gap-2">
-                  <span className="bg-amber-400 text-senda-purple-dark font-extrabold text-xs px-3 py-1 rounded-full uppercase tracking-wider flex items-center gap-1.5">
-                    <Shield className="w-3.5 h-3.5" />
-                    SendaPass — Expediente Único Confidencial
-                  </span>
-                  <span className="bg-emerald-500 text-white font-extrabold text-[10px] px-2.5 py-0.5 rounded-full">
-                    Habeas Data Protegido (Ley 1581/2012)
-                  </span>
-                </div>
-                <h1 className="text-2xl sm:text-3xl font-extrabold text-white">
-                  Bienvenida, {profile.name}
-                </h1>
-                <p className="text-xs sm:text-sm text-pink-100">
-                  Cédula: <strong className="text-amber-300">{profile.docId}</strong> • Código Expediente: <strong className="text-amber-300 font-mono">{profile.code}</strong>
-                </p>
-              </div>
-
-              <div className="flex flex-col sm:flex-row items-center gap-3">
-                <button
-                  type="button"
-                  onClick={triggerSOS}
-                  className="bg-amber-400 hover:bg-amber-300 text-senda-purple-dark font-extrabold px-4 py-2 rounded-full text-xs flex items-center space-x-1 shadow-md cursor-pointer"
-                  title="Presiona la tecla ESC para activar camuflaje gastronómico"
-                >
-                  <ShieldAlert className="w-4 h-4 text-red-600" />
-                  <span>MODO CAMUFLAJE [ESC]</span>
-                </button>
-
-                <button
-                  type="button"
-                  onClick={handleLogout}
-                  className="bg-white/10 hover:bg-white/20 text-white font-bold px-4 py-2 rounded-full text-xs flex items-center space-x-1 border border-white/30 cursor-pointer"
-                >
-                  <LogOut className="w-3.5 h-3.5" />
-                  <span>Cerrar Sesión</span>
-                </button>
-              </div>
-            </div>
-          </div>
-
-          {/* Tabs Navigation */}
-          <div className="flex space-x-2 border-b border-pink-200 pb-2 overflow-x-auto no-scrollbar">
-            {[
-              { id: 'citas', label: 'Mis Citas (Ginecología/Odontología/Mente)', icon: Calendar },
-              { id: 'documentos', label: 'Bóveda de Documentos & Evidencias', icon: FileText },
-              { id: 'seguimiento', label: 'Hoja de Ruta & Metas', icon: CheckCircle2 },
-              { id: 'academia', label: 'SendaAcademia & Mis Certificados', icon: BookOpen },
-            ].map((tab) => {
-              const Icon = tab.icon;
-              const isActive = activeTab === tab.id;
-
-              return (
-                <button
-                  key={tab.id}
-                  onClick={() => setActiveTab(tab.id as any)}
-                  className={`px-5 py-3 rounded-2xl text-xs font-bold transition-all flex items-center space-x-2 shrink-0 cursor-pointer ${
-                    isActive
-                      ? 'bg-senda-purple text-white shadow-md'
-                      : 'bg-white text-slate-700 hover:bg-pink-50 border border-pink-100'
-                  }`}
-                >
-                  <Icon className="w-4 h-4" />
-                  <span>{tab.label}</span>
-                </button>
-              );
-            })}
-          </div>
-
-          {/* TAB 1: MIS CITAS */}
-          {activeTab === 'citas' && (
-            <div className="space-y-6 animate-fadeIn">
-              <div className="flex justify-between items-center flex-wrap gap-4">
-                <h2 className="text-xl font-extrabold text-senda-purple-dark">
-                  Mis Citas Médicas y de Acompañamiento
-                </h2>
-
-                <Link
-                  href="/agendar-cita"
-                  className="bg-senda-pink hover:bg-senda-pink-dark text-white font-extrabold px-5 py-2.5 rounded-full text-xs shadow-sm flex items-center space-x-1.5"
-                >
-                  <Plus className="w-4 h-4" />
-                  <span>Solicitar Nueva Cita</span>
-                </Link>
-              </div>
-
-              <div className="grid grid-cols-1 md:grid-cols-3 gap-6">
-                {appointments.map((apt) => (
-                  <div key={apt.id} className="bg-white rounded-3xl border border-pink-100 p-6 shadow-sm hover:shadow-md transition-all space-y-4">
-                    <div className="flex justify-between items-start">
-                      <span className="text-[10px] font-mono font-bold text-slate-400">{apt.id}</span>
-                      <span className={`text-[10px] font-extrabold px-2.5 py-0.5 rounded-full ${
-                        apt.status === 'CONFIRMADA'
-                          ? 'bg-emerald-100 text-emerald-800'
-                          : apt.status === 'PENDIENTE'
-                          ? 'bg-amber-100 text-amber-800'
-                          : 'bg-slate-100 text-slate-700'
-                      }`}>
-                        {apt.status}
-                      </span>
-                    </div>
-
-                    <div>
-                      <h3 className="font-extrabold text-base text-senda-purple-dark">{apt.specialty}</h3>
-                      <p className="text-xs text-slate-600 font-semibold">{apt.professional}</p>
-                    </div>
-
-                    <div className="bg-pink-50/60 p-3 rounded-2xl border border-pink-100 space-y-1 text-xs text-slate-700">
-                      <div className="flex justify-between">
-                        <span>Fecha:</span>
-                        <strong className="text-senda-purple">{apt.date}</strong>
-                      </div>
-                      <div className="flex justify-between">
-                        <span>Hora:</span>
-                        <strong className="text-slate-800">{apt.time}</strong>
-                      </div>
-                    </div>
-
-                    <div className="text-[11px] text-slate-500 font-medium truncate">
-                      📍 {apt.location}
-                    </div>
-                  </div>
-                ))}
-              </div>
-            </div>
-          )}
-
-          {/* TAB 2: BÓVEDA DE DOCUMENTOS */}
-          {activeTab === 'documentos' && (
-            <div className="space-y-6 animate-fadeIn">
-              <div className="bg-white rounded-3xl border border-pink-200 p-6 sm:p-8 space-y-6">
-                <div className="flex justify-between items-center flex-wrap gap-4">
-                  <div>
-                    <h2 className="text-xl font-extrabold text-senda-purple-dark flex items-center gap-2">
-                      <Lock className="w-5 h-5 text-senda-pink" />
-                      Bóveda Encriptada de Documentación & Evidencias
-                    </h2>
-                    <p className="text-xs text-slate-600 mt-1">
-                      Sube de forma segura ecografías ginecológicas, documentos de identidad o solicitudes para tu equipo de especialistas. Protegido bajo la Ley 1581 de 2012.
-                    </p>
-                  </div>
-
-                  <label className="bg-gradient-to-r from-senda-pink to-senda-purple text-white font-extrabold px-6 py-3 rounded-full text-xs shadow-md hover:shadow-glow transition-all flex items-center space-x-2 cursor-pointer">
-                    <Upload className="w-4 h-4" />
-                    <span>{isUploading ? 'Subiendo...' : 'Subir Documento (Vercel Blob)'}</span>
-                    <input
-                      type="file"
-                      onChange={handleFileUpload}
-                      className="hidden"
-                      disabled={isUploading}
-                    />
-                  </label>
-                </div>
-
-                <div className="space-y-3">
-                  {documents.map((doc, idx) => (
-                    <div key={idx} className="bg-pink-50/40 p-4 rounded-2xl border border-pink-100 flex items-center justify-between">
-                      <div className="flex items-center space-x-3">
-                        <FileText className="w-6 h-6 text-senda-pink" />
-                        <div>
-                          <h4 className="font-bold text-xs text-slate-800">{doc.name}</h4>
-                          <span className="text-[10px] text-slate-500">{doc.size} • Cargado el {doc.date}</span>
-                        </div>
-                      </div>
-
-                      <span className="bg-emerald-100 text-emerald-800 text-[10px] font-extrabold px-2.5 py-0.5 rounded-full">
-                        {doc.status}
-                      </span>
-                    </div>
-                  ))}
-                </div>
-              </div>
-            </div>
-          )}
-
-          {/* TAB 3: HOJA DE RUTA */}
-          {activeTab === 'seguimiento' && (
-            <div className="bg-white rounded-3xl border border-pink-200 p-6 sm:p-8 space-y-6 animate-fadeIn">
-              <h2 className="text-xl font-extrabold text-senda-purple-dark">
-                Mi Hoja de Ruta & Metas Personales
-              </h2>
-
-              <div className="space-y-4">
-                {[
-                  { title: 'Entrevista Social Inicial & Valoración de Riesgo', done: true, date: '10 Ago 2026' },
-                  { title: 'Valoración Ginecológica y Salud Sexual Oportuna', done: true, date: '15 Ago 2026' },
-                  { title: 'Primera Consulta Odontológica Preventiva', done: true, date: '22 Ago 2026' },
-                  { title: 'Inscripción al Taller de Confección & Emprendimiento', done: false, date: 'Próximo' },
-                  { title: 'Graduación & Entrega de Capital Semilla', done: false, date: 'Octubre 2026' },
-                ].map((task, idx) => (
-                  <div key={idx} className="flex items-center justify-between p-4 rounded-2xl border border-pink-100 bg-pink-50/30">
-                    <div className="flex items-center space-x-3">
-                      <CheckCircle2 className={`w-5 h-5 ${task.done ? 'text-emerald-500' : 'text-slate-300'}`} />
-                      <span className={`text-xs font-bold ${task.done ? 'text-slate-800' : 'text-slate-500'}`}>
-                        {task.title}
-                      </span>
-                    </div>
-                    <span className="text-[11px] font-semibold text-senda-purple">{task.date}</span>
-                  </div>
-                ))}
-              </div>
-            </div>
-          )}
-
-          {/* TAB 4: SENDAACADEMIA DENTRO DEL PERFIL */}
-          {activeTab === 'academia' && (
-            <div className="space-y-8 animate-fadeIn">
-              
-              {/* Header Academia Box */}
-              <div className="bg-gradient-to-r from-senda-purple to-senda-purple-dark text-white rounded-3xl p-6 sm:p-8 space-y-3">
-                <div className="flex justify-between items-center flex-wrap gap-2">
-                  <span className="bg-amber-400 text-senda-purple-dark font-extrabold text-[10px] px-3 py-1 rounded-full uppercase tracking-wider flex items-center gap-1">
-                    <BookOpen className="w-3.5 h-3.5" />
-                    SendaAcademia — Tu Panel de Formación
-                  </span>
-
-                  <button
-                    onClick={handleGeneratePersonalCertificate}
-                    className="bg-senda-pink hover:bg-senda-pink-dark text-white font-extrabold px-5 py-2 rounded-full text-xs shadow-md flex items-center gap-1.5 cursor-pointer"
-                  >
-                    <Award className="w-4 h-4" />
-                    <span>Generar Mi Certificado Personal</span>
-                  </button>
-                </div>
-
-                <h2 className="text-xl font-extrabold">Cursos Disponibles para {profile.name}</h2>
-                <p className="text-xs text-pink-100 leading-relaxed">
-                  Completa los talleres virtuales interactivos. Al finalizar, tu certificado oficial quedará emitido a tu nombre y número de identificación ({profile.docId}).
-                </p>
-              </div>
-
-              {/* Course Grid inside Profile */}
-              <div className="grid grid-cols-1 lg:grid-cols-12 gap-8">
-                
-                {/* Active Course View */}
-                <div className="lg:col-span-7 bg-white rounded-3xl border border-pink-200 p-6 space-y-4 shadow-sm">
-                  <div className="flex justify-between items-center text-xs">
-                    <span className="bg-pink-100 text-senda-pink font-extrabold px-2.5 py-0.5 rounded-full">
-                      Módulo Seleccionado
-                    </span>
-                    <span className="font-bold text-slate-500">⏱️ {activeCourse.duration}</span>
-                  </div>
-
-                  <h3 className="text-lg font-extrabold text-senda-purple-dark">{activeCourse.title}</h3>
-                  <p className="text-xs text-slate-600 leading-relaxed">{activeCourse.desc}</p>
-                  <span className="text-xs text-senda-purple font-bold block">Profesor: {activeCourse.instructor}</span>
-
-                  <div className="pt-4 border-t border-pink-100 flex items-center justify-between">
-                    <div className="flex items-center space-x-2 text-xs font-bold text-emerald-600">
-                      <Check className="w-4 h-4" />
-                      <span>{activeCourse.completed ? 'Módulo Completado' : 'Pendiente de inicio'}</span>
-                    </div>
-
-                    <button
-                      onClick={handleGeneratePersonalCertificate}
-                      className="bg-amber-400 hover:bg-amber-300 text-senda-purple-dark font-extrabold px-4 py-2 rounded-full text-xs transition-transform active:scale-95 flex items-center gap-1 cursor-pointer"
-                    >
-                      <Award className="w-4 h-4" />
-                      <span>Emitir Certificado</span>
-                    </button>
-                  </div>
-                </div>
-
-                {/* Course List */}
-                <div className="lg:col-span-5 space-y-3">
-                  <h4 className="text-xs font-extrabold text-slate-700 uppercase tracking-wider">
-                    Selecciona un Curso
-                  </h4>
-
-                  {COURSES_DATA.map((course) => {
-                    const isSelected = activeCourse.id === course.id;
-
-                    return (
-                      <button
-                        key={course.id}
-                        onClick={() => setActiveCourse(course)}
-                        className={`w-full text-left p-4 rounded-2xl border transition-all space-y-1.5 cursor-pointer ${
-                          isSelected
-                            ? 'border-senda-pink bg-pink-50 ring-2 ring-senda-pink'
-                            : 'border-slate-200 hover:border-pink-200 bg-white'
-                        }`}
-                      >
-                        <div className="flex justify-between items-center text-xs">
-                          <span className="font-extrabold text-senda-purple text-[10px]">{course.duration}</span>
-                          {course.completed && <CheckCircle2 className="w-4 h-4 text-emerald-500" />}
-                        </div>
-                        <h5 className="font-bold text-xs text-slate-800 leading-snug">{course.title}</h5>
-                      </button>
-                    );
-                  })}
-                </div>
-
-              </div>
-
-              {/* Personalized Certificate Modal */}
-              {showCertificateModal && (
-                <div className="bg-gradient-to-br from-senda-purple-dark via-senda-purple to-senda-pink text-white p-8 rounded-3xl border-2 border-amber-400 shadow-2xl space-y-6 animate-fadeIn text-center relative overflow-hidden">
-                  <div className="w-16 h-16 bg-amber-400 text-senda-purple-dark rounded-full flex items-center justify-center mx-auto shadow-lg">
-                    <Award className="w-10 h-10" />
-                  </div>
-
-                  <span className="bg-amber-400/20 text-amber-300 font-extrabold text-xs px-4 py-1 rounded-full border border-amber-300/40 uppercase tracking-widest">
-                    Certificado Oficial de Capacitación
-                  </span>
-
-                  <div className="space-y-2">
-                    <p className="text-xs text-pink-100 uppercase tracking-wider">La Fundación Senda Mujer Otorga el Presente Certificado a:</p>
-                    <h3 className="text-2xl sm:text-3xl font-extrabold text-white underline decoration-amber-400 underline-offset-8">
-                      {profile.name}
-                    </h3>
-                    <p className="text-xs text-amber-300 font-mono">
-                      C.C. {profile.docId} • Expediente: {profile.code}
-                    </p>
-                  </div>
-
-                  <p className="text-xs text-pink-100 max-w-lg mx-auto leading-relaxed">
-                    Por haber completado satisfactoriamente la formación en <strong>Ginecología Preventiva, Derechos Reproductivos (C-055 / C-355) y Emprendimiento Textil</strong> en Cartagena de Indias.
-                  </p>
-
-                  <div className="pt-4 border-t border-pink-400/30 flex justify-between items-center text-[10px] text-pink-200">
-                    <span>Fecha de Emisión: {new Date().toLocaleDateString('es-CO')}</span>
-                    <span>Verificación QR: SM-CERT-9941</span>
-                  </div>
-
-                  <div className="flex justify-center space-x-4 pt-2">
-                    <button
-                      onClick={() => setShowCertificateModal(false)}
-                      className="bg-white text-senda-purple font-extrabold px-6 py-2.5 rounded-full text-xs hover:bg-pink-100 transition-colors"
-                    >
-                      Cerrar Certificado
-                    </button>
-                  </div>
+            {/* Form */}
+            <form onSubmit={handleLogin} className="p-7 space-y-5">
+              {loginError && (
+                <div className="p-3.5 bg-red-50 border border-red-200 rounded-xl text-xs font-bold text-red-600">
+                  {loginError}
                 </div>
               )}
 
+              <div className="space-y-4">
+                <div>
+                  <label className="block text-xs font-extrabold text-slate-700 mb-1.5">
+                    Número de Cédula o Código de Expediente *
+                  </label>
+                  <input
+                    type="text"
+                    value={documentId}
+                    onChange={(e) => setDocumentId(e.target.value)}
+                    placeholder="Ej: 1047892411 o SM-8842"
+                    required
+                    className="w-full px-4 py-3 rounded-xl border border-pink-200 focus:outline-none focus:ring-2 focus:ring-[#E12880] text-sm bg-pink-50/30"
+                  />
+                </div>
+
+                <div>
+                  <label className="block text-xs font-extrabold text-slate-700 mb-1.5">
+                    Clave PIN Secreta *
+                  </label>
+                  <input
+                    type="password"
+                    value={secretPin}
+                    onChange={(e) => setSecretPin(e.target.value)}
+                    placeholder="••••••••"
+                    required
+                    className="w-full px-4 py-3 rounded-xl border border-pink-200 focus:outline-none focus:ring-2 focus:ring-[#E12880] text-sm bg-pink-50/30"
+                  />
+                  <span className="text-[10px] text-slate-400 mt-1 block">
+                    ¿Olvidaste tu PIN? Contáctanos al +57 317 657 5800
+                  </span>
+                </div>
+              </div>
+
+              {/* Habeas Data */}
+              <div className="bg-pink-50 p-4 rounded-2xl border border-pink-100">
+                <label className="flex items-start gap-2.5 cursor-pointer">
+                  <input
+                    type="checkbox"
+                    checked={acceptedHabeasData}
+                    onChange={(e) => setAcceptedHabeasData(e.target.checked)}
+                    className="w-4 h-4 text-[#E12880] rounded mt-0.5 cursor-pointer focus:ring-[#E12880]"
+                  />
+                  <span className="text-[11px] text-slate-700 leading-relaxed font-semibold">
+                    Autorizo a la <strong>Fundación Senda Mujer</strong> el tratamiento confidencial de mis datos personales, en cumplimiento de la <strong>Ley 1581 de 2012</strong>. Mis datos no serán compartidos sin mi consentimiento explícito.
+                  </span>
+                </label>
+              </div>
+
+              <button
+                type="submit"
+                className="w-full bg-gradient-to-r from-[#E12880] to-[#52166F] text-white font-extrabold py-3.5 rounded-full shadow-lg hover:shadow-xl transition-all flex items-center justify-center gap-2 cursor-pointer"
+              >
+                <KeyRound className="w-4 h-4" />
+                Ingresar a Mi Portal Seguro
+              </button>
+
+              <div className="text-center">
+                <button
+                  type="button"
+                  onClick={triggerSOS}
+                  className="text-[11px] text-red-600 font-bold hover:underline inline-flex items-center gap-1 cursor-pointer"
+                >
+                  <ShieldAlert className="w-3.5 h-3.5" />
+                  ¿Peligro cerca? Activar Modo Camuflaje [ESC]
+                </button>
+              </div>
+            </form>
+          </div>
+
+          {/* SOS Card below login */}
+          <div className="mt-4 bg-red-600 text-white rounded-2xl p-4 flex items-center justify-between shadow-lg">
+            <div className="flex items-center gap-3">
+              <ShieldAlert className="w-6 h-6 text-red-200" />
+              <div>
+                <p className="font-extrabold text-sm">¿Necesitas ayuda ahora?</p>
+                <p className="text-[10px] text-red-200">Sin registro requerido</p>
+              </div>
             </div>
-          )}
+            <a href="/senda-sos" className="bg-white text-red-700 font-extrabold px-4 py-2 rounded-full text-xs hover:bg-red-50 transition-colors">
+              SENDA SOS
+            </a>
+          </div>
+        </div>
+      </div>
+    );
+  }
+
+  // ─── POST-LOGIN: HOME (Module Selector) ─────────────────────────────────
+  if (activeModule === 'home') {
+    return (
+      <div className="min-h-screen bg-gradient-to-br from-[#FDF8FA] via-pink-50 to-purple-50">
+        <div className="max-w-6xl mx-auto px-4 py-8 space-y-8">
+
+          {/* Welcome Banner */}
+          <div className="bg-gradient-to-r from-[#3B0852] via-[#52166F] to-[#E12880] text-white rounded-3xl p-6 sm:p-10 shadow-xl relative overflow-hidden">
+            {/* Decorative circles */}
+            <div className="absolute top-0 right-0 w-48 h-48 bg-white/5 rounded-full -translate-y-1/4 translate-x-1/4" />
+            <div className="absolute bottom-0 left-10 w-32 h-32 bg-white/5 rounded-full translate-y-1/3" />
+
+            <div className="relative z-10 flex flex-col md:flex-row justify-between items-start md:items-center gap-6">
+              <div className="space-y-3">
+                <div className="flex items-center gap-2 flex-wrap">
+                  <span className="bg-amber-400 text-[#3B0852] font-extrabold text-[10px] px-3 py-1 rounded-full uppercase tracking-wider flex items-center gap-1">
+                    <Shield className="w-3 h-3" /> SendaPass Verificado
+                  </span>
+                  <span className="bg-emerald-500 text-white font-extrabold text-[10px] px-2.5 py-0.5 rounded-full">
+                    Habeas Data Activo
+                  </span>
+                </div>
+                <div className="flex items-center gap-3">
+                  <div className="w-14 h-14 rounded-2xl bg-white/20 border border-white/30 flex items-center justify-center font-extrabold text-xl text-white">
+                    {profile.avatar}
+                  </div>
+                  <div>
+                    <h1 className="text-2xl sm:text-3xl font-extrabold text-white">
+                      ¡Hola, {profile.name.split(' ')[0]}! 🌷
+                    </h1>
+                    <p className="text-xs text-pink-100 mt-0.5">
+                      Código: <strong className="text-amber-300 font-mono">{profile.code}</strong> • {profile.status}
+                    </p>
+                  </div>
+                </div>
+              </div>
+
+              <div className="flex flex-row md:flex-col items-center gap-2">
+                <button
+                  type="button"
+                  onClick={triggerIncognito}
+                  className="flex items-center gap-1.5 bg-slate-800/60 hover:bg-slate-800/80 text-white font-bold px-4 py-2 rounded-full text-xs border border-white/20 transition-all cursor-pointer"
+                >
+                  <EyeOff className="w-3.5 h-3.5" />
+                  Modo Incógnito
+                </button>
+                <button
+                  type="button"
+                  onClick={triggerSOS}
+                  className="flex items-center gap-1.5 bg-red-500 hover:bg-red-600 text-white font-extrabold px-4 py-2 rounded-full text-xs shadow-md animate-pulse-glow transition-all cursor-pointer"
+                >
+                  <ShieldAlert className="w-4 h-4" />
+                  SOS [ESC]
+                </button>
+                <button
+                  type="button"
+                  onClick={handleLogout}
+                  className="flex items-center gap-1 bg-white/10 hover:bg-white/20 text-white font-bold px-4 py-2 rounded-full text-xs border border-white/20 cursor-pointer"
+                >
+                  <LogOut className="w-3.5 h-3.5" />
+                  Salir
+                </button>
+              </div>
+            </div>
+          </div>
+
+          {/* Stats row */}
+          <div className="grid grid-cols-2 sm:grid-cols-4 gap-4">
+            {[
+              { label: 'SENDA Index', value: profile.sendaIndex, unit: '/100', icon: '📊', color: 'text-amber-600', bg: 'bg-amber-50' },
+              { label: 'Cursos Completados', value: `${profile.coursesCompleted}/${profile.totalCourses}`, unit: '', icon: '🎓', color: 'text-purple-600', bg: 'bg-purple-50' },
+              { label: 'Próxima Cita', value: '02 Sep', unit: '10:00 AM', icon: '📅', color: 'text-emerald-600', bg: 'bg-emerald-50' },
+              { label: 'Desde', value: profile.joinDate, unit: '', icon: '🌷', color: 'text-pink-600', bg: 'bg-pink-50' },
+            ].map((s, i) => (
+              <div key={i} className={`${s.bg} rounded-2xl p-4 border border-white shadow-sm`}>
+                <span className="text-2xl">{s.icon}</span>
+                <div className={`text-xl font-extrabold ${s.color} mt-1`}>{s.value} <span className="text-xs">{s.unit}</span></div>
+                <div className="text-xs text-slate-500 font-semibold mt-0.5">{s.label}</div>
+              </div>
+            ))}
+          </div>
+
+          {/* ── 2 Module Cards ── */}
+          <div className="grid grid-cols-1 md:grid-cols-2 gap-6">
+
+            {/* ACADEMIA */}
+            <button
+              type="button"
+              onClick={() => setActiveModule('academia')}
+              className="group bg-white rounded-3xl border-2 border-purple-100 p-8 shadow-md hover:shadow-xl hover:border-purple-300 transition-all text-left cursor-pointer relative overflow-hidden"
+            >
+              <div className="absolute top-0 right-0 w-40 h-40 bg-purple-50 rounded-full -translate-y-1/3 translate-x-1/3 group-hover:bg-purple-100 transition-all" />
+              <div className="relative z-10">
+                <div className="w-16 h-16 bg-gradient-to-br from-[#52166F] to-[#E12880] rounded-2xl flex items-center justify-center shadow-lg mb-5">
+                  <GraduationCap className="w-8 h-8 text-white" />
+                </div>
+                <div className="flex items-center gap-2 mb-2">
+                  <h2 className="text-xl font-extrabold text-[#52166F]">SendaAcademia</h2>
+                  <span className="bg-amber-100 text-amber-700 text-[10px] font-extrabold px-2 py-0.5 rounded-full">
+                    {profile.coursesCompleted}/{profile.totalCourses} módulos
+                  </span>
+                </div>
+                <p className="text-sm text-slate-600 leading-relaxed mb-4">
+                  Accede a tus cursos de formación, material de estudio descargable, talleres virtuales y genera tus certificados oficiales.
+                </p>
+                <div className="space-y-1.5 mb-5">
+                  {['Cursos y módulos de aprendizaje', 'Material descargable PDF', 'Certificados oficiales', 'Biblioteca de recursos'].map((f) => (
+                    <div key={f} className="flex items-center gap-2 text-xs text-slate-600">
+                      <CheckCircle2 className="w-3.5 h-3.5 text-purple-500 shrink-0" />
+                      {f}
+                    </div>
+                  ))}
+                </div>
+                {/* Progress bar */}
+                <div className="mb-4">
+                  <div className="flex justify-between text-[10px] font-bold text-slate-500 mb-1">
+                    <span>Progreso del programa</span>
+                    <span>{Math.round((profile.coursesCompleted / profile.totalCourses) * 100)}%</span>
+                  </div>
+                  <div className="w-full bg-purple-100 rounded-full h-2">
+                    <div
+                      className="bg-gradient-to-r from-[#52166F] to-[#E12880] h-2 rounded-full transition-all"
+                      style={{ width: `${(profile.coursesCompleted / profile.totalCourses) * 100}%` }}
+                    />
+                  </div>
+                </div>
+                <div className="flex items-center gap-2 text-[#E12880] font-extrabold text-sm group-hover:gap-3 transition-all">
+                  Ir a la Academia <ChevronRight className="w-4 h-4" />
+                </div>
+              </div>
+            </button>
+
+            {/* GESTIÓN ADMINISTRATIVA */}
+            <button
+              type="button"
+              onClick={() => setActiveModule('gestion')}
+              className="group bg-white rounded-3xl border-2 border-pink-100 p-8 shadow-md hover:shadow-xl hover:border-pink-300 transition-all text-left cursor-pointer relative overflow-hidden"
+            >
+              <div className="absolute top-0 right-0 w-40 h-40 bg-pink-50 rounded-full -translate-y-1/3 translate-x-1/3 group-hover:bg-pink-100 transition-all" />
+              <div className="relative z-10">
+                <div className="w-16 h-16 bg-gradient-to-br from-[#E12880] to-amber-500 rounded-2xl flex items-center justify-center shadow-lg mb-5">
+                  <HeartPulse className="w-8 h-8 text-white" />
+                </div>
+                <div className="flex items-center gap-2 mb-2">
+                  <h2 className="text-xl font-extrabold text-[#E12880]">Gestión Administrativa</h2>
+                  <span className="bg-emerald-100 text-emerald-700 text-[10px] font-extrabold px-2 py-0.5 rounded-full">
+                    Activa
+                  </span>
+                </div>
+                <p className="text-sm text-slate-600 leading-relaxed mb-4">
+                  Consulta tus citas médicas, seguimientos psicológicos, documentos, hoja de ruta e indicador SENDA de progreso.
+                </p>
+                <div className="space-y-1.5 mb-5">
+                  {['Mis citas médicas y psicológicas', 'Seguimientos y evolución', 'Bóveda de documentos seguros', 'Indicador SENDA Index', 'Hoja de ruta personal'].map((f) => (
+                    <div key={f} className="flex items-center gap-2 text-xs text-slate-600">
+                      <CheckCircle2 className="w-3.5 h-3.5 text-pink-500 shrink-0" />
+                      {f}
+                    </div>
+                  ))}
+                </div>
+                <div className="bg-amber-50 border border-amber-100 rounded-xl p-3 mb-4 flex items-center gap-2">
+                  <span className="text-lg">📅</span>
+                  <div>
+                    <div className="text-[10px] font-bold text-amber-700 uppercase">Próxima cita</div>
+                    <div className="text-xs font-extrabold text-slate-800">{profile.nextAppointment}</div>
+                  </div>
+                </div>
+                <div className="flex items-center gap-2 text-[#E12880] font-extrabold text-sm group-hover:gap-3 transition-all">
+                  Ver Mi Gestión <ChevronRight className="w-4 h-4" />
+                </div>
+              </div>
+            </button>
+          </div>
+
+          {/* Botón pánico flotante en home */}
+          <div className="fixed bottom-6 left-6 z-40 flex flex-col gap-3">
+            <button
+              onClick={triggerIncognito}
+              className="w-12 h-12 rounded-full bg-slate-800 text-white flex items-center justify-center shadow-xl hover:bg-slate-700 transition-all cursor-pointer"
+              title="Modo Incógnito"
+            >
+              <EyeOff className="w-5 h-5" />
+            </button>
+            <button
+              onClick={triggerSOS}
+              className="w-12 h-12 rounded-full bg-red-600 text-white flex items-center justify-center shadow-xl hover:bg-red-700 transition-all animate-pulse cursor-pointer"
+              title="Botón de Pánico SOS"
+            >
+              <ShieldAlert className="w-5 h-5" />
+            </button>
+          </div>
 
         </div>
-      )}
+      </div>
+    );
+  }
 
+  // ─── ACADEMIA MODULE ─────────────────────────────────────────────────────
+  if (activeModule === 'academia') {
+    return (
+      <div className="min-h-screen bg-[#FDF8FA]">
+        <div className="max-w-6xl mx-auto px-4 py-8">
+          <button onClick={() => setActiveModule('home')} className="flex items-center gap-2 text-sm font-bold text-[#52166F] hover:text-[#E12880] transition-colors mb-6 cursor-pointer">
+            <ChevronRight className="w-4 h-4 rotate-180" />
+            Volver al Panel Principal
+          </button>
+          <AcademiaPortal profile={profile} onSOS={triggerSOS} onIncognito={triggerIncognito} />
+        </div>
+        {/* Floating panic buttons */}
+        <div className="fixed bottom-6 left-6 z-40 flex flex-col gap-3">
+          <button onClick={triggerIncognito} className="w-12 h-12 rounded-full bg-slate-800 text-white flex items-center justify-center shadow-xl hover:bg-slate-700 transition-all cursor-pointer" title="Modo Incógnito">
+            <EyeOff className="w-5 h-5" />
+          </button>
+          <button onClick={triggerSOS} className="w-12 h-12 rounded-full bg-red-600 text-white flex items-center justify-center shadow-xl hover:bg-red-700 animate-pulse cursor-pointer" title="SOS">
+            <ShieldAlert className="w-5 h-5" />
+          </button>
+        </div>
+      </div>
+    );
+  }
+
+  // ─── GESTIÓN ADMINISTRATIVA MODULE ───────────────────────────────────────
+  return (
+    <div className="min-h-screen bg-[#FDF8FA]">
+      <div className="max-w-6xl mx-auto px-4 py-8">
+        <button onClick={() => setActiveModule('home')} className="flex items-center gap-2 text-sm font-bold text-[#E12880] hover:text-[#52166F] transition-colors mb-6 cursor-pointer">
+          <ChevronRight className="w-4 h-4 rotate-180" />
+          Volver al Panel Principal
+        </button>
+        <GestionAdministrativa profile={profile} onSOS={triggerSOS} onIncognito={triggerIncognito} />
+      </div>
+      {/* Floating panic buttons */}
+      <div className="fixed bottom-6 left-6 z-40 flex flex-col gap-3">
+        <button onClick={triggerIncognito} className="w-12 h-12 rounded-full bg-slate-800 text-white flex items-center justify-center shadow-xl hover:bg-slate-700 transition-all cursor-pointer" title="Modo Incógnito">
+          <EyeOff className="w-5 h-5" />
+        </button>
+        <button onClick={triggerSOS} className="w-12 h-12 rounded-full bg-red-600 text-white flex items-center justify-center shadow-xl hover:bg-red-700 animate-pulse cursor-pointer" title="SOS">
+          <ShieldAlert className="w-5 h-5" />
+        </button>
+      </div>
     </div>
   );
 }

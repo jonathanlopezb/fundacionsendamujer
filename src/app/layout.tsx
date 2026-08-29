@@ -12,7 +12,7 @@ export default function RootLayout({
 }: {
   children: React.ReactNode;
 }) {
-  const [isSOSOpen, setIsSOSOpen] = useState(false);
+  const [isOverlayOpen, setIsOverlayOpen] = useState(false);
 
   return (
     <html lang="es" className="scroll-smooth">
@@ -27,14 +27,17 @@ export default function RootLayout({
       </head>
       <body className="bg-[#FDF8FA] text-slate-800 antialiased min-h-screen flex flex-col justify-between">
         
-        {/* Camouflage SOS Overlay */}
+        {/* Camouflage / Incognito Overlay */}
         <CamouflageOverlay
-          isOpen={isSOSOpen}
-          onClose={() => setIsSOSOpen(false)}
+          isOpen={isOverlayOpen}
+          onClose={() => setIsOverlayOpen(false)}
         />
 
         {/* Global Navigation */}
-        <Navbar onOpenSOS={() => setIsSOSOpen(true)} />
+        <Navbar 
+          onOpenSOS={() => setIsOverlayOpen(true)} 
+          onOpenIncognito={() => setIsOverlayOpen(true)}
+        />
 
         {/* Main Content Area */}
         <main className="flex-1">{children}</main>
