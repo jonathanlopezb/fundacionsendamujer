@@ -1,7 +1,7 @@
 'use client';
 
 import React, { useState, useRef, useEffect } from 'react';
-import { MessageSquare, X, Send, Sparkles, ShieldAlert, PhoneCall, Bot, User } from 'lucide-react';
+import { MessageSquare, X, Send, Sparkles, Bot, User, Minimize2 } from 'lucide-react';
 
 interface ChatMessage {
   role: 'user' | 'assistant';
@@ -13,12 +13,13 @@ export default function SendaBotChat() {
   const [messages, setMessages] = useState<ChatMessage[]>([
     {
       role: 'assistant',
-      content: '🌷 Hola, soy **SendaBot**, tu asistente confidencial de la Fundación Senda Mujer en Cartagena. Estoy aquí para escucharte, orientarte sobre tus derechos (Sentencias C-055/2022 y C-355/2006) y guiarte de forma 100% segura. ¿En qué te puedo ayudar hoy?',
+      content: '🌷 Hola, soy **SendaBot**, tu asistente confidencial de la Fundación Senda Mujer en Cartagena. Estoy aquí para escucharte, orientarte sobre tus derechos (Sentencias C-055/2022 y C-355/2006), ginecología, odontología y guiarte de forma 100% segura. ¿En qué te puedo ayudar hoy?',
     },
   ]);
   const [input, setInput] = useState('');
   const [loading, setLoading] = useState(false);
   const messagesEndRef = useRef<HTMLDivElement>(null);
+  const chatWindowRef = useRef<HTMLDivElement>(null);
 
   const scrollToBottom = () => {
     messagesEndRef.current?.scrollIntoView({ behavior: 'smooth' });
@@ -27,6 +28,18 @@ export default function SendaBotChat() {
   useEffect(() => {
     if (isOpen) scrollToBottom();
   }, [messages, isOpen]);
+
+  // Close on Escape key or click outside
+  useEffect(() => {
+    const handleKeyDown = (e: KeyboardEvent) => {
+      if (e.key === 'Escape' && isOpen) {
+        setIsOpen(false);
+      }
+    };
+
+    window.addEventListener('keydown', handleKeyDown);
+    return () => window.removeEventListener('keydown', handleKeyDown);
+  }, [isOpen]);
 
   const handleSend = async (customText?: string) => {
     const textToSend = customText || input;
@@ -60,34 +73,37 @@ export default function SendaBotChat() {
   };
 
   return (
-    <div className="fixed bottom-6 right-6 z-40">
-      {/* Trigger Button */}
+    <div className="fixed bottom-4 right-4 sm:bottom-6 sm:right-6 z-[999]">
+      {/* Floating Trigger Button */}
       {!isOpen && (
         <button
+          type="button"
           onClick={() => setIsOpen(true)}
-          className="bg-gradient-to-r from-senda-pink via-rose-500 to-senda-purple text-white p-4 rounded-full shadow-glow hover:scale-105 active:scale-95 transition-all flex items-center space-x-2 group relative"
-          title="Abrir Chat Confidencial SendaBot AI"
+          className="bg-gradient-to-r from-senda-pink via-rose-500 to-senda-purple text-white p-3.5 sm:p-4 rounded-full shadow-glow hover:scale-105 active:scale-95 transition-all flex items-center space-x-2 group relative border border-pink-300/30 cursor-pointer"
+          aria-label="Abrir Chat SendaBot"
         >
           <span className="absolute -top-1 -right-1 w-3.5 h-3.5 bg-emerald-400 border-2 border-white rounded-full animate-ping" />
-          <Bot className="w-6 h-6" />
+          <Bot className="w-6 h-6 text-white" />
           <span className="hidden sm:inline text-xs font-extrabold tracking-wide pr-1">
             Asistente Virtual 24/7
           </span>
         </button>
       )}
 
-      {/* Floating Modal */}
+      {/* Floating Modal Window */}
       {isOpen && (
-        <div className="bg-white rounded-3xl border border-pink-200 shadow-2xl w-[360px] sm:w-[420px] h-[540px] flex flex-col overflow-hidden animate-fadeIn">
-          
-          {/* Top Bar */}
-          <div className="bg-gradient-to-r from-senda-purple-dark to-senda-purple text-white p-4 flex items-center justify-between shadow-md">
+        <div
+          ref={chatWindowRef}
+          className="bg-white rounded-3xl border border-pink-200 shadow-2xl w-[92vw] max-w-[400px] h-[520px] sm:h-[560px] flex flex-col overflow-hidden animate-fadeIn transition-all duration-300"
+        >
+          {/* Top Bar with explicit close buttons */}
+          <div className="bg-gradient-to-r from-senda-purple-dark to-senda-purple text-white p-4 flex items-center justify-between shadow-md shrink-0">
             <div className="flex items-center space-x-3">
               <div className="p-2 bg-senda-pink rounded-xl">
                 <Bot className="w-5 h-5 text-white" />
               </div>
               <div>
-                <h3 className="font-extrabold text-sm flex items-center gap-1.5">
+                <h3 className="font-extrabold text-sm flex items-center gap-1.5 text-white">
                   SendaBot AI
                   <Sparkles className="w-3.5 h-3.5 text-amber-300" />
                 </h3>
@@ -95,12 +111,17 @@ export default function SendaBotChat() {
               </div>
             </div>
 
-            <button
-              onClick={() => setIsOpen(false)}
-              className="p-1.5 hover:bg-white/10 rounded-full transition-colors text-pink-200 hover:text-white"
-            >
-              <X className="w-5 h-5" />
-            </button>
+            <div className="flex items-center space-x-1">
+              <button
+                type="button"
+                onClick={() => setIsOpen(false)}
+                className="p-2 hover:bg-white/20 active:bg-white/30 rounded-full transition-colors text-white cursor-pointer"
+                title="Minimizar / Cerrar Chat"
+                aria-label="Cerrar Chat"
+              >
+                <X className="w-5 h-5" />
+              </button>
+            </div>
           </div>
 
           {/* Messages Scroll Area */}
@@ -119,7 +140,7 @@ export default function SendaBotChat() {
                 )}
 
                 <div
-                  className={`p-3.5 rounded-2xl max-w-[82%] leading-relaxed ${
+                  className={`p-3.5 rounded-2xl max-w-[84%] leading-relaxed break-words ${
                     msg.role === 'user'
                       ? 'bg-senda-purple text-white rounded-tr-none shadow-sm'
                       : 'bg-white text-slate-800 border border-pink-100 rounded-tl-none shadow-xs'
@@ -146,24 +167,27 @@ export default function SendaBotChat() {
           </div>
 
           {/* Quick Suggestion Pills */}
-          <div className="p-2.5 bg-white border-t border-pink-100 flex gap-1.5 overflow-x-auto text-[10px] font-bold text-senda-purple no-scrollbar">
+          <div className="p-2.5 bg-white border-t border-pink-100 flex gap-1.5 overflow-x-auto text-[10px] font-bold text-senda-purple no-scrollbar shrink-0">
             <button
+              type="button"
+              onClick={() => handleSend('Quiero agendar cita de Ginecología o Medicina')}
+              className="bg-pink-50 hover:bg-pink-100 border border-pink-200 px-2.5 py-1 rounded-full shrink-0"
+            >
+              🩺 Cita Ginecología
+            </button>
+            <button
+              type="button"
               onClick={() => handleSend('Tengo un embarazo no planeado, ¿qué alternativas tengo?')}
               className="bg-pink-50 hover:bg-pink-100 border border-pink-200 px-2.5 py-1 rounded-full shrink-0"
             >
               🌸 Embarazo No Planeado
             </button>
             <button
+              type="button"
               onClick={() => handleSend('Sufro de violencia de género, ¿dónde acudo en Cartagena?')}
               className="bg-pink-50 hover:bg-pink-100 border border-pink-200 px-2.5 py-1 rounded-full shrink-0"
             >
               🕊️ Ruta Violencia Cartagena
-            </button>
-            <button
-              onClick={() => handleSend('Quiero agendar cita gratuita de Odontología o Psicología')}
-              className="bg-pink-50 hover:bg-pink-100 border border-pink-200 px-2.5 py-1 rounded-full shrink-0"
-            >
-              📅 Cita Odontológica / Médica
             </button>
           </div>
 
@@ -173,7 +197,7 @@ export default function SendaBotChat() {
               e.preventDefault();
               handleSend();
             }}
-            className="p-3 bg-white border-t border-pink-100 flex items-center space-x-2"
+            className="p-3 bg-white border-t border-pink-100 flex items-center space-x-2 shrink-0"
           >
             <input
               type="text"
@@ -185,7 +209,7 @@ export default function SendaBotChat() {
             <button
               type="submit"
               disabled={loading || !input.trim()}
-              className="bg-senda-pink hover:bg-senda-pink-dark text-white p-2.5 rounded-full disabled:opacity-50 transition-colors shadow-sm"
+              className="bg-senda-pink hover:bg-senda-pink-dark text-white p-2.5 rounded-full disabled:opacity-50 transition-colors shadow-sm cursor-pointer"
             >
               <Send className="w-4 h-4" />
             </button>

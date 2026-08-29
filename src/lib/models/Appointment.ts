@@ -4,10 +4,16 @@ export interface IAppointment extends Document {
   fullName: string;
   phone: string;
   email?: string;
-  specialty: 'Psicología & Salud Mental' | 'Medicina General & Reproductiva' | 'Odontología Integral' | 'Asesoría Jurídica & VBG' | 'Trabajo Social';
+  specialty:
+    | 'Ginecología Especializada & Salud Reproductiva'
+    | 'Psicología & Salud Mental'
+    | 'Medicina General & Salud Reproductiva'
+    | 'Odontología Integral'
+    | 'Asesoría Jurídica & VBG'
+    | 'Trabajo Social';
   preferredDate: string;
   preferredTime: string;
-  location: string; // E.g., 'Sede Cartagena - Manga' | 'Teleorientación Virtual'
+  location: string;
   notes?: string;
   status: 'PENDIENTE' | 'CONFIRMADA' | 'ATENDIDA' | 'CANCELADA';
   createdAt: Date;
@@ -21,8 +27,9 @@ const AppointmentSchema = new Schema<IAppointment>(
     specialty: {
       type: String,
       enum: [
+        'Ginecología Especializada & Salud Reproductiva',
         'Psicología & Salud Mental',
-        'Medicina General & Reproductiva',
+        'Medicina General & Salud Reproductiva',
         'Odontología Integral',
         'Asesoría Jurídica & VBG',
         'Trabajo Social',

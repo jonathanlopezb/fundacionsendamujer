@@ -2,19 +2,20 @@
 
 import React, { useState, useEffect } from 'react';
 import { useSearchParams } from 'next/navigation';
-import { Calendar, Clock, MapPin, User, Phone, Mail, FileText, CheckCircle2, Sparkles, Stethoscope, Brain, Scale, Smile, HeartHandshake } from 'lucide-react';
+import { Calendar, Clock, MapPin, User, Phone, Mail, FileText, CheckCircle2, Sparkles, Stethoscope, Brain, Scale, Smile, HeartHandshake, Activity } from 'lucide-react';
 
 const SPECIALTIES = [
+  { id: 'Ginecología Especializada & Salud Reproductiva', label: 'Ginecología Especializada', icon: Activity, color: 'text-pink-600' },
   { id: 'Psicología & Salud Mental', label: 'Psicología & Salud Mental', icon: Brain, color: 'text-purple-600' },
   { id: 'Odontología Integral', label: 'Odontología Integral', icon: Smile, color: 'text-sky-600' },
-  { id: 'Medicina General & Reproductiva', label: 'Medicina General', icon: Stethoscope, color: 'text-emerald-600' },
+  { id: 'Medicina General & Salud Reproductiva', label: 'Medicina General', icon: Stethoscope, color: 'text-emerald-600' },
   { id: 'Asesoría Jurídica & VBG', label: 'Asesoría Jurídica VBG', icon: Scale, color: 'text-amber-600' },
-  { id: 'Trabajo Social', label: 'Trabajo Social', icon: HeartHandshake, color: 'text-pink-600' },
+  { id: 'Trabajo Social', label: 'Trabajo Social', icon: HeartHandshake, color: 'text-rose-600' },
 ];
 
 export default function AppointmentBooking() {
   const searchParams = useSearchParams();
-  const defaultSpecialty = searchParams.get('especialidad') || 'Psicología & Salud Mental';
+  const defaultSpecialty = searchParams.get('especialidad') || 'Ginecología Especializada & Salud Reproductiva';
   const defaultName = searchParams.get('nombre') || '';
 
   const [formData, setFormData] = useState({
@@ -77,7 +78,7 @@ export default function AppointmentBooking() {
             Agendamiento de Atención Especializada
           </h2>
           <p className="text-xs sm:text-sm text-pink-100 mt-2 max-w-2xl">
-            Reserva tu atención confidencial presencial en Cartagena o teleorientación virtual con nuestro equipo de Psicología, Odontología, Medicina, Derecho o Trabajo Social.
+            Reserva tu atención confidencial presencial en Cartagena o teleorientación virtual con nuestro equipo de Ginecología, Psicología, Odontología, Medicina, Derecho o Trabajo Social.
           </p>
         </div>
 
@@ -118,7 +119,7 @@ export default function AppointmentBooking() {
             <div className="pt-4 flex justify-center space-x-4">
               <button
                 onClick={() => setTicket(null)}
-                className="bg-senda-purple text-white font-extrabold px-6 py-2.5 rounded-full text-xs hover:bg-senda-purple-dark transition-all"
+                className="bg-senda-purple text-white font-extrabold px-6 py-2.5 rounded-full text-xs hover:bg-senda-purple-dark transition-all cursor-pointer"
               >
                 Agendar otra cita
               </button>
@@ -133,7 +134,7 @@ export default function AppointmentBooking() {
               <label className="block text-xs font-extrabold text-slate-700 uppercase tracking-wider">
                 1. Selecciona la Especialidad Requerida *
               </label>
-              <div className="grid grid-cols-2 sm:grid-cols-3 lg:grid-cols-5 gap-3">
+              <div className="grid grid-cols-2 sm:grid-cols-3 lg:grid-cols-6 gap-3">
                 {SPECIALTIES.map((spec) => {
                   const Icon = spec.icon;
                   const isSelected = formData.specialty === spec.id;
@@ -143,7 +144,7 @@ export default function AppointmentBooking() {
                       key={spec.id}
                       type="button"
                       onClick={() => setFormData({ ...formData, specialty: spec.id })}
-                      className={`p-3.5 rounded-2xl text-center border transition-all flex flex-col items-center justify-center space-y-2 ${
+                      className={`p-3.5 rounded-2xl text-center border transition-all flex flex-col items-center justify-center space-y-2 cursor-pointer ${
                         isSelected
                           ? 'border-senda-pink bg-pink-50 ring-2 ring-senda-pink shadow-sm'
                           : 'border-slate-200 hover:border-pink-200 bg-white'
@@ -238,7 +239,7 @@ export default function AppointmentBooking() {
                   rows={3}
                   value={formData.notes}
                   onChange={handleChange}
-                  placeholder="Describe brevemente tus inquietudes o requerimientos..."
+                  placeholder="Describe brevemente tus inquietudes (salud ginecológica, apoyo en embarazo, odontología...)"
                   className="w-full px-4 py-3 rounded-xl border border-pink-200 focus:outline-none focus:ring-2 focus:ring-senda-pink text-sm"
                 />
               </div>
@@ -248,7 +249,7 @@ export default function AppointmentBooking() {
               <button
                 type="submit"
                 disabled={isSubmitting}
-                className="bg-gradient-to-r from-senda-pink to-senda-purple text-white font-extrabold px-10 py-3.5 rounded-full text-sm shadow-lg hover:shadow-glow transition-all"
+                className="bg-gradient-to-r from-senda-pink to-senda-purple text-white font-extrabold px-10 py-3.5 rounded-full text-sm shadow-lg hover:shadow-glow transition-all cursor-pointer"
               >
                 {isSubmitting ? 'Confirmando Reserva...' : 'Confirmar Reserva de Cita'}
               </button>
