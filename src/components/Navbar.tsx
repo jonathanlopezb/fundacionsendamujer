@@ -39,9 +39,11 @@ export default function Navbar({ onOpenSOS }: NavbarProps) {
             <Lock className="w-3 h-3" />
             <span>Mi Expediente Confidencial</span>
           </Link>
-          <Link href="/portal-beneficiaria" className="text-senda-purple-dark hover:text-senda-pink flex items-center gap-1 font-extrabold">
-            <Lock className="w-3.5 h-3.5 text-amber-600" />
-            Portal Beneficiaria
+          <Link href="/portal-beneficiaria"
+            className="hidden sm:flex items-center space-x-1 text-[11px] font-bold text-pink-200 hover:text-white transition-colors"
+          >
+            <UserCog className="w-3 h-3 text-emerald-400" />
+            <span>Panel Profesional</span>
           </Link>
           <Link
             href="/admin"
