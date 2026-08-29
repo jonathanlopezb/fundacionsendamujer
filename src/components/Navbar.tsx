@@ -39,7 +39,10 @@ export default function Navbar({ onOpenSOS }: NavbarProps) {
             <Lock className="w-3 h-3" />
             <span>Mi Expediente Confidencial</span>
           </Link>
-
+          <Link href="/portal-beneficiaria" className="text-senda-purple-dark hover:text-senda-pink flex items-center gap-1 font-extrabold">
+            <Lock className="w-3.5 h-3.5 text-amber-600" />
+            Portal Beneficiaria
+          </Link>
           <Link
             href="/admin"
             className="hidden sm:flex items-center space-x-1 text-[11px] font-bold text-pink-200 hover:text-white transition-colors"
@@ -47,16 +50,6 @@ export default function Navbar({ onOpenSOS }: NavbarProps) {
             <UserCog className="w-3 h-3 text-emerald-400" />
             <span>Panel Profesional</span>
           </Link>
-
-          <button
-            type="button"
-            onClick={onOpenSOS}
-            className="bg-amber-400 hover:bg-amber-300 text-senda-purple-dark font-bold px-3 py-1 rounded-full flex items-center space-x-1 transition-transform active:scale-95 shadow-sm text-[11px] cursor-pointer"
-            title="Presiona la tecla ESC o este botón para camuflar la pantalla al instante"
-          >
-            <ShieldAlert className="w-3.5 h-3.5 text-red-600" />
-            <span>MODO SOS CAMUFLAJE [ESC]</span>
-          </button>
         </div>
       </div>
 
@@ -93,14 +86,6 @@ export default function Navbar({ onOpenSOS }: NavbarProps) {
           <Link href="/galeria" className="hover:text-senda-pink flex items-center gap-1">
             <ImageIcon className="w-3.5 h-3.5 text-senda-purple" />
             Galería
-          </Link>
-          <Link href="/portal-beneficiaria" className="text-senda-purple-dark hover:text-senda-pink flex items-center gap-1 font-extrabold">
-            <Lock className="w-3.5 h-3.5 text-amber-600" />
-            Portal Beneficiaria
-          </Link>
-          <Link href="/admin" className="text-slate-600 hover:text-senda-purple flex items-center gap-1">
-            <UserCog className="w-3.5 h-3.5 text-emerald-600" />
-            Panel Profesional
           </Link>
           <Link href="/donar" className="text-amber-600 font-bold hover:text-amber-700 flex items-center gap-1">
             <Heart className="w-3.5 h-3.5 fill-amber-500 text-amber-500" />
