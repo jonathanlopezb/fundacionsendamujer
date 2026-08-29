@@ -94,7 +94,7 @@ export default function CamouflageOverlay({ isOpen, onClose }: CamouflageOverlay
             className="flex items-center gap-1.5 text-xs font-bold text-slate-600 bg-slate-100 hover:bg-slate-200 px-4 py-2 rounded-full transition-colors cursor-pointer"
           >
             <ArrowLeft className="w-4 h-4" />
-            Volver
+            Volver a Fundación Senda Mujer
           </button>
         </div>
       </header>
@@ -156,7 +156,7 @@ export default function CamouflageOverlay({ isOpen, onClose }: CamouflageOverlay
             onClick={onClose}
             className="text-sm font-bold text-green-700 border border-green-200 px-5 py-2 rounded-full hover:bg-green-50 transition-colors cursor-pointer"
           >
-            Cerrar Vista Privada
+            Volver a Fundación Senda Mujer
           </button>
         </div>
       </div>
