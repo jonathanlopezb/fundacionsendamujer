@@ -2,11 +2,47 @@
 
 import React, { useState } from 'react';
 import Link from 'next/link';
-import { UserCheck, Shield, FileText, Upload, Calendar, CheckCircle2, Lock, Sparkles, BookOpen, Clock, Heart, Award, ArrowRight, Activity, Plus, ShieldAlert, LogOut, KeyRound } from 'lucide-react';
+import { UserCheck, Shield, FileText, Upload, Calendar, CheckCircle2, Lock, Sparkles, BookOpen, Clock, Heart, Award, ArrowRight, Activity, Plus, ShieldAlert, LogOut, KeyRound, PlayCircle, Download, FileCheck, Check } from 'lucide-react';
+import confetti from 'canvas-confetti';
 
 interface BeneficiaryPortalProps {
   onOpenSOS?: () => void;
 }
+
+const COURSES_DATA = [
+  {
+    id: 1,
+    title: 'Módulo 1: Ginecología Preventiva & Derechos Reproductivos',
+    duration: '25 min',
+    instructor: 'Dra. Elena Ruiz — Ginecóloga Especialista',
+    desc: 'Salud sexual, autocuidado femenino, ecografías preventivas y jurisprudencia colombiana (Sentencias C-055 de 2022 y C-355 de 2006).',
+    completed: true,
+  },
+  {
+    id: 2,
+    title: 'Módulo 2: Confección & Patronaje Textil Básico',
+    duration: '40 min',
+    instructor: 'Instructora Carmen Lora — SENA Aliado',
+    desc: 'Fundamentos de toma de medidas, trazado de patrones y costura a máquina para crear tu propia línea de prendas.',
+    completed: true,
+  },
+  {
+    id: 3,
+    title: 'Módulo 3: Marketing Digital & Ventas WhatsApp Cartagena',
+    duration: '30 min',
+    instructor: 'Lic. Mateo Gómez — Marketing Digital',
+    desc: 'Crea tu catálogo digital, atiende clientes por WhatsApp Business y promociona tus productos en la Costa Caribe.',
+    completed: false,
+  },
+  {
+    id: 4,
+    title: 'Módulo 4: Prevención de VBG & Autonomía Jurídica',
+    duration: '35 min',
+    instructor: 'Dra. Patricia Herrera — Abogada VBG',
+    desc: 'Cómo identificar la violencia de género y solicitar medidas de protección efectivas ante comisarías y fiscalía.',
+    completed: false,
+  },
+];
 
 export default function BeneficiaryPortal({ onOpenSOS }: BeneficiaryPortalProps) {
   const [isAuthenticated, setIsAuthenticated] = useState(false);
@@ -15,7 +51,7 @@ export default function BeneficiaryPortal({ onOpenSOS }: BeneficiaryPortalProps)
   const [acceptedHabeasData, setAcceptedHabeasData] = useState(false);
   const [loginError, setLoginError] = useState('');
 
-  const [activeTab, setActiveTab] = useState<'citas' | 'documentos' | 'seguimiento' | 'actividades'>('citas');
+  const [activeTab, setActiveTab] = useState<'citas' | 'documentos' | 'seguimiento' | 'academia'>('citas');
 
   // Simulated Beneficiary Profile State
   const [profile, setProfile] = useState({
@@ -66,6 +102,10 @@ export default function BeneficiaryPortal({ onOpenSOS }: BeneficiaryPortalProps)
   ]);
 
   const [isUploading, setIsUploading] = useState(false);
+
+  // Academy Course Active State inside Portal
+  const [activeCourse, setActiveCourse] = useState(COURSES_DATA[0]);
+  const [showCertificateModal, setShowCertificateModal] = useState(false);
 
   const triggerSOS = () => {
     if (onOpenSOS) {
@@ -128,10 +168,19 @@ export default function BeneficiaryPortal({ onOpenSOS }: BeneficiaryPortalProps)
     }
   };
 
+  const handleGeneratePersonalCertificate = () => {
+    setShowCertificateModal(true);
+    confetti({
+      particleCount: 120,
+      spread: 80,
+      origin: { y: 0.5 },
+    });
+  };
+
   return (
     <div className="max-w-6xl mx-auto px-4 py-8 space-y-8">
       
-      {/* If NOT Authenticated: Secure Login Screen with Habeas Data Consent & SOS Escape Button */}
+      {/* If NOT Authenticated: Secure Login Screen */}
       {!isAuthenticated ? (
         <div className="max-w-xl mx-auto bg-white rounded-3xl border border-pink-200 shadow-2xl overflow-hidden animate-fadeIn">
           
@@ -296,7 +345,7 @@ export default function BeneficiaryPortal({ onOpenSOS }: BeneficiaryPortalProps)
               { id: 'citas', label: 'Mis Citas (Ginecología/Odontología/Mente)', icon: Calendar },
               { id: 'documentos', label: 'Bóveda de Documentos & Evidencias', icon: FileText },
               { id: 'seguimiento', label: 'Hoja de Ruta & Metas', icon: CheckCircle2 },
-              { id: 'actividades', label: 'Actividades & Academia', icon: BookOpen },
+              { id: 'academia', label: 'SendaAcademia & Mis Certificados', icon: BookOpen },
             ].map((tab) => {
               const Icon = tab.icon;
               const isActive = activeTab === tab.id;
@@ -453,50 +502,137 @@ export default function BeneficiaryPortal({ onOpenSOS }: BeneficiaryPortalProps)
             </div>
           )}
 
-          {/* TAB 4: ACTIVIDADES & ACADEMIA */}
-          {activeTab === 'actividades' && (
-            <div className="bg-white rounded-3xl border border-pink-200 p-6 sm:p-8 space-y-6 animate-fadeIn">
-              <div className="flex justify-between items-center">
-                <h2 className="text-xl font-extrabold text-senda-purple-dark">
-                  Clases Virtuales & Agenda de Talleres en Cartagena
-                </h2>
-                <Link
-                  href="/academia"
-                  className="text-xs font-bold text-senda-pink hover:underline flex items-center gap-1"
-                >
-                  <span>Ir a SendaAcademia</span>
-                  <ArrowRight className="w-4 h-4" />
-                </Link>
-              </div>
-
-              <div className="grid grid-cols-1 md:grid-cols-2 gap-6">
-                <div className="bg-gradient-to-br from-senda-purple to-senda-purple-dark text-white p-6 rounded-3xl space-y-3">
-                  <span className="bg-amber-400 text-senda-purple-dark font-extrabold text-[10px] px-2.5 py-0.5 rounded-full uppercase">
-                    SendaAcademia Virtual
+          {/* TAB 4: SENDAACADEMIA DENTRO DEL PERFIL */}
+          {activeTab === 'academia' && (
+            <div className="space-y-8 animate-fadeIn">
+              
+              {/* Header Academia Box */}
+              <div className="bg-gradient-to-r from-senda-purple to-senda-purple-dark text-white rounded-3xl p-6 sm:p-8 space-y-3">
+                <div className="flex justify-between items-center flex-wrap gap-2">
+                  <span className="bg-amber-400 text-senda-purple-dark font-extrabold text-[10px] px-3 py-1 rounded-full uppercase tracking-wider flex items-center gap-1">
+                    <BookOpen className="w-3.5 h-3.5" />
+                    SendaAcademia — Tu Panel de Formación
                   </span>
-                  <h3 className="font-extrabold text-lg">Módulo 1: Derechos Reproductivos & Ginecología Preventiva</h3>
-                  <p className="text-xs text-pink-100 leading-relaxed">
-                    Aprende sobre tus derechos bajo la legislación colombiana y autocuidado femenino con nuestras ginecólogas aliadas.
-                  </p>
-                  <Link
-                    href="/academia"
-                    className="inline-block bg-white text-senda-purple font-extrabold px-5 py-2 rounded-full text-xs hover:bg-pink-100 transition-colors"
+
+                  <button
+                    onClick={handleGeneratePersonalCertificate}
+                    className="bg-senda-pink hover:bg-senda-pink-dark text-white font-extrabold px-5 py-2 rounded-full text-xs shadow-md flex items-center gap-1.5 cursor-pointer"
                   >
-                    Ver Lección en Video
-                  </Link>
+                    <Award className="w-4 h-4" />
+                    <span>Generar Mi Certificado Personal</span>
+                  </button>
                 </div>
 
-                <div className="bg-gradient-to-br from-senda-pink to-rose-600 text-white p-6 rounded-3xl space-y-3">
-                  <span className="bg-white text-senda-pink font-extrabold text-[10px] px-2.5 py-0.5 rounded-full uppercase">
-                    Presencial Cartagena
-                  </span>
-                  <h3 className="font-extrabold text-lg">Jornada de Salud Oral & Nutrición Infantil</h3>
-                  <p className="text-xs text-pink-100 leading-relaxed">
-                    Este sábado en la Casa de Justicia de Chiquinquirá: Entregas de kits odontológicos y revisión pediátrica.
-                  </p>
-                  <span className="text-[11px] font-bold text-amber-300 block">Sábado 9:00 AM • Entrada Libre</span>
-                </div>
+                <h2 className="text-xl font-extrabold">Cursos Disponibles para {profile.name}</h2>
+                <p className="text-xs text-pink-100 leading-relaxed">
+                  Completa los talleres virtuales interactivos. Al finalizar, tu certificado oficial quedará emitido a tu nombre y número de identificación ({profile.docId}).
+                </p>
               </div>
+
+              {/* Course Grid inside Profile */}
+              <div className="grid grid-cols-1 lg:grid-cols-12 gap-8">
+                
+                {/* Active Course View */}
+                <div className="lg:col-span-7 bg-white rounded-3xl border border-pink-200 p-6 space-y-4 shadow-sm">
+                  <div className="flex justify-between items-center text-xs">
+                    <span className="bg-pink-100 text-senda-pink font-extrabold px-2.5 py-0.5 rounded-full">
+                      Módulo Seleccionado
+                    </span>
+                    <span className="font-bold text-slate-500">⏱️ {activeCourse.duration}</span>
+                  </div>
+
+                  <h3 className="text-lg font-extrabold text-senda-purple-dark">{activeCourse.title}</h3>
+                  <p className="text-xs text-slate-600 leading-relaxed">{activeCourse.desc}</p>
+                  <span className="text-xs text-senda-purple font-bold block">Profesor: {activeCourse.instructor}</span>
+
+                  <div className="pt-4 border-t border-pink-100 flex items-center justify-between">
+                    <div className="flex items-center space-x-2 text-xs font-bold text-emerald-600">
+                      <Check className="w-4 h-4" />
+                      <span>{activeCourse.completed ? 'Módulo Completado' : 'Pendiente de inicio'}</span>
+                    </div>
+
+                    <button
+                      onClick={handleGeneratePersonalCertificate}
+                      className="bg-amber-400 hover:bg-amber-300 text-senda-purple-dark font-extrabold px-4 py-2 rounded-full text-xs transition-transform active:scale-95 flex items-center gap-1 cursor-pointer"
+                    >
+                      <Award className="w-4 h-4" />
+                      <span>Emitir Certificado</span>
+                    </button>
+                  </div>
+                </div>
+
+                {/* Course List */}
+                <div className="lg:col-span-5 space-y-3">
+                  <h4 className="text-xs font-extrabold text-slate-700 uppercase tracking-wider">
+                    Selecciona un Curso
+                  </h4>
+
+                  {COURSES_DATA.map((course) => {
+                    const isSelected = activeCourse.id === course.id;
+
+                    return (
+                      <button
+                        key={course.id}
+                        onClick={() => setActiveCourse(course)}
+                        className={`w-full text-left p-4 rounded-2xl border transition-all space-y-1.5 cursor-pointer ${
+                          isSelected
+                            ? 'border-senda-pink bg-pink-50 ring-2 ring-senda-pink'
+                            : 'border-slate-200 hover:border-pink-200 bg-white'
+                        }`}
+                      >
+                        <div className="flex justify-between items-center text-xs">
+                          <span className="font-extrabold text-senda-purple text-[10px]">{course.duration}</span>
+                          {course.completed && <CheckCircle2 className="w-4 h-4 text-emerald-500" />}
+                        </div>
+                        <h5 className="font-bold text-xs text-slate-800 leading-snug">{course.title}</h5>
+                      </button>
+                    );
+                  })}
+                </div>
+
+              </div>
+
+              {/* Personalized Certificate Modal */}
+              {showCertificateModal && (
+                <div className="bg-gradient-to-br from-senda-purple-dark via-senda-purple to-senda-pink text-white p-8 rounded-3xl border-2 border-amber-400 shadow-2xl space-y-6 animate-fadeIn text-center relative overflow-hidden">
+                  <div className="w-16 h-16 bg-amber-400 text-senda-purple-dark rounded-full flex items-center justify-center mx-auto shadow-lg">
+                    <Award className="w-10 h-10" />
+                  </div>
+
+                  <span className="bg-amber-400/20 text-amber-300 font-extrabold text-xs px-4 py-1 rounded-full border border-amber-300/40 uppercase tracking-widest">
+                    Certificado Oficial de Capacitación
+                  </span>
+
+                  <div className="space-y-2">
+                    <p className="text-xs text-pink-100 uppercase tracking-wider">La Fundación Senda Mujer Otorga el Presente Certificado a:</p>
+                    <h3 className="text-2xl sm:text-3xl font-extrabold text-white underline decoration-amber-400 underline-offset-8">
+                      {profile.name}
+                    </h3>
+                    <p className="text-xs text-amber-300 font-mono">
+                      C.C. {profile.docId} • Expediente: {profile.code}
+                    </p>
+                  </div>
+
+                  <p className="text-xs text-pink-100 max-w-lg mx-auto leading-relaxed">
+                    Por haber completado satisfactoriamente la formación en <strong>Ginecología Preventiva, Derechos Reproductivos (C-055 / C-355) y Emprendimiento Textil</strong> en Cartagena de Indias.
+                  </p>
+
+                  <div className="pt-4 border-t border-pink-400/30 flex justify-between items-center text-[10px] text-pink-200">
+                    <span>Fecha de Emisión: {new Date().toLocaleDateString('es-CO')}</span>
+                    <span>Verificación QR: SM-CERT-9941</span>
+                  </div>
+
+                  <div className="flex justify-center space-x-4 pt-2">
+                    <button
+                      onClick={() => setShowCertificateModal(false)}
+                      className="bg-white text-senda-purple font-extrabold px-6 py-2.5 rounded-full text-xs hover:bg-pink-100 transition-colors"
+                    >
+                      Cerrar Certificado
+                    </button>
+                  </div>
+                </div>
+              )}
+
             </div>
           )}
 

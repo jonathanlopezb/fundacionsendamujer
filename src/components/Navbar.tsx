@@ -3,7 +3,7 @@
 import React, { useState } from 'react';
 import Link from 'next/link';
 import Image from 'next/image';
-import { ShieldAlert, Calendar, PhoneCall, Menu, X, Heart, Sparkles, UserCheck, BookOpen, Image as ImageIcon, Lock, Stethoscope } from 'lucide-react';
+import { ShieldAlert, Calendar, PhoneCall, Menu, X, Heart, Sparkles, UserCheck, BookOpen, Image as ImageIcon, Lock, Stethoscope, UserCog } from 'lucide-react';
 
 interface NavbarProps {
   onOpenSOS: () => void;
@@ -39,6 +39,15 @@ export default function Navbar({ onOpenSOS }: NavbarProps) {
             <Lock className="w-3 h-3" />
             <span>Mi Expediente Confidencial</span>
           </Link>
+
+          <Link
+            href="/admin"
+            className="hidden sm:flex items-center space-x-1 text-[11px] font-bold text-pink-200 hover:text-white transition-colors"
+          >
+            <UserCog className="w-3 h-3 text-emerald-400" />
+            <span>Panel Profesional</span>
+          </Link>
+
           <button
             type="button"
             onClick={onOpenSOS}
@@ -81,10 +90,6 @@ export default function Navbar({ onOpenSOS }: NavbarProps) {
             <Sparkles className="w-3.5 h-3.5 text-amber-500" />
             Test Psicológico
           </Link>
-          <Link href="/academia" className="hover:text-senda-pink flex items-center gap-1">
-            <BookOpen className="w-3.5 h-3.5 text-senda-pink" />
-            Academia
-          </Link>
           <Link href="/galeria" className="hover:text-senda-pink flex items-center gap-1">
             <ImageIcon className="w-3.5 h-3.5 text-senda-purple" />
             Galería
@@ -92,6 +97,10 @@ export default function Navbar({ onOpenSOS }: NavbarProps) {
           <Link href="/portal-beneficiaria" className="text-senda-purple-dark hover:text-senda-pink flex items-center gap-1 font-extrabold">
             <Lock className="w-3.5 h-3.5 text-amber-600" />
             Portal Beneficiaria
+          </Link>
+          <Link href="/admin" className="text-slate-600 hover:text-senda-purple flex items-center gap-1">
+            <UserCog className="w-3.5 h-3.5 text-emerald-600" />
+            Panel Profesional
           </Link>
           <Link href="/donar" className="text-amber-600 font-bold hover:text-amber-700 flex items-center gap-1">
             <Heart className="w-3.5 h-3.5 fill-amber-500 text-amber-500" />
@@ -164,12 +173,12 @@ export default function Navbar({ onOpenSOS }: NavbarProps) {
             Portal de Beneficiarias (SendaPass)
           </Link>
           <Link
-            href="/academia"
+            href="/admin"
             onClick={() => setMobileMenuOpen(false)}
-            className="block py-1.5 hover:text-senda-pink flex items-center gap-2"
+            className="block py-1.5 text-slate-700 flex items-center gap-2"
           >
-            <BookOpen className="w-4 h-4 text-senda-pink" />
-            SendaAcademia Virtual
+            <UserCog className="w-4 h-4 text-emerald-600" />
+            Panel Profesional & Gestión
           </Link>
           <Link
             href="/galeria"
