@@ -43,7 +43,7 @@ export default function Navbar({ onOpenSOS }: NavbarProps) {
             className="hidden sm:flex items-center space-x-1 text-[11px] font-bold text-pink-200 hover:text-white transition-colors"
           >
             <UserCog className="w-3 h-3 text-emerald-400" />
-            <span>Panel Profesional</span>
+            <span>Portal Beneficiaria</span>
           </Link>
           <Link
             href="/admin"
