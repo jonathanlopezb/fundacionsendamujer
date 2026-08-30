@@ -98,11 +98,13 @@ export default function Navbar({ onOpenSOS, onOpenIncognito }: NavbarProps) {
             {/* 1. SendaAcademia */}
             <Link
               href="/academia"
+              target="_blank"
+              rel="noopener noreferrer"
               className="flex items-center gap-1.5 bg-amber-400/20 hover:bg-amber-400/30 text-amber-300 border border-amber-400/30 text-[11px] font-extrabold px-2.5 py-1 rounded-full transition-all shadow-xs"
-              title="Cursos, talleres y capacitaciones de formación"
+              title="Plataforma de educación digital SendaAcademia (Abre en ventana independiente)"
             >
               <GraduationCap className="w-3.5 h-3.5 text-amber-300" />
-              <span>SendaAcademia</span>
+              <span>SendaAcademia ↗</span>
             </Link>
 
             {/* 2. Portal Usuarias (Abre en pestaña nueva con control de sesión por pestaña) */}
@@ -256,7 +258,7 @@ export default function Navbar({ onOpenSOS, onOpenIncognito }: NavbarProps) {
           {([
             { href: '/', label: '🏠 Inicio' },
             { href: '/senda-universal', label: '🌍 SENDA Universal (Sistema Operativo)' },
-            { href: '/academia', label: '🎓 1. SendaAcademia (Cursos & Formación)' },
+            { href: '/academia', label: '🎓 1. SendaAcademia (Plataforma EdTech) ↗' },
             { href: '/portal-beneficiaria', label: '🔒 2. Portal de Gestión de Usuarias' },
             { href: '/admin', label: '👩‍⚕️ 3. Portal de Gestión de Profesionales' },
             { href: '/programas', label: '7 Programas Integrales' },
