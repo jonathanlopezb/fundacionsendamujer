@@ -1,18 +1,64 @@
 'use client';
 
-import React, { useState } from 'react';
+import React, { useState, useEffect } from 'react';
 import Link from 'next/link';
-import { ShieldCheck, Stethoscope, Activity, FileText, CheckCircle2, User, Calendar, Plus, Lock, Search, Filter, ShieldAlert, LogOut, KeyRound, DollarSign, Award, Clock } from 'lucide-react';
+import { ShieldCheck, Stethoscope, Activity, FileText, CheckCircle2, User, Calendar, Plus, Lock, Search, Filter, ShieldAlert, LogOut, KeyRound, DollarSign, Award, Clock, Info } from 'lucide-react';
 
 interface AdminManagementPanelProps {
   onOpenSOS?: () => void;
 }
+
+const TWO_HOURS_MS = 2 * 60 * 60 * 1000; // 2 hours security limit
 
 export default function AdminManagementPanel({ onOpenSOS }: AdminManagementPanelProps) {
   const [isAdminAuth, setIsAdminAuth] = useState(false);
   const [adminUser, setAdminUser] = useState('');
   const [adminPass, setAdminPass] = useState('');
   const [adminError, setAdminError] = useState('');
+  const [sessionExpiredNotice, setSessionExpiredNotice] = useState(false);
+
+  // 2-Hour Security Session Expiration Controller
+  useEffect(() => {
+    if (!isAdminAuth) return;
+
+    const loginTime = Date.now();
+    localStorage.setItem('senda_admin_login_time', loginTime.toString());
+
+    const checkInterval = setInterval(() => {
+      const storedTime = localStorage.getItem('senda_admin_login_time');
+      if (storedTime) {
+        const elapsed = Date.now() - parseInt(storedTime, 10);
+        if (elapsed >= TWO_HOURS_MS) {
+          handleLogoutDueToTimeout();
+        }
+      }
+    }, 30000); // Check every 30s
+
+    const autoLogoutTimer = setTimeout(() => {
+      handleLogoutDueToTimeout();
+    }, TWO_HOURS_MS);
+
+    return () => {
+      clearInterval(checkInterval);
+      clearTimeout(autoLogoutTimer);
+    };
+  }, [isAdminAuth]);
+
+  const handleLogoutDueToTimeout = () => {
+    setIsAdminAuth(false);
+    localStorage.removeItem('senda_admin_login_time');
+    setSessionExpiredNotice(true);
+    setAdminError('Tu sesión profesional ha expirado automáticamente por políticas de seguridad (límite de 2 horas). Por favor ingresa de nuevo.');
+  };
+
+  const handleLogout = () => {
+    setIsAdminAuth(false);
+    localStorage.removeItem('senda_admin_login_time');
+    setAdminUser('');
+    setAdminPass('');
+    setAdminError('');
+    setSessionExpiredNotice(false);
+  };
 
   const [activeTab, setActiveTab] = useState<'citas' | 'historias' | 'documentos' | 'capital'>('citas');
 
@@ -241,8 +287,8 @@ export default function AdminManagementPanel({ onOpenSOS }: AdminManagementPanel
 
               <button
                 type="button"
-                onClick={() => setIsAdminAuth(false)}
-                className="bg-white/10 text-white font-bold px-4 py-2 rounded-full text-xs border border-white/30 cursor-pointer"
+                onClick={handleLogout}
+                className="bg-white/10 hover:bg-white/20 text-white font-bold px-4 py-2 rounded-full text-xs border border-white/30 cursor-pointer transition-colors"
               >
                 Cerrar Sesión
               </button>

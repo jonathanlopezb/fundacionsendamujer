@@ -153,6 +153,8 @@ function BackButton({ onBack, color = 'text-[#52166F]' }: { onBack: () => void; 
 }
 
 // ─── MAIN COMPONENT ───────────────────────────────────────────────────────────
+const TWO_HOURS_BENEFICIARY_MS = 2 * 60 * 60 * 1000;
+
 export default function BeneficiaryPortal({ onOpenSOS, onOpenIncognito }: BeneficiaryPortalProps) {
   const [isAuthenticated, setIsAuthenticated] = useState(false);
   const [documentId, setDocumentId] = useState('');
@@ -164,6 +166,43 @@ export default function BeneficiaryPortal({ onOpenSOS, onOpenIncognito }: Benefi
 
   const triggerSOS = () => { if (onOpenSOS) onOpenSOS(); };
   const triggerIncognito = () => { if (onOpenIncognito) onOpenIncognito(); else if (onOpenSOS) onOpenSOS(); };
+
+  // 2-Hour Automatic Session Expiration Security Controller
+  useEffect(() => {
+    if (!isAuthenticated) return;
+
+    const loginTime = Date.now();
+    localStorage.setItem('senda_beneficiary_login_time', loginTime.toString());
+
+    const checkInterval = setInterval(() => {
+      const storedTime = localStorage.getItem('senda_beneficiary_login_time');
+      if (storedTime) {
+        const elapsed = Date.now() - parseInt(storedTime, 10);
+        if (elapsed >= TWO_HOURS_BENEFICIARY_MS) {
+          handleLogoutDueToTimeout();
+        }
+      }
+    }, 30000);
+
+    const autoLogoutTimer = setTimeout(() => {
+      handleLogoutDueToTimeout();
+    }, TWO_HOURS_BENEFICIARY_MS);
+
+    return () => {
+      clearInterval(checkInterval);
+      clearTimeout(autoLogoutTimer);
+    };
+  }, [isAuthenticated]);
+
+  const handleLogoutDueToTimeout = () => {
+    setIsAuthenticated(false);
+    localStorage.removeItem('senda_beneficiary_login_time');
+    setDocumentId('');
+    setSecretPin('');
+    setAcceptedHabeasData(false);
+    setActiveModule('home');
+    setLoginError('Tu sesión de beneficiaria ha cerrado automáticamente tras 2 horas por seguridad y confidencialidad.');
+  };
 
   const handleLogin = (e: React.FormEvent) => {
     e.preventDefault();
@@ -190,10 +229,12 @@ export default function BeneficiaryPortal({ onOpenSOS, onOpenIncognito }: Benefi
 
   const handleLogout = () => {
     setIsAuthenticated(false);
+    localStorage.removeItem('senda_beneficiary_login_time');
     setDocumentId('');
     setSecretPin('');
     setAcceptedHabeasData(false);
     setActiveModule('home');
+    setLoginError('');
   };
 
   const fillDemo = () => {
