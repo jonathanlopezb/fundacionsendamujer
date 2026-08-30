@@ -65,6 +65,7 @@ export default function Footer() {
             <li><Link href="/programas#programa-5" className="hover:text-white">🤰 Embarazo con Apoyo</Link></li>
             <li><Link href="/programas#programa-6" className="hover:text-white">👩‍⚖️ Mujer y Justicia</Link></li>
             <li><Link href="/programas#programa-7" className="hover:text-white">🎓 Proyecto de Vida</Link></li>
+            <li className="pt-1 border-t border-purple-800/40"><Link href="/#aliados" className="text-amber-300 font-bold hover:text-white flex items-center gap-1">🤝 nuestros Aliados Institucionales</Link></li>
           </ul>
         </div>
 

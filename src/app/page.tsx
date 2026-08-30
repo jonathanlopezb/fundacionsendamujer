@@ -7,6 +7,7 @@ import CartagenaDirectory from '@/components/CartagenaDirectory';
 import DonationCalculator from '@/components/DonationCalculator';
 import SendaUniversalModule from '@/components/SendaUniversalModule';
 import CharlaDelDia from '@/components/CharlaDelDia';
+import AlliesSection from '@/components/AlliesSection';
 import { BrainCircuit, ShieldCheck, Heart, Calendar, ArrowRight, UserCheck, Stethoscope, Smile, Scale, Brain, Globe, Compass, Workflow, Zap } from 'lucide-react';
 
 export default function HomePage() {
@@ -198,6 +199,9 @@ export default function HomePage() {
       <section className="bg-pink-50/40 py-16">
         <CartagenaDirectory />
       </section>
+
+      {/* 5.5. Institutional Allies & Network Section */}
+      <AlliesSection />
 
       {/* 6. Donation Platform Section */}
       <section className="max-w-7xl mx-auto px-6 lg:px-8 py-8">

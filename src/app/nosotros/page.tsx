@@ -3,6 +3,7 @@
 import React from 'react';
 import Image from 'next/image';
 import { ShieldCheck, Heart, Scale, Users, Award, Sparkles, CheckCircle2 } from 'lucide-react';
+import AlliesSection from '@/components/AlliesSection';
 
 export default function NosotrosPage() {
   return (
@@ -104,6 +105,11 @@ export default function NosotrosPage() {
             </div>
           ))}
         </div>
+      </div>
+
+      {/* Red de Aliados Institucionales */}
+      <div className="-mx-6 -mb-12">
+        <AlliesSection />
       </div>
 
     </div>

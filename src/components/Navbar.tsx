@@ -7,7 +7,7 @@ import {
   ShieldAlert, Calendar, PhoneCall, Menu, X, Heart,
   BookOpen, Lock, Stethoscope, UserCog, ChevronDown, MapPin,
   GraduationCap, Users, Scale, EyeOff, Globe, ArrowRight,
-  AlertTriangle, Shield, BrainCircuit, Compass, Workflow,
+  AlertTriangle, Shield, BrainCircuit, Compass, Workflow, Handshake,
 } from 'lucide-react';
 
 interface NavbarProps {
@@ -197,6 +197,10 @@ export default function Navbar({ onOpenSOS, onOpenIncognito }: NavbarProps) {
             <MapPin className="w-3.5 h-3.5" />
             Ruta Cartagena
           </Link>
+          <Link href="/#aliados" className="px-3 py-2 rounded-lg hover:bg-pink-50 hover:text-[#E12880] flex items-center gap-1 transition-all">
+            <Handshake className="w-3.5 h-3.5 text-purple-600" />
+            Aliados
+          </Link>
           <Link href="/donar" className="px-3 py-2 rounded-lg hover:bg-amber-50 text-amber-600 font-bold flex items-center gap-1 transition-all">
             <Heart className="w-3.5 h-3.5 fill-amber-500 text-amber-500" />
             Donar
@@ -258,6 +262,7 @@ export default function Navbar({ onOpenSOS, onOpenIncognito }: NavbarProps) {
             { href: '/programas', label: '7 Programas Integrales' },
             { href: '/triaje-psicologico', label: 'Test Psicológico SENDA EVAL' },
             { href: '/ruta-cartagena', label: 'Ruta de Emergencia Cartagena' },
+            { href: '/#aliados', label: '🤝 Nuestros Aliados Institucionales' },
             { href: '/donar', label: 'Portal de Donaciones' },
           ] as Array<{ href: string; label: string; accent?: boolean; amber?: boolean }>).map((item) => (
             <Link
