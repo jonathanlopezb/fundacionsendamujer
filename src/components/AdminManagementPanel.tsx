@@ -124,73 +124,97 @@ export default function AdminManagementPanel({ onOpenSOS }: AdminManagementPanel
       
       {/* Login Screen for Professionals */}
       {!isAdminAuth ? (
-        <div className="max-w-md mx-auto bg-white rounded-3xl border border-pink-200 shadow-2xl overflow-hidden animate-fadeIn">
+        <div className="max-w-md mx-auto space-y-4">
           
-          <div className="bg-gradient-to-r from-senda-purple-dark to-senda-purple text-white p-6 sm:p-8 text-center relative">
-            <div className="flex justify-end mb-2">
-              <button
-                type="button"
-                onClick={triggerSOS}
-                className="bg-amber-400 text-senda-purple-dark font-extrabold text-[11px] px-3 py-1 rounded-full flex items-center space-x-1 cursor-pointer"
-              >
-                <ShieldAlert className="w-3.5 h-3.5 text-red-600" />
-                <span>CAMUFLAJE [ESC]</span>
-              </button>
+          {/* Demo Banner */}
+          <div className="bg-purple-50 border border-purple-200 rounded-2xl p-4 flex items-start gap-3">
+            <Info className="w-5 h-5 text-purple-600 shrink-0 mt-0.5" />
+            <div className="flex-1">
+              <p className="text-xs font-extrabold text-purple-900">Demo Profesional Disponible</p>
+              <p className="text-[11px] text-purple-700 mt-0.5">
+                Usuario: <strong>ginecologia.cartagena</strong> — Clave: <strong>senda2026</strong>
+              </p>
             </div>
-
-            <div className="w-14 h-14 bg-white/10 rounded-2xl flex items-center justify-center mx-auto mb-3 border border-white/20">
-              <Stethoscope className="w-7 h-7 text-amber-300" />
-            </div>
-
-            <h2 className="text-2xl font-extrabold">Panel Profesional & Gestión</h2>
-            <p className="text-xs text-pink-100 mt-1">
-              Acceso exclusivo para médicos, ginecólogas, odontólogos, abogadas y trabajadoras sociales.
-            </p>
+            <button
+              onClick={() => {
+                setAdminUser('ginecologia.cartagena');
+                setAdminPass('senda2026');
+                setIsAdminAuth(true);
+              }}
+              className="bg-purple-600 hover:bg-purple-700 text-white font-extrabold text-[10px] px-3 py-1.5 rounded-full transition-all cursor-pointer shrink-0 shadow-sm"
+            >
+              Autocompletar Demo
+            </button>
           </div>
 
-          <form onSubmit={handleAdminLogin} className="p-6 sm:p-8 space-y-4">
-            {adminError && (
-              <div className="p-3 bg-red-50 text-red-600 font-bold text-xs rounded-xl">
-                {adminError}
+          <div className="bg-white rounded-3xl border border-pink-200 shadow-2xl overflow-hidden animate-fadeIn">
+            
+            <div className="bg-gradient-to-r from-senda-purple-dark to-senda-purple text-white p-6 sm:p-8 text-center relative">
+              <div className="flex justify-end mb-2">
+                <button
+                  type="button"
+                  onClick={triggerSOS}
+                  className="bg-amber-400 text-senda-purple-dark font-extrabold text-[11px] px-3 py-1 rounded-full flex items-center space-x-1 cursor-pointer"
+                >
+                  <ShieldAlert className="w-3.5 h-3.5 text-red-600" />
+                  <span>CAMUFLAJE [ESC]</span>
+                </button>
               </div>
-            )}
 
-            <div>
-              <label className="block text-xs font-extrabold text-slate-700 mb-1">Usuario Profesional *</label>
-              <input
-                type="text"
-                value={adminUser}
-                onChange={(e) => setAdminUser(e.target.value)}
-                placeholder="Ej: ginecologia.cartagena"
-                required
-                className="w-full px-4 py-3 rounded-xl border border-pink-200 text-sm focus:outline-none focus:ring-2 focus:ring-senda-pink"
-              />
+              <div className="w-14 h-14 bg-white/10 rounded-2xl flex items-center justify-center mx-auto mb-3 border border-white/20">
+                <Stethoscope className="w-7 h-7 text-amber-300" />
+              </div>
+
+              <h2 className="text-2xl font-extrabold">Panel Profesional & Gestión</h2>
+              <p className="text-xs text-pink-100 mt-1">
+                Acceso exclusivo para médicos, ginecólogas, odontólogos, abogadas y trabajadoras sociales.
+              </p>
             </div>
 
-            <div>
-              <label className="block text-xs font-extrabold text-slate-700 mb-1">Contraseña de Seguridad *</label>
-              <input
-                type="password"
-                value={adminPass}
-                onChange={(e) => setAdminPass(e.target.value)}
-                placeholder="••••••••"
-                required
-                className="w-full px-4 py-3 rounded-xl border border-pink-200 text-sm focus:outline-none focus:ring-2 focus:ring-senda-pink"
-              />
-            </div>
+            <form onSubmit={handleAdminLogin} className="p-6 sm:p-8 space-y-4">
+              {adminError && (
+                <div className="p-3 bg-red-50 text-red-600 font-bold text-xs rounded-xl">
+                  {adminError}
+                </div>
+              )}
 
-            <div className="p-3 bg-pink-50 rounded-xl text-[10px] text-slate-600 border border-pink-200">
-              🔒 <strong>Aviso Habeas Data Ley 1581/2012:</strong> La información médica e historias clínicas de las beneficiarias es estrictamente confidencial.
-            </div>
+              <div>
+                <label className="block text-xs font-extrabold text-slate-700 mb-1">Usuario Profesional *</label>
+                <input
+                  type="text"
+                  value={adminUser}
+                  onChange={(e) => setAdminUser(e.target.value)}
+                  placeholder="Ej: ginecologia.cartagena"
+                  required
+                  className="w-full px-4 py-3 rounded-xl border border-pink-200 text-sm focus:outline-none focus:ring-2 focus:ring-senda-pink"
+                />
+              </div>
 
-            <button
-              type="submit"
-              className="w-full bg-senda-purple hover:bg-senda-purple-dark text-white font-extrabold py-3.5 rounded-full text-sm shadow-md transition-all cursor-pointer"
-            >
-              Ingresar al Panel Administrativo
-            </button>
-          </form>
+              <div>
+                <label className="block text-xs font-extrabold text-slate-700 mb-1">Contraseña de Seguridad *</label>
+                <input
+                  type="password"
+                  value={adminPass}
+                  onChange={(e) => setAdminPass(e.target.value)}
+                  placeholder="••••••••"
+                  required
+                  className="w-full px-4 py-3 rounded-xl border border-pink-200 text-sm focus:outline-none focus:ring-2 focus:ring-senda-pink"
+                />
+              </div>
 
+              <div className="p-3 bg-pink-50 rounded-xl text-[10px] text-slate-600 border border-pink-200">
+                🔒 <strong>Aviso Habeas Data Ley 1581/2012:</strong> La información médica e historias clínicas de las beneficiarias es estrictamente confidencial.
+              </div>
+
+              <button
+                type="submit"
+                className="w-full bg-senda-purple hover:bg-senda-purple-dark text-white font-extrabold py-3.5 rounded-full text-sm shadow-md transition-all cursor-pointer"
+              >
+                Ingresar al Panel Administrativo
+              </button>
+            </form>
+
+          </div>
         </div>
       ) : (
         /* Authenticated Admin Dashboard */

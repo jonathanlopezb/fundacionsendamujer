@@ -391,59 +391,135 @@ export default function BeneficiaryPortal({ onOpenSOS, onOpenIncognito }: Benefi
             ))}
           </div>
 
-          {/* 5 Module Cards */}
-          <div>
-            <h2 className="text-base font-extrabold text-slate-700 mb-4">Acceso Seguro Beneficiarias</h2>
-            <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 gap-4">
-              {MODULES.map((mod) => {
-                const Icon = mod.icon;
-                const isExternal = mod.action === 'link';
-                const isSOS = mod.id === 'sos';
+          {/* 2 MAIN PRIMARY OPTIONS HERO CARDS */}
+          <div className="space-y-4">
+            <h2 className="text-base font-extrabold text-slate-800 flex items-center gap-2">
+              <span className="w-2.5 h-2.5 rounded-full bg-[#E12880]"></span>
+              Selecciona tu Módulo Principal de Atención
+            </h2>
 
-                const cardContent = (
-                  <>
-                    <div className={`w-12 h-12 bg-gradient-to-br ${mod.color} rounded-2xl flex items-center justify-center shadow-md mb-4 shrink-0`}>
-                      <Icon className="w-6 h-6 text-white" />
+            <div className="grid grid-cols-1 md:grid-cols-2 gap-6">
+              
+              {/* OPTION 1: CITAS MÉDICAS & GESTIONES ADMINISTRATIVAS */}
+              <div 
+                onClick={() => setActiveModule('expediente')}
+                className="group relative bg-white rounded-3xl border-2 border-pink-200 hover:border-[#E12880] p-7 shadow-md hover:shadow-2xl transition-all cursor-pointer overflow-hidden flex flex-col justify-between"
+              >
+                <div className="absolute top-0 right-0 w-32 h-32 bg-pink-100/50 rounded-full -translate-y-10 translate-x-10 group-hover:scale-110 transition-transform" />
+                <div className="space-y-4 relative z-10">
+                  <div className="flex items-center justify-between">
+                    <div className="w-14 h-14 bg-gradient-to-br from-[#E12880] to-[#52166F] rounded-2xl flex items-center justify-center text-white shadow-lg">
+                      <HeartPulse className="w-7 h-7" />
                     </div>
-                    <div className="flex-1">
-                      <div className="flex items-center gap-2 mb-1 flex-wrap">
-                        <h3 className="font-extrabold text-sm text-slate-800">{mod.title}</h3>
-                        <span className={`text-[10px] font-extrabold px-2 py-0.5 rounded-full ${mod.badgeColor}`}>
-                          {mod.badge}
-                        </span>
-                      </div>
-                      <p className={`text-xs font-bold mb-2 ${isSOS ? 'text-red-600' : 'text-[#52166F]'}`}>{mod.subtitle}</p>
-                      <p className="text-xs text-slate-500 leading-relaxed">{mod.desc}</p>
-                      <div className="flex items-center justify-between mt-3">
-                        <span className="text-[10px] text-slate-400 font-semibold">{mod.highlight}</span>
-                        <span className={`flex items-center gap-1 text-xs font-extrabold ${isSOS ? 'text-red-600' : 'text-[#E12880]'}`}>
-                          Acceder <ChevronRight className="w-3.5 h-3.5" />
-                        </span>
-                      </div>
+                    <span className="bg-emerald-100 text-emerald-800 text-xs font-extrabold px-3 py-1 rounded-full border border-emerald-200">
+                      Cita Activa: 02 Sep
+                    </span>
+                  </div>
+
+                  <div>
+                    <span className="text-[10px] font-extrabold uppercase tracking-widest text-[#E12880]">MÓDULO ADMINISTRATIVO Y CLÍNICO</span>
+                    <h3 className="text-xl font-extrabold text-slate-900 mt-0.5 group-hover:text-[#E12880] transition-colors">
+                      1. Citas Médicas & Gestiones Administrativas
+                    </h3>
+                    <p className="text-xs text-slate-600 mt-2 leading-relaxed">
+                      Accede a tu historial clínico confidencial, agendamiento prioritario de citas (*Ginecología, Odontología, Medicina, Psicología y Asesoría Jurídica*), descarga de documentos verificados y seguimiento de tu expediente seguro.
+                    </p>
+                  </div>
+
+                  <div className="pt-2 border-t border-pink-100 flex flex-wrap gap-2 text-[11px] font-bold text-slate-500">
+                    <span className="bg-pink-50 px-2.5 py-1 rounded-lg">🏥 Agendar Citas</span>
+                    <span className="bg-pink-50 px-2.5 py-1 rounded-lg">📄 Historial Clínico</span>
+                    <span className="bg-pink-50 px-2.5 py-1 rounded-lg">🔐 Bóveda Cifrada</span>
+                  </div>
+                </div>
+
+                <div className="mt-6 pt-4 flex items-center justify-between font-extrabold text-xs text-[#E12880] relative z-10">
+                  <span>Ingresar a Gestiones Administrativas</span>
+                  <div className="w-8 h-8 rounded-full bg-pink-100 group-hover:bg-[#E12880] group-hover:text-white flex items-center justify-center transition-all">
+                    <ChevronRight className="w-4 h-4" />
+                  </div>
+                </div>
+              </div>
+
+              {/* OPTION 2: SENDA ACADEMIA & RECURSOS ACADÉMICOS */}
+              <div 
+                onClick={() => setActiveModule('academia')}
+                className="group relative bg-white rounded-3xl border-2 border-purple-200 hover:border-purple-600 p-7 shadow-md hover:shadow-2xl transition-all cursor-pointer overflow-hidden flex flex-col justify-between"
+              >
+                <div className="absolute top-0 right-0 w-32 h-32 bg-purple-100/50 rounded-full -translate-y-10 translate-x-10 group-hover:scale-110 transition-transform" />
+                <div className="space-y-4 relative z-10">
+                  <div className="flex items-center justify-between">
+                    <div className="w-14 h-14 bg-gradient-to-br from-[#52166F] to-[#3B0852] rounded-2xl flex items-center justify-center text-white shadow-lg">
+                      <GraduationCap className="w-7 h-7" />
                     </div>
-                  </>
-                );
+                    <span className="bg-purple-100 text-purple-800 text-xs font-extrabold px-3 py-1 rounded-full border border-purple-200">
+                      2/6 Cursos Completados
+                    </span>
+                  </div>
 
-                const baseClass = `group bg-white rounded-2xl border-2 ${mod.border} p-5 shadow-sm hover:shadow-lg transition-all text-left flex flex-col cursor-pointer ${isSOS ? 'border-red-200' : ''}`;
+                  <div>
+                    <span className="text-[10px] font-extrabold uppercase tracking-widest text-purple-700">MÓDULO EDUCATIVO Y FORMACIÓN</span>
+                    <h3 className="text-xl font-extrabold text-slate-900 mt-0.5 group-hover:text-purple-700 transition-colors">
+                      2. SendaAcademia & Recursos Académicos
+                    </h3>
+                    <p className="text-xs text-slate-600 mt-2 leading-relaxed">
+                      Accede a tus cursos asignados y catálogo completo disponible: salud reproductiva, emprendimiento textil, liderazgo femenino, finanzas del hogar y certificaciones oficiales descargables.
+                    </p>
+                  </div>
 
-                if (isExternal) {
-                  return (
-                    <Link key={mod.id} href={mod.actionTarget} className={baseClass}>
-                      {cardContent}
-                    </Link>
-                  );
-                }
+                  <div className="pt-2 border-t border-purple-100 flex flex-wrap gap-2 text-[11px] font-bold text-slate-500">
+                    <span className="bg-purple-50 px-2.5 py-1 rounded-lg">🎓 Cursos Asignados</span>
+                    <span className="bg-purple-50 px-2.5 py-1 rounded-lg">📚 Recursos Disponibles</span>
+                    <span className="bg-purple-50 px-2.5 py-1 rounded-lg">📜 Diplomas Oficiales</span>
+                  </div>
+                </div>
 
-                return (
-                  <button
-                    key={mod.id}
-                    onClick={() => setActiveModule(mod.actionTarget as ActiveModule)}
-                    className={baseClass}
-                  >
-                    {cardContent}
-                  </button>
-                );
-              })}
+                <div className="mt-6 pt-4 flex items-center justify-between font-extrabold text-xs text-purple-700 relative z-10">
+                  <span>Ingresar a SendaAcademia</span>
+                  <div className="w-8 h-8 rounded-full bg-purple-100 group-hover:bg-purple-700 group-hover:text-white flex items-center justify-center transition-all">
+                    <ChevronRight className="w-4 h-4" />
+                  </div>
+                </div>
+              </div>
+
+            </div>
+          </div>
+
+          {/* SECONDARY TOOLS */}
+          <div className="pt-4 space-y-3">
+            <h3 className="text-xs font-extrabold text-slate-500 uppercase tracking-wider">Herramientas Complementarias de Apoyo</h3>
+            <div className="grid grid-cols-1 sm:grid-cols-2 gap-4">
+              <button
+                onClick={() => setActiveModule('test')}
+                className="bg-white p-4 rounded-2xl border border-emerald-200 hover:border-emerald-500 flex items-center justify-between text-left transition-all hover:shadow-md cursor-pointer"
+              >
+                <div className="flex items-center gap-3">
+                  <div className="w-10 h-10 rounded-xl bg-emerald-100 text-emerald-700 flex items-center justify-center font-bold">
+                    <Brain className="w-5 h-5" />
+                  </div>
+                  <div>
+                    <h4 className="font-extrabold text-xs text-slate-800">Test Psicológico SENDA EVAL</h4>
+                    <p className="text-[11px] text-slate-500">Evaluación confidencial de bienestar en 4 áreas</p>
+                  </div>
+                </div>
+                <ChevronRight className="w-4 h-4 text-emerald-600" />
+              </button>
+
+              <Link
+                href="/senda-sos"
+                className="bg-red-50 p-4 rounded-2xl border border-red-200 hover:border-red-500 flex items-center justify-between text-left transition-all hover:shadow-md cursor-pointer"
+              >
+                <div className="flex items-center gap-3">
+                  <div className="w-10 h-10 rounded-xl bg-red-600 text-white flex items-center justify-center font-bold animate-pulse">
+                    <ShieldAlert className="w-5 h-5" />
+                  </div>
+                  <div>
+                    <h4 className="font-extrabold text-xs text-red-700">SENDA SOS — Emergencias 24/7</h4>
+                    <p className="text-[11px] text-red-600">Líneas de ayuda y protocolo de camuflaje</p>
+                  </div>
+                </div>
+                <ChevronRight className="w-4 h-4 text-red-600" />
+              </Link>
             </div>
           </div>
         </div>

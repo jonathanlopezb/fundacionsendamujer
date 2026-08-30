@@ -4,10 +4,10 @@ import React, { useState, useEffect, useRef } from 'react';
 import Link from 'next/link';
 import Image from 'next/image';
 import {
-  ShieldAlert, Calendar, PhoneCall, Menu, X, Heart, Sparkles,
+  ShieldAlert, Calendar, PhoneCall, Menu, X, Heart,
   BookOpen, Lock, Stethoscope, UserCog, ChevronDown, MapPin,
   GraduationCap, Users, Scale, EyeOff, Globe, ArrowRight,
-  AlertTriangle, Shield,
+  AlertTriangle, Shield, BrainCircuit, Compass, Workflow,
 } from 'lucide-react';
 
 interface NavbarProps {
@@ -26,10 +26,11 @@ const PROGRAMAS = [
 ];
 
 const PORTAL_LINKS = [
-  { icon: Lock, label: 'Mi Expediente Seguro', desc: 'Accede a tu historial confidencial', href: '/portal-beneficiaria', color: 'text-senda-pink' },
+  { icon: Globe, label: 'SENDA Universal', desc: 'Sistema Operativo de Derechos', href: '/senda-universal', color: 'text-purple-700' },
+  { icon: Lock, label: 'Mi Expediente Seguro', desc: 'Accede a tu historial confidencial', href: '/portal-beneficiaria', color: 'text-[#E12880]' },
   { icon: GraduationCap, label: 'SendaAcademia', desc: 'Cursos y material de formación', href: '/academia', color: 'text-amber-600' },
   { icon: Stethoscope, label: 'Agendar Cita Médica', desc: 'Ginecología, Psicología, Odontología', href: '/agendar-cita', color: 'text-emerald-600' },
-  { icon: Sparkles, label: 'Test Psicológico', desc: 'Evaluación de bienestar SENDA EVAL', href: '/triaje-psicologico', color: 'text-purple-600' },
+  { icon: BrainCircuit, label: 'Test Psicológico', desc: 'Evaluación de bienestar SENDA EVAL', href: '/triaje-psicologico', color: 'text-purple-600' },
 ];
 
 export default function Navbar({ onOpenSOS, onOpenIncognito }: NavbarProps) {
@@ -199,8 +200,22 @@ export default function Navbar({ onOpenSOS, onOpenIncognito }: NavbarProps) {
             )}
           </div>
 
+          {/* Direct Panel Profesional link */}
+          <Link
+            href="/admin"
+            className="px-3 py-2 rounded-lg hover:bg-purple-50 text-[#52166F] font-extrabold flex items-center gap-1.5 transition-all"
+            title="Acceso exclusivo a médicos, psicólogas, abogadas y trabajadoras sociales"
+          >
+            <UserCog className="w-4 h-4 text-purple-700" />
+            <span>Acceso Profesional</span>
+          </Link>
+
+          <Link href="/senda-universal" className="px-3 py-2 rounded-lg bg-gradient-to-r from-purple-100 to-pink-100 text-purple-900 font-extrabold flex items-center gap-1.5 transition-all hover:shadow-sm">
+            <Globe className="w-3.5 h-3.5 text-purple-700" />
+            <span>SENDA Universal</span>
+          </Link>
           <Link href="/triaje-psicologico" className="px-3 py-2 rounded-lg hover:bg-pink-50 text-[#E12880] flex items-center gap-1 transition-all">
-            <Sparkles className="w-3.5 h-3.5 text-amber-500" />
+            <BrainCircuit className="w-3.5 h-3.5 text-[#E12880]" />
             Test Psicológico
           </Link>
           <Link href="/ruta-cartagena" className="px-3 py-2 rounded-lg hover:bg-pink-50 hover:text-[#E12880] flex items-center gap-1 transition-all">
@@ -261,11 +276,13 @@ export default function Navbar({ onOpenSOS, onOpenIncognito }: NavbarProps) {
         <div className="lg:hidden bg-white border-t border-pink-100 px-5 py-5 space-y-1 shadow-xl animate-fadeIn">
           {[
             { href: '/', label: 'Inicio' },
+            { href: '/senda-universal', label: '🌍 SENDA Universal', purple: true },
+            { href: '/portal-beneficiaria', label: '🔒 Mi Expediente Beneficiaria', accent: true },
+            { href: '/admin', label: '👩‍⚕️ Acceso Profesional (Login)', purple: true },
             { href: '/nosotros', label: 'Nosotros' },
             { href: '/programas', label: '7 Programas Integrales' },
-            { href: '/triaje-psicologico', label: 'Test Psicológico SENDA EVAL', accent: true },
+            { href: '/triaje-psicologico', label: 'Test Psicológico SENDA EVAL' },
             { href: '/ruta-cartagena', label: 'Ruta de Emergencia Cartagena' },
-            { href: '/galeria', label: 'Galería de Actividades' },
             { href: '/donar', label: 'Portal de Donaciones', amber: true },
           ].map((item) => (
             <Link

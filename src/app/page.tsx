@@ -1,12 +1,12 @@
-'use client';
-
 import React from 'react';
 import Link from 'next/link';
 import HeroSection from '@/components/HeroSection';
 import ProgramsGrid from '@/components/ProgramsGrid';
 import CartagenaDirectory from '@/components/CartagenaDirectory';
 import DonationCalculator from '@/components/DonationCalculator';
-import { Sparkles, ShieldCheck, Heart, Calendar, ArrowRight, UserCheck, Stethoscope, Smile, Scale, Brain } from 'lucide-react';
+import SendaUniversalModule from '@/components/SendaUniversalModule';
+import CharlaDelDia from '@/components/CharlaDelDia';
+import { BrainCircuit, ShieldCheck, Heart, Calendar, ArrowRight, UserCheck, Stethoscope, Smile, Scale, Brain, Globe, Compass, Workflow, Zap } from 'lucide-react';
 
 export default function HomePage() {
   return (
@@ -14,13 +14,21 @@ export default function HomePage() {
       {/* 1. Hero Section */}
       <HeroSection />
 
+      {/* 1.5. CHARLA DEL DÍA (Featured Video Section) */}
+      <CharlaDelDia />
+
+      {/* 1.8. SENDA UNIVERSAL FLAGSHIP SYSTEM OPERATIVO */}
+      <section className="bg-slate-950/5 py-4">
+        <SendaUniversalModule />
+      </section>
+
       {/* 2. Quick Triage Banner */}
       <section className="max-w-7xl mx-auto px-6 lg:px-8">
         <div className="bg-gradient-to-r from-senda-purple-dark via-senda-purple to-senda-pink text-white rounded-3xl p-8 sm:p-12 shadow-xl relative overflow-hidden">
           <div className="relative z-10 grid grid-cols-1 lg:grid-cols-12 gap-8 items-center">
             <div className="lg:col-span-8 space-y-4">
-              <span className="bg-amber-400 text-senda-purple-dark font-extrabold text-xs px-3 py-1 rounded-full uppercase tracking-wider">
-                Evaluación Confidencial Gratuita
+              <span className="bg-amber-400 text-senda-purple-dark font-extrabold text-xs px-3 py-1 rounded-full uppercase tracking-wider inline-flex items-center gap-1.5">
+                <BrainCircuit className="w-3.5 h-3.5" /> Evaluación Confidencial Gratuita
               </span>
               <h2 className="text-2xl sm:text-4xl font-extrabold text-white">
                 ¿Necesitas orientación psicológica, médica o jurídica urgente?
@@ -35,7 +43,7 @@ export default function HomePage() {
                 href="/triaje-psicologico"
                 className="bg-amber-400 hover:bg-amber-300 text-senda-purple-dark font-extrabold text-sm px-6 py-4 rounded-full text-center shadow-lg transition-transform active:scale-95 flex items-center justify-center space-x-2"
               >
-                <Sparkles className="w-5 h-5 text-senda-purple" />
+                <BrainCircuit className="w-5 h-5 text-senda-purple" />
                 <span>Iniciar Test Psicológico</span>
               </Link>
               

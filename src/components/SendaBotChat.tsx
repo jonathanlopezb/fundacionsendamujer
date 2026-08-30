@@ -1,7 +1,7 @@
 'use client';
 
 import React, { useState, useRef, useEffect } from 'react';
-import { MessageSquare, X, Send, Sparkles, Bot, User, Minimize2 } from 'lucide-react';
+import { MessageSquare, X, Send, BrainCircuit, Bot, User, Minimize2 } from 'lucide-react';
 
 interface ChatMessage {
   role: 'user' | 'assistant';
@@ -105,7 +105,7 @@ export default function SendaBotChat() {
               <div>
                 <h3 className="font-extrabold text-sm flex items-center gap-1.5 text-white">
                   SendaBot AI
-                  <Sparkles className="w-3.5 h-3.5 text-amber-300" />
+                  <BrainCircuit className="w-3.5 h-3.5 text-amber-300" />
                 </h3>
                 <span className="text-[10px] text-pink-200 block">Atención Confidencial Cartagena</span>
               </div>
