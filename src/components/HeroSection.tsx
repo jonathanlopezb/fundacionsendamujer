@@ -102,8 +102,8 @@ export default function HeroSection() {
                   
                   <div className="pt-2 border-t border-pink-500/30 flex justify-between items-center text-xs">
                     <span className="text-pink-200">Línea Púrpura Cartagena:</span>
-                    <a href="tel:3176575800" className="font-extrabold text-amber-300 hover:underline flex items-center gap-1">
-                      <PhoneCall className="w-3.5 h-3.5" /> 317 657 5800
+                    <a href="tel:3014692095" className="font-extrabold text-amber-300 hover:underline flex items-center gap-1">
+                      <PhoneCall className="w-3.5 h-3.5" /> 301 469 2095
                     </a>
                   </div>
                 </div>

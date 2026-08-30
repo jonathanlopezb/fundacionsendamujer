@@ -964,7 +964,7 @@ export default function SendaUniversalModule() {
             <div className="p-4 rounded-2xl bg-slate-900 border border-slate-800 space-y-3">
               <div className="text-xs text-slate-400 italic font-mono">&quot;No sé qué hacer... estoy sola y tengo miedo.&quot;</div>
               <div className="p-3.5 rounded-xl bg-rose-950/80 border border-rose-800 text-xs text-rose-100 leading-relaxed font-medium">
-                🎙️ <strong>Respuesta por Voz SENDA:</strong> &quot;Estoy aquí contigo. No necesitas saber de trámites. Vamos paso a paso juntas. Tu primer paso es presionar el botón SOS o llamarme al 317 657 5800.&quot;
+                🎙️ <strong>Respuesta por Voz SENDA:</strong> &quot;Estoy aquí contigo. No necesitas saber de trámites. Vamos paso a paso juntas. Tu primer paso es presionar el botón SOS o llamarme al 301 469 2095.&quot;
               </div>
             </div>
           </div>

@@ -34,7 +34,7 @@ const CARTAGENA_ROUTES: RouteCategory[] = [
     items: [
       {
         name: 'Línea Púrpura Cartagena & Fundación Senda Mujer',
-        phone: '317 657 5800 / 155',
+        phone: '301 469 2095 / 155',
         address: 'Atención 24 Horas — Cartagena de Indias',
         badge: 'Directo Fundación 24/7',
       },

@@ -12,7 +12,7 @@ type RiskLevel = null | 'red' | 'orange' | 'yellow';
 const EMERGENCY_NUMBERS = [
   { label: 'Linea Purpura Nacional', number: '155', desc: 'Atencion a mujeres victimas de violencia' },
   { label: 'Policia Nacional', number: '123', desc: 'Emergencias en Colombia' },
-  { label: 'Fundacion Senda Mujer', number: '+57 317 657 5800', href: 'tel:3176575800', desc: 'Linea directa Cartagena 24/7' },
+  { label: 'Fundacion Senda Mujer', number: '+57 301 469 2095', href: 'tel:3014692095', desc: 'Linea directa Dra. Sorelvis 24/7' },
   { label: 'Fiscalia General', number: '122', desc: 'Denuncia de violencia sexual y VBG' },
   { label: 'ICBF', number: '141', desc: 'Proteccion de menores de edad' },
 ];
@@ -174,7 +174,7 @@ export default function SendaSOS() {
                 Si no puedes hablar, <strong>envianos un mensaje de WhatsApp</strong>. Solo escribe <strong>1</strong> si estas en peligro inmediato.
               </p>
               <a
-                href="https://wa.me/573176575800?text=1"
+                href="https://wa.me/573014692095?text=1"
                 target="_blank"
                 rel="noopener noreferrer"
                 className="block w-full bg-emerald-500 hover:bg-emerald-600 text-white font-extrabold py-4 rounded-2xl text-center text-base shadow-lg transition-all"
@@ -224,7 +224,7 @@ export default function SendaSOS() {
                   Enviar a Equipo Senda <ArrowRight className="w-4 h-4" />
                 </button>
                 <a
-                  href={`https://wa.me/573176575800?text=${encodeURIComponent(message || 'Necesito ayuda')}`}
+                  href={`https://wa.me/573014692095?text=${encodeURIComponent(message || 'Necesito ayuda')}`}
                   target="_blank"
                   rel="noopener noreferrer"
                   className="bg-emerald-500 text-white font-extrabold px-4 py-3 rounded-full text-xs hover:bg-emerald-600 transition-all flex items-center gap-1"
@@ -243,8 +243,8 @@ export default function SendaSOS() {
               </div>
               <h3 className="text-xl font-extrabold text-[#52166F]">Mensaje Recibido</h3>
               <p className="text-sm text-slate-600 leading-relaxed">Nuestro equipo en Cartagena revisara tu mensaje. Te contactaremos lo antes posible.</p>
-              <a href="tel:3176575800" className="block bg-[#E12880] text-white font-extrabold py-3 rounded-full text-sm hover:bg-[#c41070] transition-all">
-                Llamar Ahora: 317 657 5800
+              <a href="tel:3014692095" className="block bg-[#E12880] text-white font-extrabold py-3 rounded-full text-sm hover:bg-[#c41070] transition-all">
+                Llamar Ahora: 301 469 2095
               </a>
             </div>
           )}
@@ -262,7 +262,7 @@ export default function SendaSOS() {
                 <div className="bg-red-50 border border-red-200 rounded-xl p-4">
                   <p className="text-sm font-extrabold text-red-700 mb-2">Situacion de riesgo detectada</p>
                   <p className="text-xs text-red-600 leading-relaxed">
-                    Llama ahora a la Linea Purpura <strong>155</strong> o a nuestra linea directa <strong>317 657 5800</strong>. Si estas en peligro inmediato, llama al <strong>123</strong>.
+                    Llama ahora a la Linea Purpura <strong>155</strong> o a nuestra linea directa <strong>301 469 2095</strong>. Si estas en peligro inmediato, llama al <strong>123</strong>.
                   </p>
                 </div>
               )}

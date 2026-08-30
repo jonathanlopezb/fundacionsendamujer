@@ -304,7 +304,7 @@ export default function PsychologicalTest() {
                   <ShieldAlert className="w-5 h-5 text-red-600 shrink-0 mt-0.5" />
                   <div>
                     <p className="text-sm font-extrabold text-red-700">Requieres atención inmediata</p>
-                    <p className="text-xs text-red-600 mt-1">Por favor comunícate ahora con nuestra línea de crisis: <a href="tel:3176575800" className="font-extrabold underline">317 657 5800</a> o Línea Púrpura: <a href="tel:155" className="font-extrabold underline">155</a></p>
+                    <p className="text-xs text-red-600 mt-1">Por favor comunícate ahora con nuestra línea de crisis: <a href="tel:3014692095" className="font-extrabold underline">301 469 2095</a> o Línea Púrpura: <a href="tel:155" className="font-extrabold underline">155</a></p>
                   </div>
                 </div>
               )}
@@ -317,7 +317,7 @@ export default function PsychologicalTest() {
                 <Link href={`/agendar-cita?especialidad=${encodeURIComponent(result.dept)}&nombre=${encodeURIComponent(contact.name || 'Anónima')}`} className="bg-amber-400 text-[#3B0852] font-extrabold px-6 py-3 rounded-full text-xs hover:bg-amber-300 transition-all flex items-center gap-2">
                   Agendar Cita <ArrowRight className="w-4 h-4" />
                 </Link>
-                <a href={`https://wa.me/573176575800?text=Hola,%20acabo%20de%20completar%20el%20test%20de%20bienestar%20SENDA%20EVAL.%20Mi%20nombre%20es%20${encodeURIComponent(contact.name || 'Anónima')}`} target="_blank" rel="noopener noreferrer" className="bg-emerald-500 text-white font-extrabold px-6 py-3 rounded-full text-xs hover:bg-emerald-600 transition-all flex items-center gap-2">
+                <a href={`https://wa.me/573014692095?text=Hola,%20acabo%20de%20completar%20el%20test%20de%20bienestar%20SENDA%20EVAL.%20Mi%20nombre%20es%20${encodeURIComponent(contact.name || 'Anónima')}`} target="_blank" rel="noopener noreferrer" className="bg-emerald-500 text-white font-extrabold px-6 py-3 rounded-full text-xs hover:bg-emerald-600 transition-all flex items-center gap-2">
                   WhatsApp Cartagena
                 </a>
                 <button onClick={() => { setStep(1); setAnswers({}); setResult(null); }} className="bg-white/10 text-white font-bold px-6 py-3 rounded-full text-xs border border-white/20 hover:bg-white/20 cursor-pointer">

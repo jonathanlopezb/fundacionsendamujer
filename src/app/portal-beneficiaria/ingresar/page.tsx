@@ -119,7 +119,7 @@ export default function IngresarPage() {
                 placeholder="••••"
                 className="w-full px-4 py-3 rounded-xl border border-pink-200 focus:outline-none focus:ring-2 focus:ring-[#E12880] text-sm bg-pink-50/30"
               />
-              <p className="text-[10px] text-slate-400 mt-1">Olvide mi PIN — Contactar al +57 317 657 5800</p>
+              <p className="text-[10px] text-slate-400 mt-1">Olvidé mi PIN — Contactar a Dra. Sorelvis (+57 301 469 2095)</p>
             </div>
 
             <div className="bg-pink-50 p-4 rounded-2xl border border-pink-100">

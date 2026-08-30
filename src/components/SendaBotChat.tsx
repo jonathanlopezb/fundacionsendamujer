@@ -65,7 +65,7 @@ export default function SendaBotChat() {
         ...newMessages,
         {
           role: 'assistant',
-          content: 'Recuerda que nuestro canal directo de atención en Cartagena está activo 24/7 en el **317 657 5800** o Línea Púrpura **155**.',
+          content: 'Recuerda que nuestro canal directo de atención en Cartagena está activo 24/7 en el **301 469 2095** o Línea Púrpura **155**.',
         },
       ]);
     } finally {

@@ -58,7 +58,7 @@ export async function POST(req: Request) {
     let fallbackReply = '';
 
     if (lastUserMessage.includes('violencia') || lastUserMessage.includes('abuso') || lastUserMessage.includes('golpe') || lastUserMessage.includes('amenaza') || lastUserMessage.includes('peligro')) {
-      fallbackReply = '🕊️ **Estás en un espacio seguro y confidencial.** Si sufres violencia o estás en riesgo en Cartagena, comunícate inmediatamente a la **Línea Púrpura (155 / 317 657 5800)** o acudamos juntas a la Casa de Justicia de Chiquinquirá. En Fundación Senda Mujer te ofrecemos acompañamiento de caso y asesoría jurídica 100% gratuita.';
+      fallbackReply = '🕊️ **Estás en un espacio seguro y confidencial.** Si sufres violencia o estás en riesgo en Cartagena, comunícate inmediatamente a la **Línea Púrpura (155 / 301 469 2095)** o acudamos juntas a la Casa de Justicia de Chiquinquirá. En Fundación Senda Mujer te ofrecemos acompañamiento de caso y asesoría jurídica 100% gratuita.';
     } else if (lastUserMessage.includes('embarazo') || lastUserMessage.includes('ive') || lastUserMessage.includes('aborto') || lastUserMessage.includes('bebé') || lastUserMessage.includes('gestan')) {
       fallbackReply = '🌸 **En Fundación Senda Mujer te acompañamos con empatía y sin juzgar.** Bajo la legislación colombiana (Sentencias C-055/2022 y C-355/2006) tienes derecho a orientación oportuna y confidencial. Apoyamos tanto la interrupción voluntaria segura como la maternidad elegida mediante el programa *Embarazo con Apoyo* (nutrición, kit maternal y cuidado prenatal). ¿Te gustaría agendar una orientación psicosocial gratuita?';
     } else if (lastUserMessage.includes('cita') || lastUserMessage.includes('medico') || lastUserMessage.includes('psicologia') || lastUserMessage.includes('odontologia') || lastUserMessage.includes('abogado') || lastUserMessage.includes('ginecologia')) {
@@ -73,7 +73,7 @@ export async function POST(req: Request) {
   } catch (error: any) {
     console.error('Error in Chat API Route:', error);
     return NextResponse.json({
-      reply: '🌷 Hola. Estoy aquí para acompañarte de forma segura. Recuerda que nuestra línea prioritaria en Cartagena está activa 24/7 en el **317 657 5800** o Línea Púrpura **155**. ¿En qué puedo orientarte hoy?'
+      reply: '🌷 Hola. Estoy aquí para acompañarte de forma segura. Recuerda que nuestra línea prioritaria en Cartagena está activa 24/7 en el **301 469 2095** o Línea Púrpura **155**. ¿En qué puedo orientarte hoy?'
     });
   }
 }

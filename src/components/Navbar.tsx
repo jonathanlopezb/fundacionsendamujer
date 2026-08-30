@@ -74,8 +74,8 @@ export default function Navbar({ onOpenSOS, onOpenIncognito }: NavbarProps) {
               <PhoneCall className="w-3 h-3" /> 155
             </a>
             <span className="text-pink-300 hidden md:inline">|</span>
-            <a href="tel:3176575800" className="font-bold text-pink-100 hover:text-amber-300 transition-colors hidden md:inline">
-              +57 317 657 5800
+            <a href="tel:3014692095" className="font-bold text-pink-100 hover:text-amber-300 transition-colors hidden md:inline">
+              +57 301 469 2095
             </a>
           </div>
 
