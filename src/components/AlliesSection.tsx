@@ -6,6 +6,7 @@ import {
   PhoneCall, CheckCircle2, FileText, Globe, GraduationCap, Scale,
   Stethoscope, Users, HelpCircle, ArrowRight, X, Sparkles, Send, MapPin, AlertCircle
 } from 'lucide-react';
+import { ALLY_LOGOS_MAP } from './AllyLogos';
 
 export interface Ally {
   id: string;
@@ -423,24 +424,26 @@ export default function AlliesSection() {
         </div>
 
         {/* ── Marquee / Ticker Ribbon of Key Partners ── */}
-        <div className="bg-white/5 border border-white/10 rounded-2xl p-4 backdrop-blur-md overflow-hidden shadow-inner">
-          <p className="text-[10px] uppercase font-extrabold tracking-widest text-pink-300/80 text-center mb-3">
-            ✦ Articulación Garantizada con las Principales Entidades del Estado y la Sociedad Civil ✦
+        <div className="bg-white/5 border border-white/10 rounded-2xl p-4 sm:p-5 backdrop-blur-md overflow-hidden shadow-inner space-y-3">
+          <p className="text-[10px] uppercase font-extrabold tracking-widest text-pink-300/90 text-center flex items-center justify-center gap-2">
+            <Sparkles className="w-3.5 h-3.5 text-amber-400" />
+            <span>Red Interinstitucional Certificada en Cartagena y Bolívar</span>
+            <Sparkles className="w-3.5 h-3.5 text-amber-400" />
           </p>
-          <div className="flex flex-wrap items-center justify-center gap-3 sm:gap-6 opacity-90">
-            {[
-              'Defensoría del Pueblo', 'Fiscalía CAIVAS', 'Profamilia', 'ICBF Bolívar', 
-              'ONU Mujeres', 'Universidad de Cartagena', 'Alcaldía de Cartagena', 
-              'ESE Hospital Local', 'Red Nacional de Mujeres', 'UTB'
-            ].map((name, idx) => (
-              <span
-                key={idx}
-                className="bg-purple-950/60 border border-purple-700/40 text-purple-200 text-xs font-bold px-3 py-1.5 rounded-xl shadow-xs flex items-center gap-1.5"
-              >
-                <CheckCircle2 className="w-3.5 h-3.5 text-amber-400" />
-                {name}
-              </span>
-            ))}
+          <div className="flex flex-wrap items-center justify-center gap-2.5 sm:gap-4">
+            {ALLIES_DATA.map((ally) => {
+              const LogoComp = ALLY_LOGOS_MAP[ally.id];
+              return (
+                <button
+                  key={ally.id}
+                  onClick={() => setActiveModalAlly(ally)}
+                  className="bg-purple-950/80 hover:bg-pink-950/80 border border-purple-700/50 hover:border-pink-500/60 text-purple-100 text-xs font-bold px-3 py-1.5 rounded-2xl shadow-xs flex items-center gap-2.5 transition-all cursor-pointer group"
+                >
+                  {LogoComp && <LogoComp className="w-6 h-6 shrink-0 group-hover:scale-110 transition-transform" size={24} />}
+                  <span className="group-hover:text-amber-300 transition-colors whitespace-nowrap">{ally.acronym || ally.name}</span>
+                </button>
+              );
+            })}
           </div>
         </div>
 
@@ -509,6 +512,7 @@ export default function AlliesSection() {
           <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-6">
             {filteredAllies.map((ally) => {
               const IconComponent = ally.logoIcon;
+              const LogoComponent = ALLY_LOGOS_MAP[ally.id];
               return (
                 <div
                   key={ally.id}
@@ -524,10 +528,16 @@ export default function AlliesSection() {
 
                   <div className="space-y-4">
                     {/* Header with Logo Badge & Category */}
-                    <div className="flex items-start gap-3 pt-1">
-                      <div className={`w-14 h-14 rounded-2xl bg-gradient-to-br ${ally.logoBg} flex items-center justify-center shrink-0 shadow-lg border border-white/10 group-hover:scale-105 transition-transform`}>
-                        <IconComponent className={`w-7 h-7 ${ally.iconColor}`} />
-                      </div>
+                    <div className="flex items-start gap-3.5 pt-1">
+                      {LogoComponent ? (
+                        <div className="w-14 h-14 rounded-2xl p-1 bg-slate-950/90 border border-purple-500/40 flex items-center justify-center shrink-0 shadow-xl group-hover:scale-110 group-hover:border-amber-400 transition-all">
+                          <LogoComponent className="w-12 h-12" size={48} />
+                        </div>
+                      ) : (
+                        <div className={`w-14 h-14 rounded-2xl bg-gradient-to-br ${ally.logoBg} flex items-center justify-center shrink-0 shadow-lg border border-white/10 group-hover:scale-105 transition-transform`}>
+                          <IconComponent className={`w-7 h-7 ${ally.iconColor}`} />
+                        </div>
+                      )}
                       <div className="space-y-1">
                         <span className="text-[10px] font-bold text-pink-300 bg-pink-950/80 border border-pink-700/30 px-2 py-0.5 rounded-full inline-block">
                           {ally.categoryLabel}
@@ -651,9 +661,15 @@ export default function AlliesSection() {
 
             {/* Modal Header */}
             <div className="flex items-start gap-4 pr-8">
-              <div className={`w-16 h-16 rounded-2xl bg-gradient-to-br ${activeModalAlly.logoBg} flex items-center justify-center shrink-0 shadow-lg border border-white/20`}>
-                {React.createElement(activeModalAlly.logoIcon, { className: `w-8 h-8 ${activeModalAlly.iconColor}` })}
-              </div>
+              {ALLY_LOGOS_MAP[activeModalAlly.id] ? (
+                <div className="w-16 h-16 rounded-2xl p-1 bg-slate-950/90 border border-amber-400/50 flex items-center justify-center shrink-0 shadow-xl">
+                  {React.createElement(ALLY_LOGOS_MAP[activeModalAlly.id], { className: "w-14 h-14", size: 56 })}
+                </div>
+              ) : (
+                <div className={`w-16 h-16 rounded-2xl bg-gradient-to-br ${activeModalAlly.logoBg} flex items-center justify-center shrink-0 shadow-lg border border-white/20`}>
+                  {React.createElement(activeModalAlly.logoIcon, { className: `w-8 h-8 ${activeModalAlly.iconColor}` })}
+                </div>
+              )}
               <div className="space-y-1">
                 <span className="bg-pink-500/20 text-pink-300 border border-pink-500/30 text-[10px] font-extrabold px-2.5 py-0.5 rounded-full uppercase tracking-wider">
                   {activeModalAlly.categoryLabel}
