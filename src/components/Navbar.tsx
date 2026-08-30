@@ -79,22 +79,52 @@ export default function Navbar({ onOpenSOS, onOpenIncognito }: NavbarProps) {
             </a>
           </div>
 
-          <div className="flex items-center gap-3">
-            {/* Incognito Mode */}
+          {/* Top Portals & Incognito Bar */}
+          <div className="flex items-center gap-2 flex-wrap">
+
+            {/* Modo Incógnito Button */}
             <button
               type="button"
               onClick={onOpenIncognito || onOpenSOS}
-              className="hidden sm:flex items-center gap-1.5 text-[10px] font-bold text-pink-200 hover:text-amber-300 transition-colors cursor-pointer"
-              title="Modo Incógnito — Protege tu privacidad"
+              className="hidden sm:flex items-center gap-1.5 text-[11px] font-extrabold text-pink-200 hover:text-amber-300 transition-colors cursor-pointer px-2 py-0.5 rounded-full hover:bg-white/10"
+              title="Modo Incógnito — Protege tu privacidad de navegación"
             >
-              <EyeOff className="w-3 h-3" />
+              <EyeOff className="w-3.5 h-3.5 text-pink-300" />
               <span>Modo Incógnito</span>
             </button>
-            <span className="text-pink-400 hidden sm:inline">|</span>
-            <Link href="/admin" className="hidden sm:flex items-center gap-1 text-[10px] font-bold text-pink-200 hover:text-white transition-colors">
-              <UserCog className="w-3 h-3 text-emerald-400" />
-              <span>Panel Profesional</span>
+
+            <span className="text-pink-400/60 hidden sm:inline">|</span>
+
+            {/* 1. SendaAcademia */}
+            <Link
+              href="/academia"
+              className="flex items-center gap-1.5 bg-amber-400/20 hover:bg-amber-400/30 text-amber-300 border border-amber-400/30 text-[11px] font-extrabold px-2.5 py-1 rounded-full transition-all shadow-xs"
+              title="Cursos, talleres y capacitaciones de formación"
+            >
+              <GraduationCap className="w-3.5 h-3.5 text-amber-300" />
+              <span>SendaAcademia</span>
             </Link>
+
+            {/* 2. Portal Usuarias */}
+            <Link
+              href="/portal-beneficiaria"
+              className="flex items-center gap-1.5 bg-pink-500/20 hover:bg-pink-500/30 text-pink-200 border border-pink-400/30 text-[11px] font-extrabold px-2.5 py-1 rounded-full transition-all shadow-xs"
+              title="Expediente confidencial y agendamiento de citas"
+            >
+              <Lock className="w-3.5 h-3.5 text-pink-300" />
+              <span>Portal Usuarias</span>
+            </Link>
+
+            {/* 3. Portal Profesional */}
+            <Link
+              href="/admin"
+              className="flex items-center gap-1.5 bg-purple-500/30 hover:bg-purple-500/40 text-emerald-300 border border-emerald-400/30 text-[11px] font-extrabold px-2.5 py-1 rounded-full transition-all shadow-xs"
+              title="Acceso exclusivo para equipo profesional médico, psicológico y legal"
+            >
+              <UserCog className="w-3.5 h-3.5 text-emerald-300" />
+              <span>Portal Profesional</span>
+            </Link>
+
           </div>
         </div>
       </div>
