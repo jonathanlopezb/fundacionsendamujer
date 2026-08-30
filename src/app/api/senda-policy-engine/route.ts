@@ -41,19 +41,39 @@ export async function POST(req: Request) {
     }
 
     if (groq) {
-      const response = await groq.chat.completions.create({
-        model: 'openai/gpt-oss-120b',
-        messages: [
-          { role: 'system', content: SYSTEM_PROMPT_POLICY_ENGINE },
-          { role: 'user', content: `Analiza esta situación de una mujer: "${narrative}"` },
-        ],
-        temperature: 0.2,
-        response_format: { type: 'json_object' },
-      });
+      try {
+        const response = await groq.chat.completions.create({
+          model: 'llama-3.3-70b-versatile',
+          messages: [
+            { role: 'system', content: SYSTEM_PROMPT_POLICY_ENGINE },
+            { role: 'user', content: `Analiza esta situación de una mujer: "${narrative}"` },
+          ],
+          temperature: 0.2,
+          response_format: { type: 'json_object' },
+        });
 
-      const rawJson = response.choices[0]?.message?.content || '{}';
-      const parsed = JSON.parse(rawJson);
-      return NextResponse.json(parsed);
+        const rawJson = response.choices[0]?.message?.content || '{}';
+        const parsed = JSON.parse(rawJson);
+        return NextResponse.json(parsed);
+      } catch (groqErr: any) {
+        console.warn('Primary Groq model failed in senda-policy-engine, trying fallback model:', groqErr?.message || groqErr);
+        try {
+          const fallbackResp = await groq.chat.completions.create({
+            model: 'llama-3.1-8b-instant',
+            messages: [
+              { role: 'system', content: SYSTEM_PROMPT_POLICY_ENGINE },
+              { role: 'user', content: `Analiza esta situación de una mujer: "${narrative}"` },
+            ],
+            temperature: 0.2,
+            response_format: { type: 'json_object' },
+          });
+          const rawFallback = fallbackResp.choices[0]?.message?.content || '{}';
+          const parsedFallback = JSON.parse(rawFallback);
+          return NextResponse.json(parsedFallback);
+        } catch (secondaryGroqErr: any) {
+          console.error('Secondary Groq model failed in senda-policy-engine:', secondaryGroqErr?.message || secondaryGroqErr);
+        }
+      }
     }
 
     // Fallback if Groq API key is not present in dev

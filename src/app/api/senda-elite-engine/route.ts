@@ -99,26 +99,46 @@ PERFIL COMPLETO:
 Analiza esta situación completa y genera el informe élite de derechos y ruta de acción integral.`;
 
     if (groq) {
-      const response = await groq.chat.completions.create({
-        model: 'openai/gpt-oss-120b',
-        messages: [
-          { role: 'system', content: ELITE_SYSTEM_PROMPT },
-          { role: 'user', content: narrativeForAI },
-        ],
-        temperature: 0.2,
-        response_format: { type: 'json_object' },
-      });
-
-      const raw = response.choices[0]?.message?.content || '{}';
       try {
-        const parsed = JSON.parse(raw);
-        return NextResponse.json(parsed);
-      } catch {
-        return NextResponse.json({ error: 'Parse error', raw }, { status: 500 });
+        const response = await groq.chat.completions.create({
+          model: 'llama-3.3-70b-versatile',
+          messages: [
+            { role: 'system', content: ELITE_SYSTEM_PROMPT },
+            { role: 'user', content: narrativeForAI },
+          ],
+          temperature: 0.2,
+          response_format: { type: 'json_object' },
+        });
+
+        const raw = response.choices[0]?.message?.content || '{}';
+        try {
+          const parsed = JSON.parse(raw);
+          return NextResponse.json(parsed);
+        } catch {
+          console.warn('JSON parse error from primary Groq response, falling back');
+        }
+      } catch (groqErr: any) {
+        console.warn('Primary Groq model failed in senda-elite-engine, attempting fallback:', groqErr?.message || groqErr);
+        try {
+          const fallbackResp = await groq.chat.completions.create({
+            model: 'llama-3.1-8b-instant',
+            messages: [
+              { role: 'system', content: ELITE_SYSTEM_PROMPT },
+              { role: 'user', content: narrativeForAI },
+            ],
+            temperature: 0.2,
+            response_format: { type: 'json_object' },
+          });
+          const rawFallback = fallbackResp.choices[0]?.message?.content || '{}';
+          const parsedFallback = JSON.parse(rawFallback);
+          return NextResponse.json(parsedFallback);
+        } catch (secondaryGroqErr: any) {
+          console.error('Secondary Groq model failed in senda-elite-engine:', secondaryGroqErr?.message || secondaryGroqErr);
+        }
       }
     }
 
-    // Fallback
+    // Fallback if Groq is unavailable or returns an invalid payload
     return NextResponse.json(buildFallback(answers));
   } catch (err: any) {
     console.error('Elite engine error:', err);
