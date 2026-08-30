@@ -140,9 +140,11 @@ export default function Navbar({ onOpenSOS, onOpenIncognito }: NavbarProps) {
 
         {/* Logo */}
         <Link href="/" className="flex items-center shrink-0 group">
-          <div className="relative w-40 h-11 sm:w-52 sm:h-13 transition-transform group-hover:scale-[1.02]">
-            <Image src="/logo.png" alt="Fundación Senda Mujer" fill className="object-contain" priority />
-          </div>
+          <img
+            src="/logo.png"
+            alt="Fundación Senda Mujer"
+            className="h-9 sm:h-12 w-auto object-contain transition-transform group-hover:scale-[1.02]"
+          />
         </Link>
 
         {/* Desktop Nav */}

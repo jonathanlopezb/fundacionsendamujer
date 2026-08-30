@@ -1,7 +1,6 @@
 'use client';
 import React from 'react';
-import Image from 'next/image';
-import { X, Award, Download, Share2, ShieldCheck, QrCode, Sparkles } from 'lucide-react';
+import { X, Download, Share2, ShieldCheck, QrCode, Sparkles } from 'lucide-react';
 
 interface Props {
   userName: string;
@@ -15,13 +14,13 @@ export default function CertificateModal({ userName, courseTitle, courseCategory
   const certId = `SENDA-CERT-${Math.floor(100000 + Math.random() * 900000)}`;
 
   return (
-    <div className="fixed inset-0 z-50 flex items-center justify-center p-4 bg-slate-950/85 backdrop-blur-md">
-      <div className="w-full max-w-2xl rounded-3xl p-6 sm:p-8 relative overflow-hidden shadow-2xl animate-fadeIn bg-[#180325] border border-pink-500/30">
+    <div className="fixed inset-0 z-50 flex items-center justify-center p-3 sm:p-4 bg-slate-950/85 backdrop-blur-md">
+      <div className="w-full max-w-2xl rounded-3xl p-5 sm:p-8 relative overflow-hidden shadow-2xl animate-fadeIn bg-[#180325] border border-pink-500/30">
 
         {/* Close Button */}
         <button
           onClick={onClose}
-          className="absolute top-5 right-5 text-pink-200 hover:text-white p-2 rounded-full transition-colors bg-white/10 z-20 cursor-pointer"
+          className="absolute top-4 right-4 sm:top-5 sm:right-5 text-pink-200 hover:text-white p-2 rounded-full transition-colors bg-white/10 z-20 cursor-pointer"
         >
           <X className="w-4 h-4" />
         </button>
@@ -36,13 +35,15 @@ export default function CertificateModal({ userName, courseTitle, courseCategory
         </div>
 
         {/* CERTIFICATE DISPLAY BOX */}
-        <div className="relative rounded-2xl p-6 sm:p-8 border border-pink-400/40 shadow-2xl text-center space-y-5 overflow-hidden bg-gradient-to-b from-[#270538] via-[#3B0852] to-[#180325]">
+        <div className="relative rounded-2xl p-5 sm:p-8 border border-pink-400/40 shadow-2xl text-center space-y-5 overflow-hidden bg-gradient-to-b from-[#270538] via-[#3B0852] to-[#180325]">
 
           <div className="flex items-center justify-between border-b border-pink-500/20 pb-4">
             <div className="text-left flex items-center gap-2">
-              <div className="relative w-28 h-8">
-                <Image src="/logo.png" alt="Fundación Senda Mujer" fill className="object-contain" priority />
-              </div>
+              <img
+                src="/logo.png"
+                alt="Fundación Senda Mujer"
+                className="h-7 sm:h-9 w-auto object-contain"
+              />
               <span className="text-[10px] uppercase font-bold tracking-widest text-amber-300 border-l border-pink-500/30 pl-2">SendaAcademia</span>
             </div>
             <div className="text-right">

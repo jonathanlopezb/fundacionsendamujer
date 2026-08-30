@@ -1,6 +1,5 @@
 'use client';
 import React, { useState } from 'react';
-import Image from 'next/image';
 import { X, Lock, Mail, User, Zap, Shield, Sparkles } from 'lucide-react';
 
 interface Props {
@@ -39,9 +38,11 @@ export default function AuthModal({ mode, onClose, onLogin, onSwitchMode }: Prop
 
         {/* Header */}
         <div className="space-y-3 mb-6">
-          <div className="relative w-36 h-9">
-            <Image src="/logo.png" alt="Fundación Senda Mujer" fill className="object-contain" priority />
-          </div>
+          <img
+            src="/logo.png"
+            alt="Fundación Senda Mujer"
+            className="h-9 w-auto object-contain"
+          />
 
           <div className="inline-flex items-center gap-1.5 px-3 py-1 rounded-full text-[10px] font-extrabold uppercase tracking-wider text-amber-300 bg-[#52166F]/80 border border-pink-400/30">
             <Sparkles className="w-3 h-3 text-amber-300" />

@@ -1,19 +1,20 @@
 'use client';
 import React from 'react';
 import Link from 'next/link';
-import Image from 'next/image';
-import { GraduationCap, Heart, ShieldCheck, Globe, PhoneCall } from 'lucide-react';
+import { Globe } from 'lucide-react';
 
 export default function AcademiaFooter() {
   return (
-    <footer className="border-t border-pink-500/20 py-12 px-4 sm:px-8 text-pink-200/80 text-xs bg-[#14021f]">
+    <footer className="border-t border-pink-500/20 py-10 px-4 sm:px-8 text-pink-200/80 text-xs bg-[#14021f]">
       <div className="max-w-7xl mx-auto flex flex-col md:flex-row items-center justify-between gap-6">
 
         {/* Brand info */}
         <div className="flex items-center gap-3">
-          <div className="relative w-36 h-9">
-            <Image src="/logo.png" alt="Fundación Senda Mujer" fill className="object-contain" />
-          </div>
+          <img
+            src="/logo.png"
+            alt="Fundación Senda Mujer"
+            className="h-8 w-auto object-contain"
+          />
           <div className="h-6 w-[1px] bg-pink-500/30" />
           <div>
             <div className="font-extrabold text-white">SendaAcademia</div>

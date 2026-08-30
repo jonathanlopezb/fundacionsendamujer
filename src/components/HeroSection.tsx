@@ -75,12 +75,11 @@ export default function HeroSection() {
               <div className="absolute -inset-2 bg-gradient-to-r from-senda-pink via-amber-400 to-senda-purple rounded-3xl blur-lg opacity-30 animate-pulse-glow" />
 
               <div className="relative bg-white/90 backdrop-blur-xl border border-pink-200/80 rounded-3xl p-5 sm:p-8 shadow-2xl space-y-5">
-                <div className="relative w-full h-48 sm:h-64 rounded-2xl overflow-hidden border border-pink-100 bg-pink-50/50 shadow-inner flex items-center justify-center p-3">
-                  <Image
+                <div className="w-full h-44 sm:h-64 rounded-2xl overflow-hidden border border-pink-100 bg-pink-50/50 shadow-inner flex items-center justify-center p-4">
+                  <img
                     src="/logo.png"
                     alt="Fundación Senda Mujer Logo Corporativo"
-                    fill
-                    className="object-contain p-2"
+                    className="max-h-full max-w-full object-contain"
                   />
                 </div>
 
