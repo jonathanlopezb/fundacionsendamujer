@@ -42,7 +42,7 @@ export async function POST(req: Request) {
 
     if (groq) {
       const response = await groq.chat.completions.create({
-        model: 'llama-3.3-70b-versatile',
+        model: 'openai/gpt-oss-120b',
         messages: [
           { role: 'system', content: SYSTEM_PROMPT_POLICY_ENGINE },
           { role: 'user', content: `Analiza esta situación de una mujer: "${narrative}"` },

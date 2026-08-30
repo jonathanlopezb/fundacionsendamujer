@@ -12,7 +12,7 @@ export async function POST(req: Request) {
     // If GROQ_API_KEY is configured, call Groq API
     if (groq) {
       const response = await groq.chat.completions.create({
-        model: 'llama-3.3-70b-versatile',
+        model: 'groq/compound',
         messages: [
           { role: 'system', content: SYSTEM_PROMPT_SENDA_BOT },
           ...messages,
