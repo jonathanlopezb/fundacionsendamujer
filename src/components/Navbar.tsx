@@ -157,59 +157,37 @@ export default function Navbar({ onOpenSOS, onOpenIncognito }: NavbarProps) {
               className="px-3 py-2 rounded-lg hover:bg-pink-50 hover:text-[#E12880] transition-all flex items-center gap-1 cursor-pointer"
             >
               <Lock className="w-3.5 h-3.5 text-amber-500" />
-              Portal
-              <ChevronDown className={`w-3.5 h-3.5 transition-transform duration-200 ${portalOpen ? 'rotate-180' : ''}`} />
-            </button>
+          {/* 1. SendaAcademia */}
+          <Link
+            href="/academia"
+            className="px-3 py-2 rounded-lg hover:bg-amber-50 text-amber-700 font-extrabold flex items-center gap-1.5 transition-all"
+            title="Formación, cursos y capacitaciones (Beneficiarias y Profesionales)"
+          >
+            <GraduationCap className="w-4 h-4 text-amber-600" />
+            <span>SendaAcademia</span>
+          </Link>
 
-            {portalOpen && (
-              <div className="absolute top-full left-0 mt-2 w-80 bg-white rounded-2xl shadow-2xl border border-pink-100 p-3 z-50 animate-fadeIn">
-                <p className="text-[10px] font-extrabold text-slate-400 uppercase tracking-widest px-2 mb-2">Acceso Seguro Beneficiarias</p>
-                {PORTAL_LINKS.map((pl) => {
-                  const Icon = pl.icon;
-                  return (
-                    <Link
-                      key={pl.href}
-                      href={pl.href}
-                      onClick={() => setPortalOpen(false)}
-                      className="flex items-start gap-3 px-3 py-3 rounded-xl hover:bg-pink-50 transition-all group"
-                    >
-                      <div className="w-8 h-8 rounded-lg bg-pink-50 flex items-center justify-center shrink-0 group-hover:bg-pink-100 transition-colors">
-                        <Icon className={`w-4 h-4 ${pl.color}`} />
-                      </div>
-                      <div>
-                        <div className="text-xs font-extrabold text-slate-800 group-hover:text-[#E12880] transition-colors">{pl.label}</div>
-                        <div className="text-[10px] text-slate-500 mt-0.5">{pl.desc}</div>
-                      </div>
-                    </Link>
-                  );
-                })}
-                <div className="mt-2 pt-2 border-t border-pink-50 px-2">
-                  <Link
-                    href="/senda-sos"
-                    onClick={() => setPortalOpen(false)}
-                    className="flex items-center gap-2 p-3 rounded-xl bg-red-50 border border-red-100 hover:bg-red-100 transition-all"
-                  >
-                    <AlertTriangle className="w-4 h-4 text-red-600 shrink-0" />
-                    <div>
-                      <div className="text-xs font-extrabold text-red-700">SENDA SOS — Necesito Ayuda Ahora</div>
-                      <div className="text-[10px] text-red-500">Sin registro requerido</div>
-                    </div>
-                  </Link>
-                </div>
-              </div>
-            )}
-          </div>
+          {/* 2. Portal de Gestión de Usuaria */}
+          <Link
+            href="/portal-beneficiaria"
+            className="px-3 py-2 rounded-lg hover:bg-pink-50 text-[#E12880] font-extrabold flex items-center gap-1.5 transition-all"
+            title="Expediente confidencial y agendamiento de citas para beneficiarias"
+          >
+            <Lock className="w-4 h-4 text-[#E12880]" />
+            <span>Portal Usuarias</span>
+          </Link>
 
-          {/* Direct Panel Profesional link */}
+          {/* 3. Portal de Gestión de Profesionales */}
           <Link
             href="/admin"
             className="px-3 py-2 rounded-lg hover:bg-purple-50 text-[#52166F] font-extrabold flex items-center gap-1.5 transition-all"
             title="Acceso exclusivo a médicos, psicólogas, abogadas y trabajadoras sociales"
           >
             <UserCog className="w-4 h-4 text-purple-700" />
-            <span>Acceso Profesional</span>
+            <span>Portal Profesional</span>
           </Link>
 
+          {/* SENDA Universal Flagship */}
           <Link href="/senda-universal" className="px-3 py-2 rounded-lg bg-gradient-to-r from-purple-100 to-pink-100 text-purple-900 font-extrabold flex items-center gap-1.5 transition-all hover:shadow-sm">
             <Globe className="w-3.5 h-3.5 text-purple-700" />
             <span>SENDA Universal</span>
@@ -275,15 +253,15 @@ export default function Navbar({ onOpenSOS, onOpenIncognito }: NavbarProps) {
       {mobileMenuOpen && (
         <div className="lg:hidden bg-white border-t border-pink-100 px-5 py-5 space-y-1 shadow-xl animate-fadeIn">
           {[
-            { href: '/', label: 'Inicio' },
-            { href: '/senda-universal', label: '🌍 SENDA Universal', purple: true },
-            { href: '/portal-beneficiaria', label: '🔒 Mi Expediente Beneficiaria', accent: true },
-            { href: '/admin', label: '👩‍⚕️ Acceso Profesional (Login)', purple: true },
-            { href: '/nosotros', label: 'Nosotros' },
+            { href: '/', label: '🏠 Inicio' },
+            { href: '/senda-universal', label: '🌍 SENDA Universal (Sistema Operativo)' },
+            { href: '/academia', label: '🎓 1. SendaAcademia (Cursos & Formación)' },
+            { href: '/portal-beneficiaria', label: '🔒 2. Portal de Gestión de Usuarias' },
+            { href: '/admin', label: '👩‍⚕️ 3. Portal de Gestión de Profesionales' },
             { href: '/programas', label: '7 Programas Integrales' },
             { href: '/triaje-psicologico', label: 'Test Psicológico SENDA EVAL' },
             { href: '/ruta-cartagena', label: 'Ruta de Emergencia Cartagena' },
-            { href: '/donar', label: 'Portal de Donaciones', amber: true },
+            { href: '/donar', label: 'Portal de Donaciones' },
           ].map((item) => (
             <Link
               key={item.href}

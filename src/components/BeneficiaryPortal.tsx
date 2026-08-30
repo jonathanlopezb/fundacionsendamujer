@@ -1,6 +1,6 @@
 'use client';
 
-import React, { useState } from 'react';
+import React, { useState, useEffect } from 'react';
 import {
   Lock, KeyRound, ShieldAlert, EyeOff, LogOut, Shield,
   GraduationCap, HeartPulse, Calendar, Brain, ChevronRight,
