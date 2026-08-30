@@ -2,7 +2,7 @@
 
 import React, { useState, useRef, useEffect } from 'react';
 import { MessageSquare, X, Send, BrainCircuit, Bot, User, Minimize2, Sparkles, PhoneCall } from 'lucide-react';
-import { RiRobot2Fill, RiSendPlaneFill, RiSparklesLine, RiMessage3Fill } from 'react-icons/ri';
+import { RiRobot2Fill, RiSendPlaneFill } from 'react-icons/ri';
 
 interface ChatMessage {
   role: 'user' | 'assistant';
