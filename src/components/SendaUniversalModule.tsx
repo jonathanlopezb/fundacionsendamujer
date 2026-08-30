@@ -9,7 +9,7 @@ import {
   ArrowRight, Clock, MapPin, TrendingUp, EyeOff, Mic,
   VolumeX, Share2, Key, RefreshCw, Award, Check, ChevronRight,
   GraduationCap, Briefcase, DollarSign, Home, HeartPulse, Heart,
-  ShieldAlert, Sparkles, AlertTriangle, Play, HelpCircle
+  ShieldAlert, Sparkles, AlertTriangle, Play, HelpCircle, Scale
 } from 'lucide-react';
 
 // Types for Policy Engine Simulation
