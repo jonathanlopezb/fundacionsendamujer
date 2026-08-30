@@ -1,19 +1,42 @@
 'use client';
 
 import React from 'react';
-import { MapPin, Phone, Building2, Shield, HeartPulse, Scale, ExternalLink, Navigation } from 'lucide-react';
+import { 
+  RiPhoneFill, 
+  RiScales3Line, 
+  RiHeartPulseLine, 
+  RiBuilding4Line, 
+  RiMapPinLine, 
+  RiCompass3Line, 
+  RiShieldFlashLine,
+  RiSparklesLine,
+  RiCheckDoubleLine
+} from 'react-icons/ri';
+import { IconType } from 'react-icons';
 
-const CARTAGENA_ROUTES = [
+export interface RouteCategory {
+  category: string;
+  icon: IconType;
+  color: string;
+  items: {
+    name: string;
+    phone: string;
+    address: string;
+    badge: string;
+  }[];
+}
+
+const CARTAGENA_ROUTES: RouteCategory[] = [
   {
     category: 'Línea de Atención Violeta & Emergencia',
-    icon: Phone,
-    color: 'bg-pink-500 text-white',
+    icon: RiPhoneFill,
+    color: 'bg-gradient-to-br from-pink-500 to-rose-600 text-white',
     items: [
       {
         name: 'Línea Púrpura Cartagena & Fundación Senda Mujer',
         phone: '317 657 5800 / 155',
         address: 'Atención 24 Horas — Cartagena de Indias',
-        badge: 'Directo Fundación',
+        badge: 'Directo Fundación 24/7',
       },
       {
         name: 'Policía Nacional & Patrulla Púrpura Cartagena',
@@ -25,8 +48,8 @@ const CARTAGENA_ROUTES = [
   },
   {
     category: 'Comisarías de Familia & Casa de Justicia',
-    icon: Scale,
-    color: 'bg-purple-600 text-white',
+    icon: RiScales3Line,
+    color: 'bg-gradient-to-br from-purple-600 to-indigo-700 text-white',
     items: [
       {
         name: 'Casa de Justicia Chiquinquirá',
@@ -50,8 +73,8 @@ const CARTAGENA_ROUTES = [
   },
   {
     category: 'Salud & Urgencias Médicas Cartagena',
-    icon: HeartPulse,
-    color: 'bg-emerald-600 text-white',
+    icon: RiHeartPulseLine,
+    color: 'bg-gradient-to-br from-emerald-500 to-teal-700 text-white',
     items: [
       {
         name: 'ESE Hospital Local Cartagena de Indias',
@@ -69,8 +92,8 @@ const CARTAGENA_ROUTES = [
   },
   {
     category: 'Justicia & Derechos Humanos',
-    icon: Building2,
-    color: 'bg-amber-600 text-white',
+    icon: RiBuilding4Line,
+    color: 'bg-gradient-to-br from-amber-500 to-orange-600 text-white',
     items: [
       {
         name: 'Fiscalía General de la Nación — Seccional Bolívar',
@@ -92,12 +115,15 @@ export default function CartagenaDirectory() {
   return (
     <div className="max-w-6xl mx-auto px-4 py-8">
       <div className="text-center max-w-3xl mx-auto mb-12 space-y-3">
-        <span className="bg-senda-purple-light text-senda-purple font-extrabold text-xs px-4 py-1.5 rounded-full uppercase tracking-wider">
-          Directorio Local Interactivo
-        </span>
+        <div className="inline-flex items-center gap-2 bg-pink-100/80 border border-pink-200 text-senda-purple font-extrabold text-xs px-4 py-1.5 rounded-full uppercase tracking-wider shadow-xs">
+          <RiSparklesLine className="w-4 h-4 text-senda-pink" />
+          <span>Directorio Local Interactivo</span>
+        </div>
+
         <h2 className="text-3xl font-extrabold text-senda-purple-dark">
           Ruta Institucional de Atención en Cartagena de Indias
         </h2>
+
         <p className="text-sm text-slate-600">
           La Fundación Senda Mujer te acompaña como gestora de caso para acceder de forma rápida y segura a las entidades de salud, protección y justicia en la ciudad.
         </p>
@@ -105,13 +131,14 @@ export default function CartagenaDirectory() {
 
       <div className="grid grid-cols-1 md:grid-cols-2 gap-8">
         {CARTAGENA_ROUTES.map((sec, idx) => {
-          const Icon = sec.icon;
+          const IconComponent = sec.icon;
 
           return (
-            <div key={idx} className="bg-white rounded-3xl border border-pink-100 p-6 shadow-sm hover:shadow-md transition-all space-y-6">
-              <div className="flex items-center space-x-3 pb-4 border-b border-pink-100">
-                <div className={`p-3 rounded-2xl ${sec.color}`}>
-                  <Icon className="w-6 h-6" />
+            <div key={idx} className="bg-white rounded-3xl border border-pink-200/80 p-6 sm:p-8 shadow-sm hover:shadow-xl transition-all duration-300 space-y-6">
+              
+              <div className="flex items-center space-x-3.5 pb-4 border-b border-pink-100">
+                <div className={`w-12 h-12 rounded-2xl ${sec.color} flex items-center justify-center shrink-0 shadow-md`}>
+                  <IconComponent className="w-6 h-6 text-white" />
                 </div>
                 <h3 className="font-extrabold text-lg text-senda-purple-dark">
                   {sec.category}
@@ -120,25 +147,25 @@ export default function CartagenaDirectory() {
 
               <div className="space-y-4">
                 {sec.items.map((item, itemIdx) => (
-                  <div key={itemIdx} className="bg-pink-50/50 p-4 rounded-2xl border border-pink-100/80 space-y-2">
-                    <div className="flex justify-between items-start">
-                      <h4 className="font-bold text-sm text-slate-800">{item.name}</h4>
-                      <span className="bg-white text-senda-pink font-extrabold text-[10px] px-2.5 py-0.5 rounded-full border border-pink-200 shadow-2xs">
+                  <div key={itemIdx} className="bg-gradient-to-br from-pink-50/60 to-purple-50/40 p-4 rounded-2xl border border-pink-100 space-y-3.5 hover:border-pink-300 transition-colors">
+                    <div className="flex justify-between items-start gap-2">
+                      <h4 className="font-extrabold text-sm text-slate-900">{item.name}</h4>
+                      <span className="bg-white text-senda-pink font-extrabold text-[10px] px-2.5 py-0.5 rounded-full border border-pink-200/80 shadow-xs shrink-0">
                         {item.badge}
                       </span>
                     </div>
 
-                    <div className="flex items-center space-x-2 text-xs text-slate-600">
-                      <MapPin className="w-3.5 h-3.5 text-senda-pink shrink-0" />
+                    <div className="flex items-start space-x-2 text-xs text-slate-600">
+                      <RiMapPinLine className="w-4 h-4 text-senda-pink shrink-0 mt-0.5" />
                       <span>{item.address}</span>
                     </div>
 
-                    <div className="flex items-center justify-between pt-2">
+                    <div className="flex items-center justify-between pt-2 border-t border-pink-100/60">
                       <a
                         href={`tel:${item.phone.replace(/[^0-9]/g, '')}`}
-                        className="text-xs font-extrabold text-senda-purple hover:text-senda-pink flex items-center gap-1"
+                        className="text-xs font-extrabold text-senda-purple hover:text-senda-pink flex items-center gap-1.5 py-1 px-2.5 bg-white rounded-lg border border-pink-200/60 hover:shadow-xs transition-all"
                       >
-                        <Phone className="w-3.5 h-3.5 text-amber-500" />
+                        <RiPhoneFill className="w-3.5 h-3.5 text-amber-500" />
                         <span>{item.phone}</span>
                       </a>
 
@@ -146,15 +173,16 @@ export default function CartagenaDirectory() {
                         href={`https://maps.google.com/?q=${encodeURIComponent(item.name + ' ' + item.address)}`}
                         target="_blank"
                         rel="noopener noreferrer"
-                        className="text-[11px] font-bold text-slate-500 hover:text-senda-pink flex items-center gap-1"
+                        className="text-[11px] font-extrabold text-slate-600 hover:text-senda-pink flex items-center gap-1.5 transition-colors"
                       >
                         <span>Cómo llegar</span>
-                        <Navigation className="w-3 h-3" />
+                        <RiCompass3Line className="w-4 h-4 text-senda-pink" />
                       </a>
                     </div>
                   </div>
                 ))}
               </div>
+
             </div>
           );
         })}

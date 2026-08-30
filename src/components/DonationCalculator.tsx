@@ -1,49 +1,78 @@
 'use client';
 
 import React, { useState } from 'react';
-import { Heart, ShieldCheck, Sparkles, CheckCircle2, Smile, Stethoscope, Baby, Scale, GraduationCap } from 'lucide-react';
+import { 
+  RiHeart3Fill, 
+  RiShieldCheckLine, 
+  RiSparklesLine, 
+  RiEmotionSmileLine, 
+  RiStethoscopeLine, 
+  RiHeartPulseLine, 
+  RiScales3Line, 
+  RiGraduationCapLine,
+  RiCheckDoubleLine,
+  RiHandHeartLine,
+  RiLock2Line,
+  RiBankCardLine,
+  RiArrowRightLine
+} from 'react-icons/ri';
 import confetti from 'canvas-confetti';
+import { IconType } from 'react-icons';
 
-const IMPACT_OPTIONS = [
+export interface ImpactOption {
+  id: string;
+  title: string;
+  costCOP: number;
+  icon: IconType;
+  badge: string;
+  desc: string;
+}
+
+const IMPACT_OPTIONS: ImpactOption[] = [
   {
     id: 'Kit Maternidad',
     title: 'Kit Maternidad Elegida',
     costCOP: 120000,
-    icon: Baby,
+    icon: RiHeartPulseLine,
+    badge: 'Nutrición & Cuidado',
     desc: 'Incluye pañales, cobijita, mudas de ropa, biberón y fórmula nutricional para el primer mes.',
   },
   {
     id: 'Consulta Odontológica',
     title: 'Consulta Odontológica Integral',
     costCOP: 80000,
-    icon: Smile,
+    icon: RiEmotionSmileLine,
+    badge: 'Salud Oral',
     desc: 'Atención odontológica preventiva, profilaxis y salud oral para una beneficiaria.',
   },
   {
     id: 'Sesión Psicológica',
     title: 'Sesión Psicológica Individual',
     costCOP: 60000,
-    icon: Stethoscope,
+    icon: RiStethoscopeLine,
+    badge: 'Salud Mental',
     desc: 'Contención emocional de crisis y 1 hora de terapia profesional.',
   },
   {
     id: 'Asesoría Jurídica',
     title: 'Asesoría Jurídica VBG',
     costCOP: 100000,
-    icon: Scale,
+    icon: RiScales3Line,
+    badge: 'Protección Legal',
     desc: 'Acompañamiento legal completo y tramitación de medidas de protección.',
   },
   {
     id: 'Beca Emprendimiento',
     title: 'Beca Capacitación & Insumos',
     costCOP: 250000,
-    icon: GraduationCap,
+    icon: RiGraduationCapLine,
+    badge: 'Autonomía Económica',
     desc: 'Cubre materiales de estudio y kit inicial de emprendimiento productivo.',
   },
 ];
 
 export default function DonationCalculator() {
-  const [selectedImpact, setSelectedImpact] = useState(IMPACT_OPTIONS[0]);
+  const [selectedImpact, setSelectedImpact] = useState<ImpactOption>(IMPACT_OPTIONS[0]);
   const [units, setUnits] = useState(1);
   const [donorName, setDonorName] = useState('');
   const [email, setEmail] = useState('');
@@ -89,43 +118,48 @@ export default function DonationCalculator() {
 
   return (
     <div className="max-w-4xl mx-auto px-4 py-8">
-      <div className="bg-white rounded-3xl border border-pink-200 shadow-xl overflow-hidden">
+      <div className="bg-white rounded-3xl border border-pink-200/80 shadow-2xl overflow-hidden relative">
         
         {/* Header */}
-        <div className="bg-gradient-to-r from-senda-purple-dark via-senda-purple to-senda-pink text-white p-6 sm:p-8">
-          <div className="flex items-center space-x-2 text-xs font-bold text-amber-300 uppercase tracking-widest mb-2">
-            <Heart className="w-4 h-4 text-amber-300 fill-amber-300" />
-            <span>Portal de Micro-Mecenazgo Transparente 1 a 1</span>
+        <div className="bg-gradient-to-r from-senda-purple-dark via-[#52166F] to-senda-pink text-white p-6 sm:p-10 relative overflow-hidden">
+          <div className="absolute -right-10 -bottom-10 w-60 h-60 bg-amber-400/10 rounded-full blur-3xl pointer-events-none" />
+          
+          <div className="relative z-10 space-y-3">
+            <div className="inline-flex items-center gap-2 bg-amber-400/20 border border-amber-400/30 text-amber-300 font-extrabold text-[11px] px-3.5 py-1 rounded-full uppercase tracking-wider shadow-xs">
+              <RiHeart3Fill className="w-3.5 h-3.5 text-amber-300" />
+              <span>Portal de Micro-Mecenazgo Transparente 1 a 1</span>
+            </div>
+            <h2 className="text-2xl sm:text-4xl font-extrabold text-white tracking-tight">
+              Patrocina una Vida en Cartagena
+            </h2>
+            <p className="text-xs sm:text-sm text-pink-100/90 leading-relaxed max-w-2xl">
+              Tú eliges exactamente qué ayuda entregar. Cada aporte se transforma directamente en salud, protección jurídica o dignidad para una mujer en situación de vulnerabilidad.
+            </p>
           </div>
-          <h2 className="text-2xl sm:text-3xl font-extrabold text-white">
-            Patrocina una Vida en Cartagena
-          </h2>
-          <p className="text-xs sm:text-sm text-pink-100 mt-2 max-w-2xl">
-            Tú eliges exactamente qué ayuda entregar. Cada aporte se transforma directamente en salud, protección jurídica o dignidad para una mujer en situación de vulnerabilidad.
-          </p>
         </div>
 
         {successReceipt ? (
           <div className="p-8 sm:p-12 space-y-6 text-center animate-fadeIn">
-            <div className="w-16 h-16 bg-amber-100 rounded-full flex items-center justify-center mx-auto text-amber-600 shadow-inner">
-              <Heart className="w-10 h-10 fill-amber-500 text-amber-500" />
+            <div className="w-20 h-20 bg-gradient-to-br from-amber-400 to-pink-500 rounded-3xl flex items-center justify-center mx-auto text-slate-950 shadow-xl">
+              <RiHeart3Fill className="w-10 h-10 text-slate-950" />
             </div>
 
-            <h3 className="text-2xl font-extrabold text-senda-purple-dark">
+            <h3 className="text-2xl sm:text-3xl font-extrabold text-senda-purple-dark">
               ¡Gracias por tu Transformador Aporte!
             </h3>
 
-            <p className="text-sm text-slate-600 max-w-md mx-auto">
-              Has patrocinado <strong className="text-senda-pink">{units} unit(s) de {selectedImpact.title}</strong> por un valor total de <strong>${totalAmount.toLocaleString('es-CO')} COP</strong>.
+            <p className="text-sm text-slate-600 max-w-md mx-auto leading-relaxed">
+              Has patrocinado <strong className="text-senda-pink">{units} unidad(es) de {selectedImpact.title}</strong> por un valor total de <strong className="text-slate-900">${totalAmount.toLocaleString('es-CO')} COP</strong>.
             </p>
 
-            <div className="bg-pink-50 rounded-2xl p-4 border border-pink-200 text-xs font-semibold text-senda-purple max-w-sm mx-auto">
-              Certificado de Impacto #: {successReceipt.receiptId || 'SM-884920'}
+            <div className="bg-pink-50 rounded-2xl p-4 border border-pink-200 text-xs font-bold text-senda-purple max-w-sm mx-auto flex items-center justify-center gap-2">
+              <RiShieldCheckLine className="w-4 h-4 text-emerald-600" />
+              <span>Certificado de Impacto #: {successReceipt.receiptId || 'SM-884920'}</span>
             </div>
 
             <button
               onClick={() => setSuccessReceipt(null)}
-              className="bg-senda-purple text-white font-extrabold px-6 py-2.5 rounded-full text-xs hover:bg-senda-purple-dark transition-all"
+              className="bg-gradient-to-r from-senda-purple to-senda-pink text-white font-extrabold px-8 py-3 rounded-full text-xs hover:shadow-lg transition-all cursor-pointer"
             >
               Realizar otro mecenazgo
             </button>
@@ -133,14 +167,16 @@ export default function DonationCalculator() {
         ) : (
           <form onSubmit={handleSubmit} className="p-6 sm:p-10 space-y-8">
             
-            {/* Impact Cards */}
-            <div className="space-y-3">
-              <label className="block text-xs font-extrabold text-slate-700 uppercase tracking-wider">
-                1. Selecciona el Impacto Directo que deseas Financiar *
+            {/* Impact Cards Grid */}
+            <div className="space-y-4">
+              <label className="block text-xs font-extrabold text-slate-700 uppercase tracking-wider flex items-center gap-1.5">
+                <RiSparklesLine className="w-4 h-4 text-amber-500" />
+                <span>1. Selecciona el Impacto Directo que deseas Financiar *</span>
               </label>
+
               <div className="grid grid-cols-1 sm:grid-cols-2 md:grid-cols-3 gap-4">
                 {IMPACT_OPTIONS.map((impact) => {
-                  const Icon = impact.icon;
+                  const IconComponent = impact.icon;
                   const isSelected = selectedImpact.id === impact.id;
 
                   return (
@@ -148,20 +184,29 @@ export default function DonationCalculator() {
                       key={impact.id}
                       type="button"
                       onClick={() => setSelectedImpact(impact)}
-                      className={`p-4 rounded-2xl text-left border transition-all space-y-2 ${
+                      className={`p-4 rounded-2xl text-left border transition-all duration-200 flex flex-col justify-between space-y-3 cursor-pointer group ${
                         isSelected
-                          ? 'border-senda-pink bg-pink-50 ring-2 ring-senda-pink shadow-md'
-                          : 'border-slate-200 hover:border-pink-200 bg-white'
+                          ? 'border-senda-pink bg-pink-50/90 ring-2 ring-senda-pink shadow-md scale-[1.02]'
+                          : 'border-slate-200 hover:border-pink-300 bg-white hover:bg-slate-50/50'
                       }`}
                     >
-                      <div className="flex justify-between items-center">
-                        <Icon className="w-6 h-6 text-senda-pink" />
-                        <span className="font-extrabold text-xs text-amber-600">
+                      <div className="flex justify-between items-start">
+                        <div className={`w-10 h-10 rounded-xl flex items-center justify-center ${isSelected ? 'bg-senda-pink text-white shadow-sm' : 'bg-pink-100 text-senda-pink group-hover:scale-110'} transition-transform`}>
+                          <IconComponent className="w-5 h-5" />
+                        </div>
+                        <span className="font-extrabold text-xs text-amber-700 bg-amber-100/80 px-2 py-0.5 rounded-md">
                           ${impact.costCOP.toLocaleString('es-CO')} COP
                         </span>
                       </div>
-                      <h4 className="font-bold text-xs text-senda-purple">{impact.title}</h4>
-                      <p className="text-[11px] text-slate-500 leading-tight">{impact.desc}</p>
+
+                      <div className="space-y-1">
+                        <h4 className="font-extrabold text-xs text-senda-purple-dark group-hover:text-senda-pink transition-colors">
+                          {impact.title}
+                        </h4>
+                        <p className="text-[11px] text-slate-500 leading-relaxed line-clamp-2">
+                          {impact.desc}
+                        </p>
+                      </div>
                     </button>
                   );
                 })}
@@ -169,27 +214,27 @@ export default function DonationCalculator() {
             </div>
 
             {/* Units counter */}
-            <div className="bg-pink-50/70 p-6 rounded-2xl border border-pink-200 flex flex-col sm:flex-row justify-between items-center gap-4">
-              <div>
+            <div className="bg-gradient-to-r from-pink-50/90 via-purple-50/60 to-pink-50/90 p-6 rounded-3xl border border-pink-200/80 flex flex-col sm:flex-row justify-between items-center gap-4 shadow-inner">
+              <div className="space-y-1 text-center sm:text-left">
                 <span className="text-xs font-bold text-slate-600 block">¿Cuántas mujeres deseas beneficiar?</span>
-                <span className="text-lg font-extrabold text-senda-purple">
+                <span className="text-base sm:text-lg font-extrabold text-senda-purple-dark">
                   {units} x {selectedImpact.title}
                 </span>
               </div>
 
-              <div className="flex items-center space-x-3">
+              <div className="flex items-center space-x-3 bg-white p-1.5 rounded-full border border-pink-200 shadow-xs">
                 <button
                   type="button"
                   onClick={() => setUnits(Math.max(1, units - 1))}
-                  className="w-10 h-10 rounded-full bg-white border border-pink-300 font-extrabold text-lg text-senda-purple hover:bg-pink-100"
+                  className="w-10 h-10 rounded-full bg-slate-100 hover:bg-pink-100 border border-slate-200 font-extrabold text-lg text-senda-purple transition-all flex items-center justify-center cursor-pointer active:scale-95"
                 >
                   -
                 </button>
-                <span className="font-extrabold text-base w-8 text-center">{units}</span>
+                <span className="font-extrabold text-base w-8 text-center text-slate-900">{units}</span>
                 <button
                   type="button"
                   onClick={() => setUnits(units + 1)}
-                  className="w-10 h-10 rounded-full bg-white border border-pink-300 font-extrabold text-lg text-senda-purple hover:bg-pink-100"
+                  className="w-10 h-10 rounded-full bg-slate-100 hover:bg-pink-100 border border-slate-200 font-extrabold text-lg text-senda-purple transition-all flex items-center justify-center cursor-pointer active:scale-95"
                 >
                   +
                 </button>
@@ -207,7 +252,7 @@ export default function DonationCalculator() {
                   placeholder="Ej: Catalina Gómez / Empresa Aliada"
                   disabled={isAnonymous}
                   required={!isAnonymous}
-                  className="w-full px-4 py-3 rounded-xl border border-pink-200 focus:outline-none focus:ring-2 focus:ring-senda-pink text-sm disabled:bg-slate-100"
+                  className="w-full px-4 py-3 rounded-xl border border-pink-200 focus:outline-none focus:ring-2 focus:ring-senda-pink text-xs disabled:bg-slate-100 transition-colors"
                 />
               </div>
 
@@ -219,28 +264,30 @@ export default function DonationCalculator() {
                   onChange={(e) => setEmail(e.target.value)}
                   placeholder="Ej: catalina@ejemplo.com"
                   required
-                  className="w-full px-4 py-3 rounded-xl border border-pink-200 focus:outline-none focus:ring-2 focus:ring-senda-pink text-sm"
+                  className="w-full px-4 py-3 rounded-xl border border-pink-200 focus:outline-none focus:ring-2 focus:ring-senda-pink text-xs transition-colors"
                 />
               </div>
             </div>
 
+            {/* Anonymous checkbox */}
             <div className="flex items-center space-x-2">
               <input
                 type="checkbox"
                 id="anon"
                 checked={isAnonymous}
                 onChange={(e) => setIsAnonymous(e.target.checked)}
-                className="w-4 h-4 text-senda-pink rounded focus:ring-senda-pink"
+                className="w-4 h-4 text-senda-pink rounded focus:ring-senda-pink accent-pink-600 cursor-pointer"
               />
-              <label htmlFor="anon" className="text-xs text-slate-600 font-semibold cursor-pointer">
+              <label htmlFor="anon" className="text-xs text-slate-600 font-semibold cursor-pointer select-none">
                 Deseo que mi donación sea 100% Anónima
               </label>
             </div>
 
+            {/* Submit Bar */}
             <div className="pt-6 border-t border-pink-100 flex flex-col sm:flex-row justify-between items-center gap-4">
               <div>
                 <span className="text-xs text-slate-500 block">Total Aporte de Impacto:</span>
-                <span className="text-2xl font-black text-senda-pink">
+                <span className="text-2xl sm:text-3xl font-black text-senda-pink">
                   ${totalAmount.toLocaleString('es-CO')} COP
                 </span>
               </div>
@@ -248,13 +295,13 @@ export default function DonationCalculator() {
               <button
                 type="submit"
                 disabled={isSubmitting}
-                className="w-full sm:w-auto bg-gradient-to-r from-amber-500 to-senda-pink text-white font-extrabold px-10 py-3.5 rounded-full text-sm shadow-lg hover:shadow-glow transition-all flex items-center justify-center space-x-2"
+                className="w-full sm:w-auto bg-gradient-to-r from-amber-400 via-pink-500 to-senda-purple hover:from-amber-300 hover:to-senda-pink text-slate-950 font-extrabold px-8 py-4 rounded-2xl text-xs shadow-xl hover:shadow-2xl transition-all flex items-center justify-center space-x-2 cursor-pointer active:scale-95"
               >
                 {isSubmitting ? (
-                  <span>Procesando...</span>
+                  <span>Procesando mecenazgo...</span>
                 ) : (
                   <>
-                    <Heart className="w-4 h-4 fill-white" />
+                    <RiHandHeartLine className="w-5 h-5 text-slate-950" />
                     <span>Patrocinar con Wompi / Nequi / Tarjeta</span>
                   </>
                 )}
