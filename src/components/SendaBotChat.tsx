@@ -1,7 +1,7 @@
 'use client';
 
 import React, { useState, useRef, useEffect } from 'react';
-import { MessageSquare, X, Send, BrainCircuit, Bot, User, Minimize2 } from 'lucide-react';
+import { MessageSquare, X, Send, BrainCircuit, Bot, User, Minimize2, Sparkles } from 'lucide-react';
 
 interface ChatMessage {
   role: 'user' | 'assistant';
