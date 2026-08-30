@@ -1,6 +1,7 @@
 import React from 'react';
 import Link from 'next/link';
 import HeroSection from '@/components/HeroSection';
+import FounderGreeting from '@/components/FounderGreeting';
 import ProgramsGrid from '@/components/ProgramsGrid';
 import CartagenaDirectory from '@/components/CartagenaDirectory';
 import DonationCalculator from '@/components/DonationCalculator';
@@ -13,6 +14,9 @@ export default function HomePage() {
     <div className="space-y-16 pb-16">
       {/* 1. Hero Section */}
       <HeroSection />
+
+      {/* 1.2. SALUDO Y MENSAJE DE BIENVENIDA DE LA FUNDADORA */}
+      <FounderGreeting />
 
       {/* 1.5. CHARLA DEL DÍA (Featured Video Section) */}
       <CharlaDelDia />
