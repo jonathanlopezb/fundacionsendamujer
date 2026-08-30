@@ -9,9 +9,9 @@ import {
   RiMapPinLine, 
   RiCompass3Line, 
   RiShieldFlashLine,
-  RiSparklesLine,
   RiCheckDoubleLine
 } from 'react-icons/ri';
+import { HiOutlineSparkles } from 'react-icons/hi2';
 import { IconType } from 'react-icons';
 
 export interface RouteCategory {
@@ -116,7 +116,7 @@ export default function CartagenaDirectory() {
     <div className="max-w-6xl mx-auto px-4 py-8">
       <div className="text-center max-w-3xl mx-auto mb-12 space-y-3">
         <div className="inline-flex items-center gap-2 bg-pink-100/80 border border-pink-200 text-senda-purple font-extrabold text-xs px-4 py-1.5 rounded-full uppercase tracking-wider shadow-xs">
-          <RiSparklesLine className="w-4 h-4 text-senda-pink" />
+          <HiOutlineSparkles className="w-4 h-4 text-senda-pink" />
           <span>Directorio Local Interactivo</span>
         </div>
 

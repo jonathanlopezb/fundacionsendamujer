@@ -4,18 +4,14 @@ import React, { useState } from 'react';
 import { 
   RiHeart3Fill, 
   RiShieldCheckLine, 
-  RiSparklesLine, 
-  RiEmotionSmileLine, 
+  RiEmotionHappyLine, 
   RiStethoscopeLine, 
   RiHeartPulseLine, 
   RiScales3Line, 
   RiGraduationCapLine,
-  RiCheckDoubleLine,
-  RiHandHeartLine,
-  RiLock2Line,
-  RiBankCardLine,
-  RiArrowRightLine
+  RiHandHeartLine
 } from 'react-icons/ri';
+import { HiOutlineSparkles } from 'react-icons/hi2';
 import confetti from 'canvas-confetti';
 import { IconType } from 'react-icons';
 
@@ -41,7 +37,7 @@ const IMPACT_OPTIONS: ImpactOption[] = [
     id: 'Consulta Odontológica',
     title: 'Consulta Odontológica Integral',
     costCOP: 80000,
-    icon: RiEmotionSmileLine,
+    icon: RiEmotionHappyLine,
     badge: 'Salud Oral',
     desc: 'Atención odontológica preventiva, profilaxis y salud oral para una beneficiaria.',
   },
@@ -170,7 +166,7 @@ export default function DonationCalculator() {
             {/* Impact Cards Grid */}
             <div className="space-y-4">
               <label className="block text-xs font-extrabold text-slate-700 uppercase tracking-wider flex items-center gap-1.5">
-                <RiSparklesLine className="w-4 h-4 text-amber-500" />
+                <HiOutlineSparkles className="w-4 h-4 text-amber-500" />
                 <span>1. Selecciona el Impacto Directo que deseas Financiar *</span>
               </label>
 

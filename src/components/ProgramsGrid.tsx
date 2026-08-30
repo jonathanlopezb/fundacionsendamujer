@@ -3,7 +3,7 @@
 import React, { useState } from 'react';
 import Link from 'next/link';
 import { 
-  RiRoseLine, 
+  RiPlantLine, 
   RiShieldCrossLine, 
   RiBrainLine, 
   RiStethoscopeLine, 
@@ -11,12 +11,13 @@ import {
   RiScales3Line, 
   RiGraduationCapLine,
   RiArrowRightLine,
-  RiCheckDoubleLine,
-  RiChevronDownLine,
-  RiChevronUpLine,
-  RiSparklesLine,
-  RiShieldCheckLine
+  RiCheckDoubleLine
 } from 'react-icons/ri';
+import { 
+  HiOutlineSparkles, 
+  HiChevronDown, 
+  HiChevronUp 
+} from 'react-icons/hi2';
 import { IconType } from 'react-icons';
 
 export interface ProgramItem {
@@ -39,7 +40,7 @@ export const PROGRAMS: ProgramItem[] = [
     id: 'programa-1',
     number: '01',
     title: 'Programa 1 — Mujer Acompañada',
-    icon: RiRoseLine,
+    icon: RiPlantLine,
     badge: 'Atención Social Inicial',
     color: 'from-pink-500 via-rose-500 to-pink-600',
     badgeBg: 'bg-pink-100/80',
@@ -189,7 +190,7 @@ export default function ProgramsGrid() {
         {/* Section Header */}
         <div className="text-center max-w-3xl mx-auto space-y-4">
           <div className="inline-flex items-center gap-2 bg-pink-100/80 border border-pink-200 text-senda-purple font-extrabold text-xs px-4 py-1.5 rounded-full uppercase tracking-wider shadow-xs">
-            <RiSparklesLine className="w-4 h-4 text-senda-pink" />
+            <HiOutlineSparkles className="w-4 h-4 text-senda-pink" />
             <span>Nuestra Estrategia Integral de Impacto</span>
           </div>
 
@@ -268,7 +269,7 @@ export default function ProgramsGrid() {
                     className="text-xs font-bold text-senda-purple hover:text-senda-pink flex items-center gap-1 transition-colors cursor-pointer py-1 px-2.5 rounded-lg hover:bg-pink-50"
                   >
                     <span>{isExpanded ? 'Ver menos' : 'Ver detalle completo'}</span>
-                    {isExpanded ? <RiChevronUpLine className="w-4 h-4" /> : <RiChevronDownLine className="w-4 h-4" />}
+                    {isExpanded ? <HiChevronUp className="w-4 h-4" /> : <HiChevronDown className="w-4 h-4" />}
                   </button>
 
                   <Link
