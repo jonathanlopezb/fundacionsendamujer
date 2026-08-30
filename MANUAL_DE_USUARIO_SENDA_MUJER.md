@@ -125,34 +125,25 @@ Standalone microsite de educación digital con experiencia **Platzi / Udemy**, d
 
 ## 5. PORTAL SEGURO DE BENEFICIARIAS (`/portal-beneficiaria`)
 
-Área privada donde cada usuaria autenticada gestiona su proceso de acompañamiento integral en Cartagena.
+Micrositio completamente independiente y aislado de la web pública (sin el menú de la web principal para garantizar máxima confidencialidad y seguridad visual), diseñado para el seguimiento integral de la beneficiaria en Cartagena.
 
 ### Funcionalidades Clave:
+- **Sesión Persistente Cifrada con Auto-Expiración de 2 Horas**:
+  - Almacenamiento seguro en el navegador (`localStorage`) que mantiene la sesión activa al recargar la página o navegar entre pestañas.
+  - Temporizador de seguridad que cierra automáticamente la sesión transcurridas exactamente **2 horas** desde el inicio.
 - **Autorización de Habeas Data (Ley 1581 de 2012)**:
-  - Casilla obligatoria de consentimiento informado previo al ingreso.
-- **Seguridad y Control de Sesión**:
-  - Expiración automática de sesión tras 2 horas de inactividad o cierre de la pestaña.
-- **Dashboard Interactivo de Beneficiaria**:
-  - **Tarjeta de Saludo Personalizado**: Con nombre de la beneficiaria, código de expediente (Ej. `SM-8842`) y especialista asignada.
-  - **Métricas Globales**: Indicador SENDA Index, cursos completados y próximas citas.
+  - Casilla de consentimiento informado obligatorio previo al ingreso al portal.
+- **Tablero de Gráficos e Indicadores Interactivos**:
+  - **Gráfico de Evolución del SENDA Index (Línea de Tendencia SVG)**: Muestra la reducción del nivel de vulnerabilidad a lo largo de 90 días (78 pts → 52 pts → 34 pts).
+  - **Gráfico de Barras de Ventas & Capital Semilla (SVG)**: Seguimiento del fondo textil ($2.500.000 COP) y ventas mensuales acumuladas ($450K, $820K, $1.25M).
+  - **Gráfico Donut de Distribución de Atención**: Desglose porcentual por especialidades (Ginecología 35%, Psicología 25%, Visitas Domiciliarias 20%, Odontología 20%).
+  - **Indicadores Radiales de Cumplimiento de Metas**: Porcentaje de avance en Emprendimiento (85%), Salud (100%), Habilidades Digitales (90%) y Fortaleza Emocional (75%).
 - **Sección: Citas Médicas & Visitas Domiciliarias**:
-  - Módulo de agendamiento y consulta de estado para:
-    - *Ginecología & Salud Reproductiva*
-    - *Odontología Integral*
-    - *Medicina General Preventiva*
-    - *Psicología & Salud Mental*
-    - *Trabajo Social*
-    - *Visitas Domiciliarias en Territorio* (Acompañamiento en la vivienda de la usuaria en barrios como Olaya Herrera, El Pozón, Nelson Mandela, etc.).
-- **Sección: ¿Cómo Van Tus Metas? (`metas`)**:
-  - Tablero gráfico interactivo con barras de progreso porcentual, categorías (Emprendimiento, Salud, Educación, Bienestar) y fechas límite de cumplimiento.
-- **Sección: Proyectos Productivos & Capital Semilla (`capital_semilla`)**:
-  - Mapeo del proyecto productivo asignado.
-  - Estado del **Capital Semilla otorgado ($2.500.000 COP)**.
-  - Registro de insumos y maquinaria adquirida (fileteadoras, telas, kits comercial).
-  - Métricas de ventas mensuales y unidades producidas.
-  - Hitos del proyecto con verificación de cumplimiento.
-- **Bóveda Cifrada de Documentos**:
-  - Carga segura y descarga de ecografías, cédula, certificados y reportes domiciliarios.
+  - Módulo de agendamiento y seguimiento de citas médicas y **Visitas Domiciliarias en vivienda** (Olaya Herrera, El Pozón, Nelson Mandela, etc.).
+- **Sección: Proyectos Productivos & Capital Semilla**:
+  - Trazabilidad de la maquinaria entregada (fileteadora industrial, insumos), unidades producidas y ventas.
+- **Conexión Directa a SendaAcademia ↗**:
+  - Enlace destacado en el encabezado del portal para acceder a la plataforma educativa externa en una nueva pestaña.
 
 ---
 

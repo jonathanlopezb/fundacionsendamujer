@@ -1,6 +1,7 @@
 'use client';
 
 import React, { useState } from 'react';
+import { usePathname } from 'next/navigation';
 import './globals.css';
 import Navbar from '@/components/Navbar';
 import Footer from '@/components/Footer';
@@ -13,6 +14,12 @@ export default function RootLayout({
   children: React.ReactNode;
 }) {
   const [isOverlayOpen, setIsOverlayOpen] = useState(false);
+  const pathname = usePathname();
+
+  // Determine if current route is an independent microsite (Portal Beneficiarias or SendaAcademia)
+  const isStandaloneMicrosite =
+    pathname?.startsWith('/portal-beneficiaria') ||
+    pathname?.startsWith('/academia');
 
   return (
     <html lang="es" className="scroll-smooth">
@@ -33,20 +40,22 @@ export default function RootLayout({
           onClose={() => setIsOverlayOpen(false)}
         />
 
-        {/* Global Navigation */}
-        <Navbar 
-          onOpenSOS={() => setIsOverlayOpen(true)} 
-          onOpenIncognito={() => setIsOverlayOpen(true)}
-        />
+        {/* Global Navigation — Rendered ONLY for main site, hidden for independent microsites */}
+        {!isStandaloneMicrosite && (
+          <Navbar 
+            onOpenSOS={() => setIsOverlayOpen(true)} 
+            onOpenIncognito={() => setIsOverlayOpen(true)}
+          />
+        )}
 
         {/* Main Content Area */}
         <main className="flex-1">{children}</main>
 
-        {/* Floating AI Chat Assistant */}
-        <SendaBotChat />
+        {/* Floating AI Chat Assistant — Rendered on main site */}
+        {!isStandaloneMicrosite && <SendaBotChat />}
 
-        {/* Global Footer */}
-        <Footer />
+        {/* Global Footer — Rendered ONLY for main site, hidden for independent microsites */}
+        {!isStandaloneMicrosite && <Footer />}
       </body>
     </html>
   );
