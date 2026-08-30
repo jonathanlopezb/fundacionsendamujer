@@ -149,14 +149,6 @@ export default function Navbar({ onOpenSOS, onOpenIncognito }: NavbarProps) {
             )}
           </div>
 
-          {/* Portal Dropdown */}
-          <div ref={portalRef} className="relative">
-            <button
-              type="button"
-              onClick={() => { setPortalOpen(!portalOpen); setProgramasOpen(false); }}
-              className="px-3 py-2 rounded-lg hover:bg-pink-50 hover:text-[#E12880] transition-all flex items-center gap-1 cursor-pointer"
-            >
-              <Lock className="w-3.5 h-3.5 text-amber-500" />
           {/* 1. SendaAcademia */}
           <Link
             href="/academia"
