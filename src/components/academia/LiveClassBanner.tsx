@@ -9,7 +9,7 @@ interface Props {
 
 const LIVE_EVENT = {
   title: 'Masterclass: Emprendimiento Digital & Autonomía Financiera para Mujeres en Cartagena',
-  instructor: 'Dra. Sorelvis Caldera',
+  instructor: 'Dra. Sorelvis Murillo',
   role: 'Directora Fundación Senda Mujer • Cel: 301 469 2095',
   date: new Date(Date.now() + 2 * 24 * 60 * 60 * 1000 + 4 * 60 * 60 * 1000),
   attendees: 420,

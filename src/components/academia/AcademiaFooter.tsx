@@ -24,7 +24,7 @@ export default function AcademiaFooter() {
 
         {/* Center credits */}
         <div className="flex items-center gap-2 text-center text-[11px]">
-          <span>Dirección Ejecutiva: Dra. Sorelvis Caldera (+57 301 469 2095)</span>
+          <span>Dirección Ejecutiva: Dra. Sorelvis Murillo (+57 301 469 2095)</span>
         </div>
 
         {/* Back to main site link */}

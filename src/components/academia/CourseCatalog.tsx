@@ -12,7 +12,7 @@ const COURSES: CourseData[] = [
   {
     id: 'course-1',
     title: 'De la Idea al Negocio: Plan Financiero para Emprendedoras',
-    instructor: 'Dra. Sorelvis Caldera',
+    instructor: 'Dra. Sorelvis Murillo',
     category: 'Autonomía Financiera',
     modules: [
       {

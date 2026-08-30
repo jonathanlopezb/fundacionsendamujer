@@ -70,7 +70,7 @@ export default function CertificateModal({ userName, courseTitle, courseCategory
           {/* Certificate footer with signatures and QR */}
           <div className="pt-4 border-t border-pink-500/20 flex flex-col sm:flex-row justify-between items-center gap-4 text-xs">
             <div className="text-left space-y-1">
-              <div className="font-extrabold text-amber-300">Dra. Sorelvis Caldera</div>
+              <div className="font-extrabold text-amber-300">Dra. Sorelvis Murillo</div>
               <div className="text-[10px] text-pink-200">Directora Ejecutiva — Fundación Senda Mujer</div>
               <div className="text-[9px] text-emerald-300 font-bold flex items-center gap-1">
                 <ShieldCheck className="w-3.5 h-3.5 text-emerald-400" /> Firma Digital Verificada (+57 301 469 2095)
