@@ -244,7 +244,7 @@ export default function Navbar({ onOpenSOS, onOpenIncognito }: NavbarProps) {
       {/* Mobile Drawer */}
       {mobileMenuOpen && (
         <div className="lg:hidden bg-white border-t border-pink-100 px-5 py-5 space-y-1 shadow-xl animate-fadeIn">
-          {[
+          {([
             { href: '/', label: '🏠 Inicio' },
             { href: '/senda-universal', label: '🌍 SENDA Universal (Sistema Operativo)' },
             { href: '/academia', label: '🎓 1. SendaAcademia (Cursos & Formación)' },
@@ -254,12 +254,12 @@ export default function Navbar({ onOpenSOS, onOpenIncognito }: NavbarProps) {
             { href: '/triaje-psicologico', label: 'Test Psicológico SENDA EVAL' },
             { href: '/ruta-cartagena', label: 'Ruta de Emergencia Cartagena' },
             { href: '/donar', label: 'Portal de Donaciones' },
-          ].map((item) => (
+          ] as Array<{ href: string; label: string; accent?: boolean; amber?: boolean }>).map((item) => (
             <Link
               key={item.href}
               href={item.href}
               onClick={() => setMobileMenuOpen(false)}
-              className={`block px-3 py-2.5 rounded-xl font-bold text-sm transition-all hover:bg-pink-50 ${item.accent ? 'text-[#E12880]' : item.amber ? 'text-amber-600' : 'text-[#52166F]'}`}
+              className="block px-3 py-2.5 rounded-xl font-bold text-sm text-[#52166F] transition-all hover:bg-pink-50 hover:text-[#E12880]"
             >
               {item.label}
             </Link>
