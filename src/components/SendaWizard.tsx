@@ -132,7 +132,10 @@ export default function SendaWizard() {
   const current = STEPS[step - 1];
   const progress = step === 0 ? 0 : Math.round((step / 12) * 100);
 
-  const handleAnswer = useCallback((key: string, value: string) => {
+  const [loadingAi, setLoadingAi] = useState(false);
+  const [aiReport, setAiReport] = useState<any>(null);
+
+  const handleAnswer = useCallback(async (key: string, value: string) => {
     const newAnswers = { ...answers, [key]: value };
     setAnswers(newAnswers);
     if (step < 12) {
@@ -140,8 +143,27 @@ export default function SendaWizard() {
     } else {
       const generatedCode = generateCode(newAnswers);
       setCode(generatedCode);
-      setReport(buildReport(newAnswers, generatedCode));
+      const fallbackRep = buildReport(newAnswers, generatedCode);
+      setReport(fallbackRep);
       setFinished(true);
+      
+      // Call Elite AI Engine
+      setLoadingAi(true);
+      try {
+        const res = await fetch('/api/senda-elite-engine', {
+          method: 'POST',
+          headers: { 'Content-Type': 'application/json' },
+          body: JSON.stringify({ answers: newAnswers, code: generatedCode }),
+        });
+        const data = await res.json();
+        if (data && !data.error) {
+          setAiReport(data);
+        }
+      } catch (err) {
+        console.error('Error fetching elite report:', err);
+      } finally {
+        setLoadingAi(false);
+      }
     }
   }, [answers, step]);
 
@@ -215,33 +237,131 @@ export default function SendaWizard() {
             </div>
           </div>
 
-          {/* Report */}
+          {/* Crisis Alert Banner if applicable */}
+          {aiReport?.alertaCrisis && (
+            <div className="bg-red-600 text-white rounded-3xl p-6 shadow-xl flex items-center gap-4 animate-pulse">
+              <AlertCircle className="w-10 h-10 shrink-0" />
+              <div>
+                <h3 className="font-extrabold text-base">⚠️ Alerta de Protección Prioritaria</h3>
+                <p className="text-xs text-red-100 mt-1">{aiReport.mensajeCrisis || 'Si estás en riesgo inmediato de violencia, llama a la Línea 123 o acude a la Casa Violeta en Cartagena.'}</p>
+              </div>
+            </div>
+          )}
+
+          {/* AI Report Card */}
           <div className="bg-white rounded-3xl border border-slate-200 p-6 sm:p-8 space-y-6 shadow-xl">
-            <div className="border-b border-slate-100 pb-4">
-              <h2 className="text-xl font-black text-slate-900 flex items-center gap-2">
-                <Award className="w-6 h-6 text-purple-600" />
-                Informe de Derechos y Plan de Acción Personalizado
-              </h2>
-              <p className="text-xs text-slate-500 mt-1">Basado en tus 12 respuestas · Código: <strong className="font-mono text-purple-700">{report.code}</strong></p>
+            <div className="border-b border-slate-100 pb-4 flex flex-col sm:flex-row sm:items-center justify-between gap-2">
+              <div>
+                <h2 className="text-xl font-black text-slate-900 flex items-center gap-2">
+                  <Award className="w-6 h-6 text-purple-600" />
+                  Informe de Derechos y Plan de Acción Élite
+                </h2>
+                <p className="text-xs text-slate-500 mt-1">Basado en Ley 1257, CONPES 4080 & Política SSR 2026-2035 · Código: <strong className="font-mono text-purple-700">{report.code}</strong></p>
+              </div>
+              {aiReport?.nivelCrisis && (
+                <span className={`self-start sm:self-auto text-xs font-mono font-black px-3.5 py-1.5 rounded-full ${
+                  aiReport.nivelCrisis === 'CRÍTICO' ? 'bg-red-600 text-white' :
+                  aiReport.nivelCrisis === 'ALTO' ? 'bg-orange-500 text-white' :
+                  aiReport.nivelCrisis === 'MODERADO' ? 'bg-amber-500 text-slate-950' : 'bg-emerald-500 text-white'
+                }`}>
+                  Nivel de Atención: {aiReport.nivelCrisis}
+                </span>
+              )}
             </div>
 
+            {/* AI Personalized Message */}
+            {aiReport?.mensajePersonalizado && (
+              <div className="bg-purple-50 border border-purple-200 rounded-2xl p-4 text-xs sm:text-sm text-purple-950 leading-relaxed font-medium italic">
+                &ldquo;{aiReport.mensajePersonalizado}&rdquo;
+              </div>
+            )}
+
+            {/* 7-Dimension Risk Scores */}
+            {aiReport?.scoreDimensiones && (
+              <div className="space-y-3">
+                <h3 className="font-extrabold text-xs uppercase tracking-wider text-slate-500">Diagnóstico por Dimensiones de Vida</h3>
+                <div className="grid grid-cols-1 sm:grid-cols-2 gap-3">
+                  {Object.entries(aiReport.scoreDimensiones).map(([dimKey, dimVal]: [string, any]) => (
+                    <div key={dimKey} className="bg-slate-50 border border-slate-200 rounded-2xl p-3.5 space-y-1.5">
+                      <div className="flex items-center justify-between text-xs">
+                        <span className="font-extrabold uppercase text-slate-700">{dimKey}</span>
+                        <span className="font-mono font-bold text-slate-900">{dimVal.nivel}/100</span>
+                      </div>
+                      <div className="w-full bg-slate-200 rounded-full h-2">
+                        <div
+                          className={`h-2 rounded-full transition-all duration-700 ${
+                            dimVal.nivel > 70 ? 'bg-red-500' : dimVal.nivel > 40 ? 'bg-amber-500' : 'bg-emerald-500'
+                          }`}
+                          style={{ width: `${dimVal.nivel}%` }}
+                        />
+                      </div>
+                      <p className="text-[11px] text-slate-600">{dimVal.texto}</p>
+                    </div>
+                  ))}
+                </div>
+              </div>
+            )}
+
+            {/* Action Steps */}
             <div className="space-y-4">
-              {report.actions.map((a, i) => (
-                <div key={i} className={`p-4 rounded-2xl border-l-4 space-y-1 ${
-                  a.priority.includes('URGENTE') ? 'border-red-500 bg-red-50' :
-                  a.priority.includes('PRIORIDAD') ? 'border-amber-500 bg-amber-50' :
-                  a.priority.includes('RECOMENDADO') ? 'border-blue-500 bg-blue-50' :
-                  'border-emerald-500 bg-emerald-50'
+              <h3 className="font-extrabold text-xs uppercase tracking-wider text-slate-500">Acciones Prioritarias Garantizadas</h3>
+              {(aiReport?.accionesInmediatas || report.actions).map((a: any, i: number) => (
+                <div key={i} className={`p-4 sm:p-5 rounded-2xl border-l-4 space-y-2 ${
+                  (a.prioridad || a.priority).includes('URGENTE') ? 'border-red-500 bg-red-50/70' :
+                  (a.prioridad || a.priority).includes('ALTA') || (a.prioridad || a.priority).includes('PRIORIDAD') ? 'border-amber-500 bg-amber-50/70' :
+                  'border-purple-500 bg-purple-50/70'
                 }`}>
                   <div className="flex items-center justify-between gap-2 flex-wrap">
-                    <span className="text-xs font-extrabold">{a.priority}</span>
-                    <span className="text-[10px] font-mono text-slate-500 bg-white px-2 py-0.5 rounded-full border">{a.norm}</span>
+                    <span className="text-xs font-black uppercase text-slate-900">{a.prioridad || a.priority}</span>
+                    <span className="text-[10px] font-mono text-purple-900 bg-white px-2.5 py-1 rounded-full border border-purple-200 font-bold">{a.norma || a.norm}</span>
                   </div>
-                  <p className="text-xs font-extrabold text-slate-800">{a.area}</p>
-                  <p className="text-xs text-slate-700 leading-relaxed">{a.action}</p>
+                  <h4 className="text-xs font-black text-slate-900">{a.titulo || a.area}</h4>
+                  <p className="text-xs text-slate-700 leading-relaxed">{a.descripcion || a.action}</p>
+                  {(a.institucion || a.contacto) && (
+                    <div className="flex items-center gap-3 text-[11px] font-medium text-slate-600 pt-1 flex-wrap border-t border-slate-200/60">
+                      {a.institucion && <span>🏛️ <strong>Lugar:</strong> {a.institucion}</span>}
+                      {a.contacto && <span>📞 <strong>Contacto:</strong> {a.contacto}</span>}
+                      {a.plazo && <span>⏱️ <strong>Plazo:</strong> {a.plazo}</span>}
+                    </div>
+                  )}
                 </div>
               ))}
             </div>
+
+            {/* Timeline Roadmap */}
+            {aiReport?.rutaIntegral && (
+              <div className="bg-slate-900 text-white rounded-2xl p-5 space-y-4">
+                <h3 className="font-extrabold text-sm text-amber-300 flex items-center gap-2">
+                  🗺️ Tu Hoja de Ruta Gradual (1 Semana, 1 Mes, 3 Meses)
+                </h3>
+                <div className="grid grid-cols-1 sm:grid-cols-3 gap-4 text-xs">
+                  <div className="bg-white/5 border border-white/10 rounded-xl p-3 space-y-2">
+                    <div className="text-pink-300 font-bold border-b border-white/10 pb-1">Semana 1</div>
+                    <ul className="space-y-1.5 text-slate-300 list-disc list-inside">
+                      {aiReport.rutaIntegral.semana1?.map((s: string, idx: number) => (
+                        <li key={idx}>{s}</li>
+                      ))}
+                    </ul>
+                  </div>
+                  <div className="bg-white/5 border border-white/10 rounded-xl p-3 space-y-2">
+                    <div className="text-purple-300 font-bold border-b border-white/10 pb-1">Mes 1</div>
+                    <ul className="space-y-1.5 text-slate-300 list-disc list-inside">
+                      {aiReport.rutaIntegral.mes1?.map((s: string, idx: number) => (
+                        <li key={idx}>{s}</li>
+                      ))}
+                    </ul>
+                  </div>
+                  <div className="bg-white/5 border border-white/10 rounded-xl p-3 space-y-2">
+                    <div className="text-emerald-300 font-bold border-b border-white/10 pb-1">Mes 3</div>
+                    <ul className="space-y-1.5 text-slate-300 list-disc list-inside">
+                      {aiReport.rutaIntegral.mes3?.map((s: string, idx: number) => (
+                        <li key={idx}>{s}</li>
+                      ))}
+                    </ul>
+                  </div>
+                </div>
+              </div>
+            )}
 
             {/* Summary of answers */}
             <div className="bg-slate-50 rounded-2xl p-5 border border-slate-200 space-y-3">
