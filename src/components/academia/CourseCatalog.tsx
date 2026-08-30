@@ -134,20 +134,19 @@ export default function CourseCatalog({ user, onOpenAuth }: Props) {
   };
 
   return (
-    <section className="py-16 px-4 sm:px-6 max-w-7xl mx-auto space-y-10">
+    <section className="py-16 px-4 sm:px-8 max-w-7xl mx-auto space-y-10">
 
       {/* Header Title */}
       <div className="text-center max-w-3xl mx-auto space-y-3">
-        <div className="inline-flex items-center gap-1.5 px-3.5 py-1 rounded-full text-xs font-extrabold uppercase tracking-wider text-cyan-300"
-          style={{ background: 'rgba(6,182,212,0.15)', border: '1px solid rgba(6,182,212,0.3)' }}>
-          <Sparkles className="w-3.5 h-3.5 text-cyan-400" />
-          <span>Catálogo de Formación Certificada</span>
+        <div className="inline-flex items-center gap-1.5 px-4 py-1.5 rounded-full text-xs font-extrabold uppercase tracking-wider text-amber-300 bg-[#52166F]/80 border border-pink-400/30 shadow-sm">
+          <Sparkles className="w-4 h-4 text-amber-300" />
+          <span>Catálogo Formativo Institucional</span>
         </div>
-        <h2 className="text-3xl sm:text-4xl font-black text-white tracking-tight">
+        <h2 className="text-3xl sm:text-5xl font-black text-white tracking-tight">
           Rutas de Aprendizaje SendaAcademia
         </h2>
-        <p className="text-sm text-gray-400 leading-relaxed">
-          Explora los programas temáticos diseñados para fortalecer la autonomía económica, los derechos y la salud de las mujeres en Cartagena.
+        <p className="text-sm sm:text-base text-pink-100/80 leading-relaxed">
+          Explora los programas formativos diseñados por la Fundación Senda Mujer para potenciar la autonomía económica, los derechos humanos y la salud en Cartagena.
         </p>
       </div>
 
@@ -157,12 +156,11 @@ export default function CourseCatalog({ user, onOpenAuth }: Props) {
           <button
             key={cat}
             onClick={() => setSelectedCategory(cat)}
-            className={`px-4 py-2 rounded-xl text-xs font-bold whitespace-nowrap transition-all cursor-pointer ${
+            className={`px-4 py-2.5 rounded-full text-xs font-extrabold whitespace-nowrap transition-all cursor-pointer ${
               selectedCategory === cat
-                ? 'bg-gradient-to-r from-purple-600 to-cyan-600 text-white shadow-lg scale-[1.02]'
-                : 'text-gray-400 hover:bg-white/5 hover:text-white'
+                ? 'bg-gradient-to-r from-[#E12880] to-[#52166F] text-white shadow-lg border border-pink-400/40 scale-[1.02]'
+                : 'bg-[#270538] text-pink-200/80 hover:bg-[#3B0852] hover:text-white border border-pink-500/20'
             }`}
-            style={{ border: selectedCategory === cat ? 'none' : '1px solid rgba(255,255,255,0.08)' }}
           >
             {cat}
           </button>
@@ -177,48 +175,46 @@ export default function CourseCatalog({ user, onOpenAuth }: Props) {
           return (
             <div
               key={course.id}
-              className="rounded-3xl p-6 flex flex-col justify-between transition-all duration-300 hover:-translate-y-1.5 group relative overflow-hidden"
-              style={{ background: '#12121e', border: '1px solid rgba(255,255,255,0.08)' }}
+              className="bg-gradient-to-b from-[#270538] to-[#3B0852] border border-pink-500/30 rounded-3xl p-6 flex flex-col justify-between transition-all duration-300 hover:border-pink-400 hover:shadow-2xl hover:-translate-y-1.5 group relative overflow-hidden"
             >
               <div className="space-y-4">
                 <div className="flex items-center justify-between">
-                  <span className="text-[10px] font-bold uppercase tracking-wider px-2.5 py-1 rounded-full text-purple-300"
-                    style={{ background: 'rgba(124,58,237,0.15)', border: '1px solid rgba(124,58,237,0.3)' }}>
+                  <span className="text-[10px] font-extrabold uppercase tracking-wider px-3 py-1 rounded-full text-pink-200 bg-[#52166F] border border-pink-400/30">
                     {course.category}
                   </span>
-                  <div className="flex items-center gap-1 text-xs text-amber-400 font-bold">
-                    <Star className="w-3.5 h-3.5 fill-amber-400" />
+                  <div className="flex items-center gap-1 text-xs text-amber-300 font-extrabold">
+                    <Star className="w-3.5 h-3.5 fill-amber-300" />
                     <span>4.9</span>
                   </div>
                 </div>
 
-                <h3 className="text-lg font-bold text-white group-hover:text-cyan-400 transition-colors leading-snug">
+                <h3 className="text-lg font-extrabold text-white group-hover:text-amber-300 transition-colors leading-snug">
                   {course.title}
                 </h3>
 
-                <p className="text-xs text-gray-400">
-                  Instructora: <strong className="text-gray-200">{course.instructor}</strong>
+                <p className="text-xs text-pink-100/70">
+                  Instructora: <strong className="text-amber-300 font-extrabold">{course.instructor}</strong>
                 </p>
 
                 {/* Modules breakdown */}
-                <div className="space-y-2 pt-2 border-t" style={{ borderColor: 'rgba(255,255,255,0.06)' }}>
-                  <div className="flex items-center justify-between text-[11px] text-gray-400">
+                <div className="space-y-2 pt-3 border-t border-pink-500/20">
+                  <div className="flex items-center justify-between text-[11px] font-semibold text-pink-200">
                     <span className="flex items-center gap-1">
-                      <BookOpen className="w-3.5 h-3.5 text-purple-400" /> {course.modules.length} Módulos
+                      <BookOpen className="w-3.5 h-3.5 text-[#E12880]" /> {course.modules.length} Módulos
                     </span>
                     <span className="flex items-center gap-1">
-                      <Clock className="w-3.5 h-3.5 text-cyan-400" /> {totalLessons} Lecciones
+                      <Clock className="w-3.5 h-3.5 text-amber-300" /> {totalLessons} Lecciones
                     </span>
                   </div>
 
                   <div className="space-y-1.5 pt-1">
                     {course.modules.flatMap((m) => m.lessons).slice(0, 2).map((les, i) => (
-                      <div key={i} className="flex items-center justify-between text-xs text-gray-300 bg-white/5 p-2 rounded-lg">
+                      <div key={i} className="flex items-center justify-between text-xs text-pink-100 bg-black/20 p-2.5 rounded-xl border border-white/5">
                         <span className="truncate pr-2">{les.title}</span>
                         {!user ? (
-                          <Lock className="w-3 h-3 text-amber-400 shrink-0" />
+                          <Lock className="w-3.5 h-3.5 text-amber-400 shrink-0" />
                         ) : (
-                          <Play className="w-3 h-3 text-cyan-400 shrink-0" />
+                          <Play className="w-3.5 h-3.5 text-emerald-400 shrink-0" />
                         )}
                       </div>
                     ))}
@@ -231,19 +227,17 @@ export default function CourseCatalog({ user, onOpenAuth }: Props) {
                 {user ? (
                   <button
                     onClick={() => handleLaunchCourse(course)}
-                    className="w-full py-3 rounded-xl text-xs font-bold text-white transition-all flex items-center justify-center gap-2"
-                    style={{ background: 'linear-gradient(135deg,#7c3aed,#06b6d4)' }}
+                    className="w-full py-3.5 rounded-full text-xs font-extrabold text-white bg-gradient-to-r from-[#E12880] to-[#52166F] border border-pink-400/40 shadow-lg hover:scale-[1.02] transition-all flex items-center justify-center gap-2 cursor-pointer"
                   >
-                    <Play className="w-4 h-4" />
+                    <Play className="w-4 h-4 text-amber-300" />
                     <span>Acceder al Aula Virtual</span>
                   </button>
                 ) : (
                   <button
                     onClick={onOpenAuth}
-                    className="w-full py-3 rounded-xl text-xs font-bold transition-all flex items-center justify-center gap-2"
-                    style={{ background: 'rgba(245,158,11,0.15)', border: '1px solid rgba(245,158,11,0.3)', color: '#fbbf24' }}
+                    className="w-full py-3.5 rounded-full text-xs font-extrabold text-amber-300 bg-[#52166F] border border-pink-400/30 hover:bg-[#3B0852] transition-all flex items-center justify-center gap-2 cursor-pointer shadow-sm"
                   >
-                    <Lock className="w-4 h-4 text-amber-400" />
+                    <Lock className="w-4 h-4 text-amber-300" />
                     <span>Iniciar Sesión para Acceder</span>
                   </button>
                 )}
