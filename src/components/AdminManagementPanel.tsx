@@ -17,15 +17,33 @@ export default function AdminManagementPanel({ onOpenSOS }: AdminManagementPanel
   const [adminError, setAdminError] = useState('');
   const [sessionExpiredNotice, setSessionExpiredNotice] = useState(false);
 
-  // 2-Hour Security Session Expiration Controller
+  // Check tab-scoped sessionStorage on component mount
+  useEffect(() => {
+    if (typeof window === 'undefined') return;
+    const isAuth = sessionStorage.getItem('senda_admin_auth') === 'true';
+    const loginTime = sessionStorage.getItem('senda_admin_login_time');
+    if (isAuth && loginTime) {
+      const elapsed = Date.now() - parseInt(loginTime, 10);
+      if (elapsed < TWO_HOURS_MS) {
+        setIsAdminAuth(true);
+      } else {
+        sessionStorage.removeItem('senda_admin_auth');
+        sessionStorage.removeItem('senda_admin_login_time');
+      }
+    }
+  }, []);
+
+  // 2-Hour Security Session Expiration Controller for Active Tab
   useEffect(() => {
     if (!isAdminAuth) return;
 
-    const loginTime = Date.now();
-    localStorage.setItem('senda_admin_login_time', loginTime.toString());
+    sessionStorage.setItem('senda_admin_auth', 'true');
+    if (!sessionStorage.getItem('senda_admin_login_time')) {
+      sessionStorage.setItem('senda_admin_login_time', Date.now().toString());
+    }
 
     const checkInterval = setInterval(() => {
-      const storedTime = localStorage.getItem('senda_admin_login_time');
+      const storedTime = sessionStorage.getItem('senda_admin_login_time');
       if (storedTime) {
         const elapsed = Date.now() - parseInt(storedTime, 10);
         if (elapsed >= TWO_HOURS_MS) {
@@ -46,14 +64,16 @@ export default function AdminManagementPanel({ onOpenSOS }: AdminManagementPanel
 
   const handleLogoutDueToTimeout = () => {
     setIsAdminAuth(false);
-    localStorage.removeItem('senda_admin_login_time');
+    sessionStorage.removeItem('senda_admin_auth');
+    sessionStorage.removeItem('senda_admin_login_time');
     setSessionExpiredNotice(true);
-    setAdminError('Tu sesión profesional ha expirado automáticamente por políticas de seguridad (límite de 2 horas). Por favor ingresa de nuevo.');
+    setAdminError('Tu sesión profesional ha expirado automáticamente por políticas de seguridad (límite de 2 horas o pestaña cerrada). Por favor ingresa de nuevo.');
   };
 
   const handleLogout = () => {
     setIsAdminAuth(false);
-    localStorage.removeItem('senda_admin_login_time');
+    sessionStorage.removeItem('senda_admin_auth');
+    sessionStorage.removeItem('senda_admin_login_time');
     setAdminUser('');
     setAdminPass('');
     setAdminError('');

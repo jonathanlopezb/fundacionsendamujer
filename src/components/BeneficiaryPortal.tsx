@@ -167,15 +167,33 @@ export default function BeneficiaryPortal({ onOpenSOS, onOpenIncognito }: Benefi
   const triggerSOS = () => { if (onOpenSOS) onOpenSOS(); };
   const triggerIncognito = () => { if (onOpenIncognito) onOpenIncognito(); else if (onOpenSOS) onOpenSOS(); };
 
-  // 2-Hour Automatic Session Expiration Security Controller
+  // Check tab-scoped sessionStorage on component mount
+  useEffect(() => {
+    if (typeof window === 'undefined') return;
+    const isAuth = sessionStorage.getItem('senda_beneficiary_auth') === 'true';
+    const loginTime = sessionStorage.getItem('senda_beneficiary_login_time');
+    if (isAuth && loginTime) {
+      const elapsed = Date.now() - parseInt(loginTime, 10);
+      if (elapsed < TWO_HOURS_BENEFICIARY_MS) {
+        setIsAuthenticated(true);
+      } else {
+        sessionStorage.removeItem('senda_beneficiary_auth');
+        sessionStorage.removeItem('senda_beneficiary_login_time');
+      }
+    }
+  }, []);
+
+  // 2-Hour Automatic Session Expiration Security Controller for Active Tab
   useEffect(() => {
     if (!isAuthenticated) return;
 
-    const loginTime = Date.now();
-    localStorage.setItem('senda_beneficiary_login_time', loginTime.toString());
+    sessionStorage.setItem('senda_beneficiary_auth', 'true');
+    if (!sessionStorage.getItem('senda_beneficiary_login_time')) {
+      sessionStorage.setItem('senda_beneficiary_login_time', Date.now().toString());
+    }
 
     const checkInterval = setInterval(() => {
-      const storedTime = localStorage.getItem('senda_beneficiary_login_time');
+      const storedTime = sessionStorage.getItem('senda_beneficiary_login_time');
       if (storedTime) {
         const elapsed = Date.now() - parseInt(storedTime, 10);
         if (elapsed >= TWO_HOURS_BENEFICIARY_MS) {
@@ -196,12 +214,13 @@ export default function BeneficiaryPortal({ onOpenSOS, onOpenIncognito }: Benefi
 
   const handleLogoutDueToTimeout = () => {
     setIsAuthenticated(false);
-    localStorage.removeItem('senda_beneficiary_login_time');
+    sessionStorage.removeItem('senda_beneficiary_auth');
+    sessionStorage.removeItem('senda_beneficiary_login_time');
     setDocumentId('');
     setSecretPin('');
     setAcceptedHabeasData(false);
     setActiveModule('home');
-    setLoginError('Tu sesión de beneficiaria ha cerrado automáticamente tras 2 horas por seguridad y confidencialidad.');
+    setLoginError('Tu sesión de beneficiaria ha cerrado automáticamente tras 2 horas o al cerrar la pestaña por seguridad y confidencialidad.');
   };
 
   const handleLogin = (e: React.FormEvent) => {
@@ -229,7 +248,8 @@ export default function BeneficiaryPortal({ onOpenSOS, onOpenIncognito }: Benefi
 
   const handleLogout = () => {
     setIsAuthenticated(false);
-    localStorage.removeItem('senda_beneficiary_login_time');
+    sessionStorage.removeItem('senda_beneficiary_auth');
+    sessionStorage.removeItem('senda_beneficiary_login_time');
     setDocumentId('');
     setSecretPin('');
     setAcceptedHabeasData(false);

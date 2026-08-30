@@ -105,24 +105,28 @@ export default function Navbar({ onOpenSOS, onOpenIncognito }: NavbarProps) {
               <span>SendaAcademia</span>
             </Link>
 
-            {/* 2. Portal Usuarias */}
+            {/* 2. Portal Usuarias (Abre en pestaña nueva con control de sesión por pestaña) */}
             <Link
               href="/portal-beneficiaria"
+              target="_blank"
+              rel="noopener noreferrer"
               className="flex items-center gap-1.5 bg-pink-500/20 hover:bg-pink-500/30 text-pink-200 border border-pink-400/30 text-[11px] font-extrabold px-2.5 py-1 rounded-full transition-all shadow-xs"
-              title="Expediente confidencial y agendamiento de citas"
+              title="Expediente confidencial (Abre en ventana independiente con auto-cierre de sesión)"
             >
               <Lock className="w-3.5 h-3.5 text-pink-300" />
-              <span>Portal Usuarias</span>
+              <span>Portal Usuarias ↗</span>
             </Link>
 
-            {/* 3. Portal Profesional */}
+            {/* 3. Portal Profesional (Abre en pestaña nueva con control de sesión por pestaña) */}
             <Link
               href="/admin"
+              target="_blank"
+              rel="noopener noreferrer"
               className="flex items-center gap-1.5 bg-purple-500/30 hover:bg-purple-500/40 text-emerald-300 border border-emerald-400/30 text-[11px] font-extrabold px-2.5 py-1 rounded-full transition-all shadow-xs"
-              title="Acceso exclusivo para equipo profesional médico, psicológico y legal"
+              title="Panel profesional (Abre en ventana independiente con auto-cierre de sesión)"
             >
               <UserCog className="w-3.5 h-3.5 text-emerald-300" />
-              <span>Portal Profesional</span>
+              <span>Portal Profesional ↗</span>
             </Link>
 
           </div>
@@ -179,35 +183,6 @@ export default function Navbar({ onOpenSOS, onOpenIncognito }: NavbarProps) {
             )}
           </div>
 
-          {/* 1. SendaAcademia */}
-          <Link
-            href="/academia"
-            className="px-3 py-2 rounded-lg hover:bg-amber-50 text-amber-700 font-extrabold flex items-center gap-1.5 transition-all"
-            title="Formación, cursos y capacitaciones (Beneficiarias y Profesionales)"
-          >
-            <GraduationCap className="w-4 h-4 text-amber-600" />
-            <span>SendaAcademia</span>
-          </Link>
-
-          {/* 2. Portal de Gestión de Usuaria */}
-          <Link
-            href="/portal-beneficiaria"
-            className="px-3 py-2 rounded-lg hover:bg-pink-50 text-[#E12880] font-extrabold flex items-center gap-1.5 transition-all"
-            title="Expediente confidencial y agendamiento de citas para beneficiarias"
-          >
-            <Lock className="w-4 h-4 text-[#E12880]" />
-            <span>Portal Usuarias</span>
-          </Link>
-
-          {/* 3. Portal de Gestión de Profesionales */}
-          <Link
-            href="/admin"
-            className="px-3 py-2 rounded-lg hover:bg-purple-50 text-[#52166F] font-extrabold flex items-center gap-1.5 transition-all"
-            title="Acceso exclusivo a médicos, psicólogas, abogadas y trabajadoras sociales"
-          >
-            <UserCog className="w-4 h-4 text-purple-700" />
-            <span>Portal Profesional</span>
-          </Link>
 
           {/* SENDA Universal Flagship */}
           <Link href="/senda-universal" className="px-3 py-2 rounded-lg bg-gradient-to-r from-purple-100 to-pink-100 text-purple-900 font-extrabold flex items-center gap-1.5 transition-all hover:shadow-sm">
@@ -298,14 +273,18 @@ export default function Navbar({ onOpenSOS, onOpenIncognito }: NavbarProps) {
           <div className="pt-3 border-t border-pink-100 space-y-2">
             <Link
               href="/portal-beneficiaria"
+              target="_blank"
+              rel="noopener noreferrer"
               onClick={() => setMobileMenuOpen(false)}
               className="flex items-center gap-2 px-3 py-3 rounded-xl bg-pink-50 border border-pink-100 font-bold text-sm text-[#52166F]"
             >
               <Lock className="w-4 h-4 text-amber-500" />
-              Portal Beneficiaria — SendaPass
+              Portal Beneficiaria — SendaPass ↗
             </Link>
             <Link
               href="/admin"
+              target="_blank"
+              rel="noopener noreferrer"
               onClick={() => setMobileMenuOpen(false)}
               className="flex items-center gap-2 px-3 py-3 rounded-xl bg-slate-50 border border-slate-100 font-bold text-sm text-slate-700"
             >
