@@ -16,10 +16,11 @@ export interface IObservatorySnapshot extends Document {
   period: string;                         // Ej: "2026-Q3" o "2026-09"
   periodType: 'mensual' | 'trimestral' | 'anual';
   generatedAt: Date;
-  generatedBy: 'sistema_automatico';      // Solo el sistema genera cifras
+  generatedBy: string;                    // Nombre del responsable o 'sistema_automatico'
   reviewedBy: string;                     // Responsable de datos (persona)
   reviewedAt: Date | null;
   approved: boolean;                      // DEBE ser true para publicar
+  approvedBy: string;                     // Quien aprobó la publicación
   approvedAt: Date | null;
   publishedAt: Date | null;
 
@@ -66,10 +67,11 @@ const ObservatorySnapshotSchema = new Schema<IObservatorySnapshot>(
     period: { type: String, required: true, unique: true },
     periodType: { type: String, enum: ['mensual', 'trimestral', 'anual'], required: true },
     generatedAt: { type: Date, default: Date.now },
-    generatedBy: { type: String, default: 'sistema_automatico' },
+    generatedBy: { type: String, default: '' },
     reviewedBy: { type: String, default: '' },
     reviewedAt: { type: Date, default: null },
     approved: { type: Boolean, default: false },
+    approvedBy: { type: String, default: '' },
     approvedAt: { type: Date, default: null },
     publishedAt: { type: Date, default: null },
     minimumGroupSize: { type: Number, default: 5 },

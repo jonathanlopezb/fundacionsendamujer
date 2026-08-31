@@ -12,6 +12,7 @@ import BeneficiaryDashboardCharts from './BeneficiaryDashboardCharts';
 import GestionAdministrativa from './GestionAdministrativa';
 import PsychologicalTest from './PsychologicalTest';
 import { IPSCRadarChart, IPSCTrajectoryChart, IPSCDimensionBars } from './caribe-seguro/IPSCCharts';
+import IPSCBeneficiaryView from './caribe-seguro/IPSCBeneficiaryView';
 
 interface BeneficiaryPortalProps {
   onOpenSOS?: () => void;
@@ -570,77 +571,14 @@ export default function BeneficiaryPortal({ onOpenSOS, onOpenIncognito }: Benefi
           </div>
         )}
 
-        {/* SUB-MODULE: TRAYECTORIA IPSC CARIBE SEGURO */}
+        {/* SUB-MODULE: TRAYECTORIA IPSC CARIBE SEGURO — DATOS REALES */}
         {activeModule === 'ipsc' && (
           <div className="space-y-6 animate-fadeIn">
             <BackButton onBack={() => setActiveModule('home')} color="text-[#52166F]" />
-            <div className="bg-white rounded-3xl border border-pink-200 p-6 sm:p-8 space-y-6">
-              <div className="bg-gradient-to-r from-[#3B0852] to-[#52166F] text-white rounded-2xl p-6 flex flex-col sm:flex-row justify-between items-start sm:items-center gap-4">
-                <div>
-                  <span className="text-[10px] font-extrabold uppercase tracking-widest text-amber-300">CARIBE SEGURO</span>
-                  <h2 className="text-xl font-black">Mi Índice de Protección Senda-Caribe</h2>
-                  <p className="text-xs text-pink-200 mt-1">Expediente: <strong className="font-mono text-amber-300">{PROFILE.code}</strong></p>
-                </div>
-                <div className="bg-emerald-500/20 border border-emerald-400/30 rounded-xl px-4 py-2 text-center">
-                  <p className="text-2xl font-black text-emerald-300">7.8<span className="text-xs font-normal text-emerald-200">/10</span></p>
-                  <p className="text-[10px] text-emerald-100 font-bold">Estado: Estable</p>
-                </div>
-              </div>
-
-              <div className="grid grid-cols-1 lg:grid-cols-2 gap-6">
-                <IPSCRadarChart
-                  dimensions={{
-                    seguridadFisica: { score: 8 },
-                    seguridadDigital: { score: 7 },
-                    autonomiaEconomica: { score: 6 },
-                    redDeApoyo: { score: 9 },
-                    accesoAJusticia: { score: 8 },
-                    accesoASalud: { score: 9 },
-                    bienestarPsicosocial: { score: 7 },
-                    conocimientoDerechos: { score: 8 },
-                    capacidadRespuesta: { score: 8 },
-                    continuidadAcompanamiento: { score: 8 },
-                  }}
-                  previousDimensions={{
-                    seguridadFisica: { score: 5 },
-                    seguridadDigital: { score: 4 },
-                    autonomiaEconomica: { score: 3 },
-                    redDeApoyo: { score: 6 },
-                    accesoAJusticia: { score: 5 },
-                    accesoASalud: { score: 7 },
-                    bienestarPsicosocial: { score: 5 },
-                    conocimientoDerechos: { score: 5 },
-                    capacidadRespuesta: { score: 6 },
-                    continuidadAcompanamiento: { score: 6 },
-                  }}
-                  period="Ingreso vs Día 90"
-                />
-
-                <IPSCTrajectoryChart
-                  measurements={[
-                    { period: 'ingreso', ipscTotal: 5.2 },
-                    { period: '30d', ipscTotal: 6.5 },
-                    { period: '90d', ipscTotal: 7.8 },
-                  ]}
-                  beneficiaryCode={PROFILE.code}
-                />
-              </div>
-
-              <IPSCDimensionBars
-                dimensions={{
-                  seguridadFisica: { score: 8 },
-                  seguridadDigital: { score: 7 },
-                  autonomiaEconomica: { score: 6 },
-                  redDeApoyo: { score: 9 },
-                  accesoAJusticia: { score: 8 },
-                  accesoASalud: { score: 9 },
-                  bienestarPsicosocial: { score: 7 },
-                  conocimientoDerechos: { score: 8 },
-                  capacidadRespuesta: { score: 8 },
-                  continuidadAcompanamiento: { score: 8 },
-                }}
-              />
-            </div>
+            <IPSCBeneficiaryView
+              beneficiaryCode={PROFILE.code}
+              beneficiaryName={PROFILE.name.split(' ')[0]}
+            />
           </div>
         )}
 

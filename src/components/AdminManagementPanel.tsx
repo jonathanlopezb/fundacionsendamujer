@@ -5,6 +5,7 @@ import Link from 'next/link';
 import { ShieldCheck, Stethoscope, Activity, FileText, CheckCircle2, User, Calendar, Plus, Lock, Search, Filter, ShieldAlert, LogOut, KeyRound, DollarSign, Award, Clock, Info, Shield } from 'lucide-react';
 import IPSCMeasurementForm from '@/components/caribe-seguro/IPSCMeasurementForm';
 import DeteriorationAlertsPanel from '@/components/caribe-seguro/DeteriorationAlertsPanel';
+import ObservatoryManager from '@/components/caribe-seguro/ObservatoryManager';
 
 interface AdminManagementPanelProps {
   onOpenSOS?: () => void;
@@ -507,6 +508,10 @@ export default function AdminManagementPanel({ onOpenSOS }: AdminManagementPanel
                     <h3 className="font-extrabold text-base text-[#52166F] mb-4">Panel de Señales de Deterioro</h3>
                     <DeteriorationAlertsPanel />
                   </div>
+                </div>
+
+                <div className="border-t border-pink-100 pt-6">
+                  <ObservatoryManager />
                 </div>
               </div>
             </div>
