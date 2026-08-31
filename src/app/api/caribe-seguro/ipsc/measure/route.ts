@@ -128,11 +128,11 @@ export async function POST(req: NextRequest) {
     await connectToDatabase();
 
     // Buscar la medición anterior para calcular delta
-    const lastMeasurement = await IPSCMeasurement.findOne(
+    const lastMeasurement = (await IPSCMeasurement.findOne(
       { beneficiaryInternalCode },
       { ipscTotal: 1, dimensions: 1, _id: 1 },
       { sort: { measurementDate: -1 } }
-    ).lean();
+    ).lean()) as { ipscTotal: number; dimensions: any } | null;
 
     const ipscTotal = calcIPSCTotal(dimensions);
     const deltaFromPrevious = lastMeasurement ? ipscTotal - lastMeasurement.ipscTotal : null;
@@ -141,7 +141,7 @@ export async function POST(req: NextRequest) {
     // Detectar señales de deterioro
     const { signals, level, dimensionsAffected } = detectSignals(
       dimensions,
-      lastMeasurement?.dimensions as any ?? null,
+      lastMeasurement?.dimensions ?? null,
       deltaFromPrevious
     );
 

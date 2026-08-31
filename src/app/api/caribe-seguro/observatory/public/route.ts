@@ -14,7 +14,7 @@ export async function GET(req: NextRequest) {
   try {
     await connectToDatabase();
 
-    const snapshots = await ObservatorySnapshot.find(
+    const snapshots = (await ObservatorySnapshot.find(
       { approved: true },
       {
         period: 1,
@@ -26,7 +26,7 @@ export async function GET(req: NextRequest) {
     )
       .sort({ publishedAt: -1 })
       .limit(8)
-      .lean();
+      .lean()) as any[];
 
     // Última snapshot aprobada como "actual"
     const latest = snapshots[0] || null;
