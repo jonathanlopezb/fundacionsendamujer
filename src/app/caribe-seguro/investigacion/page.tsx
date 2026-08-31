@@ -5,17 +5,12 @@
  */
 
 import React from 'react';
-import CaribeSeguroHeader from '@/components/caribe-seguro/CaribeSeguroHeader';
 import PolicyLabCaribeSeguro from '@/components/caribe-seguro/PolicyLabCaribeSeguro';
 
 export default function InvestigacionPage() {
   return (
-    <div className="min-h-screen bg-[#FDF8FA]">
-      <CaribeSeguroHeader />
-
-      <main className="max-w-6xl mx-auto px-4 py-12">
-        <PolicyLabCaribeSeguro />
-      </main>
+    <div className="p-4 sm:p-8 space-y-6 animate-fadeIn">
+      <PolicyLabCaribeSeguro />
     </div>
   );
 }

@@ -1,17 +1,12 @@
 'use client';
 
 import React from 'react';
-import CaribeSeguroHeader from '@/components/caribe-seguro/CaribeSeguroHeader';
 import ObservatorioPublico from '@/components/caribe-seguro/ObservatorioPublico';
 
 export default function ObservatorioPage() {
   return (
-    <div className="min-h-screen bg-[#FDF8FA]">
-      <CaribeSeguroHeader />
-
-      <main className="max-w-6xl mx-auto px-4 py-12">
-        <ObservatorioPublico showHeader={true} />
-      </main>
+    <div className="p-4 sm:p-8 space-y-6 animate-fadeIn">
+      <ObservatorioPublico showHeader={true} />
     </div>
   );
 }
