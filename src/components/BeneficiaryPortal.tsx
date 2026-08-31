@@ -11,13 +11,14 @@ import BeneficiaryPortalHeader from './BeneficiaryPortalHeader';
 import BeneficiaryDashboardCharts from './BeneficiaryDashboardCharts';
 import GestionAdministrativa from './GestionAdministrativa';
 import PsychologicalTest from './PsychologicalTest';
+import { IPSCRadarChart, IPSCTrajectoryChart, IPSCDimensionBars } from './caribe-seguro/IPSCCharts';
 
 interface BeneficiaryPortalProps {
   onOpenSOS?: () => void;
   onOpenIncognito?: () => void;
 }
 
-type ActiveModule = 'home' | 'graficos' | 'expediente' | 'test';
+type ActiveModule = 'home' | 'graficos' | 'expediente' | 'test' | 'ipsc';
 
 // DEMO USER CREDENTIALS
 const DEMO = { doc: '1047892411', pin: '1234', code: 'SM-8842' };
@@ -499,6 +500,46 @@ export default function BeneficiaryPortal({ onOpenSOS, onOpenIncognito }: Benefi
                   </div>
                 </div>
 
+                {/* MODULE 3: ÍNDICE DE PROTECCIÓN SENDA-CARIBE (IPSC) */}
+                <div 
+                  onClick={() => setActiveModule('ipsc')}
+                  className="group relative bg-white rounded-3xl border-2 border-purple-200 hover:border-[#52166F] p-7 shadow-md hover:shadow-2xl transition-all cursor-pointer overflow-hidden flex flex-col justify-between md:col-span-2"
+                >
+                  <div className="space-y-4 relative z-10">
+                    <div className="flex items-center justify-between">
+                      <div className="w-14 h-14 bg-gradient-to-br from-[#3B0852] to-[#52166F] rounded-2xl flex items-center justify-center text-white shadow-lg">
+                        <Shield className="w-7 h-7 text-amber-300" />
+                      </div>
+                      <span className="bg-amber-100 text-amber-900 text-xs font-extrabold px-3 py-1 rounded-full border border-amber-200">
+                        IPSC Actual: 7.8 / 10 (Estable)
+                      </span>
+                    </div>
+
+                    <div>
+                      <span className="text-[10px] font-extrabold uppercase tracking-widest text-[#52166F]">PROGRAMA CARIBE SEGURO</span>
+                      <h3 className="text-xl font-extrabold text-slate-900 mt-0.5 group-hover:text-[#52166F] transition-colors">
+                        3. Mi Índice de Protección Senda-Caribe (IPSC) — Trayectoria Individual
+                      </h3>
+                      <p className="text-xs text-slate-600 mt-2 leading-relaxed">
+                        Visualiza la evolución de tus 10 dimensiones de protección (seguridad física, autonomía económica, red de apoyo, acceso a justicia) evaluadas periódicamente por el equipo profesional.
+                      </p>
+                    </div>
+
+                    <div className="pt-2 border-t border-purple-100 flex flex-wrap gap-2 text-[11px] font-bold text-slate-500">
+                      <span className="bg-purple-50 px-2.5 py-1 rounded-lg">🛡️ 10 Dimensiones de Protección</span>
+                      <span className="bg-purple-50 px-2.5 py-1 rounded-lg">📈 Gráfica de Araña y Trayectoria</span>
+                      <span className="bg-purple-50 px-2.5 py-1 rounded-lg">🤝 Acompañamiento Profesional Continuo</span>
+                    </div>
+                  </div>
+
+                  <div className="mt-6 pt-4 flex items-center justify-between font-extrabold text-xs text-[#52166F] relative z-10">
+                    <span>Ver mi Trayectoria IPSC Completa</span>
+                    <div className="w-8 h-8 rounded-full bg-purple-100 group-hover:bg-[#52166F] group-hover:text-white flex items-center justify-center transition-all">
+                      <ChevronRight className="w-4 h-4" />
+                    </div>
+                  </div>
+                </div>
+
               </div>
             </div>
 
@@ -526,6 +567,80 @@ export default function BeneficiaryPortal({ onOpenSOS, onOpenIncognito }: Benefi
           <div className="space-y-6 animate-fadeIn">
             <BackButton onBack={() => setActiveModule('home')} color="text-emerald-700" />
             <PsychologicalTest />
+          </div>
+        )}
+
+        {/* SUB-MODULE: TRAYECTORIA IPSC CARIBE SEGURO */}
+        {activeModule === 'ipsc' && (
+          <div className="space-y-6 animate-fadeIn">
+            <BackButton onBack={() => setActiveModule('home')} color="text-[#52166F]" />
+            <div className="bg-white rounded-3xl border border-pink-200 p-6 sm:p-8 space-y-6">
+              <div className="bg-gradient-to-r from-[#3B0852] to-[#52166F] text-white rounded-2xl p-6 flex flex-col sm:flex-row justify-between items-start sm:items-center gap-4">
+                <div>
+                  <span className="text-[10px] font-extrabold uppercase tracking-widest text-amber-300">CARIBE SEGURO</span>
+                  <h2 className="text-xl font-black">Mi Índice de Protección Senda-Caribe</h2>
+                  <p className="text-xs text-pink-200 mt-1">Expediente: <strong className="font-mono text-amber-300">{PROFILE.code}</strong></p>
+                </div>
+                <div className="bg-emerald-500/20 border border-emerald-400/30 rounded-xl px-4 py-2 text-center">
+                  <p className="text-2xl font-black text-emerald-300">7.8<span className="text-xs font-normal text-emerald-200">/10</span></p>
+                  <p className="text-[10px] text-emerald-100 font-bold">Estado: Estable</p>
+                </div>
+              </div>
+
+              <div className="grid grid-cols-1 lg:grid-cols-2 gap-6">
+                <IPSCRadarChart
+                  dimensions={{
+                    seguridadFisica: { score: 8 },
+                    seguridadDigital: { score: 7 },
+                    autonomiaEconomica: { score: 6 },
+                    redDeApoyo: { score: 9 },
+                    accesoAJusticia: { score: 8 },
+                    accesoASalud: { score: 9 },
+                    bienestarPsicosocial: { score: 7 },
+                    conocimientoDerechos: { score: 8 },
+                    capacidadRespuesta: { score: 8 },
+                    continuidadAcompanamiento: { score: 8 },
+                  }}
+                  previousDimensions={{
+                    seguridadFisica: { score: 5 },
+                    seguridadDigital: { score: 4 },
+                    autonomiaEconomica: { score: 3 },
+                    redDeApoyo: { score: 6 },
+                    accesoAJusticia: { score: 5 },
+                    accesoASalud: { score: 7 },
+                    bienestarPsicosocial: { score: 5 },
+                    conocimientoDerechos: { score: 5 },
+                    capacidadRespuesta: { score: 6 },
+                    continuidadAcompanamiento: { score: 6 },
+                  }}
+                  period="Ingreso vs Día 90"
+                />
+
+                <IPSCTrajectoryChart
+                  measurements={[
+                    { period: 'ingreso', ipscTotal: 5.2 },
+                    { period: '30d', ipscTotal: 6.5 },
+                    { period: '90d', ipscTotal: 7.8 },
+                  ]}
+                  beneficiaryCode={PROFILE.code}
+                />
+              </div>
+
+              <IPSCDimensionBars
+                dimensions={{
+                  seguridadFisica: { score: 8 },
+                  seguridadDigital: { score: 7 },
+                  autonomiaEconomica: { score: 6 },
+                  redDeApoyo: { score: 9 },
+                  accesoAJusticia: { score: 8 },
+                  accesoASalud: { score: 9 },
+                  bienestarPsicosocial: { score: 7 },
+                  conocimientoDerechos: { score: 8 },
+                  capacidadRespuesta: { score: 8 },
+                  continuidadAcompanamiento: { score: 8 },
+                }}
+              />
+            </div>
           </div>
         )}
 

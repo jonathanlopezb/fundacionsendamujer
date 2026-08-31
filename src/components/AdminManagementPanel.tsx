@@ -2,7 +2,9 @@
 
 import React, { useState, useEffect } from 'react';
 import Link from 'next/link';
-import { ShieldCheck, Stethoscope, Activity, FileText, CheckCircle2, User, Calendar, Plus, Lock, Search, Filter, ShieldAlert, LogOut, KeyRound, DollarSign, Award, Clock, Info } from 'lucide-react';
+import { ShieldCheck, Stethoscope, Activity, FileText, CheckCircle2, User, Calendar, Plus, Lock, Search, Filter, ShieldAlert, LogOut, KeyRound, DollarSign, Award, Clock, Info, Shield } from 'lucide-react';
+import IPSCMeasurementForm from '@/components/caribe-seguro/IPSCMeasurementForm';
+import DeteriorationAlertsPanel from '@/components/caribe-seguro/DeteriorationAlertsPanel';
 
 interface AdminManagementPanelProps {
   onOpenSOS?: () => void;
@@ -80,7 +82,7 @@ export default function AdminManagementPanel({ onOpenSOS }: AdminManagementPanel
     setSessionExpiredNotice(false);
   };
 
-  const [activeTab, setActiveTab] = useState<'citas' | 'historias' | 'documentos' | 'capital'>('citas');
+  const [activeTab, setActiveTab] = useState<'citas' | 'historias' | 'documentos' | 'capital' | 'caribe-seguro'>('caribe-seguro');
 
   // Simulated Appointments State
   const [appointmentsList, setAppointmentsList] = useState([
@@ -318,6 +320,7 @@ export default function AdminManagementPanel({ onOpenSOS }: AdminManagementPanel
           {/* Navigation Tabs */}
           <div className="flex space-x-2 border-b border-pink-200 pb-2 overflow-x-auto">
             {[
+              { id: 'caribe-seguro', label: '🛡️ Caribe Seguro — IPSC & Alertas', icon: Shield },
               { id: 'citas', label: 'Gestión Citas Multidisciplinarias', icon: Calendar },
               { id: 'historias', label: 'Historias Clínicas & Evolución', icon: Activity },
               { id: 'documentos', label: 'Documentos & Evidencias Recibidas', icon: FileText },
@@ -479,6 +482,32 @@ export default function AdminManagementPanel({ onOpenSOS }: AdminManagementPanel
                     </button>
                   </div>
                 ))}
+              </div>
+            </div>
+          )}
+
+          {/* TAB 5: CARIBE SEGURO — IPSC & ALERTAS */}
+          {activeTab === 'caribe-seguro' && (
+            <div className="space-y-8 animate-fadeIn">
+              <div className="bg-white rounded-3xl border border-pink-200 p-6 sm:p-8 space-y-6">
+                <div className="flex flex-col sm:flex-row justify-between items-start sm:items-center gap-4 border-b border-pink-100 pb-4">
+                  <div>
+                    <span className="text-[10px] font-extrabold uppercase tracking-widest text-[#E12880]">SISTEMA CARIBE SEGURO</span>
+                    <h2 className="text-xl font-black text-[#52166F]">Gestión del IPSC & Señales de Deterioro</h2>
+                    <p className="text-xs text-slate-500">Herramientas profesionales para seguimiento longitudinal e intervención prioritaria.</p>
+                  </div>
+                </div>
+
+                <div className="grid grid-cols-1 lg:grid-cols-2 gap-8">
+                  <div>
+                    <h3 className="font-extrabold text-base text-[#52166F] mb-4">Nueva Medición del IPSC (10 Dimensiones)</h3>
+                    <IPSCMeasurementForm />
+                  </div>
+                  <div>
+                    <h3 className="font-extrabold text-base text-[#52166F] mb-4">Panel de Señales de Deterioro</h3>
+                    <DeteriorationAlertsPanel />
+                  </div>
+                </div>
               </div>
             </div>
           )}

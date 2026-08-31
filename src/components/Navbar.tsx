@@ -193,6 +193,11 @@ export default function Navbar({ onOpenSOS, onOpenIncognito }: NavbarProps) {
             <Globe className="w-3.5 h-3.5 text-purple-700" />
             <span>SENDA Universal</span>
           </Link>
+          {/* Caribe Seguro Module */}
+          <Link href="/caribe-seguro" className="px-3 py-2 rounded-lg bg-gradient-to-r from-[#3B0852] to-[#52166F] text-amber-300 font-extrabold flex items-center gap-1.5 transition-all hover:shadow-sm">
+            <Shield className="w-3.5 h-3.5 text-amber-400" />
+            <span>Caribe Seguro</span>
+          </Link>
           <Link href="/triaje-psicologico" className="px-3 py-2 rounded-lg hover:bg-pink-50 text-[#E12880] flex items-center gap-1 transition-all">
             <BrainCircuit className="w-3.5 h-3.5 text-[#E12880]" />
             Test Psicológico
