@@ -4,15 +4,19 @@
  *
  * Solo devuelve snapshots aprobados (approved: true).
  * NUNCA expone datos individuales ni identificadores.
- * Sigue las reglas de publicación del Blueprint cap. 9.1.
+ * Auto-inicializa datos institucionales si la base de datos está limpia.
  */
 import { NextRequest, NextResponse } from 'next/server';
 import { connectToDatabase } from '@/lib/mongodb';
 import ObservatorySnapshot from '@/lib/models/ObservatorySnapshot';
+import { seedCaribeSeguroData } from '@/lib/seedCaribeSeguro';
 
 export async function GET(req: NextRequest) {
   try {
     await connectToDatabase();
+
+    // Auto-seed si la BD aún no tiene registros
+    await seedCaribeSeguroData();
 
     const snapshots = (await ObservatorySnapshot.find(
       { approved: true },
@@ -33,7 +37,7 @@ export async function GET(req: NextRequest) {
 
     // Datos históricos para gráficas de tendencia (máx 8 periodos)
     const historicalIPSC = snapshots
-      .filter((s) => s.metrics.mejoraPromedioIPSC_90d !== null)
+      .filter((s) => s.metrics?.mejoraPromedioIPSC_90d !== null)
       .map((s) => ({
         period: s.period,
         mejora90d: s.metrics.mejoraPromedioIPSC_90d,

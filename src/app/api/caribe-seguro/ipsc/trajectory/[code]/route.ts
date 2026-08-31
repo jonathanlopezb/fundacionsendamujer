@@ -3,12 +3,13 @@
  * GET — Trayectoria longitudinal de una beneficiaria
  *
  * Devuelve todas las mediciones ordenadas por fecha para construir
- * la gráfica de trayectoria en el panel profesional.
- * Nunca expone datos de identidad — solo internalCode.
+ * la gráfica de trayectoria en el portal.
+ * Auto-inicializa datos de semilla institucionales si la BD está limpia.
  */
 import { NextRequest, NextResponse } from 'next/server';
 import { connectToDatabase } from '@/lib/mongodb';
 import IPSCMeasurement from '@/lib/models/IPSCMeasurement';
+import { seedCaribeSeguroData } from '@/lib/seedCaribeSeguro';
 
 export async function GET(
   req: NextRequest,
@@ -19,6 +20,9 @@ export async function GET(
     if (!code) return NextResponse.json({ error: 'Código requerido.' }, { status: 400 });
 
     await connectToDatabase();
+
+    // Auto-seed si no hay suficientes mediciones
+    await seedCaribeSeguroData();
 
     const measurements = await IPSCMeasurement.find(
       { beneficiaryInternalCode: code },

@@ -365,7 +365,7 @@ export default function DeteriorationAlertsPanel({ showOnlyPending = false }: De
 
       {/* Nota ética */}
       <div className="bg-blue-50 border border-blue-200 rounded-xl p-3 text-[11px] text-blue-800 font-semibold">
-        ℹ️ <strong>Límite ético:</strong> Este sistema identifica señales de deterioro en las dimensiones del IPSC, no predice probabilidades de violencia futura. Toda acción requiere decisión de un profesional humano. Blueprint cap. 8 — Fundación Senda Mujer.
+        ℹ️ <strong>Límite ético e institucional:</strong> Este sistema identifica señales de deterioro en las dimensiones del IPSC, no predice probabilidades de violencia futura. Toda acción requiere decisión de un profesional humano — Fundación Senda Mujer.
       </div>
     </div>
   );

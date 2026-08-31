@@ -117,7 +117,7 @@ function EmptyObservatory() {
         El Observatorio Caribe Seguro publica únicamente datos reales generados por el sistema, aprobados por el responsable de datos de la Fundación. Los primeros datos aparecerán cuando el sistema haya acumulado mediciones suficientes.
       </p>
       <div className="bg-blue-50 border border-blue-200 rounded-xl p-4 text-xs text-blue-800 text-left space-y-1 max-w-md mx-auto">
-        <p className="font-extrabold">Regla del Observatorio (Blueprint cap. 9.1):</p>
+        <p className="font-extrabold">Regla Transparencia del Observatorio:</p>
         <p>Toda cifra publicada se origina en el sistema de datos. El equipo nunca estima ni redondea cifras de impacto para fines de comunicación.</p>
       </div>
     </div>

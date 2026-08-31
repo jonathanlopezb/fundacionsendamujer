@@ -330,7 +330,7 @@ export default function IPSCMeasurementForm({ onSuccess, defaultCode }: IPSCMeas
       <div className="bg-blue-50 border border-blue-200 rounded-2xl p-4 flex items-start gap-3">
         <Info className="w-5 h-5 text-blue-600 shrink-0 mt-0.5" />
         <div className="text-xs text-blue-900 space-y-1">
-          <p className="font-extrabold">Límite ético del IPSC (Blueprint Cap. 7.3)</p>
+          <p className="font-extrabold">Marco Ético e Institucional del IPSC</p>
           <p>Este índice mide el resultado del acompañamiento, no diagnostica ni predice violencia. La participación es voluntaria y revocable. Toda variación relevante debe ser revisada por un profesional antes de comunicarse a la beneficiaria.</p>
         </div>
       </div>
