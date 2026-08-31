@@ -16,10 +16,11 @@ export default function RootLayout({
   const [isOverlayOpen, setIsOverlayOpen] = useState(false);
   const pathname = usePathname();
 
-  // Determine if current route is an independent microsite (Portal Beneficiarias or SendaAcademia)
+  // Determine if current route is an independent microsite (Portal Beneficiarias, SendaAcademia, or CaribeSeguro)
   const isStandaloneMicrosite =
     pathname?.startsWith('/portal-beneficiaria') ||
-    pathname?.startsWith('/academia');
+    pathname?.startsWith('/academia') ||
+    pathname?.startsWith('/caribe-seguro');
 
   return (
     <html lang="es" className="scroll-smooth">

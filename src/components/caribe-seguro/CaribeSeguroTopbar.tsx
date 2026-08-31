@@ -92,6 +92,16 @@ export default function CaribeSeguroTopbar({ onToggleSidebarMobile }: TopbarProp
           <span className="hidden sm:inline">Portal Beneficiaria</span>
         </Link>
 
+        {/* VOLVER AL SITIO WEB PRINCIPAL */}
+        <Link
+          href="/"
+          className="bg-purple-950/60 hover:bg-purple-900 border border-purple-800/50 text-pink-300 hover:text-white font-bold text-xs px-3.5 py-2 rounded-full flex items-center gap-1.5 transition-colors cursor-pointer"
+          title="Volver a la web principal de la Fundación Senda Mujer"
+        >
+          <ExternalLink className="w-3.5 h-3.5" />
+          <span className="hidden xl:inline">Volver a Web Principal</span>
+        </Link>
+
         {/* ACCESO PANEL ADMINISTRATIVO */}
         <Link
           href="/admin"
