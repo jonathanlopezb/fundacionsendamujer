@@ -93,7 +93,7 @@ export async function POST(req: NextRequest) {
         { measurementPeriod: 1, ipscTotal: 1 }
       )
         .sort({ measurementDate: 1 })
-        .lean()) as { measurementPeriod: string; ipscTotal: number }[];
+        .lean()) as unknown as { measurementPeriod: string; ipscTotal: number }[];
 
       const ingreso = measurements.find((m) => m.measurementPeriod === 'ingreso');
       const m30 = measurements.find((m) => m.measurementPeriod === '30d');
@@ -124,7 +124,7 @@ export async function POST(req: NextRequest) {
     const allMeasurements = (await IPSCMeasurement.find(
       {},
       { dimensions: 1 }
-    ).lean()) as { dimensions: Record<string, { score: number }> }[];
+    ).lean()) as unknown as { dimensions: Record<string, { score: number }> }[];
 
     for (const m of allMeasurements) {
       for (const key of DIMENSION_KEYS) {
