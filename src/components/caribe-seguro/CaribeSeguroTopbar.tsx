@@ -26,10 +26,7 @@ export default function CaribeSeguroTopbar({ onToggleSidebarMobile }: TopbarProp
     <header className="h-16 bg-[#140320]/80 backdrop-blur-xl border-b border-purple-900/40 px-4 sm:px-6 flex items-center justify-between gap-4 sticky top-0 z-30">
       {/* LADO IZQUIERDO: ESTADO EN VIVO Y BÚSQUEDA */}
       <div className="flex items-center gap-3">
-        <div className="hidden sm:flex items-center gap-2 px-3 py-1 rounded-full bg-emerald-950/60 border border-emerald-700/50 text-emerald-300 text-[11px] font-bold">
-          <span className="w-2 h-2 rounded-full bg-emerald-400 animate-ping" />
-          <span>Producción Activa — MongoDB Senda</span>
-        </div>
+
 
         <div className="relative hidden lg:block w-64 xl:w-80">
           <Search className="w-3.5 h-3.5 absolute left-3.5 top-1/2 -translate-y-1/2 text-pink-300/60" />
