@@ -8,7 +8,7 @@ import {
   Clock, Info, Shield, Scale, HeartPulse, Brain, Home, Eye, Check,
   AlertTriangle, ChevronRight, UserCheck, RefreshCw, X, Printer, FilePlus,
   Pill, AlertCircle, Phone, MapPin, Hash, Sparkles, FolderOpen, Heart,
-  UserPlus, UserCog, CalendarPlus, BarChart3, Settings, ShieldCheck
+  UserPlus, UserCog, CalendarPlus, BarChart3, Settings, ShieldCheck, EyeOff
 } from 'lucide-react';
 import IPSCMeasurementForm from '@/components/caribe-seguro/IPSCMeasurementForm';
 import DeteriorationAlertsPanel from '@/components/caribe-seguro/DeteriorationAlertsPanel';
@@ -135,6 +135,7 @@ export interface PatientEHR {
   allergies: string;
   riskLevel: 'BAJO' | 'MODERADO' | 'ALTO' | 'CRITICO';
   ipscScore: number;
+  dimensionsIPSC: Record<string, number>;
   primaryCategory: 'MEDICO' | 'TRABAJO_SOCIAL' | 'JURIDICO' | 'PSICOLOGO';
   assignedDoctor: string;
   status: 'ACTIVA' | 'EN_ORIENTACION' | 'RUTA_ACTIVADA' | 'EN_SEGUIMIENTO' | 'COMPLETADA';
@@ -182,17 +183,22 @@ const INITIAL_PATIENTS_EHR: PatientEHR[] = [
     allergies: 'Penicilina, Sulfas',
     riskLevel: 'BAJO',
     ipscScore: 78,
+    dimensionsIPSC: {
+      seguridadFisica: 8,
+      seguridadDigital: 7,
+      autonomiaEconomica: 8,
+      redDeApoyo: 8,
+      accesoAJusticia: 8,
+      accesoASalud: 8,
+      bienestarPsicosocial: 8,
+      conocimientoDerechos: 8,
+      capacidadRespuesta: 7,
+      continuidadAcompanamiento: 8,
+    },
     primaryCategory: 'MEDICO',
     assignedDoctor: 'Dra. Elena Ruiz',
     status: 'RUTA_ACTIVADA',
-    vitals: {
-      bloodPressure: '120/80 mmHg',
-      heartRate: 74,
-      weightKg: 62,
-      heightM: 1.62,
-      bmi: 23.6,
-      tempC: 36.6,
-    },
+    vitals: { bloodPressure: '120/80 mmHg', heartRate: 74, weightKg: 62, heightM: 1.62, bmi: 23.6, tempC: 36.6 },
     evolutions: [
       {
         id: 'EVO-101',
@@ -201,10 +207,10 @@ const INITIAL_PATIENTS_EHR: PatientEHR[] = [
         author: 'Dra. Elena Ruiz',
         role: 'MEDICO',
         rethus: 'RETHUS 1047892-BOL',
-        subjective: 'Paciente gestante de 14 semanas que acude a control prenatal especializado.',
-        objective: 'Paciente consciente, orientada. AU: 12 cm. FCF: 148 lpm audible con Doppler. Ecografía pélvica demuestra feto único vivo.',
-        analysis: 'Supervisión de embarazo normal de 14 semanas. Diagnóstico CIE-10: Z34.8.',
-        plan: '1. Continuar Micronutrientes (Ácido Fólico 1mg/día). 2. Solicitar Ecografía Morfológica Nivel II.',
+        subjective: 'Paciente gestante de 14 semanas en control prenatal. Refiere náusea matutina tratada.',
+        objective: 'AU: 12 cm. FCF: 148 lpm audible con Doppler. Ecografía fetal normal.',
+        analysis: 'Supervisión de embarazo normal de 14 semanas. CIE-10: Z34.8.',
+        plan: '1. Ácido Fólico + Sulfato Ferroso. 2. Ecografía Morfológica semana 20.',
         cie10Code: 'Z34.8',
       },
     ],
@@ -233,17 +239,22 @@ const INITIAL_PATIENTS_EHR: PatientEHR[] = [
     allergies: 'Ninguna conocida',
     riskLevel: 'ALTO',
     ipscScore: 42,
+    dimensionsIPSC: {
+      seguridadFisica: 3,
+      seguridadDigital: 4,
+      autonomiaEconomica: 4,
+      redDeApoyo: 5,
+      accesoAJusticia: 4,
+      accesoASalud: 5,
+      bienestarPsicosocial: 4,
+      conocimientoDerechos: 5,
+      capacidadRespuesta: 4,
+      continuidadAcompanamiento: 4,
+    },
     primaryCategory: 'JURIDICO',
     assignedDoctor: 'Dra. Patricia Herrera',
     status: 'EN_ORIENTACION',
-    vitals: {
-      bloodPressure: '135/85 mmHg',
-      heartRate: 88,
-      weightKg: 58,
-      heightM: 1.58,
-      bmi: 23.2,
-      tempC: 36.5,
-    },
+    vitals: { bloodPressure: '135/85 mmHg', heartRate: 88, weightKg: 58, heightM: 1.58, bmi: 23.2, tempC: 36.5 },
     evolutions: [
       {
         id: 'EVO-201',
@@ -252,10 +263,10 @@ const INITIAL_PATIENTS_EHR: PatientEHR[] = [
         author: 'Dra. Patricia Herrera',
         role: 'JURIDICO',
         rethus: 'TP 204918-CSJ',
-        subjective: 'Usuaria solicita asesoría por violencia intrafamiliar y hostigamiento psicológico.',
-        objective: 'Se radican medidas de protección bajo Ley 1257 de 2008 ante la Comisaría de Familia Chiquinquirá.',
-        analysis: 'Situación de vulnerabilidad jurídica que requiere medida cautelar urgente.',
-        plan: '1. Radicar Medida de Protección Prioritaria. 2. Coordinación con Patrulla Púrpura.',
+        subjective: 'Solicitud de asesoría por violencia intrafamiliar y perturbación psicológica.',
+        objective: 'Radicación de Medidas de Protección Ley 1257 ante Comisaría Chiquinquirá.',
+        analysis: 'Vulnerabilidad jurídica que requiere medida cautelar urgente de protección.',
+        plan: '1. Medida de Protección Prioritaria. 2. Alarma activa Patrulla Púrpura.',
         cie10Code: 'Z65.9',
       },
     ],
@@ -282,17 +293,22 @@ const INITIAL_PATIENTS_EHR: PatientEHR[] = [
     allergies: 'Dipirona',
     riskLevel: 'BAJO',
     ipscScore: 74,
+    dimensionsIPSC: {
+      seguridadFisica: 7,
+      seguridadDigital: 7,
+      autonomiaEconomica: 8,
+      redDeApoyo: 7,
+      accesoAJusticia: 7,
+      accesoASalud: 8,
+      bienestarPsicosocial: 7,
+      conocimientoDerechos: 8,
+      capacidadRespuesta: 7,
+      continuidadAcompanamiento: 8,
+    },
     primaryCategory: 'TRABAJO_SOCIAL',
     assignedDoctor: 'Lic. Sorelvis Murillo',
     status: 'EN_SEGUIMIENTO',
-    vitals: {
-      bloodPressure: '118/75 mmHg',
-      heartRate: 70,
-      weightKg: 65,
-      heightM: 1.65,
-      bmi: 23.8,
-      tempC: 36.4,
-    },
+    vitals: { bloodPressure: '118/75 mmHg', heartRate: 70, weightKg: 65, heightM: 1.65, bmi: 23.8, tempC: 36.4 },
     evolutions: [
       {
         id: 'EVO-301',
@@ -301,15 +317,115 @@ const INITIAL_PATIENTS_EHR: PatientEHR[] = [
         author: 'Lic. Sorelvis Murillo',
         role: 'TRABAJO_SOCIAL',
         rethus: 'RETHUS 99281-TS-COL',
-        subjective: 'Seguimiento del proyecto taller textil Olaya Herrera.',
-        objective: 'Producción activa con 140 prendas confeccionadas y ventas de $1.250.000 COP.',
-        analysis: 'Alto grado de autonomía económica lograda.',
-        plan: '1. Participación en Feria Senda. 2. Cita de seguimiento en 30 días.',
+        subjective: 'Seguimiento de micronegocio taller textil Olaya Herrera.',
+        objective: '140 prendas confeccionadas y ventas locales de $1.250.000 COP.',
+        analysis: 'Alto grado de autonomía económica alcanzado.',
+        plan: '1. Participación en Feria Senda. 2. Cita en 30 días.',
       },
     ],
     prescriptions: [],
     routesActivated: [
       { routeName: 'Capacitación WhatsApp Business SendaAcademia', date: '2026-08-10', status: 'COMPLETADA', entity: 'SendaAcademia' },
+    ],
+    documents: [],
+  },
+  {
+    id: 'EHR-004',
+    patientCode: 'CSM-2026-000484',
+    patientName: 'Diana Marcela Gómez',
+    docId: '1.048.223.109',
+    age: 29,
+    birthDate: '1997-03-12',
+    bloodType: 'A-',
+    eps: 'Mutual Ser EPS-S',
+    phone: '+57 318 765 4321',
+    emergencyContact: 'Marta Gómez (Hermana) - +57 318 009 2211',
+    neighborhood: 'El Pozón, Sector 20 de Enero, Cartagena',
+    allergies: 'Ninguna',
+    riskLevel: 'MODERADO',
+    ipscScore: 51,
+    dimensionsIPSC: {
+      seguridadFisica: 5,
+      seguridadDigital: 5,
+      autonomiaEconomica: 4,
+      redDeApoyo: 6,
+      accesoAJusticia: 5,
+      accesoASalud: 6,
+      bienestarPsicosocial: 5,
+      conocimientoDerechos: 5,
+      capacidadRespuesta: 5,
+      continuidadAcompanamiento: 5,
+    },
+    primaryCategory: 'PSICOLOGO',
+    assignedDoctor: 'Lic. Claudia Morales',
+    status: 'EN_ORIENTACION',
+    vitals: { bloodPressure: '122/82 mmHg', heartRate: 78, weightKg: 59, heightM: 1.61, bmi: 22.8, tempC: 36.6 },
+    evolutions: [
+      {
+        id: 'EVO-401',
+        date: '2026-08-29',
+        time: '10:00 AM',
+        author: 'Lic. Claudia Morales',
+        role: 'PSICOLOGO',
+        rethus: 'COLPSIC 449102-PSI',
+        subjective: 'Consulta psicosocial inicial por síntomas de ansiedad moderada.',
+        objective: 'Triaje completado. Red de apoyo familiar parcial presente.',
+        analysis: 'Estrés agudo reactivo a factores del entorno. Requiere fortalecimiento psicosocial.',
+        plan: '1. Sesiones semanales de psicología. 2. Taller de inteligencia emocional SendaAcademia.',
+      },
+    ],
+    prescriptions: [],
+    routesActivated: [],
+    documents: [],
+  },
+  {
+    id: 'EHR-005',
+    patientCode: 'SENDA-A3F1C2',
+    patientName: 'Sorelvis Murillo (Demo Beneficiaria)',
+    docId: '45.789.012',
+    age: 40,
+    birthDate: '1986-09-08',
+    bloodType: 'O+',
+    eps: 'Coosalud EPS',
+    phone: '+57 301 469 2095',
+    emergencyContact: 'Fundación Senda Mujer - Cartagena',
+    neighborhood: 'Nelson Mandela, Sector 1, Cartagena',
+    allergies: 'Ninguna',
+    riskLevel: 'BAJO',
+    ipscScore: 85,
+    dimensionsIPSC: {
+      seguridadFisica: 9,
+      seguridadDigital: 8,
+      autonomiaEconomica: 9,
+      redDeApoyo: 9,
+      accesoAJusticia: 8,
+      accesoASalud: 9,
+      bienestarPsicosocial: 8,
+      conocimientoDerechos: 9,
+      capacidadRespuesta: 8,
+      continuidadAcompanamiento: 9,
+    },
+    primaryCategory: 'TRABAJO_SOCIAL',
+    assignedDoctor: 'Lic. Sorelvis Murillo',
+    status: 'COMPLETADA',
+    vitals: { bloodPressure: '115/75 mmHg', heartRate: 68, weightKg: 64, heightM: 1.63, bmi: 24.1, tempC: 36.5 },
+    evolutions: [
+      {
+        id: 'EVO-501',
+        date: '2026-08-25',
+        time: '03:00 PM',
+        author: 'Lic. Sorelvis Murillo',
+        role: 'TRABAJO_SOCIAL',
+        rethus: 'RETHUS 99281-TS-COL',
+        subjective: 'Evaluación final del ciclo de autonomía económica y liderazgo comunitario.',
+        objective: 'Graduada de SendaAcademia con 100% de cumplimiento. Negocio propio consolidado.',
+        analysis: 'Autonomía y fortalecimiento integral destacado.',
+        plan: '1. Vinculación como lideresa mentora comunitaria Senda.',
+      },
+    ],
+    prescriptions: [],
+    routesActivated: [
+      { routeName: 'Certificación Liderazgo Comunitario', date: '2026-08-25', status: 'COMPLETADA', entity: 'Fundación Senda Mujer' },
     ],
     documents: [],
   },
@@ -373,7 +489,7 @@ export default function AdminManagementPanel({ onOpenSOS }: { onOpenSOS?: () => 
 
   // Admin Console Tab
   const [adminTab, setAdminTab] = useState<'dashboard' | 'profesionales' | 'beneficiarias' | 'citas' | 'clinica'>('dashboard');
-  const [ehrTab, setEhrTab] = useState<'evoluciones' | 'prescripcion' | 'rutas' | 'documentos'>('evoluciones');
+  const [ehrTab, setEhrTab] = useState<'ipsc' | 'evoluciones' | 'prescripcion' | 'rutas' | 'documentos'>('ipsc');
 
   // Form State: Create Professional
   const [newProfName, setNewProfName] = useState('');
@@ -446,7 +562,6 @@ export default function AdminManagementPanel({ onOpenSOS }: { onOpenSOS?: () => 
       return;
     }
 
-    // Default professional login
     setIsAdminAuth(true);
     sessionStorage.setItem('senda_admin_auth', 'true');
     sessionStorage.setItem('senda_prof_id', selectedProfessional.id);
@@ -469,7 +584,6 @@ export default function AdminManagementPanel({ onOpenSOS }: { onOpenSOS?: () => 
     sessionStorage.removeItem('senda_prof_id');
   };
 
-  // Actions: Create Professional
   const handleCreateProfessional = (e: React.FormEvent) => {
     e.preventDefault();
     if (!newProfName || !newProfSpecialty || !newProfRethus) return;
@@ -499,7 +613,6 @@ export default function AdminManagementPanel({ onOpenSOS }: { onOpenSOS?: () => 
     setTimeout(() => setProfCreateSuccess(''), 4000);
   };
 
-  // Actions: Create Patient
   const handleCreatePatient = (e: React.FormEvent) => {
     e.preventDefault();
     if (!newPatName || !newPatDocId) return;
@@ -520,6 +633,7 @@ export default function AdminManagementPanel({ onOpenSOS }: { onOpenSOS?: () => 
       allergies: 'Ninguna reportada',
       riskLevel: 'BAJO',
       ipscScore: 65,
+      dimensionsIPSC: { seguridadFisica: 6, seguridadDigital: 6, autonomiaEconomica: 6, redDeApoyo: 7, accesoAJusticia: 6, accesoASalud: 7, bienestarPsicosocial: 6, conocimientoDerechos: 7, capacidadRespuesta: 6, continuidadAcompanamiento: 7 },
       primaryCategory: newPatCategory,
       assignedDoctor: newPatDoctor,
       status: 'ACTIVA',
@@ -552,7 +666,6 @@ export default function AdminManagementPanel({ onOpenSOS }: { onOpenSOS?: () => 
     setTimeout(() => setPatientCreateSuccess(''), 4000);
   };
 
-  // Actions: Create Appointment
   const handleCreateAppointment = (e: React.FormEvent) => {
     e.preventDefault();
     const pat = patients.find((p) => p.id === appPatId);
@@ -613,6 +726,8 @@ export default function AdminManagementPanel({ onOpenSOS }: { onOpenSOS?: () => 
       p.patientCode.toLowerCase().includes(patientSearchQuery.toLowerCase()) ||
       p.docId.includes(patientSearchQuery)
   );
+
+  const isAdminRole = selectedProfessional.role === 'ADMIN_SISTEMA' || selectedProfessional.role === 'COORDINADOR';
 
   return (
     <div className="min-h-screen bg-[#0F0218] text-slate-100 font-sans selection:bg-[#E12880] selection:text-white">
@@ -775,7 +890,7 @@ export default function AdminManagementPanel({ onOpenSOS }: { onOpenSOS?: () => 
               { id: 'profesionales', label: '🩺 Crear & Gestionar Médicos', icon: UserPlus },
               { id: 'beneficiarias', label: '👥 Crear & Gestionar Beneficiarias', icon: UserCog },
               { id: 'citas', label: '📅 Asignar & Agendar Citas', icon: CalendarPlus },
-              { id: 'clinica', label: '🩺 Expediente EHR & Historias Clínicas', icon: Activity },
+              { id: 'clinica', label: '🩺 Expediente EHR & IPSC de Pacientes', icon: Activity },
             ].map((t) => {
               const Icon = t.icon;
               const isActive = adminTab === t.id;
@@ -813,8 +928,42 @@ export default function AdminManagementPanel({ onOpenSOS }: { onOpenSOS?: () => 
                   </div>
                   <h2 className="text-2xl sm:text-3xl font-black">Bienvenida, {selectedProfessional.name}</h2>
                   <p className="text-xs text-pink-100 max-w-2xl leading-relaxed">
-                    Desde este panel administras las cuentas del equipo médico y profesional, registras nuevas beneficiarias, asignas citas multidisplinarias y supervisas el impacto territorial.
+                    Desde este panel administras las cuentas del equipo médico y profesional, registras nuevas beneficiarias, asignas citas multidisplinarias y supervisas el impacto territorial del IPSC.
                   </p>
+                </div>
+
+                {/* TABLA RESUMEN PACIENTES DEMOS DISPONIBLES */}
+                <div className="bg-[#240538] rounded-3xl p-6 border border-pink-500/30 space-y-4">
+                  <div className="flex justify-between items-center">
+                    <h3 className="font-black text-sm text-white uppercase tracking-wider flex items-center gap-2">
+                      <UserCheck className="w-4 h-4 text-amber-300" />
+                      Listado de Pacientes Demos Disponibles ({patients.length})
+                    </h3>
+                  </div>
+                  <div className="grid grid-cols-1 sm:grid-cols-2 md:grid-cols-3 gap-3">
+                    {patients.map((p) => (
+                      <div key={p.id} className="p-3.5 bg-[#140320] rounded-2xl border border-pink-500/20 space-y-1">
+                        <div className="flex justify-between font-black text-xs text-white">
+                          <span>{p.patientName}</span>
+                          <span className="text-amber-300 font-mono text-[10px]">{p.patientCode}</span>
+                        </div>
+                        <p className="text-[10px] text-pink-200/80">C.C. {p.docId} • {p.neighborhood}</p>
+                        <div className="flex justify-between items-center text-[10px] pt-1">
+                          <span className="text-emerald-300 font-bold">IPSC: {p.ipscScore}/100</span>
+                          <button
+                            onClick={() => {
+                              setSelectedPatientId(p.id);
+                              setAdminTab('clinica');
+                              setEhrTab('ipsc');
+                            }}
+                            className="bg-[#E12880] text-white px-2.5 py-0.5 rounded-full font-bold cursor-pointer hover:bg-pink-600"
+                          >
+                            Ver IPSC
+                          </button>
+                        </div>
+                      </div>
+                    ))}
+                  </div>
                 </div>
 
                 {/* Métricas KPI */}
@@ -975,7 +1124,6 @@ export default function AdminManagementPanel({ onOpenSOS }: { onOpenSOS?: () => 
                   </form>
                 </div>
 
-                {/* Tabla de Médicos Registrados */}
                 <div className="bg-[#240538] rounded-3xl p-6 border border-pink-500/20 space-y-4">
                   <h3 className="text-sm font-black text-white uppercase tracking-wider">
                     Directorio de Médicos & Profesionales Registrados ({professionals.length})
@@ -1248,7 +1396,6 @@ export default function AdminManagementPanel({ onOpenSOS }: { onOpenSOS?: () => 
                   </form>
                 </div>
 
-                {/* Lista de Citas Agendadas */}
                 <div className="bg-[#240538] rounded-3xl p-6 border border-pink-500/20 space-y-4">
                   <h3 className="text-sm font-black text-white uppercase tracking-wider">
                     Calendario de Citas Multidisciplinarias Agendadas ({appointments.length})
@@ -1277,10 +1424,9 @@ export default function AdminManagementPanel({ onOpenSOS }: { onOpenSOS?: () => 
               </div>
             )}
 
-            {/* ── MÓDULO 5: EXPEDIENTE CLÍNICO EHR Y NOTAS SOAP ──────────────────── */}
+            {/* ── MÓDULO 5: EXPEDIENTE CLÍNICO EHR & IPSC DE PACIENTES ───────────────── */}
             {adminTab === 'clinica' && (
               <div className="space-y-6 animate-fadeIn">
-                {/* VISTA DIVIDIDA EHR PACIENTE SELECCIONADA */}
                 <div className="bg-gradient-to-r from-[#2B0642] via-[#3B0852] to-[#1A042B] rounded-3xl p-6 border border-pink-500/30 shadow-2xl space-y-6">
                   
                   <div className="flex flex-col md:flex-row justify-between items-start md:items-center gap-4 border-b border-pink-500/20 pb-4">
@@ -1330,107 +1476,184 @@ export default function AdminManagementPanel({ onOpenSOS }: { onOpenSOS?: () => 
                   </div>
                 </div>
 
-                {/* REGISTRAR NOTA SOAP */}
-                <form onSubmit={handleAddSoapEvolution} className="bg-[#240538] rounded-3xl p-6 border border-pink-500/30 space-y-4 shadow-xl">
-                  <h3 className="text-sm font-black text-white uppercase tracking-wider flex items-center gap-2">
-                    <FilePlus className="w-4 h-4 text-amber-300" />
-                    Registrar Nueva Evolución Clínica en Formato SOAP ({selectedPatient.patientName})
-                  </h3>
+                {/* TABS DENTRO DE LA PACIENTE: IPSC vs EVOLUCIONES */}
+                <div className="flex space-x-2 border-b border-pink-500/20 pb-2 overflow-x-auto">
+                  {[
+                    { id: 'ipsc', label: '📊 Índice IPSC (10 Dimensiones Visible)', icon: Shield },
+                    { id: 'evoluciones', label: '🩺 Evoluciones Clínicas (SOAP)', icon: Activity },
+                    { id: 'prescripcion', label: '💊 Prescripción & Fórmulas', icon: Pill },
+                    { id: 'rutas', label: '🏛️ Rutas Activadas', icon: ShieldCheck },
+                  ].map((t) => {
+                    const Icon = t.icon;
+                    const isActive = ehrTab === t.id;
 
-                  <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
-                    <div>
-                      <label className="block text-[11px] font-extrabold text-pink-300 mb-1">S — Subjetivo (Relato de la Paciente) *</label>
-                      <textarea
-                        value={newSoapSubjective}
-                        onChange={(e) => setNewSoapSubjective(e.target.value)}
-                        placeholder="Síntomas o manifestaciones de la paciente..."
-                        rows={2}
-                        required
-                        className="w-full p-3 rounded-xl bg-[#140320] border border-pink-500/30 text-xs text-white"
-                      />
-                    </div>
-                    <div>
-                      <label className="block text-[11px] font-extrabold text-pink-300 mb-1">O — Objetivo (Examen Físico / Ecográfico)</label>
-                      <textarea
-                        value={newSoapObjective}
-                        onChange={(e) => setNewSoapObjective(e.target.value)}
-                        placeholder="Examen físico, ecografía o constantes..."
-                        rows={2}
-                        className="w-full p-3 rounded-xl bg-[#140320] border border-pink-500/30 text-xs text-white"
-                      />
-                    </div>
-                    <div>
-                      <label className="block text-[11px] font-extrabold text-pink-300 mb-1">A — Análisis / Diagnóstico CIE-10 *</label>
-                      <textarea
-                        value={newSoapAnalysis}
-                        onChange={(e) => setNewSoapAnalysis(e.target.value)}
-                        placeholder="Juicio clínico (ej: Z34.8 Supervisión de Embarazo)..."
-                        rows={2}
-                        required
-                        className="w-full p-3 rounded-xl bg-[#140320] border border-pink-500/30 text-xs text-white"
-                      />
-                    </div>
-                    <div>
-                      <label className="block text-[11px] font-extrabold text-pink-300 mb-1">P — Plan & Conducta a Seguir *</label>
-                      <textarea
-                        value={newSoapPlan}
-                        onChange={(e) => setNewSoapPlan(e.target.value)}
-                        placeholder="Formulación de medicamentos, remisión..."
-                        rows={2}
-                        required
-                        className="w-full p-3 rounded-xl bg-[#140320] border border-pink-500/30 text-xs text-white"
-                      />
-                    </div>
-                  </div>
-
-                  <div className="flex justify-end pt-2">
-                    <button
-                      type="submit"
-                      className="bg-gradient-to-r from-[#E12880] to-[#52166F] hover:from-[#c81e6e] text-white font-black px-6 py-2.5 rounded-xl text-xs shadow-md cursor-pointer flex items-center gap-2"
-                    >
-                      <CheckCircle2 className="w-4 h-4 text-emerald-400" />
-                      <span>Firmar & Guardar Evolución SOAP</span>
-                    </button>
-                  </div>
-                </form>
-
-                {/* TIMELINE DE EVOLUCIONES ANTERIORES */}
-                <div className="space-y-4">
-                  <h3 className="text-xs font-black text-pink-300 uppercase tracking-widest">
-                    Histórico de Evoluciones Firmadas ({selectedPatient.evolutions.length})
-                  </h3>
-
-                  {selectedPatient.evolutions.map((evo) => (
-                    <div key={evo.id} className="bg-[#240538] rounded-3xl p-6 border border-pink-500/20 space-y-3 shadow-sm">
-                      <div className="flex justify-between items-start border-b border-pink-500/20 pb-3">
-                        <div>
-                          <span className="text-xs font-black text-amber-300">{evo.author}</span>
-                          <span className="text-[10px] text-pink-200 font-mono ml-2">({evo.rethus})</span>
-                        </div>
-                        <div className="text-[11px] text-slate-400">{evo.date} • {evo.time}</div>
-                      </div>
-
-                      <div className="grid grid-cols-1 md:grid-cols-2 gap-3 text-xs">
-                        <div className="bg-[#140320]/60 p-3 rounded-2xl border border-pink-500/10">
-                          <strong className="text-pink-300 block mb-0.5">S (Subjetivo):</strong>
-                          <p className="text-slate-200">{evo.subjective}</p>
-                        </div>
-                        <div className="bg-[#140320]/60 p-3 rounded-2xl border border-pink-500/10">
-                          <strong className="text-pink-300 block mb-0.5">O (Objetivo):</strong>
-                          <p className="text-slate-200">{evo.objective}</p>
-                        </div>
-                        <div className="bg-[#140320]/60 p-3 rounded-2xl border border-pink-500/10">
-                          <strong className="text-amber-300 block mb-0.5">A (Análisis):</strong>
-                          <p className="text-slate-200">{evo.analysis}</p>
-                        </div>
-                        <div className="bg-[#140320]/60 p-3 rounded-2xl border border-pink-500/10">
-                          <strong className="text-emerald-300 block mb-0.5">P (Plan):</strong>
-                          <p className="text-slate-200">{evo.plan}</p>
-                        </div>
-                      </div>
-                    </div>
-                  ))}
+                    return (
+                      <button
+                        key={t.id}
+                        onClick={() => setEhrTab(t.id as any)}
+                        className={`px-5 py-2.5 rounded-2xl text-xs font-extrabold transition-all flex items-center space-x-2 shrink-0 cursor-pointer ${
+                          isActive
+                            ? 'bg-gradient-to-r from-[#E12880] to-[#52166F] text-white shadow-md'
+                            : 'bg-[#240538] text-slate-300 hover:bg-[#31084A] border border-pink-500/20'
+                        }`}
+                      >
+                        <Icon className="w-4 h-4" />
+                        <span>{t.label}</span>
+                      </button>
+                    );
+                  })}
                 </div>
+
+                {/* TAB IPSC VISIBLE PARA ADMINISTRADORES Y DIRECCIÓN */}
+                {ehrTab === 'ipsc' && (
+                  <div className="bg-[#240538] rounded-3xl p-6 border border-pink-500/30 space-y-6">
+                    <div className="flex justify-between items-center flex-wrap gap-2 border-b border-pink-500/20 pb-3">
+                      <div>
+                        <span className="text-[10px] font-black text-amber-300 uppercase tracking-widest">EVALUACIÓN DE PROTECCIÓN</span>
+                        <h3 className="text-lg font-black text-white">Desglose de las 10 Dimensiones IPSC — {selectedPatient.patientName}</h3>
+                      </div>
+                      <span className="bg-emerald-500/20 text-emerald-300 border border-emerald-500/40 text-xs font-extrabold px-3 py-1 rounded-full">
+                        Puntaje Total: {selectedPatient.ipscScore}/100
+                      </span>
+                    </div>
+
+                    <div className="grid grid-cols-1 sm:grid-cols-2 gap-4">
+                      {Object.entries(selectedPatient.dimensionsIPSC || {}).map(([dim, score]) => (
+                        <div key={dim} className="bg-[#140320] p-4 rounded-2xl border border-pink-500/20 space-y-2">
+                          <div className="flex justify-between text-xs font-extrabold">
+                            <span className="text-pink-200 capitalize">{dim.replace(/([A-Z])/g, ' $1')}</span>
+                            <span className="text-amber-300">{score}/10</span>
+                          </div>
+                          <div className="w-full bg-[#240538] rounded-full h-2 overflow-hidden">
+                            <div
+                              className="h-full bg-gradient-to-r from-[#E12880] to-emerald-400 rounded-full"
+                              style={{ width: `${score * 10}%` }}
+                            />
+                          </div>
+                        </div>
+                      ))}
+                    </div>
+                  </div>
+                )}
+
+                {/* TAB EVOLUCIONES CON AUTOPROTECCIÓN PRIVACIDAD LEY 1581 PARA ADMIN GENERAL */}
+                {ehrTab === 'evoluciones' && (
+                  <div className="space-y-6">
+                    {isAdminRole && (
+                      <div className="p-4 bg-amber-500/15 border border-amber-500/40 rounded-2xl text-xs text-amber-200 space-y-1">
+                        <div className="flex items-center gap-2 font-black text-amber-300">
+                          <EyeOff className="w-4 h-4" />
+                          <span>Aviso Habeas Data Ley 1581 / Res. 839 de 2019 (Privacidad de Historia Clínica):</span>
+                        </div>
+                        <p>
+                          Como Administradora General o Supervisora puedes visualizar el **Índice IPSC (78/100)** y las rutas activadas. Las notaciones clínicas detalladas SOAP están reservadas para la médica o profesional tratante asignada ({selectedPatient.assignedDoctor}).
+                        </p>
+                      </div>
+                    )}
+
+                    {/* REGISTRAR NOTA SOAP */}
+                    <form onSubmit={handleAddSoapEvolution} className="bg-[#240538] rounded-3xl p-6 border border-pink-500/30 space-y-4 shadow-xl">
+                      <h3 className="text-sm font-black text-white uppercase tracking-wider flex items-center gap-2">
+                        <FilePlus className="w-4 h-4 text-amber-300" />
+                        Registrar Nueva Evolución Clínica en Formato SOAP ({selectedPatient.patientName})
+                      </h3>
+
+                      <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
+                        <div>
+                          <label className="block text-[11px] font-extrabold text-pink-300 mb-1">S — Subjetivo *</label>
+                          <textarea
+                            value={newSoapSubjective}
+                            onChange={(e) => setNewSoapSubjective(e.target.value)}
+                            placeholder="Síntomas o manifestaciones de la paciente..."
+                            rows={2}
+                            required
+                            className="w-full p-3 rounded-xl bg-[#140320] border border-pink-500/30 text-xs text-white"
+                          />
+                        </div>
+                        <div>
+                          <label className="block text-[11px] font-extrabold text-pink-300 mb-1">O — Objetivo</label>
+                          <textarea
+                            value={newSoapObjective}
+                            onChange={(e) => setNewSoapObjective(e.target.value)}
+                            placeholder="Examen físico, ecografía o constantes..."
+                            rows={2}
+                            className="w-full p-3 rounded-xl bg-[#140320] border border-pink-500/30 text-xs text-white"
+                          />
+                        </div>
+                        <div>
+                          <label className="block text-[11px] font-extrabold text-pink-300 mb-1">A — Análisis / Diagnóstico *</label>
+                          <textarea
+                            value={newSoapAnalysis}
+                            onChange={(e) => setNewSoapAnalysis(e.target.value)}
+                            placeholder="Juicio clínico (ej: Z34.8)..."
+                            rows={2}
+                            required
+                            className="w-full p-3 rounded-xl bg-[#140320] border border-pink-500/30 text-xs text-white"
+                          />
+                        </div>
+                        <div>
+                          <label className="block text-[11px] font-extrabold text-pink-300 mb-1">P — Plan *</label>
+                          <textarea
+                            value={newSoapPlan}
+                            onChange={(e) => setNewSoapPlan(e.target.value)}
+                            placeholder="Formulación, remisión..."
+                            rows={2}
+                            required
+                            className="w-full p-3 rounded-xl bg-[#140320] border border-pink-500/30 text-xs text-white"
+                          />
+                        </div>
+                      </div>
+
+                      <div className="flex justify-end pt-2">
+                        <button
+                          type="submit"
+                          className="bg-gradient-to-r from-[#E12880] to-[#52166F] hover:from-[#c81e6e] text-white font-black px-6 py-2.5 rounded-xl text-xs shadow-md cursor-pointer flex items-center gap-2"
+                        >
+                          <CheckCircle2 className="w-4 h-4 text-emerald-400" />
+                          <span>Firmar & Guardar Evolución SOAP</span>
+                        </button>
+                      </div>
+                    </form>
+
+                    {/* TIMELINE DE EVOLUCIONES ANTERIORES */}
+                    <div className="space-y-4">
+                      <h3 className="text-xs font-black text-pink-300 uppercase tracking-widest">
+                        Histórico de Evoluciones Firmadas ({selectedPatient.evolutions.length})
+                      </h3>
+
+                      {selectedPatient.evolutions.map((evo) => (
+                        <div key={evo.id} className="bg-[#240538] rounded-3xl p-6 border border-pink-500/20 space-y-3 shadow-sm">
+                          <div className="flex justify-between items-start border-b border-pink-500/20 pb-3">
+                            <div>
+                              <span className="text-xs font-black text-amber-300">{evo.author}</span>
+                              <span className="text-[10px] text-pink-200 font-mono ml-2">({evo.rethus})</span>
+                            </div>
+                            <div className="text-[11px] text-slate-400">{evo.date} • {evo.time}</div>
+                          </div>
+
+                          <div className="grid grid-cols-1 md:grid-cols-2 gap-3 text-xs">
+                            <div className="bg-[#140320]/60 p-3 rounded-2xl border border-pink-500/10">
+                              <strong className="text-pink-300 block mb-0.5">S (Subjetivo):</strong>
+                              <p className="text-slate-200">{evo.subjective}</p>
+                            </div>
+                            <div className="bg-[#140320]/60 p-3 rounded-2xl border border-pink-500/10">
+                              <strong className="text-pink-300 block mb-0.5">O (Objetivo):</strong>
+                              <p className="text-slate-200">{evo.objective}</p>
+                            </div>
+                            <div className="bg-[#140320]/60 p-3 rounded-2xl border border-pink-500/10">
+                              <strong className="text-amber-300 block mb-0.5">A (Análisis):</strong>
+                              <p className="text-slate-200">{evo.analysis}</p>
+                            </div>
+                            <div className="bg-[#140320]/60 p-3 rounded-2xl border border-pink-500/10">
+                              <strong className="text-emerald-300 block mb-0.5">P (Plan):</strong>
+                              <p className="text-slate-200">{evo.plan}</p>
+                            </div>
+                          </div>
+                        </div>
+                      ))}
+                    </div>
+                  </div>
+                )}
               </div>
             )}
 
