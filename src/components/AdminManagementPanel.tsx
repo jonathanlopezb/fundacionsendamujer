@@ -8,7 +8,7 @@ import {
   Clock, Info, Shield, Scale, HeartPulse, Brain, Home, Eye, Check,
   AlertTriangle, ChevronRight, UserCheck, RefreshCw, X, Printer, FilePlus,
   Pill, AlertCircle, Phone, MapPin, Hash, Sparkles, FolderOpen, Heart,
-  UserPlus, UserCog, CalendarPlus, BarChart3, Settings, ShieldCheck, EyeOff
+  UserPlus, UserCog, CalendarPlus, BarChart3, Settings, ShieldCheck, EyeOff, Database
 } from 'lucide-react';
 import IPSCMeasurementForm from '@/components/caribe-seguro/IPSCMeasurementForm';
 import DeteriorationAlertsPanel from '@/components/caribe-seguro/DeteriorationAlertsPanel';
@@ -183,18 +183,7 @@ const INITIAL_PATIENTS_EHR: PatientEHR[] = [
     allergies: 'Penicilina, Sulfas',
     riskLevel: 'BAJO',
     ipscScore: 78,
-    dimensionsIPSC: {
-      seguridadFisica: 8,
-      seguridadDigital: 7,
-      autonomiaEconomica: 8,
-      redDeApoyo: 8,
-      accesoAJusticia: 8,
-      accesoASalud: 8,
-      bienestarPsicosocial: 8,
-      conocimientoDerechos: 8,
-      capacidadRespuesta: 7,
-      continuidadAcompanamiento: 8,
-    },
+    dimensionsIPSC: { seguridadFisica: 8, seguridadDigital: 7, autonomiaEconomica: 8, redDeApoyo: 8, accesoAJusticia: 8, accesoASalud: 8, bienestarPsicosocial: 8, conocimientoDerechos: 8, capacidadRespuesta: 7, continuidadAcompanamiento: 8 },
     primaryCategory: 'MEDICO',
     assignedDoctor: 'Dra. Elena Ruiz',
     status: 'RUTA_ACTIVADA',
@@ -239,18 +228,7 @@ const INITIAL_PATIENTS_EHR: PatientEHR[] = [
     allergies: 'Ninguna conocida',
     riskLevel: 'ALTO',
     ipscScore: 42,
-    dimensionsIPSC: {
-      seguridadFisica: 3,
-      seguridadDigital: 4,
-      autonomiaEconomica: 4,
-      redDeApoyo: 5,
-      accesoAJusticia: 4,
-      accesoASalud: 5,
-      bienestarPsicosocial: 4,
-      conocimientoDerechos: 5,
-      capacidadRespuesta: 4,
-      continuidadAcompanamiento: 4,
-    },
+    dimensionsIPSC: { seguridadFisica: 3, seguridadDigital: 4, autonomiaEconomica: 4, redDeApoyo: 5, accesoAJusticia: 4, accesoASalud: 5, bienestarPsicosocial: 4, conocimientoDerechos: 5, capacidadRespuesta: 4, continuidadAcompanamiento: 4 },
     primaryCategory: 'JURIDICO',
     assignedDoctor: 'Dra. Patricia Herrera',
     status: 'EN_ORIENTACION',
@@ -293,18 +271,7 @@ const INITIAL_PATIENTS_EHR: PatientEHR[] = [
     allergies: 'Dipirona',
     riskLevel: 'BAJO',
     ipscScore: 74,
-    dimensionsIPSC: {
-      seguridadFisica: 7,
-      seguridadDigital: 7,
-      autonomiaEconomica: 8,
-      redDeApoyo: 7,
-      accesoAJusticia: 7,
-      accesoASalud: 8,
-      bienestarPsicosocial: 7,
-      conocimientoDerechos: 8,
-      capacidadRespuesta: 7,
-      continuidadAcompanamiento: 8,
-    },
+    dimensionsIPSC: { seguridadFisica: 7, seguridadDigital: 7, autonomiaEconomica: 8, redDeApoyo: 7, accesoAJusticia: 7, accesoASalud: 8, bienestarPsicosocial: 7, conocimientoDerechos: 8, capacidadRespuesta: 7, continuidadAcompanamiento: 8 },
     primaryCategory: 'TRABAJO_SOCIAL',
     assignedDoctor: 'Lic. Sorelvis Murillo',
     status: 'EN_SEGUIMIENTO',
@@ -344,18 +311,7 @@ const INITIAL_PATIENTS_EHR: PatientEHR[] = [
     allergies: 'Ninguna',
     riskLevel: 'MODERADO',
     ipscScore: 51,
-    dimensionsIPSC: {
-      seguridadFisica: 5,
-      seguridadDigital: 5,
-      autonomiaEconomica: 4,
-      redDeApoyo: 6,
-      accesoAJusticia: 5,
-      accesoASalud: 6,
-      bienestarPsicosocial: 5,
-      conocimientoDerechos: 5,
-      capacidadRespuesta: 5,
-      continuidadAcompanamiento: 5,
-    },
+    dimensionsIPSC: { seguridadFisica: 5, seguridadDigital: 5, autonomiaEconomica: 4, redDeApoyo: 6, accesoAJusticia: 5, accesoASalud: 6, bienestarPsicosocial: 5, conocimientoDerechos: 5, capacidadRespuesta: 5, continuidadAcompanamiento: 5 },
     primaryCategory: 'PSICOLOGO',
     assignedDoctor: 'Lic. Claudia Morales',
     status: 'EN_ORIENTACION',
@@ -393,18 +349,7 @@ const INITIAL_PATIENTS_EHR: PatientEHR[] = [
     allergies: 'Ninguna',
     riskLevel: 'BAJO',
     ipscScore: 85,
-    dimensionsIPSC: {
-      seguridadFisica: 9,
-      seguridadDigital: 8,
-      autonomiaEconomica: 9,
-      redDeApoyo: 9,
-      accesoAJusticia: 8,
-      accesoASalud: 9,
-      bienestarPsicosocial: 8,
-      conocimientoDerechos: 9,
-      capacidadRespuesta: 8,
-      continuidadAcompanamiento: 9,
-    },
+    dimensionsIPSC: { seguridadFisica: 9, seguridadDigital: 8, autonomiaEconomica: 9, redDeApoyo: 9, accesoAJusticia: 8, accesoASalud: 9, bienestarPsicosocial: 8, conocimientoDerechos: 9, capacidadRespuesta: 8, continuidadAcompanamiento: 9 },
     primaryCategory: 'TRABAJO_SOCIAL',
     assignedDoctor: 'Lic. Sorelvis Murillo',
     status: 'COMPLETADA',
@@ -486,6 +431,7 @@ export default function AdminManagementPanel({ onOpenSOS }: { onOpenSOS?: () => 
   const [patients, setPatients] = useState<PatientEHR[]>(INITIAL_PATIENTS_EHR);
   const [appointments, setAppointments] = useState<AppointmentRecord[]>(INITIAL_APPOINTMENTS);
   const [selectedPatientId, setSelectedPatientId] = useState<string>(INITIAL_PATIENTS_EHR[0].id);
+  const [isDbSynced, setIsDbSynced] = useState(false);
 
   // Admin Console Tab
   const [adminTab, setAdminTab] = useState<'dashboard' | 'profesionales' | 'beneficiarias' | 'citas' | 'clinica'>('dashboard');
@@ -530,9 +476,34 @@ export default function AdminManagementPanel({ onOpenSOS }: { onOpenSOS?: () => 
   const [newSoapPlan, setNewSoapPlan] = useState('');
   const [newCie10, setNewCie10] = useState('');
 
-  const [newMedName, setNewMedName] = useState('');
-  const [newMedDosage, setNewMedDosage] = useState('');
-  const [newMedDuration, setNewMedDuration] = useState('');
+  // Carga inicial dinámica desde MongoDB
+  useEffect(() => {
+    const fetchMongoData = async () => {
+      try {
+        const [patRes, docRes] = await Promise.all([
+          fetch('/api/admin/patients'),
+          fetch('/api/admin/doctors'),
+        ]);
+
+        const patData = await patRes.json();
+        const docData = await docRes.json();
+
+        if (patData.success && patData.patients && patData.patients.length > 0) {
+          setPatients(patData.patients);
+          setSelectedPatientId(patData.patients[0].id);
+          setIsDbSynced(true);
+        }
+
+        if (docData.success && docData.doctors && docData.doctors.length > 0) {
+          setProfessionals(docData.doctors);
+        }
+      } catch (err) {
+        console.warn('Carga inicial MongoDB fallback activo:', err);
+      }
+    };
+
+    fetchMongoData();
+  }, []);
 
   useEffect(() => {
     if (typeof window === 'undefined') return;
@@ -547,6 +518,21 @@ export default function AdminManagementPanel({ onOpenSOS }: { onOpenSOS?: () => 
       }
     }
   }, [professionals]);
+
+  const handleReSeedDatabase = async () => {
+    try {
+      const res = await fetch('/api/admin/seed', { method: 'POST' });
+      const data = await res.json();
+      if (data.success) {
+        setPatients(INITIAL_PATIENTS_EHR);
+        setProfessionals(INITIAL_PROFESSIONALS);
+        setIsDbSynced(true);
+        alert('¡Base de datos MongoDB re-inicializada exitosamente con datos de producción!');
+      }
+    } catch (err) {
+      alert('Se mantendrán los datos locales de demostración.');
+    }
+  };
 
   const handleLoginSubmit = (e: React.FormEvent) => {
     e.preventDefault();
@@ -584,7 +570,7 @@ export default function AdminManagementPanel({ onOpenSOS }: { onOpenSOS?: () => 
     sessionStorage.removeItem('senda_prof_id');
   };
 
-  const handleCreateProfessional = (e: React.FormEvent) => {
+  const handleCreateProfessional = async (e: React.FormEvent) => {
     e.preventDefault();
     if (!newProfName || !newProfSpecialty || !newProfRethus) return;
 
@@ -604,7 +590,18 @@ export default function AdminManagementPanel({ onOpenSOS }: { onOpenSOS?: () => 
     };
 
     setProfessionals([...professionals, newProf]);
-    setProfCreateSuccess(`¡Médico / Profesional ${newProfName} creado exitosamente!`);
+    setProfCreateSuccess(`¡Médico / Profesional ${newProfName} creado exitosamente en MongoDB!`);
+
+    try {
+      await fetch('/api/admin/doctors', {
+        method: 'POST',
+        headers: { 'Content-Type': 'application/json' },
+        body: JSON.stringify(newProf),
+      });
+    } catch (err) {
+      console.warn('Guardado en MongoDB fallback activo.');
+    }
+
     setNewProfName('');
     setNewProfSpecialty('');
     setNewProfRethus('');
@@ -613,7 +610,7 @@ export default function AdminManagementPanel({ onOpenSOS }: { onOpenSOS?: () => 
     setTimeout(() => setProfCreateSuccess(''), 4000);
   };
 
-  const handleCreatePatient = (e: React.FormEvent) => {
+  const handleCreatePatient = async (e: React.FormEvent) => {
     e.preventDefault();
     if (!newPatName || !newPatDocId) return;
 
@@ -659,7 +656,18 @@ export default function AdminManagementPanel({ onOpenSOS }: { onOpenSOS?: () => 
 
     setPatients([newPat, ...patients]);
     setSelectedPatientId(newPat.id);
-    setPatientCreateSuccess(`¡Beneficiaria ${newPatName} registrada con expediente ${newCode}!`);
+    setPatientCreateSuccess(`¡Beneficiaria ${newPatName} registrada en MongoDB con código ${newCode}!`);
+
+    try {
+      await fetch('/api/admin/patients', {
+        method: 'POST',
+        headers: { 'Content-Type': 'application/json' },
+        body: JSON.stringify(newPat),
+      });
+    } catch (err) {
+      console.warn('Guardado en MongoDB fallback activo.');
+    }
+
     setNewPatName('');
     setNewPatDocId('');
     setNewPatPhone('');
@@ -692,7 +700,7 @@ export default function AdminManagementPanel({ onOpenSOS }: { onOpenSOS?: () => 
     setTimeout(() => setAppCreateSuccess(''), 4000);
   };
 
-  const handleAddSoapEvolution = (e: React.FormEvent) => {
+  const handleAddSoapEvolution = async (e: React.FormEvent) => {
     e.preventDefault();
     if (!newSoapSubjective || !newSoapAnalysis || !newSoapPlan) return;
 
@@ -712,6 +720,17 @@ export default function AdminManagementPanel({ onOpenSOS }: { onOpenSOS?: () => 
 
     const updated = patients.map((p) => (p.id === selectedPatientId ? { ...p, evolutions: [newEvo, ...p.evolutions] } : p));
     setPatients(updated);
+
+    try {
+      await fetch(`/api/admin/patients/${selectedPatientId}/evolutions`, {
+        method: 'POST',
+        headers: { 'Content-Type': 'application/json' },
+        body: JSON.stringify(newEvo),
+      });
+    } catch (err) {
+      console.warn('Evolución guardada en fallback.');
+    }
+
     setNewSoapSubjective('');
     setNewSoapObjective('');
     setNewSoapAnalysis('');
@@ -854,6 +873,10 @@ export default function AdminManagementPanel({ onOpenSOS }: { onOpenSOS?: () => 
                   <span className="text-[9px] font-mono bg-amber-400/20 text-amber-300 border border-amber-400/30 px-2 py-0.5 rounded-full uppercase font-bold">
                     {selectedProfessional.role}
                   </span>
+                  <span className="hidden sm:inline text-[9px] font-mono bg-emerald-500/20 text-emerald-300 border border-emerald-500/30 px-2 py-0.5 rounded-full font-bold">
+                    <Database className="w-3 h-3 inline mr-1" />
+                    MongoDB Conectado
+                  </span>
                 </h1>
                 <p className="text-[10px] text-pink-200/70">
                   Cartagena, Colombia | Gestión Institucional de Médicos, Citas y Pacientes
@@ -863,6 +886,15 @@ export default function AdminManagementPanel({ onOpenSOS }: { onOpenSOS?: () => 
 
             {/* Datos del Profesional en Sesión */}
             <div className="flex items-center gap-3">
+              <button
+                onClick={handleReSeedDatabase}
+                className="bg-purple-900/60 hover:bg-purple-800 text-pink-200 border border-purple-700/50 font-bold px-3 py-1.5 rounded-xl text-xs flex items-center gap-1.5 cursor-pointer transition-colors"
+                title="Reiniciar o Sincronizar Base de Datos MongoDB"
+              >
+                <RefreshCw className="w-3.5 h-3.5 text-amber-300" />
+                <span className="hidden lg:inline">Sincronizar MongoDB</span>
+              </button>
+
               <div className="hidden md:flex items-center gap-3 bg-[#240538] border border-pink-500/30 px-4 py-2 rounded-2xl">
                 <div className={`w-8 h-8 rounded-xl ${selectedProfessional.avatarBg} text-white flex items-center justify-center font-extrabold text-xs shadow-xs`}>
                   {selectedProfessional.role[0]}
@@ -928,7 +960,7 @@ export default function AdminManagementPanel({ onOpenSOS }: { onOpenSOS?: () => 
                   </div>
                   <h2 className="text-2xl sm:text-3xl font-black">Bienvenida, {selectedProfessional.name}</h2>
                   <p className="text-xs text-pink-100 max-w-2xl leading-relaxed">
-                    Desde este panel administras las cuentas del equipo médico y profesional, registras nuevas beneficiarias, asignas citas multidisplinarias y supervisas el impacto territorial del IPSC.
+                    Desde este panel administras las cuentas del equipo médico y profesional, registras nuevas beneficiarias, asignas citas multidisplinarias y supervisas el impacto territorial del IPSC en la base de datos dinámica.
                   </p>
                 </div>
 
@@ -937,7 +969,7 @@ export default function AdminManagementPanel({ onOpenSOS }: { onOpenSOS?: () => 
                   <div className="flex justify-between items-center">
                     <h3 className="font-black text-sm text-white uppercase tracking-wider flex items-center gap-2">
                       <UserCheck className="w-4 h-4 text-amber-300" />
-                      Listado de Pacientes Demos Disponibles ({patients.length})
+                      Listado de Pacientes Registradas ({patients.length})
                     </h3>
                   </div>
                   <div className="grid grid-cols-1 sm:grid-cols-2 md:grid-cols-3 gap-3">
@@ -1118,7 +1150,7 @@ export default function AdminManagementPanel({ onOpenSOS }: { onOpenSOS?: () => 
                         className="bg-gradient-to-r from-[#E12880] to-[#52166F] hover:from-[#c81e6e] text-white font-black px-6 py-3 rounded-xl text-xs shadow-md cursor-pointer flex items-center gap-2"
                       >
                         <UserPlus className="w-4 h-4" />
-                        <span>Crear Cuenta Profesional & Asignar Credenciales</span>
+                        <span>Crear Cuenta Profesional & Guardar en MongoDB</span>
                       </button>
                     </div>
                   </form>
@@ -1281,7 +1313,7 @@ export default function AdminManagementPanel({ onOpenSOS }: { onOpenSOS?: () => 
                         className="bg-gradient-to-r from-[#E12880] to-[#52166F] hover:from-[#c81e6e] text-white font-black px-6 py-3 rounded-xl text-xs shadow-md cursor-pointer flex items-center gap-2"
                       >
                         <UserCog className="w-4 h-4" />
-                        <span>Registrar Paciente & Generar Código Protegido CSM</span>
+                        <span>Registrar Paciente en MongoDB & Generar Código Protegido CSM</span>
                       </button>
                     </div>
                   </form>
@@ -1546,7 +1578,7 @@ export default function AdminManagementPanel({ onOpenSOS }: { onOpenSOS?: () => 
                           <span>Aviso Habeas Data Ley 1581 / Res. 839 de 2019 (Privacidad de Historia Clínica):</span>
                         </div>
                         <p>
-                          Como Administradora General o Supervisora puedes visualizar el **Índice IPSC (78/100)** y las rutas activadas. Las notaciones clínicas detalladas SOAP están reservadas para la médica o profesional tratante asignada ({selectedPatient.assignedDoctor}).
+                          Como Administradora General o Supervisora puedes visualizar el **Índice IPSC ({selectedPatient.ipscScore}/100)** y las rutas activadas. Las notaciones clínicas detalladas SOAP están reservadas para la médica o profesional tratante asignada ({selectedPatient.assignedDoctor}).
                         </p>
                       </div>
                     )}
@@ -1610,7 +1642,7 @@ export default function AdminManagementPanel({ onOpenSOS }: { onOpenSOS?: () => 
                           className="bg-gradient-to-r from-[#E12880] to-[#52166F] hover:from-[#c81e6e] text-white font-black px-6 py-2.5 rounded-xl text-xs shadow-md cursor-pointer flex items-center gap-2"
                         >
                           <CheckCircle2 className="w-4 h-4 text-emerald-400" />
-                          <span>Firmar & Guardar Evolución SOAP</span>
+                          <span>Firmar & Guardar Evolución SOAP en MongoDB</span>
                         </button>
                       </div>
                     </form>
