@@ -46,18 +46,58 @@ export default function IngresarPage() {
   const [pin, setPin] = useState('');
   const [accepted, setAccepted] = useState(false);
   const [error, setError] = useState('');
+  const [loading, setLoading] = useState(false);
   const [user, setUser] = useState<typeof DEMO_USERS[string] | null>(null);
 
-  const handleLogin = (e: React.FormEvent) => {
+  const handleLogin = async (e: React.FormEvent) => {
     e.preventDefault();
     setError('');
-    if (!accepted) { setError('Debes aceptar la autorizacion de datos personales (Ley 1581 de 2012).'); return; }
+    setLoading(true);
+    
+    if (!accepted) { 
+      setError('Debes aceptar la autorizacion de datos personales (Ley 1581 de 2012).'); 
+      setLoading(false);
+      return; 
+    }
+
+    try {
+      // Intentar validar contra base de datos
+      const res = await fetch('/api/beneficiary/login', {
+        method: 'POST',
+        headers: { 'Content-Type': 'application/json' },
+        body: JSON.stringify({ documentNumber: documentId.trim(), password: pin.trim() }),
+      });
+
+      if (res.ok) {
+        const data = await res.json();
+        // Convertir respuesta de BD a formato esperado por PortalDashboard
+        setUser({
+          pin: pin.trim(),
+          name: data.user.patientName,
+          code: data.user.patientCode,
+          docId: data.user.documentNumber,
+          program: 'Programa Caribe Seguro para Mujeres',
+          specialist: 'Equipo Multidisciplinario',
+          sendaIndex: 65,
+          assignedCourses: [1, 2, 3],
+          completedCourses: [],
+        });
+        setLoading(false);
+        return;
+      }
+    } catch (err) {
+      console.warn('Error conectando con BD, usando demo users:', err);
+    }
+
+    // Fallback: validar con DEMO_USERS
     const found = DEMO_USERS[documentId.trim()];
     if (!found || found.pin !== pin.trim()) {
       setError('Credenciales incorrectas. Demo: Cedula 1047892411 / PIN 1234');
+      setLoading(false);
       return;
     }
     setUser(found);
+    setLoading(false);
   };
 
   const fillDemo = () => { setDocumentId('1047892411'); setPin('1234'); setAccepted(true); };
@@ -131,9 +171,13 @@ export default function IngresarPage() {
               </label>
             </div>
 
-            <button type="submit" className="w-full bg-gradient-to-r from-[#E12880] to-[#52166F] text-white font-extrabold py-3.5 rounded-full shadow-lg hover:shadow-xl transition-all flex items-center justify-center gap-2 cursor-pointer">
+            <button 
+              type="submit" 
+              disabled={loading}
+              className="w-full bg-gradient-to-r from-[#E12880] to-[#52166F] text-white font-extrabold py-3.5 rounded-full shadow-lg hover:shadow-xl transition-all flex items-center justify-center gap-2 cursor-pointer disabled:opacity-70 disabled:cursor-not-allowed"
+            >
               <KeyRound className="w-4 h-4" />
-              Ingresar a Mi Portal Seguro
+              {loading ? 'Validando credenciales...' : 'Ingresar a Mi Portal Seguro'}
             </button>
 
             <div className="flex items-center justify-between text-[11px]">

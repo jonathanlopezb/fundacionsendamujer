@@ -751,6 +751,19 @@ export default function AdminManagementPanel({ onOpenSOS }: { onOpenSOS?: () => 
         headers: { 'Content-Type': 'application/json' },
         body: JSON.stringify(newPat),
       });
+      
+      // Guardar credenciales de acceso al portal: usuario y contraseña = número de cédula
+      await fetch('/api/beneficiary/access', {
+        method: 'POST',
+        headers: { 'Content-Type': 'application/json' },
+        body: JSON.stringify({
+          patientId: newPat.id,
+          documentNumber: newPatDocumentNumber,
+          password: newPatDocumentNumber, // Contraseña = número de cédula
+          patientName: newPat.patientName,
+          patientCode: generatedCode,
+        }),
+      });
     } catch (err) {
       console.warn('Fallback local activo');
     }
