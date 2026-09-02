@@ -5,7 +5,22 @@ import Appointment from '@/lib/models/Appointment';
 export async function POST(req: Request) {
   try {
     const body = await req.json();
-    const { fullName, phone, email, specialty, preferredDate, preferredTime, location, notes } = body;
+    const {
+      fullName,
+      patientName,
+      professionalName,
+      patientId,
+      professionalId,
+      beneficiaryId,
+      phone,
+      email,
+      specialty,
+      preferredDate,
+      preferredTime,
+      location,
+      modality,
+      notes,
+    } = body;
 
     if (!fullName || !phone || !specialty || !preferredDate || !preferredTime) {
       return NextResponse.json({ error: 'Todos los campos requeridos deben ser completados' }, { status: 400 });
@@ -14,13 +29,19 @@ export async function POST(req: Request) {
     try {
       await connectToDatabase();
       const newAppointment = await Appointment.create({
+        patientId: patientId || beneficiaryId || undefined,
+        professionalId: professionalId || undefined,
+        beneficiaryId: beneficiaryId || patientId || undefined,
         fullName,
+        patientName: patientName || fullName,
+        professionalName: professionalName || undefined,
         phone,
         email,
         specialty,
         preferredDate,
         preferredTime,
         location: location || 'Sede Fundación Senda Mujer - Cartagena',
+        modality: modality || 'Presencial Sede Pie de la Popa',
         notes,
         status: 'PENDIENTE',
       });
@@ -31,11 +52,15 @@ export async function POST(req: Request) {
         success: true,
         appointment: {
           fullName,
-          phone,
+          patientName: patientName || fullName,
+          professionalName,
+          patientId: patientId || beneficiaryId || undefined,
+          professionalId: professionalId || undefined,
           specialty,
           preferredDate,
           preferredTime,
           location: location || 'Sede Fundación Senda Mujer - Cartagena',
+          modality: modality || 'Presencial Sede Pie de la Popa',
           status: 'PENDIENTE (Confirmación enviada)',
         },
       });

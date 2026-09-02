@@ -26,17 +26,17 @@ const MENU_GROUPS = [
   {
     title: 'OPERACIÓN Y COMANDO',
     items: [
-      { href: '/caribe-seguro', label: 'Command Center', icon: LayoutDashboard },
+      { href: '/caribe-seguro', label: 'Centro de Control', icon: LayoutDashboard },
       { href: '/caribe-seguro/como-funciona', label: '¿Cómo Funciona?', icon: HelpCircle },
     ],
   },
   {
     title: 'PROTECCIÓN Y RESPUESTA',
     items: [
-      { href: '/caribe-seguro/proteccion', label: 'Protection Index & Plan', icon: ShieldCheck },
-      { href: '/caribe-seguro/prevencion', label: 'Prevención Comunitarias', icon: ShieldAlert },
-      { href: '/caribe-seguro/rutas', label: 'Route Engine (Rutas)', icon: Route },
-      { href: '/caribe-seguro/sos', label: 'SENDA SOS (Emergencias)', icon: PhoneCall, highlight: true },
+      { href: '/caribe-seguro/proteccion', label: 'Mi Plan de Protección', icon: ShieldCheck },
+      { href: '/caribe-seguro/prevencion', label: 'Prevención Comunitaria', icon: ShieldAlert },
+      { href: '/caribe-seguro/rutas', label: 'Rutas de Atención', icon: Route },
+      { href: '/caribe-seguro/sos', label: 'SENDA SOS (Emergencias 24/7)', icon: PhoneCall, highlight: true },
     ],
   },
   {
@@ -49,16 +49,16 @@ const MENU_GROUPS = [
   {
     title: 'EVIDENCIA E IMPACTO',
     items: [
-      { href: '/caribe-seguro/impacto', label: 'Impact Engine & KPIs', icon: TrendingUp },
+      { href: '/caribe-seguro/impacto', label: 'Motor de Impacto & KPIs', icon: TrendingUp },
       { href: '/caribe-seguro/observatorio', label: 'Observatorio en Vivo', icon: BarChart3 },
-      { href: '/caribe-seguro/aliados', label: 'Caribe Safe Certified', icon: Award },
+      { href: '/caribe-seguro/aliados', label: 'Caribe Seguro Certificado', icon: Award },
     ],
   },
   {
     title: 'INCIDENCIA Y COOPERACIÓN',
     items: [
-      { href: '/caribe-seguro/cooperacion', label: 'Cooperation & Data Room', icon: Globe },
-      { href: '/caribe-seguro/investigacion', label: 'Policy Lab & Research', icon: BookOpen },
+      { href: '/caribe-seguro/cooperacion', label: 'Sala de Datos & Cooperación', icon: Globe },
+      { href: '/caribe-seguro/investigacion', label: 'Laboratorio de Política', icon: BookOpen },
     ],
   },
 ];

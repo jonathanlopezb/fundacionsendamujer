@@ -50,14 +50,36 @@ export interface IPatientEHR extends Document {
   id: string;
   patientCode: string;
   patientName: string;
+  firstName?: string;
+  lastName?: string;
+  documentType?: string;
+  documentNumber?: string;
   docId: string;
   age: number;
   birthDate: string;
   bloodType: string;
-  eps: string;
+  eps?: string;
   phone: string;
-  emergencyContact: string;
+  email?: string;
+  department?: string;
+  municipality?: string;
   neighborhood: string;
+  address?: string;
+  preferredContact?: string;
+  safeContact?: string;
+  educationLevel?: string;
+  maritalStatus?: string;
+  occupation?: string;
+  employmentStatus?: string;
+  householdMembers?: number;
+  hasChildren?: boolean;
+  childrenCount?: number;
+  healthRegime?: string;
+  typeOfDisability?: string;
+  accessibilitySupport?: string;
+  motivation?: string[];
+  riskSituations?: string[];
+  emergencyContact: string;
   allergies: string;
   riskLevel: 'BAJO' | 'MODERADO' | 'ALTO' | 'CRITICO';
   ipscScore: number;
@@ -73,6 +95,12 @@ export interface IPatientEHR extends Document {
     bmi: number;
     tempC: number;
   };
+  consents?: Array<{
+    purpose: string;
+    grantedAt: Date;
+    status: 'CONCEDIDO' | 'REVOCADO';
+    version: string;
+  }>;
   evolutions: IClinicalEvolution[];
   legalProcedures: ILegalProcedure[];
   resourcesProvided: IResourceProvided[];
@@ -106,14 +134,36 @@ const PatientEHRSchema = new Schema<IPatientEHR>(
     id: { type: String, required: true, unique: true },
     patientCode: { type: String, required: true, unique: true },
     patientName: { type: String, required: true },
+    firstName: { type: String },
+    lastName: { type: String },
+    documentType: { type: String, default: 'CC' },
+    documentNumber: { type: String },
     docId: { type: String, required: true },
     age: { type: Number, default: 25 },
     birthDate: { type: String, default: '1999-01-01' },
     bloodType: { type: String, default: 'O+' },
     eps: { type: String, default: 'Mutual Ser EPS-S' },
     phone: { type: String, default: '+57 300 000 0000' },
-    emergencyContact: { type: String, default: 'Familiar Responsable' },
+    email: { type: String },
+    department: { type: String },
+    municipality: { type: String },
     neighborhood: { type: String, default: 'Olaya Herrera, Cartagena' },
+    address: { type: String },
+    preferredContact: { type: String, default: 'WhatsApp' },
+    safeContact: { type: String },
+    educationLevel: { type: String },
+    maritalStatus: { type: String },
+    occupation: { type: String },
+    employmentStatus: { type: String },
+    householdMembers: { type: Number },
+    hasChildren: { type: Boolean },
+    childrenCount: { type: Number },
+    healthRegime: { type: String },
+    typeOfDisability: { type: String },
+    accessibilitySupport: { type: String },
+    motivation: [{ type: String }],
+    riskSituations: [{ type: String }],
+    emergencyContact: { type: String, default: 'Familiar Responsable' },
     allergies: { type: String, default: 'Ninguna' },
     riskLevel: { type: String, enum: ['BAJO', 'MODERADO', 'ALTO', 'CRITICO'], default: 'BAJO' },
     ipscScore: { type: Number, default: 70 },
@@ -133,6 +183,14 @@ const PatientEHRSchema = new Schema<IPatientEHR>(
       bmi: { type: Number, default: 23.4 },
       tempC: { type: Number, default: 36.5 },
     },
+    consents: [
+      {
+        purpose: { type: String, required: true },
+        grantedAt: { type: Date, default: Date.now },
+        status: { type: String, enum: ['CONCEDIDO', 'REVOCADO'], default: 'CONCEDIDO' },
+        version: { type: String, default: '1.0' },
+      },
+    ],
     evolutions: [
       {
         id: { type: String, required: true },

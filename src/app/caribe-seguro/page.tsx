@@ -65,10 +65,7 @@ export default function CaribeSeguroCommandCenterPage() {
           <div className="space-y-2 max-w-2xl">
             <div className="flex items-center gap-2">
               <span className="bg-amber-400 text-[#3B0852] font-black text-[10px] px-3 py-1 rounded-full uppercase tracking-widest flex items-center gap-1 shadow-sm">
-                <Shield className="w-3 h-3" /> COMMAND CENTER DE INNOVACIÓN SOCIAL
-              </span>
-              <span className="bg-emerald-500 text-white font-extrabold text-[10px] px-3 py-1 rounded-full flex items-center gap-1">
-                <CheckCircle2 className="w-3 h-3" /> FASES 1, 2 Y 3 ACTIVAS
+            <Shield className="w-3 h-3" /> CENTRO DE CONTROL — INNOVACIÓN SOCIAL
               </span>
             </div>
 
@@ -127,8 +124,8 @@ export default function CaribeSeguroCommandCenterPage() {
             {[
               { id: 'observatorio', label: '1. Observatorio en Vivo', icon: BarChart3 },
               { id: 'mapa', label: '2. Mapa de Servicios', icon: MapPin },
-              { id: 'certificacion', label: '3. Caribe Safe Certified', icon: Award },
-              { id: 'policylab', label: '4. Policy Lab & Alianzas', icon: Globe },
+              { id: 'certificacion', label: '3. Caribe Seguro Certificado', icon: Award },
+              { id: 'policylab', label: '4. Laboratorio de Política', icon: Globe },
             ].map((tab) => {
               const Icon = tab.icon;
               const isActive = activeTab === tab.id;

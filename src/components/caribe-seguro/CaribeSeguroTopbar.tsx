@@ -12,19 +12,19 @@ interface TopbarProps {
 }
 
 const ROUTE_LABELS: Record<string, string> = {
-  '/caribe-seguro': 'Command Center (Centro de Control)',
+  '/caribe-seguro': 'Centro de Control (Ecosistema)',
   '/caribe-seguro/como-funciona': '¿Cómo Funciona el Modelo?',
-  '/caribe-seguro/proteccion': 'Índice de Protección IPSC (10D)',
+  '/caribe-seguro/proteccion': 'Mi Plan de Protección IPSC (10 Dimensiones)',
   '/caribe-seguro/prevencion': 'Redes de Prevención Comunitaria',
-  '/caribe-seguro/rutas': 'Route Engine (Rutas Institucionales)',
+  '/caribe-seguro/rutas': 'Rutas de Atención Institucional',
   '/caribe-seguro/sos': 'SENDA SOS (Emergencias 24/7)',
   '/caribe-seguro/academia': 'Senda Academia & Formación',
   '/caribe-seguro/red': 'Red Profesional & Voluntariado',
-  '/caribe-seguro/impacto': 'Impact Engine & Métricas KPIs',
+  '/caribe-seguro/impacto': 'Motor de Impacto & Métricas KPIs',
   '/caribe-seguro/observatorio': 'Observatorio en Vivo (Agregado k≥5)',
-  '/caribe-seguro/aliados': 'Caribe Safe Certified',
-  '/caribe-seguro/cooperacion': 'Data Room para Cooperantes',
-  '/caribe-seguro/investigacion': 'Policy Lab & Investigaciones',
+  '/caribe-seguro/aliados': 'Caribe Seguro Certificado',
+  '/caribe-seguro/cooperacion': 'Sala de Datos para Cooperantes',
+  '/caribe-seguro/investigacion': 'Laboratorio de Política & Investigaciones',
 };
 
 export default function CaribeSeguroTopbar({ onToggleSidebarMobile }: TopbarProps) {
