@@ -12,7 +12,7 @@ export interface IIPSCIndexAggregate extends Document {
   generatedAt: Date;
 }
 
-const IPSCIndexAggregateSchema = new Schema<IPSCIndexAggregate>(
+const IPSCIndexAggregateSchema = new Schema<IIPSCIndexAggregate>(
   {
     period: { type: String, required: true },
     territorialUnit: { type: String, required: true },
@@ -28,4 +28,4 @@ const IPSCIndexAggregateSchema = new Schema<IPSCIndexAggregate>(
 );
 
 export default mongoose.models.IPSCIndexAggregate ||
-  mongoose.model<IPSCIndexAggregate>('IPSCIndexAggregate', IPSCIndexAggregateSchema);
+  mongoose.model<IIPSCIndexAggregate>('IPSCIndexAggregate', IPSCIndexAggregateSchema);
