@@ -148,14 +148,45 @@ export interface PatientEHR {
   id: string;
   patientCode: string;
   patientName: string;
+  firstName?: string;
+  lastName?: string;
+  documentType?: string;
+  documentNumber?: string;
   docId: string;
   age: number;
   birthDate: string;
   bloodType: string;
   eps: string;
   phone: string;
-  emergencyContact: string;
+  email?: string;
+  department?: string;
+  municipality?: string;
   neighborhood: string;
+  address?: string;
+  zone?: string;
+  preferredContact?: string;
+  safeContact?: string;
+  maritalStatus?: string;
+  educationLevel?: string;
+  occupation?: string;
+  employmentStatus?: string;
+  housingType?: string;
+  householdMembers?: number;
+  hasChildren?: boolean;
+  childrenCount?: number;
+  peopleInCharge?: string;
+  healthRegime?: string;
+  typeOfDisability?: string;
+  disabilityType?: string;
+  accessibilitySupport?: string;
+  motivation?: string[];
+  riskSituations?: string[];
+  digitalPhoneAccess?: string;
+  internetAccess?: string;
+  safeCommunication?: string;
+  notificationsDiscrete?: string;
+  participationSource?: string;
+  emergencyContact: string;
   allergies: string;
   riskLevel: 'BAJO' | 'MODERADO' | 'ALTO' | 'CRITICO';
   ipscScore: number;
@@ -171,6 +202,7 @@ export interface PatientEHR {
     bmi: number;
     tempC: number;
   };
+  consents?: Array<{ purpose: string; grantedAt: Date; status: string; version: string }>;
   evolutions: ClinicalEvolutionNote[];
   legalProcedures: LegalProcedureItem[];
   resourcesProvided: ResourceProvidedItem[];
@@ -631,20 +663,29 @@ export default function AdminManagementPanel({ onOpenSOS }: { onOpenSOS?: () => 
       municipality: newPatMunicipality,
       neighborhood: newPatNeighborhood,
       address: newPatAddress,
+      zone: newPatZone,
       preferredContact: newPatPreferredContact,
       safeContact: newPatSafeContact,
       educationLevel: newPatEducation,
       maritalStatus: newPatMaritalStatus,
       occupation: newPatOccupation,
       employmentStatus: newPatEmploymentStatus,
+      housingType: newPatHousingType,
       householdMembers: newPatHouseholdMembers,
       hasChildren: newPatHasChildren === 'Sí',
       childrenCount: newPatChildrenCount,
+      peopleInCharge: newPatPeopleInCharge,
       healthRegime: newPatHealthRegime,
       typeOfDisability: newPatDisability === 'Sí' ? newPatDisabilityType || 'No reportada' : 'No',
+      disabilityType: newPatDisabilityType,
       accessibilitySupport: newPatAccessibilitySupport,
       motivation: newPatMotivations,
       riskSituations: newPatRiskSituations,
+      digitalPhoneAccess: newPatDigitalPhoneAccess,
+      internetAccess: newPatInternetAccess,
+      safeCommunication: newPatSafeCommunication,
+      notificationsDiscrete: newPatNotificationsDiscrete,
+      participationSource: newPatSource,
       emergencyContact: 'Familiar Responsable',
       allergies: 'Ninguna reportada',
       riskLevel: 'BAJO',
