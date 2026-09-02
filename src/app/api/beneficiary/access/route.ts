@@ -1,10 +1,10 @@
 import { NextRequest, NextResponse } from 'next/server';
-import dbConnect from '@/lib/mongodb';
+import { connectToDatabase } from '@/lib/mongodb';
 import BeneficiaryPortalAccess from '@/lib/models/BeneficiaryPortalAccess';
 
 export async function POST(req: NextRequest) {
   try {
-    await dbConnect();
+    await connectToDatabase();
     const { patientId, documentNumber, password, patientName, patientCode } = await req.json();
 
     if (!patientId || !documentNumber || !password || !patientName) {
@@ -48,7 +48,7 @@ export async function POST(req: NextRequest) {
 
 export async function GET(req: NextRequest) {
   try {
-    await dbConnect();
+    await connectToDatabase();
     const { searchParams } = new URL(req.url);
     const documentNumber = searchParams.get('documentNumber');
 

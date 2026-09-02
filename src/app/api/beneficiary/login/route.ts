@@ -1,10 +1,10 @@
 import { NextRequest, NextResponse } from 'next/server';
-import dbConnect from '@/lib/mongodb';
+import { connectToDatabase } from '@/lib/mongodb';
 import BeneficiaryPortalAccess from '@/lib/models/BeneficiaryPortalAccess';
 
 export async function POST(req: NextRequest) {
   try {
-    await dbConnect();
+    await connectToDatabase();
     const { documentNumber, password } = await req.json();
 
     if (!documentNumber || !password) {
