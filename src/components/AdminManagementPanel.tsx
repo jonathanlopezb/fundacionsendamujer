@@ -388,10 +388,51 @@ export default function AdminManagementPanel({ onOpenSOS }: { onOpenSOS?: () => 
   // Form State: Create Patient with Immediate Appointment
   const [newPatName, setNewPatName] = useState('');
   const [newPatDocId, setNewPatDocId] = useState('');
+  const [newPatFirstName, setNewPatFirstName] = useState('');
+  const [newPatLastName, setNewPatLastName] = useState('');
+  const [newPatDocumentType, setNewPatDocumentType] = useState('CC');
+  const [newPatDocumentNumber, setNewPatDocumentNumber] = useState('');
+  const [newPatBirthDate, setNewPatBirthDate] = useState('1998-01-01');
   const [newPatAge, setNewPatAge] = useState(25);
+  const [newPatPlaceOfBirth, setNewPatPlaceOfBirth] = useState('Cartagena');
+  const [newPatNationality, setNewPatNationality] = useState('Colombiana');
+  const [newPatSex, setNewPatSex] = useState('Femenino');
+  const [newPatPreferredName, setNewPatPreferredName] = useState('');
   const [newPatPhone, setNewPatPhone] = useState('');
+  const [newPatEmail, setNewPatEmail] = useState('');
+  const [newPatDepartment, setNewPatDepartment] = useState('Bolívar');
+  const [newPatMunicipality, setNewPatMunicipality] = useState('Cartagena');
   const [newPatNeighborhood, setNewPatNeighborhood] = useState('Olaya Herrera, Cartagena');
+  const [newPatAddress, setNewPatAddress] = useState('');
+  const [newPatZone, setNewPatZone] = useState('Urbana');
+  const [newPatPreferredContact, setNewPatPreferredContact] = useState('WhatsApp');
+  const [newPatSafeContact, setNewPatSafeContact] = useState('Sí');
+  const [newPatMaritalStatus, setNewPatMaritalStatus] = useState('Soltera');
+  const [newPatEducation, setNewPatEducation] = useState('Bachillerato');
+  const [newPatOccupation, setNewPatOccupation] = useState('');
+  const [newPatEmploymentStatus, setNewPatEmploymentStatus] = useState('Desempleada');
+  const [newPatHousingType, setNewPatHousingType] = useState('Propia');
+  const [newPatHouseholdMembers, setNewPatHouseholdMembers] = useState(3);
+  const [newPatHasChildren, setNewPatHasChildren] = useState('No');
+  const [newPatChildrenCount, setNewPatChildrenCount] = useState(0);
+  const [newPatPeopleInCharge, setNewPatPeopleInCharge] = useState('No');
   const [newPatEps, setNewPatEps] = useState('Mutual Ser EPS-S');
+  const [newPatHealthRegime, setNewPatHealthRegime] = useState('Contributivo');
+  const [newPatDisability, setNewPatDisability] = useState('No');
+  const [newPatDisabilityType, setNewPatDisabilityType] = useState('');
+  const [newPatAccessibilitySupport, setNewPatAccessibilitySupport] = useState('No');
+  const [newPatMotivations, setNewPatMotivations] = useState<string[]>([]);
+  const [newPatRiskSituations, setNewPatRiskSituations] = useState<string[]>([]);
+  const [newPatDigitalPhoneAccess, setNewPatDigitalPhoneAccess] = useState('Sí');
+  const [newPatInternetAccess, setNewPatInternetAccess] = useState('Diario');
+  const [newPatSafeCommunication, setNewPatSafeCommunication] = useState('Sí');
+  const [newPatNotificationsDiscrete, setNewPatNotificationsDiscrete] = useState('Sí');
+  const [newPatSource, setNewPatSource] = useState('Redes sociales');
+  const [newPatConsentPersonal, setNewPatConsentPersonal] = useState(false);
+  const [newPatConsentProgram, setNewPatConsentProgram] = useState(false);
+  const [newPatConsentFollowUp, setNewPatConsentFollowUp] = useState(false);
+  const [newPatConsentImpact, setNewPatConsentImpact] = useState(false);
+  const [newPatConsentCommunications, setNewPatConsentCommunications] = useState(false);
   const [newPatCategory, setNewPatCategory] = useState<'MEDICO' | 'TRABAJO_SOCIAL' | 'JURIDICO' | 'PSICOLOGO'>('MEDICO');
   const [newPatDoctor, setNewPatDoctor] = useState('Dra. Elena Ruiz');
   const [scheduleImmediateAppointment, setScheduleImmediateAppointment] = useState(true);
@@ -399,6 +440,10 @@ export default function AdminManagementPanel({ onOpenSOS }: { onOpenSOS?: () => 
   const [newPatAppTime, setNewPatAppTime] = useState('10:00 AM');
   const [newPatAppModality, setNewPatAppModality] = useState<'Presencial Sede Pie de la Popa' | 'Teleorientación Virtual' | 'Visita Domiciliaria'>('Presencial Sede Pie de la Popa');
   const [patientCreateSuccess, setPatientCreateSuccess] = useState('');
+
+  const toggleChecklist = <T extends string>(value: T, current: T[], setCurrent: React.Dispatch<React.SetStateAction<T[]>>) => {
+    setCurrent((prev) => prev.includes(value) ? prev.filter((item) => item !== value) : [...prev, value]);
+  };
 
   // Form State: Assign Appointment
   const [newAppointmentBeneficiaryId, setNewAppointmentBeneficiaryId] = useState('');
@@ -562,21 +607,45 @@ export default function AdminManagementPanel({ onOpenSOS }: { onOpenSOS?: () => 
   // ACCIONES: REGISTRAR BENEFICIARIA CON CÓDIGO CSM Y CITA INMEDIATA
   const handleCreatePatient = async (e: React.FormEvent) => {
     e.preventDefault();
-    if (!newPatName || !newPatDocId) return;
+    const patientName = `${newPatFirstName} ${newPatLastName}`.trim();
+    const docNumber = newPatDocumentNumber || newPatDocumentType;
+    if (!patientName || !docNumber) return;
 
     const generatedCode = `CSM-2026-${Math.floor(100000 + Math.random() * 900000)}`;
     const newPat: PatientEHR = {
       id: `EHR-${Date.now()}`,
       patientCode: generatedCode,
-      patientName: newPatName,
-      docId: newPatDocId,
+      patientName,
+      firstName: newPatFirstName,
+      lastName: newPatLastName,
+      documentType: newPatDocumentType,
+      documentNumber: newPatDocumentNumber,
+      docId: docNumber,
       age: Number(newPatAge) || 25,
-      birthDate: '1999-01-01',
+      birthDate: newPatBirthDate,
       bloodType: 'O+',
       eps: newPatEps,
       phone: newPatPhone || '+57 300 123 4567',
-      emergencyContact: 'Familiar Responsable',
+      email: newPatEmail || undefined,
+      department: newPatDepartment,
+      municipality: newPatMunicipality,
       neighborhood: newPatNeighborhood,
+      address: newPatAddress,
+      preferredContact: newPatPreferredContact,
+      safeContact: newPatSafeContact,
+      educationLevel: newPatEducation,
+      maritalStatus: newPatMaritalStatus,
+      occupation: newPatOccupation,
+      employmentStatus: newPatEmploymentStatus,
+      householdMembers: newPatHouseholdMembers,
+      hasChildren: newPatHasChildren === 'Sí',
+      childrenCount: newPatChildrenCount,
+      healthRegime: newPatHealthRegime,
+      typeOfDisability: newPatDisability === 'Sí' ? newPatDisabilityType || 'No reportada' : 'No',
+      accessibilitySupport: newPatAccessibilitySupport,
+      motivation: newPatMotivations,
+      riskSituations: newPatRiskSituations,
+      emergencyContact: 'Familiar Responsable',
       allergies: 'Ninguna reportada',
       riskLevel: 'BAJO',
       ipscScore: 65,
@@ -585,6 +654,13 @@ export default function AdminManagementPanel({ onOpenSOS }: { onOpenSOS?: () => 
       assignedDoctor: newPatDoctor,
       status: 'ACTIVA',
       vitals: { bloodPressure: '120/80 mmHg', heartRate: 72, weightKg: 60, heightM: 1.60, bmi: 23.4, tempC: 36.5 },
+      consents: [
+        { purpose: 'política de tratamiento de datos personales', grantedAt: new Date(), status: 'CONCEDIDO', version: '1.0' },
+        { purpose: 'participar en Caribe Seguro para Mujeres', grantedAt: new Date(), status: 'CONCEDIDO', version: '1.0' },
+        { purpose: 'seguimiento de participación', grantedAt: new Date(), status: newPatConsentFollowUp ? 'CONCEDIDO' : 'REVOCADO', version: '1.0' },
+        { purpose: 'medición de impacto e investigación anónima', grantedAt: new Date(), status: newPatConsentImpact ? 'CONCEDIDO' : 'REVOCADO', version: '1.0' },
+        { purpose: 'comunicaciones del programa', grantedAt: new Date(), status: newPatConsentCommunications ? 'CONCEDIDO' : 'REVOCADO', version: '1.0' },
+      ].filter((consent) => consent.status === 'CONCEDIDO' || consent.purpose !== 'seguimiento de participación' || consent.status === 'REVOCADO'),
       evolutions: [
         {
           id: `EVO-INIT-${Date.now()}`,
@@ -609,7 +685,6 @@ export default function AdminManagementPanel({ onOpenSOS }: { onOpenSOS?: () => 
     setPatients([newPat, ...patients]);
     setSelectedPatientId(newPat.id);
 
-    // Agendar cita inmediata si la opción está activa
     if (scheduleImmediateAppointment) {
       const newApp: AppointmentRecord = {
         id: `APT-${Date.now()}`,
@@ -627,7 +702,7 @@ export default function AdminManagementPanel({ onOpenSOS }: { onOpenSOS?: () => 
       setAppointments([newApp, ...appointments]);
     }
 
-    setPatientCreateSuccess(`¡Beneficiaria ${newPatName} registrada con Código Protegido ${generatedCode} y Cita Inicial Agendada!`);
+    setPatientCreateSuccess(`¡Beneficiaria ${patientName} registrada con Código Protegido ${generatedCode} y Cita Inicial Agendada!`);
 
     try {
       await fetch('/api/admin/patients', {
@@ -639,9 +714,45 @@ export default function AdminManagementPanel({ onOpenSOS }: { onOpenSOS?: () => 
       console.warn('Fallback local activo');
     }
 
-    setNewPatName('');
-    setNewPatDocId('');
+    setNewPatFirstName('');
+    setNewPatLastName('');
+    setNewPatDocumentType('CC');
+    setNewPatDocumentNumber('');
+    setNewPatBirthDate('1998-01-01');
     setNewPatPhone('');
+    setNewPatEmail('');
+    setNewPatDepartment('Bolívar');
+    setNewPatMunicipality('Cartagena');
+    setNewPatNeighborhood('Olaya Herrera, Cartagena');
+    setNewPatAddress('');
+    setNewPatZone('Urbana');
+    setNewPatPreferredContact('WhatsApp');
+    setNewPatSafeContact('Sí');
+    setNewPatMaritalStatus('Soltera');
+    setNewPatEducation('Bachillerato');
+    setNewPatOccupation('');
+    setNewPatEmploymentStatus('Desempleada');
+    setNewPatHousingType('Propia');
+    setNewPatHouseholdMembers(3);
+    setNewPatHasChildren('No');
+    setNewPatChildrenCount(0);
+    setNewPatPeopleInCharge('No');
+    setNewPatEps('Mutual Ser EPS-S');
+    setNewPatDisability('No');
+    setNewPatDisabilityType('');
+    setNewPatAccessibilitySupport('No');
+    setNewPatMotivations([]);
+    setNewPatRiskSituations([]);
+    setNewPatDigitalPhoneAccess('Sí');
+    setNewPatInternetAccess('Diario');
+    setNewPatSafeCommunication('Sí');
+    setNewPatNotificationsDiscrete('Sí');
+    setNewPatSource('Redes sociales');
+    setNewPatConsentPersonal(false);
+    setNewPatConsentProgram(false);
+    setNewPatConsentFollowUp(false);
+    setNewPatConsentImpact(false);
+    setNewPatConsentCommunications(false);
     setTimeout(() => setPatientCreateSuccess(''), 5000);
   };
 
@@ -1165,149 +1276,384 @@ export default function AdminManagementPanel({ onOpenSOS }: { onOpenSOS?: () => 
                     </div>
                   )}
 
-                  <form onSubmit={handleCreatePatient} className="space-y-4">
-                    <div className="grid grid-cols-1 sm:grid-cols-2 md:grid-cols-3 gap-4">
-                      <div>
-                        <label className="block text-[11px] font-extrabold text-pink-300 mb-1">Nombre Completo *</label>
-                        <input
-                          type="text"
-                          value={newPatName}
-                          onChange={(e) => setNewPatName(e.target.value)}
-                          placeholder="Ej: Diana Marcela Gómez"
-                          required
-                          className="w-full p-3 rounded-xl bg-[#140320] border border-pink-500/30 text-xs text-white"
-                        />
-                      </div>
-
-                      <div>
-                        <label className="block text-[11px] font-extrabold text-pink-300 mb-1">Número de Cédula / Documento *</label>
-                        <input
-                          type="text"
-                          value={newPatDocId}
-                          onChange={(e) => setNewPatDocId(e.target.value)}
-                          placeholder="Ej: 1.048.223.109"
-                          required
-                          className="w-full p-3 rounded-xl bg-[#140320] border border-pink-500/30 text-xs text-white font-mono"
-                        />
-                      </div>
-
-                      <div>
-                        <label className="block text-[11px] font-extrabold text-pink-300 mb-1">Edad</label>
-                        <input
-                          type="number"
-                          value={newPatAge}
-                          onChange={(e) => setNewPatAge(Number(e.target.value))}
-                          placeholder="Ej: 29"
-                          className="w-full p-3 rounded-xl bg-[#140320] border border-pink-500/30 text-xs text-white"
-                        />
-                      </div>
-
-                      <div>
-                        <label className="block text-[11px] font-extrabold text-pink-300 mb-1">Teléfono Móvil</label>
-                        <input
-                          type="text"
-                          value={newPatPhone}
-                          onChange={(e) => setNewPatPhone(e.target.value)}
-                          placeholder="+57 318 765 4321"
-                          className="w-full p-3 rounded-xl bg-[#140320] border border-pink-500/30 text-xs text-white"
-                        />
-                      </div>
-
-                      <div>
-                        <label className="block text-[11px] font-extrabold text-pink-300 mb-1">Barrio de Residencia (Cartagena)</label>
-                        <input
-                          type="text"
-                          value={newPatNeighborhood}
-                          onChange={(e) => setNewPatNeighborhood(e.target.value)}
-                          placeholder="Ej: Olaya Herrera, Cartagena"
-                          className="w-full p-3 rounded-xl bg-[#140320] border border-pink-500/30 text-xs text-white"
-                        />
-                      </div>
-
-                      <div>
-                        <label className="block text-[11px] font-extrabold text-pink-300 mb-1">EPS / Régimen de Salud</label>
-                        <input
-                          type="text"
-                          value={newPatEps}
-                          onChange={(e) => setNewPatEps(e.target.value)}
-                          placeholder="Ej: Mutual Ser EPS-S"
-                          className="w-full p-3 rounded-xl bg-[#140320] border border-pink-500/30 text-xs text-white"
-                        />
-                      </div>
-
-                      <div>
-                        <label className="block text-[11px] font-extrabold text-pink-300 mb-1">Especialidad Requerida</label>
-                        <select
-                          value={newPatCategory}
-                          onChange={(e) => setNewPatCategory(e.target.value as any)}
-                          className="w-full p-3 rounded-xl bg-[#140320] border border-pink-500/30 text-xs text-white font-bold"
-                        >
-                          <option value="MEDICO">🩺 Ginecología / Medicina</option>
-                          <option value="JURIDICO">⚖️ Asesoría Jurídica Ley 1257</option>
-                          <option value="TRABAJO_SOCIAL">🏡 Trabajo Social & Territorio</option>
-                          <option value="PSICOLOGO">🧠 Psicología & Salud Mental</option>
-                        </select>
-                      </div>
-
-                      <div>
-                        <label className="block text-[11px] font-extrabold text-pink-300 mb-1">Médico Asignado</label>
-                        <select
-                          value={newPatDoctor}
-                          onChange={(e) => setNewPatDoctor(e.target.value)}
-                          className="w-full p-3 rounded-xl bg-[#140320] border border-pink-500/30 text-xs text-white font-bold"
-                        >
-                          {professionals.map((p) => (
-                            <option key={p.id} value={p.name}>
-                              {p.name} ({p.role})
-                            </option>
-                          ))}
-                        </select>
+                  <form onSubmit={handleCreatePatient} className="space-y-5">
+                    <div className="space-y-4 rounded-2xl border border-pink-500/20 bg-[#140320] p-4">
+                      <h4 className="text-xs font-black uppercase tracking-[0.18em] text-amber-300">Bloque A — Identificación</h4>
+                      <div className="grid grid-cols-1 sm:grid-cols-2 md:grid-cols-4 gap-4">
+                        <div>
+                          <label className="block text-[11px] font-extrabold text-pink-300 mb-1">Primer nombre *</label>
+                          <input value={newPatFirstName} onChange={(e) => setNewPatFirstName(e.target.value)} placeholder="Ej: Diana" required className="w-full p-3 rounded-xl bg-[#240538] border border-pink-500/30 text-xs text-white" />
+                        </div>
+                        <div>
+                          <label className="block text-[11px] font-extrabold text-pink-300 mb-1">Primer apellido *</label>
+                          <input value={newPatLastName} onChange={(e) => setNewPatLastName(e.target.value)} placeholder="Ej: Gómez" required className="w-full p-3 rounded-xl bg-[#240538] border border-pink-500/30 text-xs text-white" />
+                        </div>
+                        <div>
+                          <label className="block text-[11px] font-extrabold text-pink-300 mb-1">Tipo de documento *</label>
+                          <select value={newPatDocumentType} onChange={(e) => setNewPatDocumentType(e.target.value)} className="w-full p-3 rounded-xl bg-[#240538] border border-pink-500/30 text-xs text-white font-bold">
+                            <option value="CC">CC</option>
+                            <option value="TI">TI</option>
+                            <option value="CE">CE</option>
+                            <option value="PP">PP</option>
+                          </select>
+                        </div>
+                        <div>
+                          <label className="block text-[11px] font-extrabold text-pink-300 mb-1">Número de documento *</label>
+                          <input value={newPatDocumentNumber} onChange={(e) => setNewPatDocumentNumber(e.target.value)} placeholder="Ej: 1.048.223.109" required className="w-full p-3 rounded-xl bg-[#240538] border border-pink-500/30 text-xs text-white font-mono" />
+                        </div>
+                        <div>
+                          <label className="block text-[11px] font-extrabold text-pink-300 mb-1">Fecha de nacimiento *</label>
+                          <input type="date" value={newPatBirthDate} onChange={(e) => setNewPatBirthDate(e.target.value)} required className="w-full p-3 rounded-xl bg-[#240538] border border-pink-500/30 text-xs text-white" />
+                        </div>
+                        <div>
+                          <label className="block text-[11px] font-extrabold text-pink-300 mb-1">Edad</label>
+                          <input type="number" value={newPatAge} onChange={(e) => setNewPatAge(Number(e.target.value) || 0)} className="w-full p-3 rounded-xl bg-[#240538] border border-pink-500/30 text-xs text-white" />
+                        </div>
+                        <div>
+                          <label className="block text-[11px] font-extrabold text-pink-300 mb-1">Lugar de nacimiento</label>
+                          <input value={newPatPlaceOfBirth} onChange={(e) => setNewPatPlaceOfBirth(e.target.value)} placeholder="Cartagena" className="w-full p-3 rounded-xl bg-[#240538] border border-pink-500/30 text-xs text-white" />
+                        </div>
+                        <div>
+                          <label className="block text-[11px] font-extrabold text-pink-300 mb-1">Nacionalidad</label>
+                          <input value={newPatNationality} onChange={(e) => setNewPatNationality(e.target.value)} placeholder="Colombiana" className="w-full p-3 rounded-xl bg-[#240538] border border-pink-500/30 text-xs text-white" />
+                        </div>
+                        <div>
+                          <label className="block text-[11px] font-extrabold text-pink-300 mb-1">Sexo registrado al nacer</label>
+                          <select value={newPatSex} onChange={(e) => setNewPatSex(e.target.value)} className="w-full p-3 rounded-xl bg-[#240538] border border-pink-500/30 text-xs text-white font-bold">
+                            <option value="Femenino">Femenino</option>
+                            <option value="Masculino">Masculino</option>
+                            <option value="Otro">Otro</option>
+                            <option value="Prefiero no responder">Prefiero no responder</option>
+                          </select>
+                        </div>
+                        <div>
+                          <label className="block text-[11px] font-extrabold text-pink-300 mb-1">Nombre preferido</label>
+                          <input value={newPatPreferredName} onChange={(e) => setNewPatPreferredName(e.target.value)} placeholder="Ej: Diana" className="w-full p-3 rounded-xl bg-[#240538] border border-pink-500/30 text-xs text-white" />
+                        </div>
                       </div>
                     </div>
 
-                    {/* AGENDAMIENTO DIRECTO DE CITA INICIAL */}
+                    <div className="space-y-4 rounded-2xl border border-pink-500/20 bg-[#140320] p-4">
+                      <h4 className="text-xs font-black uppercase tracking-[0.18em] text-amber-300">Bloque B — Contacto y ubicación</h4>
+                      <div className="grid grid-cols-1 sm:grid-cols-2 md:grid-cols-4 gap-4">
+                        <div>
+                          <label className="block text-[11px] font-extrabold text-pink-300 mb-1">Celular *</label>
+                          <input value={newPatPhone} onChange={(e) => setNewPatPhone(e.target.value)} placeholder="+57 318 765 4321" required className="w-full p-3 rounded-xl bg-[#240538] border border-pink-500/30 text-xs text-white" />
+                        </div>
+                        <div>
+                          <label className="block text-[11px] font-extrabold text-pink-300 mb-1">Correo electrónico</label>
+                          <input type="email" value={newPatEmail} onChange={(e) => setNewPatEmail(e.target.value)} placeholder="correo@ejemplo.com" className="w-full p-3 rounded-xl bg-[#240538] border border-pink-500/30 text-xs text-white" />
+                        </div>
+                        <div>
+                          <label className="block text-[11px] font-extrabold text-pink-300 mb-1">Departamento *</label>
+                          <input value={newPatDepartment} onChange={(e) => setNewPatDepartment(e.target.value)} placeholder="Bolívar" required className="w-full p-3 rounded-xl bg-[#240538] border border-pink-500/30 text-xs text-white" />
+                        </div>
+                        <div>
+                          <label className="block text-[11px] font-extrabold text-pink-300 mb-1">Municipio / ciudad *</label>
+                          <input value={newPatMunicipality} onChange={(e) => setNewPatMunicipality(e.target.value)} placeholder="Cartagena" required className="w-full p-3 rounded-xl bg-[#240538] border border-pink-500/30 text-xs text-white" />
+                        </div>
+                        <div>
+                          <label className="block text-[11px] font-extrabold text-pink-300 mb-1">Barrio / localidad</label>
+                          <input value={newPatNeighborhood} onChange={(e) => setNewPatNeighborhood(e.target.value)} placeholder="Olaya Herrera" className="w-full p-3 rounded-xl bg-[#240538] border border-pink-500/30 text-xs text-white" />
+                        </div>
+                        <div>
+                          <label className="block text-[11px] font-extrabold text-pink-300 mb-1">Dirección</label>
+                          <input value={newPatAddress} onChange={(e) => setNewPatAddress(e.target.value)} placeholder="Calle 20 # 12-34" className="w-full p-3 rounded-xl bg-[#240538] border border-pink-500/30 text-xs text-white" />
+                        </div>
+                        <div>
+                          <label className="block text-[11px] font-extrabold text-pink-300 mb-1">Zona</label>
+                          <select value={newPatZone} onChange={(e) => setNewPatZone(e.target.value)} className="w-full p-3 rounded-xl bg-[#240538] border border-pink-500/30 text-xs text-white font-bold">
+                            <option value="Urbana">Urbana</option>
+                            <option value="Rural">Rural</option>
+                          </select>
+                        </div>
+                        <div>
+                          <label className="block text-[11px] font-extrabold text-pink-300 mb-1">Medio preferido de contacto</label>
+                          <select value={newPatPreferredContact} onChange={(e) => setNewPatPreferredContact(e.target.value)} className="w-full p-3 rounded-xl bg-[#240538] border border-pink-500/30 text-xs text-white font-bold">
+                            <option value="WhatsApp">WhatsApp</option>
+                            <option value="Llamada">Llamada</option>
+                            <option value="SMS">SMS</option>
+                            <option value="Correo">Correo</option>
+                            <option value="Plataforma">Plataforma</option>
+                          </select>
+                        </div>
+                        <div>
+                          <label className="block text-[11px] font-extrabold text-pink-300 mb-1">¿Es seguro este medio?</label>
+                          <select value={newPatSafeContact} onChange={(e) => setNewPatSafeContact(e.target.value)} className="w-full p-3 rounded-xl bg-[#240538] border border-pink-500/30 text-xs text-white font-bold">
+                            <option value="Sí">Sí</option>
+                            <option value="No">No</option>
+                            <option value="Solo determinados horarios">Solo determinados horarios</option>
+                          </select>
+                        </div>
+                      </div>
+                    </div>
+
+                    <div className="space-y-4 rounded-2xl border border-pink-500/20 bg-[#140320] p-4">
+                      <h4 className="text-xs font-black uppercase tracking-[0.18em] text-amber-300">Bloque C — Caracterización socioeconómica</h4>
+                      <div className="grid grid-cols-1 sm:grid-cols-2 md:grid-cols-4 gap-4">
+                        <div>
+                          <label className="block text-[11px] font-extrabold text-pink-300 mb-1">Estado civil</label>
+                          <select value={newPatMaritalStatus} onChange={(e) => setNewPatMaritalStatus(e.target.value)} className="w-full p-3 rounded-xl bg-[#240538] border border-pink-500/30 text-xs text-white font-bold">
+                            <option value="Soltera">Soltera</option>
+                            <option value="Casada">Casada</option>
+                            <option value="Unión marital de hecho">Unión marital de hecho</option>
+                            <option value="Separada">Separada</option>
+                            <option value="Divorciada">Divorciada</option>
+                            <option value="Viuda">Viuda</option>
+                            <option value="Prefiero no responder">Prefiero no responder</option>
+                          </select>
+                        </div>
+                        <div>
+                          <label className="block text-[11px] font-extrabold text-pink-300 mb-1">Nivel académico</label>
+                          <select value={newPatEducation} onChange={(e) => setNewPatEducation(e.target.value)} className="w-full p-3 rounded-xl bg-[#240538] border border-pink-500/30 text-xs text-white font-bold">
+                            <option value="Sin escolaridad">Sin escolaridad</option>
+                            <option value="Primaria">Primaria</option>
+                            <option value="Bachillerato">Bachillerato</option>
+                            <option value="Técnico">Técnico</option>
+                            <option value="Tecnólogo">Tecnólogo</option>
+                            <option value="Universidad">Universidad</option>
+                            <option value="Posgrado">Posgrado</option>
+                            <option value="Prefiero no responder">Prefiero no responder</option>
+                          </select>
+                        </div>
+                        <div>
+                          <label className="block text-[11px] font-extrabold text-pink-300 mb-1">Ocupación</label>
+                          <input value={newPatOccupation} onChange={(e) => setNewPatOccupation(e.target.value)} placeholder="Ej: Empleada" className="w-full p-3 rounded-xl bg-[#240538] border border-pink-500/30 text-xs text-white" />
+                        </div>
+                        <div>
+                          <label className="block text-[11px] font-extrabold text-pink-300 mb-1">Situación laboral</label>
+                          <select value={newPatEmploymentStatus} onChange={(e) => setNewPatEmploymentStatus(e.target.value)} className="w-full p-3 rounded-xl bg-[#240538] border border-pink-500/30 text-xs text-white font-bold">
+                            <option value="Empleada">Empleada</option>
+                            <option value="Independiente">Independiente</option>
+                            <option value="Empresaria">Empresaria</option>
+                            <option value="Desempleada">Desempleada</option>
+                            <option value="Estudiante">Estudiante</option>
+                            <option value="Trabajo doméstico / no remunerado">Trabajo doméstico / no remunerado</option>
+                            <option value="Pensionada">Pensionada</option>
+                            <option value="Otra">Otra</option>
+                            <option value="Prefiero no responder">Prefiero no responder</option>
+                          </select>
+                        </div>
+                        <div>
+                          <label className="block text-[11px] font-extrabold text-pink-300 mb-1">Tipo de vivienda</label>
+                          <select value={newPatHousingType} onChange={(e) => setNewPatHousingType(e.target.value)} className="w-full p-3 rounded-xl bg-[#240538] border border-pink-500/30 text-xs text-white font-bold">
+                            <option value="Propia">Propia</option>
+                            <option value="Arrendada">Arrendada</option>
+                            <option value="Familia">Familia</option>
+                            <option value="Alquiler temporal">Alquiler temporal</option>
+                            <option value="Otra">Otra</option>
+                          </select>
+                        </div>
+                        <div>
+                          <label className="block text-[11px] font-extrabold text-pink-300 mb-1">Número de personas en el hogar</label>
+                          <input type="number" value={newPatHouseholdMembers} onChange={(e) => setNewPatHouseholdMembers(Number(e.target.value) || 0)} className="w-full p-3 rounded-xl bg-[#240538] border border-pink-500/30 text-xs text-white" />
+                        </div>
+                        <div>
+                          <label className="block text-[11px] font-extrabold text-pink-300 mb-1">¿Tiene hijos/as?</label>
+                          <select value={newPatHasChildren} onChange={(e) => setNewPatHasChildren(e.target.value)} className="w-full p-3 rounded-xl bg-[#240538] border border-pink-500/30 text-xs text-white font-bold">
+                            <option value="Sí">Sí</option>
+                            <option value="No">No</option>
+                            <option value="Prefiero no responder">Prefiero no responder</option>
+                          </select>
+                        </div>
+                        <div>
+                          <label className="block text-[11px] font-extrabold text-pink-300 mb-1">Número de hijos/as</label>
+                          <input type="number" value={newPatChildrenCount} onChange={(e) => setNewPatChildrenCount(Number(e.target.value) || 0)} className="w-full p-3 rounded-xl bg-[#240538] border border-pink-500/30 text-xs text-white" />
+                        </div>
+                        <div>
+                          <label className="block text-[11px] font-extrabold text-pink-300 mb-1">¿Tiene personas a cargo?</label>
+                          <select value={newPatPeopleInCharge} onChange={(e) => setNewPatPeopleInCharge(e.target.value)} className="w-full p-3 rounded-xl bg-[#240538] border border-pink-500/30 text-xs text-white font-bold">
+                            <option value="Sí">Sí</option>
+                            <option value="No">No</option>
+                            <option value="Prefiero no responder">Prefiero no responder</option>
+                          </select>
+                        </div>
+                      </div>
+                    </div>
+
+                    <div className="space-y-4 rounded-2xl border border-pink-500/20 bg-[#140320] p-4">
+                      <h4 className="text-xs font-black uppercase tracking-[0.18em] text-amber-300">Bloque D — Salud y aseguramiento</h4>
+                      <div className="grid grid-cols-1 sm:grid-cols-2 md:grid-cols-4 gap-4">
+                        <div>
+                          <label className="block text-[11px] font-extrabold text-pink-300 mb-1">Régimen de salud</label>
+                          <select value={newPatHealthRegime} onChange={(e) => setNewPatHealthRegime(e.target.value)} className="w-full p-3 rounded-xl bg-[#240538] border border-pink-500/30 text-xs text-white font-bold">
+                            <option value="Contributivo">Contributivo</option>
+                            <option value="Subsidiado">Subsidiado</option>
+                            <option value="Especial">Especial</option>
+                            <option value="No afiliada">No afiliada</option>
+                          </select>
+                        </div>
+                        <div>
+                          <label className="block text-[11px] font-extrabold text-pink-300 mb-1">EPS</label>
+                          <input value={newPatEps} onChange={(e) => setNewPatEps(e.target.value)} placeholder="Mutual Ser EPS-S" className="w-full p-3 rounded-xl bg-[#240538] border border-pink-500/30 text-xs text-white" />
+                        </div>
+                        <div>
+                          <label className="block text-[11px] font-extrabold text-pink-300 mb-1">¿Tiene discapacidad?</label>
+                          <select value={newPatDisability} onChange={(e) => setNewPatDisability(e.target.value)} className="w-full p-3 rounded-xl bg-[#240538] border border-pink-500/30 text-xs text-white font-bold">
+                            <option value="No">No</option>
+                            <option value="Sí">Sí</option>
+                            <option value="Prefiero no responder">Prefiero no responder</option>
+                          </select>
+                        </div>
+                        <div>
+                          <label className="block text-[11px] font-extrabold text-pink-300 mb-1">Tipo de discapacidad</label>
+                          <input value={newPatDisabilityType} onChange={(e) => setNewPatDisabilityType(e.target.value)} placeholder="Ej: Auditiva" className="w-full p-3 rounded-xl bg-[#240538] border border-pink-500/30 text-xs text-white" />
+                        </div>
+                        <div>
+                          <label className="block text-[11px] font-extrabold text-pink-300 mb-1">¿Requiere apoyo para la plataforma?</label>
+                          <select value={newPatAccessibilitySupport} onChange={(e) => setNewPatAccessibilitySupport(e.target.value)} className="w-full p-3 rounded-xl bg-[#240538] border border-pink-500/30 text-xs text-white font-bold">
+                            <option value="No">No</option>
+                            <option value="Sí">Sí</option>
+                            <option value="Prefiero no responder">Prefiero no responder</option>
+                          </select>
+                        </div>
+                      </div>
+                    </div>
+
+                    <div className="space-y-4 rounded-2xl border border-pink-500/20 bg-[#140320] p-4">
+                      <h4 className="text-xs font-black uppercase tracking-[0.18em] text-amber-300">Bloque F — Acceso y necesidades</h4>
+                      <div className="space-y-3">
+                        <label className="block text-[11px] font-extrabold text-pink-300 mb-1">¿Qué te motivó a vincularte?</label>
+                        <div className="grid grid-cols-1 sm:grid-cols-2 md:grid-cols-3 gap-2 text-xs text-white">
+                          {[
+                            'Quiero fortalecer mi seguridad',
+                            'Quiero conocer mis derechos',
+                            'Quiero acceder a formación',
+                            'Quiero fortalecer mi autonomía',
+                            'Necesito orientación',
+                            'Necesito acompañamiento',
+                            'Quiero mejorar mi seguridad digital',
+                            'Quiero fortalecer mi red de apoyo',
+                            'Quiero participar en mi comunidad',
+                            'Otro',
+                          ].map((motivation) => (
+                            <label key={motivation} className="flex items-center gap-2 rounded-lg border border-pink-500/20 bg-[#240538] px-2 py-2">
+                              <input type="checkbox" checked={newPatMotivations.includes(motivation)} onChange={() => toggleChecklist(motivation, newPatMotivations, setNewPatMotivations)} className="accent-[#E12880]" />
+                              <span>{motivation}</span>
+                            </label>
+                          ))}
+                        </div>
+                      </div>
+                    </div>
+
+                    <div className="space-y-4 rounded-2xl border border-pink-500/20 bg-[#140320] p-4">
+                      <h4 className="text-xs font-black uppercase tracking-[0.18em] text-amber-300">Bloque G — Situaciones de riesgo o necesidad</h4>
+                      <div className="space-y-3">
+                        <label className="block text-[11px] font-extrabold text-pink-300 mb-1">¿Hay alguna situación sobre la que quisieras recibir orientación?</label>
+                        <div className="grid grid-cols-1 sm:grid-cols-2 md:grid-cols-3 gap-2 text-xs text-white">
+                          {[
+                            'Seguridad personal',
+                            'Violencia basada en género',
+                            'Violencia intrafamiliar',
+                            'Violencia sexual',
+                            'Violencia económica',
+                            'Violencia psicológica',
+                            'Violencia digital',
+                            'Orientación jurídica',
+                            'Salud',
+                            'Embarazo y maternidad',
+                            'Derechos',
+                            'Acceso a servicios',
+                            'Otra',
+                            'Prefiero no responder',
+                          ].map((riskOption) => (
+                            <label key={riskOption} className="flex items-center gap-2 rounded-lg border border-pink-500/20 bg-[#240538] px-2 py-2">
+                              <input type="checkbox" checked={newPatRiskSituations.includes(riskOption)} onChange={() => toggleChecklist(riskOption, newPatRiskSituations, setNewPatRiskSituations)} className="accent-[#E12880]" />
+                              <span>{riskOption}</span>
+                            </label>
+                          ))}
+                        </div>
+                      </div>
+                    </div>
+
+                    <div className="space-y-4 rounded-2xl border border-pink-500/20 bg-[#140320] p-4">
+                      <h4 className="text-xs font-black uppercase tracking-[0.18em] text-amber-300">Bloque H — Seguridad digital</h4>
+                      <div className="grid grid-cols-1 sm:grid-cols-2 md:grid-cols-4 gap-4">
+                        <div>
+                          <label className="block text-[11px] font-extrabold text-pink-300 mb-1">¿Tienes acceso personal a un teléfono?</label>
+                          <select value={newPatDigitalPhoneAccess} onChange={(e) => setNewPatDigitalPhoneAccess(e.target.value)} className="w-full p-3 rounded-xl bg-[#240538] border border-pink-500/30 text-xs text-white font-bold">
+                            <option value="Sí">Sí</option>
+                            <option value="No">No</option>
+                            <option value="Compartido">Compartido</option>
+                          </select>
+                        </div>
+                        <div>
+                          <label className="block text-[11px] font-extrabold text-pink-300 mb-1">¿Tienes acceso a internet?</label>
+                          <select value={newPatInternetAccess} onChange={(e) => setNewPatInternetAccess(e.target.value)} className="w-full p-3 rounded-xl bg-[#240538] border border-pink-500/30 text-xs text-white font-bold">
+                            <option value="Diario">Diario</option>
+                            <option value="Algunas veces">Algunas veces</option>
+                            <option value="Muy limitado">Muy limitado</option>
+                            <option value="No tengo acceso">No tengo acceso</option>
+                          </select>
+                        </div>
+                        <div>
+                          <label className="block text-[11px] font-extrabold text-pink-300 mb-1">¿Es seguro recibir comunicaciones?</label>
+                          <select value={newPatSafeCommunication} onChange={(e) => setNewPatSafeCommunication(e.target.value)} className="w-full p-3 rounded-xl bg-[#240538] border border-pink-500/30 text-xs text-white font-bold">
+                            <option value="Sí">Sí</option>
+                            <option value="No">No</option>
+                            <option value="Depende del momento">Depende del momento</option>
+                          </select>
+                        </div>
+                        <div>
+                          <label className="block text-[11px] font-extrabold text-pink-300 mb-1">¿Prefieres notificaciones discretas?</label>
+                          <select value={newPatNotificationsDiscrete} onChange={(e) => setNewPatNotificationsDiscrete(e.target.value)} className="w-full p-3 rounded-xl bg-[#240538] border border-pink-500/30 text-xs text-white font-bold">
+                            <option value="Sí">Sí</option>
+                            <option value="No">No</option>
+                          </select>
+                        </div>
+                      </div>
+                    </div>
+
+                    <div className="space-y-4 rounded-2xl border border-pink-500/20 bg-[#140320] p-4">
+                      <h4 className="text-xs font-black uppercase tracking-[0.18em] text-amber-300">Bloque I — Participación</h4>
+                      <div className="grid grid-cols-1 sm:grid-cols-2 md:grid-cols-3 gap-4">
+                        <div>
+                          <label className="block text-[11px] font-extrabold text-pink-300 mb-1">¿Cómo conociste Caribe Seguro?</label>
+                          <select value={newPatSource} onChange={(e) => setNewPatSource(e.target.value)} className="w-full p-3 rounded-xl bg-[#240538] border border-pink-500/30 text-xs text-white font-bold">
+                            <option value="Redes sociales">Redes sociales</option>
+                            <option value="Fundación Senda Mujer">Fundación Senda Mujer</option>
+                            <option value="Profesional">Profesional</option>
+                            <option value="Organización aliada">Organización aliada</option>
+                            <option value="Institución educativa">Institución educativa</option>
+                            <option value="Evento">Evento</option>
+                            <option value="Recomendación">Recomendación</option>
+                            <option value="Internet">Internet</option>
+                            <option value="Otro">Otro</option>
+                          </select>
+                        </div>
+                      </div>
+                    </div>
+
+                    <div className="space-y-4 rounded-2xl border border-pink-500/20 bg-[#140320] p-4">
+                      <h4 className="text-xs font-black uppercase tracking-[0.18em] text-amber-300">Bloque J — Consentimientos</h4>
+                      <div className="space-y-2 text-xs text-white">
+                        <label className="flex items-center gap-2 rounded-lg border border-pink-500/20 bg-[#240538] px-3 py-2"><input type="checkbox" checked={newPatConsentPersonal} onChange={(e) => setNewPatConsentPersonal(e.target.checked)} className="accent-[#E12880]" /> He leído y acepto la política de tratamiento de datos personales.</label>
+                        <label className="flex items-center gap-2 rounded-lg border border-pink-500/20 bg-[#240538] px-3 py-2"><input type="checkbox" checked={newPatConsentProgram} onChange={(e) => setNewPatConsentProgram(e.target.checked)} className="accent-[#E12880]" /> Autorizo el tratamiento de mis datos para participar en Caribe Seguro para Mujeres.</label>
+                        <label className="flex items-center gap-2 rounded-lg border border-pink-500/20 bg-[#240538] px-3 py-2"><input type="checkbox" checked={newPatConsentFollowUp} onChange={(e) => setNewPatConsentFollowUp(e.target.checked)} className="accent-[#E12880]" /> Autorizo el uso de mis datos para realizar seguimiento de mi participación.</label>
+                        <label className="flex items-center gap-2 rounded-lg border border-pink-500/20 bg-[#240538] px-3 py-2"><input type="checkbox" checked={newPatConsentImpact} onChange={(e) => setNewPatConsentImpact(e.target.checked)} className="accent-[#E12880]" /> Autorizo el uso de información anonimizada y agregada para medición de impacto, investigación y estadísticas.</label>
+                        <label className="flex items-center gap-2 rounded-lg border border-pink-500/20 bg-[#240538] px-3 py-2"><input type="checkbox" checked={newPatConsentCommunications} onChange={(e) => setNewPatConsentCommunications(e.target.checked)} className="accent-[#E12880]" /> Deseo recibir comunicaciones sobre actividades, formación y servicios de Caribe Seguro.</label>
+                      </div>
+                    </div>
+
                     <div className="bg-[#140320] p-4 rounded-2xl border border-pink-500/20 space-y-3">
                       <div className="flex items-center gap-2">
-                        <input
-                          type="checkbox"
-                          id="schedApp"
-                          checked={scheduleImmediateAppointment}
-                          onChange={(e) => setScheduleImmediateAppointment(e.target.checked)}
-                          className="w-4 h-4 accent-[#E12880]"
-                        />
-                        <label htmlFor="schedApp" className="text-xs font-black text-amber-300 cursor-pointer">
-                          📅 Agendar Cita Inicial Inmediata al Guardar Beneficiaria
-                        </label>
+                        <input type="checkbox" id="schedApp" checked={scheduleImmediateAppointment} onChange={(e) => setScheduleImmediateAppointment(e.target.checked)} className="w-4 h-4 accent-[#E12880]" />
+                        <label htmlFor="schedApp" className="text-xs font-black text-amber-300 cursor-pointer">📅 Agendar Cita Inicial Inmediata al Guardar Beneficiaria</label>
                       </div>
 
                       {scheduleImmediateAppointment && (
                         <div className="grid grid-cols-1 sm:grid-cols-3 gap-3 pt-2">
                           <div>
                             <label className="block text-[10px] font-extrabold text-slate-300 mb-1">Fecha de la Cita</label>
-                            <input
-                              type="date"
-                              value={newPatAppDate}
-                              onChange={(e) => setNewPatAppDate(e.target.value)}
-                              className="w-full p-2.5 rounded-xl bg-[#240538] border border-pink-500/30 text-xs text-white"
-                            />
+                            <input type="date" value={newPatAppDate} onChange={(e) => setNewPatAppDate(e.target.value)} className="w-full p-2.5 rounded-xl bg-[#240538] border border-pink-500/30 text-xs text-white" />
                           </div>
                           <div>
                             <label className="block text-[10px] font-extrabold text-slate-300 mb-1">Hora de la Cita</label>
-                            <input
-                              type="text"
-                              value={newPatAppTime}
-                              onChange={(e) => setNewPatAppTime(e.target.value)}
-                              placeholder="10:00 AM"
-                              className="w-full p-2.5 rounded-xl bg-[#240538] border border-pink-500/30 text-xs text-white"
-                            />
+                            <input type="text" value={newPatAppTime} onChange={(e) => setNewPatAppTime(e.target.value)} placeholder="10:00 AM" className="w-full p-2.5 rounded-xl bg-[#240538] border border-pink-500/30 text-xs text-white" />
                           </div>
                           <div>
                             <label className="block text-[10px] font-extrabold text-slate-300 mb-1">Modalidad</label>
-                            <select
-                              value={newPatAppModality}
-                              onChange={(e) => setNewPatAppModality(e.target.value as any)}
-                              className="w-full p-2.5 rounded-xl bg-[#240538] border border-pink-500/30 text-xs text-white font-bold"
-                            >
+                            <select value={newPatAppModality} onChange={(e) => setNewPatAppModality(e.target.value as any)} className="w-full p-2.5 rounded-xl bg-[#240538] border border-pink-500/30 text-xs text-white font-bold">
                               <option value="Presencial Sede Pie de la Popa">Presencial Sede Pie de la Popa</option>
                               <option value="Teleorientación Virtual">Teleorientación Virtual</option>
                               <option value="Visita Domiciliaria">Visita Domiciliaria</option>
@@ -1318,10 +1664,7 @@ export default function AdminManagementPanel({ onOpenSOS }: { onOpenSOS?: () => 
                     </div>
 
                     <div className="flex justify-end pt-2">
-                      <button
-                        type="submit"
-                        className="bg-gradient-to-r from-[#E12880] to-[#52166F] hover:from-[#c81e6e] text-white font-black px-6 py-3 rounded-xl text-xs shadow-md cursor-pointer flex items-center gap-2"
-                      >
+                      <button type="submit" className="bg-gradient-to-r from-[#E12880] to-[#52166F] hover:from-[#c81e6e] text-white font-black px-6 py-3 rounded-xl text-xs shadow-md cursor-pointer flex items-center gap-2">
                         <UserCog className="w-4 h-4" />
                         <span>Generar Código Protegido CSM, Registrar & Agendar Cita</span>
                       </button>
