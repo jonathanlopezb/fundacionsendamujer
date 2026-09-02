@@ -400,6 +400,15 @@ export default function AdminManagementPanel({ onOpenSOS }: { onOpenSOS?: () => 
   const [newPatAppModality, setNewPatAppModality] = useState<'Presencial Sede Pie de la Popa' | 'Teleorientación Virtual' | 'Visita Domiciliaria'>('Presencial Sede Pie de la Popa');
   const [patientCreateSuccess, setPatientCreateSuccess] = useState('');
 
+  // Form State: Assign Appointment
+  const [newAppointmentBeneficiaryId, setNewAppointmentBeneficiaryId] = useState('');
+  const [newAppointmentProfessionalId, setNewAppointmentProfessionalId] = useState('');
+  const [newAppointmentDate, setNewAppointmentDate] = useState('2026-09-08');
+  const [newAppointmentTime, setNewAppointmentTime] = useState('10:00 AM');
+  const [newAppointmentModality, setNewAppointmentModality] = useState<'Presencial Sede Pie de la Popa' | 'Teleorientación Virtual' | 'Visita Domiciliaria'>('Presencial Sede Pie de la Popa');
+  const [newAppointmentNotes, setNewAppointmentNotes] = useState('');
+  const [appointmentCreateSuccess, setAppointmentCreateSuccess] = useState('');
+
   // Form State: Legal Procedure
   const [newLegalEntity, setNewLegalEntity] = useState('Comisaría de Familia Chiquinquirá');
   const [newLegalType, setNewLegalType] = useState('Medida de Protección Ley 1257/2008');
@@ -636,6 +645,69 @@ export default function AdminManagementPanel({ onOpenSOS }: { onOpenSOS?: () => 
     setTimeout(() => setPatientCreateSuccess(''), 5000);
   };
 
+  const handleCreateAppointment = async (e: React.FormEvent) => {
+    e.preventDefault();
+    const beneficiary = patients.find((p) => p.id === newAppointmentBeneficiaryId);
+    const professional = professionals.find((p) => p.id === newAppointmentProfessionalId);
+
+    if (!beneficiary || !professional || !newAppointmentDate || !newAppointmentTime) {
+      setAppointmentCreateSuccess('Debes seleccionar beneficiaria, profesional y datos de la cita.');
+      return;
+    }
+
+    const appointmentPayload = {
+      fullName: beneficiary.patientName,
+      patientName: beneficiary.patientName,
+      patientId: beneficiary.id,
+      beneficiaryId: beneficiary.id,
+      professionalName: professional.name,
+      professionalId: professional.id,
+      phone: beneficiary.phone,
+      email: professional.email,
+      specialty: professional.specialty,
+      preferredDate: newAppointmentDate,
+      preferredTime: newAppointmentTime,
+      location: 'Sede Fundación Senda Mujer - Cartagena',
+      modality: newAppointmentModality,
+      notes: newAppointmentNotes || 'Cita programada desde el panel administrativo del rol ADMIN_SISTEMA.',
+    };
+
+    const nextAppointment: AppointmentRecord = {
+      id: `APT-${Date.now()}`,
+      patientId: beneficiary.id,
+      patientName: beneficiary.patientName,
+      patientCode: beneficiary.patientCode,
+      doctorName: professional.name,
+      specialty: professional.specialty,
+      date: newAppointmentDate,
+      time: newAppointmentTime,
+      modality: newAppointmentModality,
+      status: 'PROGRAMADA',
+      notes: appointmentPayload.notes,
+    };
+
+    setAppointments((prev) => [nextAppointment, ...prev]);
+    setAppointmentCreateSuccess(`Cita programada para ${beneficiary.patientName} con ${professional.name}.`);
+
+    try {
+      await fetch('/api/appointments', {
+        method: 'POST',
+        headers: { 'Content-Type': 'application/json' },
+        body: JSON.stringify(appointmentPayload),
+      });
+    } catch (err) {
+      console.warn('Fallback local de cita:', err);
+    }
+
+    setNewAppointmentBeneficiaryId('');
+    setNewAppointmentProfessionalId('');
+    setNewAppointmentDate('2026-09-08');
+    setNewAppointmentTime('10:00 AM');
+    setNewAppointmentModality('Presencial Sede Pie de la Popa');
+    setNewAppointmentNotes('');
+    setTimeout(() => setAppointmentCreateSuccess(''), 5000);
+  };
+
   // RADICAR TRÁMITE JURÍDICO (LEY 1257, COMISARÍA, FISCALÍA)
   const handleAddLegalProcedure = async (e: React.FormEvent) => {
     e.preventDefault();
@@ -869,8 +941,8 @@ export default function AdminManagementPanel({ onOpenSOS }: { onOpenSOS?: () => 
             {[
               { id: 'dashboard', label: '📊 Panel Ejecutivo KPI', icon: BarChart3 },
               { id: 'profesionales', label: '🩺 Crear & Gestionar Médicos', icon: UserPlus },
-              { id: 'beneficiarias', label: '👥 Crear Beneficiaria & Asignar Cita', icon: UserCog },
-              { id: 'citas', label: '📅 Calendario de Citas', icon: CalendarPlus },
+              { id: 'beneficiarias', label: '👥 Registro de Beneficiaria', icon: UserCog },
+              { id: 'citas', label: '📅 Asignar Cita', icon: CalendarPlus },
               { id: 'clinica', label: '🩺 Expediente EHR & Módulo Jurídico', icon: Activity },
             ].map((t) => {
               const Icon = t.icon;
@@ -1255,6 +1327,146 @@ export default function AdminManagementPanel({ onOpenSOS }: { onOpenSOS?: () => 
                       </button>
                     </div>
                   </form>
+                </div>
+              </div>
+            )}
+
+            {/* ASIGNACIÓN DE CITA CON BENEFICIARIA Y PROFESIONAL */}
+            {adminTab === 'citas' && (
+              <div className="space-y-6 animate-fadeIn">
+                <div className="bg-[#240538] rounded-3xl p-6 border border-pink-500/30 space-y-4 shadow-xl">
+                  <h3 className="text-base font-black text-white flex items-center gap-2">
+                    <CalendarPlus className="w-5 h-5 text-amber-300" />
+                    Asignar Cita a Beneficiaria con Profesional
+                  </h3>
+
+                  {appointmentCreateSuccess && (
+                    <div className="p-3 bg-emerald-500/20 border border-emerald-500/40 text-emerald-300 rounded-xl text-xs font-bold">
+                      {appointmentCreateSuccess}
+                    </div>
+                  )}
+
+                  <form onSubmit={handleCreateAppointment} className="space-y-4">
+                    <div className="grid grid-cols-1 sm:grid-cols-2 gap-4">
+                      <div>
+                        <label className="block text-[11px] font-extrabold text-pink-300 mb-1">Beneficiaria *</label>
+                        <select
+                          value={newAppointmentBeneficiaryId}
+                          onChange={(e) => setNewAppointmentBeneficiaryId(e.target.value)}
+                          required
+                          className="w-full p-3 rounded-xl bg-[#140320] border border-pink-500/30 text-xs text-white font-bold"
+                        >
+                          <option value="">Selecciona una beneficiaria</option>
+                          {patients.map((patient) => (
+                            <option key={patient.id} value={patient.id}>
+                              {patient.patientName} • {patient.patientCode}
+                            </option>
+                          ))}
+                        </select>
+                      </div>
+
+                      <div>
+                        <label className="block text-[11px] font-extrabold text-pink-300 mb-1">Profesional *</label>
+                        <select
+                          value={newAppointmentProfessionalId}
+                          onChange={(e) => setNewAppointmentProfessionalId(e.target.value)}
+                          required
+                          className="w-full p-3 rounded-xl bg-[#140320] border border-pink-500/30 text-xs text-white font-bold"
+                        >
+                          <option value="">Selecciona un profesional</option>
+                          {professionals.map((professional) => (
+                            <option key={professional.id} value={professional.id}>
+                              {professional.name} • {professional.specialty}
+                            </option>
+                          ))}
+                        </select>
+                      </div>
+
+                      <div>
+                        <label className="block text-[11px] font-extrabold text-pink-300 mb-1">Fecha *</label>
+                        <input
+                          type="date"
+                          value={newAppointmentDate}
+                          onChange={(e) => setNewAppointmentDate(e.target.value)}
+                          required
+                          className="w-full p-3 rounded-xl bg-[#140320] border border-pink-500/30 text-xs text-white"
+                        />
+                      </div>
+
+                      <div>
+                        <label className="block text-[11px] font-extrabold text-pink-300 mb-1">Hora *</label>
+                        <input
+                          type="text"
+                          value={newAppointmentTime}
+                          onChange={(e) => setNewAppointmentTime(e.target.value)}
+                          placeholder="10:00 AM"
+                          required
+                          className="w-full p-3 rounded-xl bg-[#140320] border border-pink-500/30 text-xs text-white"
+                        />
+                      </div>
+
+                      <div>
+                        <label className="block text-[11px] font-extrabold text-pink-300 mb-1">Modalidad</label>
+                        <select
+                          value={newAppointmentModality}
+                          onChange={(e) => setNewAppointmentModality(e.target.value as any)}
+                          className="w-full p-3 rounded-xl bg-[#140320] border border-pink-500/30 text-xs text-white font-bold"
+                        >
+                          <option value="Presencial Sede Pie de la Popa">Presencial Sede Pie de la Popa</option>
+                          <option value="Teleorientación Virtual">Teleorientación Virtual</option>
+                          <option value="Visita Domiciliaria">Visita Domiciliaria</option>
+                        </select>
+                      </div>
+                    </div>
+
+                    <div>
+                      <label className="block text-[11px] font-extrabold text-pink-300 mb-1">Notas de la cita</label>
+                      <textarea
+                        value={newAppointmentNotes}
+                        onChange={(e) => setNewAppointmentNotes(e.target.value)}
+                        rows={3}
+                        placeholder="Cita de ingreso, seguimiento, orientación jurídica, etc."
+                        className="w-full p-3 rounded-xl bg-[#140320] border border-pink-500/30 text-xs text-white"
+                      />
+                    </div>
+
+                    <div className="flex justify-end pt-2">
+                      <button
+                        type="submit"
+                        className="bg-gradient-to-r from-[#E12880] to-[#52166F] hover:from-[#c81e6e] text-white font-black px-6 py-3 rounded-xl text-xs shadow-md cursor-pointer flex items-center gap-2"
+                      >
+                        <CalendarPlus className="w-4 h-4" />
+                        <span>Guardar Cita y Vincular Beneficiaria + Profesional</span>
+                      </button>
+                    </div>
+                  </form>
+                </div>
+
+                <div className="bg-[#240538] rounded-3xl p-6 border border-pink-500/20 space-y-4">
+                  <h3 className="text-sm font-black text-white uppercase tracking-wider">
+                    Calendario de Citas Programadas ({appointments.length})
+                  </h3>
+                  <div className="space-y-3">
+                    {appointments.map((appt) => (
+                      <div key={appt.id} className="p-4 rounded-2xl bg-[#140320] border border-pink-500/20 flex flex-col md:flex-row justify-between items-start gap-3">
+                        <div>
+                          <div className="flex items-center gap-2 flex-wrap">
+                            <h4 className="font-black text-sm text-white">{appt.patientName}</h4>
+                            <span className="text-[10px] font-mono text-amber-300">{appt.patientCode}</span>
+                            <span className="bg-emerald-500/20 text-emerald-300 border border-emerald-500/40 text-[10px] font-extrabold px-2.5 py-0.5 rounded-full">
+                              {appt.status}
+                            </span>
+                          </div>
+                          <p className="text-xs text-pink-200/80 mt-1">{appt.doctorName} • {appt.specialty}</p>
+                          <p className="text-[11px] text-slate-300 mt-1">{appt.date} • {appt.time} • {appt.modality}</p>
+                        </div>
+                        <div className="text-right">
+                          <p className="text-[10px] text-slate-400">Notas</p>
+                          <p className="text-xs text-slate-200 max-w-xs">{appt.notes}</p>
+                        </div>
+                      </div>
+                    ))}
+                  </div>
                 </div>
               </div>
             )}
