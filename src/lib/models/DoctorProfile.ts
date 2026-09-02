@@ -9,6 +9,7 @@ export interface IDoctorProfile extends Document {
   code: string;
   rethus: string;
   email: string;
+  password?: string;
   phone: string;
   avatarBg: string;
   badgeColor: string;
@@ -31,6 +32,7 @@ const DoctorProfileSchema = new Schema<IDoctorProfile>(
     code: { type: String, required: true, unique: true },
     rethus: { type: String, required: true },
     email: { type: String, required: true },
+    password: { type: String, default: 'senda2026' },
     phone: { type: String, default: '+57 300 000 0000' },
     avatarBg: { type: String, default: 'bg-emerald-600' },
     badgeColor: { type: String, default: 'bg-emerald-100 text-emerald-800 border-emerald-300' },

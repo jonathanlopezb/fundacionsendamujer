@@ -14,6 +14,38 @@ export interface IClinicalEvolution {
   cie10Code?: string;
 }
 
+export interface ILegalProcedure {
+  id: string;
+  date: string;
+  entity: string; // ej: Comisaría de Familia Chiquinquirá, Fiscalía Bolívar, Juzgado de Familia
+  procedureType: string; // ej: Medida de Protección Ley 1257/2008, Denuncia VBG, Custodia, Alimentos
+  status: 'RADICADO' | 'EN_MEDIDA' | 'AUDIENCIA' | 'RESUELTO' | 'ARCHIVADO';
+  caseNumber?: string;
+  notes: string;
+  documents?: Array<{ name: string; url?: string; date: string }>;
+}
+
+export interface IResourceProvided {
+  id: string;
+  date: string;
+  resourceType: 'KIT_MATERNAL' | 'CAPITAL_SEMILLA' | 'HOSPEDAJE_REFUGIO' | 'SUBSIDIO_TRANSPORTE' | 'MERCADO_ALIMENTARIO' | 'ATENCION_ODONTOLOGICA';
+  description: string;
+  quantity: number;
+  estimatedValueCop: number;
+  deliveredBy: string;
+}
+
+export interface IMultidisciplinaryProgress {
+  id: string;
+  date: string;
+  professionalName: string;
+  role: string;
+  area: 'MEDICINA' | 'PSICOLOGIA' | 'TRABAJO_SOCIAL' | 'JURIDICO' | 'ODONTOLOGIA';
+  milestone: string;
+  summary: string;
+  nextAction?: string;
+}
+
 export interface IPatientEHR extends Document {
   id: string;
   patientCode: string;
@@ -42,6 +74,9 @@ export interface IPatientEHR extends Document {
     tempC: number;
   };
   evolutions: IClinicalEvolution[];
+  legalProcedures: ILegalProcedure[];
+  resourcesProvided: IResourceProvided[];
+  multidisciplinaryProgress: IMultidisciplinaryProgress[];
   prescriptions: Array<{
     id: string;
     date: string;
@@ -111,6 +146,41 @@ const PatientEHRSchema = new Schema<IPatientEHR>(
         analysis: { type: String, required: true },
         plan: { type: String, required: true },
         cie10Code: { type: String },
+      },
+    ],
+    legalProcedures: [
+      {
+        id: { type: String, required: true },
+        date: { type: String, required: true },
+        entity: { type: String, required: true },
+        procedureType: { type: String, required: true },
+        status: { type: String, enum: ['RADICADO', 'EN_MEDIDA', 'AUDIENCIA', 'RESUELTO', 'ARCHIVADO'], default: 'RADICADO' },
+        caseNumber: { type: String },
+        notes: { type: String, required: true },
+        documents: [{ name: String, url: String, date: String }],
+      },
+    ],
+    resourcesProvided: [
+      {
+        id: { type: String, required: true },
+        date: { type: String, required: true },
+        resourceType: { type: String, required: true },
+        description: { type: String, required: true },
+        quantity: { type: Number, default: 1 },
+        estimatedValueCop: { type: Number, default: 0 },
+        deliveredBy: { type: String, required: true },
+      },
+    ],
+    multidisciplinaryProgress: [
+      {
+        id: { type: String, required: true },
+        date: { type: String, required: true },
+        professionalName: { type: String, required: true },
+        role: { type: String, required: true },
+        area: { type: String, required: true },
+        milestone: { type: String, required: true },
+        summary: { type: String, required: true },
+        nextAction: { type: String },
       },
     ],
     prescriptions: [
