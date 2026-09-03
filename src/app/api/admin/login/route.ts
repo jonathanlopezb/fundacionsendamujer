@@ -6,7 +6,7 @@ import { createAdminSession, COOKIE_NAME, SESSION_TTL_SECONDS } from '@/lib/admi
 
 function authenticatedResponse(professional: Record<string, unknown>) {
   const response = NextResponse.json({ success: true, professional });
-  response.cookies.set(COOKIE_NAME, createAdminSession({ professionalId: String(professional.id), role: String(professional.role) }), {
+  response.cookies.set(COOKIE_NAME, createAdminSession({ professionalId: String(professional.id), professionalName: String(professional.name), role: String(professional.role) }), {
     httpOnly: true,
     secure: process.env.NODE_ENV === 'production',
     sameSite: 'strict',

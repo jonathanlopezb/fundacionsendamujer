@@ -2,16 +2,20 @@ import { NextRequest, NextResponse } from 'next/server';
 import { connectToDatabase } from '@/lib/mongodb';
 import PatientEHR from '@/lib/models/PatientEHR';
 import { seedCaribeSeguroData } from '@/lib/seedCaribeSeguro';
-import { isSuperAdminSession } from '@/lib/admin-auth';
+import { isSuperAdminSession, readAdminSession } from '@/lib/admin-auth';
 
 export async function GET() {
-  if (!isSuperAdminSession()) return NextResponse.json({ success: false, error: 'Se requiere sesión de SuperAdministrador.' }, { status: 403 });
+  const session = readAdminSession();
+  if (!session) return NextResponse.json({ success: false, error: 'Se requiere una sesión profesional.' }, { status: 403 });
   try {
     try {
       await connectToDatabase();
       await seedCaribeSeguroData();
 
-      const patients = await PatientEHR.find({}).sort({ createdAt: -1 }).lean();
+      const assignmentFilter = session.role === 'ADMIN_SISTEMA'
+        ? {}
+        : { $or: [{ assignedDoctor: session.professionalName }, { primaryCategory: session.role }] };
+      const patients = await PatientEHR.find(assignmentFilter).sort({ createdAt: -1 }).lean();
       if (patients && patients.length > 0) {
         return NextResponse.json({ success: true, patients });
       }

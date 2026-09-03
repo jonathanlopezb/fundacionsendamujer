@@ -3,6 +3,12 @@ import { connectToDatabase } from '@/lib/mongodb';
 import DoctorProfile from '@/lib/models/DoctorProfile';
 import PatientEHR from '@/lib/models/PatientEHR';
 import { hashPassword } from '@/lib/password';
+import { isSuperAdminSession } from '@/lib/admin-auth';
+
+export async function GET() {
+  if (!isSuperAdminSession()) return NextResponse.json({ success: false, error: 'Solo el SuperAdministrador puede ejecutar el seed.' }, { status: 403 });
+  return NextResponse.json({ success: true, message: 'Usa el flujo de inicialización autorizado.' });
+}
 
 const INITIAL_PROFESSIONALS = [
   {
@@ -273,6 +279,7 @@ const INITIAL_PATIENTS_EHR = [
 ];
 
 export async function POST() {
+  if (!isSuperAdminSession()) return NextResponse.json({ success: false, error: 'Solo el SuperAdministrador puede ejecutar el seed.' }, { status: 403 });
   try {
     await connectToDatabase();
 

@@ -562,9 +562,14 @@ export default function AdminManagementPanel({ onOpenSOS }: { onOpenSOS?: () => 
         const patData = await patRes.json();
         const docData = await docRes.json();
 
-        if (patData.success && patData.patients && patData.patients.length > 0) {
+        if (patData.success && Array.isArray(patData.patients)) {
           setPatients(patData.patients);
-          setSelectedPatientId(patData.patients[0].id);
+          if (patData.patients[0]) setSelectedPatientId(patData.patients[0].id);
+        } else if (patRes.status === 403) {
+          setPatients([]);
+          setIsAdminAuth(false);
+          sessionStorage.removeItem('senda_admin_auth');
+          sessionStorage.removeItem('senda_prof_id');
         }
 
         if (docData.success && docData.doctors && docData.doctors.length > 0) {
@@ -1054,10 +1059,20 @@ export default function AdminManagementPanel({ onOpenSOS }: { onOpenSOS?: () => 
     setNewSoapPlan('');
   };
 
-  const selectedPatient = patients.find((p) => p.id === selectedPatientId) || patients[0];
   const isSuperAdmin = selectedProfessional.role === 'ADMIN_SISTEMA';
   const canManageLegal = isSuperAdmin || selectedProfessional.role === 'JURIDICO';
   const canWriteClinical = isSuperAdmin || ['MEDICO', 'PSICOLOGO', 'TRABAJO_SOCIAL'].includes(selectedProfessional.role);
+  const canViewClinical = isSuperAdmin || ['MEDICO', 'PSICOLOGO', 'TRABAJO_SOCIAL'].includes(selectedProfessional.role);
+  const assignedPatients = isSuperAdmin
+    ? patients
+    : patients.filter((patient) => patient.assignedDoctor === selectedProfessional.name || patient.primaryCategory === selectedProfessional.role);
+  const selectedPatient = assignedPatients.find((p) => p.id === selectedPatientId);
+
+  useEffect(() => {
+    if (assignedPatients.length > 0 && !assignedPatients.some((patient) => patient.id === selectedPatientId)) {
+      setSelectedPatientId(assignedPatients[0].id);
+    }
+  }, [selectedPatientId, assignedPatients.length, selectedProfessional.name]);
 
   return (
     <div className="min-h-screen bg-[#0F0218] text-slate-100 font-sans selection:bg-[#E12880] selection:text-white">
@@ -2048,6 +2063,43 @@ export default function AdminManagementPanel({ onOpenSOS }: { onOpenSOS?: () => 
             {/* EXPEDIENTE EHR & MÓDULO JURÍDICO Y RECURSOS */}
             {adminTab === 'clinica' && (
               <div className="space-y-6 animate-fadeIn">
+                <section className="bg-[#240538] rounded-3xl p-5 border border-pink-500/30 space-y-4">
+                  <div className="flex flex-col sm:flex-row sm:items-center justify-between gap-2">
+                    <div>
+                      <h2 className="text-sm font-black text-white uppercase tracking-wider">Mis pacientes asignadas</h2>
+                      <p className="text-xs text-pink-200/70 mt-1">Selecciona una paciente para abrir su historia clínica o jurídica.</p>
+                    </div>
+                    <span className="text-[11px] font-black text-amber-300 bg-amber-400/10 border border-amber-400/30 px-3 py-1 rounded-full">{assignedPatients.length} asignada{assignedPatients.length === 1 ? '' : 's'}</span>
+                  </div>
+
+                  {assignedPatients.length === 0 ? (
+                    <div className="border border-dashed border-pink-400/30 rounded-2xl p-8 text-center">
+                      <UserCheck className="w-9 h-9 text-pink-300/60 mx-auto mb-3" />
+                      <p className="text-sm font-black text-white">Todavía no tienes pacientes asignados</p>
+                      <p className="text-xs text-pink-200/70 mt-1">El SuperAdministrador aparecerá aquí cuando te asigne una paciente.</p>
+                    </div>
+                  ) : (
+                    <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 gap-3">
+                      {assignedPatients.map((patient) => (
+                        <button
+                          key={patient.id}
+                          type="button"
+                          onClick={() => setSelectedPatientId(patient.id)}
+                          className={`text-left p-4 rounded-2xl border transition-all ${selectedPatient?.id === patient.id ? 'bg-[#E12880]/20 border-pink-400 shadow-lg' : 'bg-[#140320] border-pink-500/20 hover:border-pink-400/60'}`}
+                        >
+                          <div className="flex items-center justify-between gap-2">
+                            <span className="font-black text-sm text-white truncate">{patient.patientName}</span>
+                            {selectedPatient?.id === patient.id && <CheckCircle2 className="w-4 h-4 text-emerald-300 shrink-0" />}
+                          </div>
+                          <p className="text-[10px] text-amber-300 font-mono mt-1">{patient.patientCode}</p>
+                          <p className="text-[10px] text-pink-200/70 mt-2">Ruta: {patient.primaryCategory} · IPSC {patient.ipscScore}/100</p>
+                        </button>
+                      ))}
+                    </div>
+                  )}
+                </section>
+
+                {selectedPatient ? <>
                 <div className="bg-gradient-to-r from-[#2B0642] via-[#3B0852] to-[#1A042B] rounded-3xl p-6 border border-pink-500/30 shadow-2xl space-y-6">
                   
                   <div className="flex flex-col md:flex-row justify-between items-start md:items-center gap-4 border-b border-pink-500/20 pb-4">
@@ -2085,7 +2137,7 @@ export default function AdminManagementPanel({ onOpenSOS }: { onOpenSOS?: () => 
                     { id: 'juridico', label: '⚖️ Módulo Jurídico & Ley 1257', icon: Gavel },
                     { id: 'recursos', label: '📦 Ayudas & Recursos Entregados', icon: PackageCheck },
                     { id: 'evoluciones', label: '🩺 Evoluciones Clínicas (SOAP)', icon: Activity },
-                  ].filter((tab) => tab.id === 'ipsc' || (tab.id === 'juridico' && canManageLegal) || (tab.id === 'recursos' && isSuperAdmin) || (tab.id === 'evoluciones' && canWriteClinical)).map((t) => {
+                  ].filter((tab) => (tab.id === 'ipsc' && canViewClinical) || (tab.id === 'juridico' && canManageLegal) || (tab.id === 'recursos' && isSuperAdmin) || (tab.id === 'evoluciones' && canWriteClinical)).map((t) => {
                     const Icon = t.icon;
                     const isActive = ehrTab === t.id;
 
@@ -2311,6 +2363,7 @@ export default function AdminManagementPanel({ onOpenSOS }: { onOpenSOS?: () => 
                     </div>
                   </div>
                 )}
+                </> : null}
               </div>
             )}
 

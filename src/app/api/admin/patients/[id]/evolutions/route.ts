@@ -4,7 +4,8 @@ import { readAdminSession } from '@/lib/admin-auth';
 import PatientEHR from '@/lib/models/PatientEHR';
 
 export async function POST(req: NextRequest, { params }: { params: { id: string } }) {
-  if (!['ADMIN_SISTEMA', 'MEDICO', 'PSICOLOGO', 'TRABAJO_SOCIAL'].includes(readAdminSession()?.role || '')) return NextResponse.json({ success: false, error: 'No tienes permisos para registrar evoluciones clínicas.' }, { status: 403 });
+  const session = readAdminSession();
+  if (!['ADMIN_SISTEMA', 'MEDICO', 'PSICOLOGO', 'TRABAJO_SOCIAL'].includes(session?.role || '')) return NextResponse.json({ success: false, error: 'No tienes permisos para registrar evoluciones clínicas.' }, { status: 403 });
   try {
     const patientId = params.id;
     const body = await req.json();
@@ -25,6 +26,10 @@ export async function POST(req: NextRequest, { params }: { params: { id: string 
 
     try {
       await connectToDatabase();
+      const patient = await PatientEHR.findOne({ id: patientId }).select('assignedDoctor primaryCategory').lean() as any;
+      if (!patient || (session?.role !== 'ADMIN_SISTEMA' && patient.assignedDoctor !== session?.professionalName && patient.primaryCategory !== session?.role)) {
+        return NextResponse.json({ success: false, error: 'No tienes acceso a este expediente.' }, { status: 403 });
+      }
       const updated = await PatientEHR.findOneAndUpdate(
         { id: patientId },
         { $push: { evolutions: { $each: [newEvolution], $position: 0 } } },

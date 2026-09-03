@@ -4,7 +4,7 @@ import { cookies } from 'next/headers';
 const COOKIE_NAME = 'senda_admin_session';
 const SESSION_TTL_SECONDS = 60 * 60 * 8;
 
-type SessionPayload = { professionalId: string; role: string; exp: number };
+type SessionPayload = { professionalId: string; professionalName?: string; role: string; exp: number };
 
 function getSecret() {
   return process.env.ADMIN_SESSION_SECRET || process.env.GROQ_API_KEY || 'change-this-admin-session-secret';
