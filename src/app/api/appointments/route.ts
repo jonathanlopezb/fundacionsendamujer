@@ -3,6 +3,7 @@ import { connectToDatabase } from '@/lib/mongodb';
 import Appointment from '@/lib/models/Appointment';
 import PatientEHR from '@/lib/models/PatientEHR';
 import { isSuperAdminSession } from '@/lib/admin-auth';
+import mongoose from 'mongoose';
 
 export async function GET() {
   if (!isSuperAdminSession()) return NextResponse.json({ success: false, error: 'Solo el SuperAdministrador puede consultar el calendario administrativo.' }, { status: 403 });
@@ -83,5 +84,21 @@ export async function POST(req: Request) {
   } catch (error: any) {
     console.error('Appointment API error:', error);
     return NextResponse.json({ error: 'Error agendando la cita' }, { status: 500 });
+  }
+}
+
+export async function DELETE(req: Request) {
+  if (!isSuperAdminSession()) return NextResponse.json({ success: false, error: 'Solo el SuperAdministrador puede eliminar solicitudes.' }, { status: 403 });
+  try {
+    const id = new URL(req.url).searchParams.get('id');
+    if (!id) return NextResponse.json({ success: false, error: 'Solicitud requerida.' }, { status: 400 });
+    await connectToDatabase();
+    const filter = mongoose.Types.ObjectId.isValid(id) ? { $or: [{ id }, { _id: id }] } : { id };
+    const result = await Appointment.deleteOne(filter);
+    if (!result.deletedCount) return NextResponse.json({ success: false, error: 'Solicitud no encontrada.' }, { status: 404 });
+    return NextResponse.json({ success: true });
+  } catch (error: any) {
+    console.error('Appointment delete error:', error);
+    return NextResponse.json({ success: false, error: 'No fue posible eliminar la solicitud.' }, { status: 500 });
   }
 }

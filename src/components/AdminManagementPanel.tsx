@@ -592,17 +592,17 @@ export default function AdminManagementPanel({ onOpenSOS }: { onOpenSOS?: () => 
           const appointmentData = await appointmentRes.json();
           if (appointmentData.success && Array.isArray(appointmentData.appointments)) {
             setAppointments(appointmentData.appointments.map((appointment: any) => ({
-              id: appointment._id || appointment.id,
+              id: appointment.id || appointment._id,
               patientId: appointment.patientId || appointment.beneficiaryId || '',
-              patientName: appointment.patientName || appointment.fullName,
+              patientName: appointment.patientName || appointment.fullName || 'Nombre no indicado',
               patientCode: appointment.patientCode || '',
-              doctorName: appointment.professionalName || '',
-              specialty: appointment.specialty,
-              date: appointment.preferredDate,
-              time: appointment.preferredTime,
-              modality: appointment.modality || 'Presencial Sede Pie de la Popa',
+              doctorName: appointment.professionalName || 'Sin profesional asignado',
+              specialty: appointment.specialty || 'No indicada',
+              date: appointment.preferredDate || appointment.date || 'No indicada',
+              time: appointment.preferredTime || appointment.time || 'No indicada',
+              modality: appointment.modality || appointment.location || 'No indicada',
               status: appointment.status === 'PENDIENTE' ? 'PROGRAMADA' : appointment.status,
-              notes: appointment.notes || '',
+              notes: appointment.notes || 'Sin notas adicionales.',
               requestSource: appointment.requestSource,
               reviewStatus: appointment.reviewStatus,
             })));
@@ -786,6 +786,18 @@ export default function AdminManagementPanel({ onOpenSOS }: { onOpenSOS?: () => 
     if (!response.ok || !result.success) return setManagementMessage(result.error || 'No fue posible actualizar la beneficiaria.');
     setPatients((prev) => prev.map((item) => item.id === patient.id ? { ...item, ...result.patient } : item));
     setManagementMessage(`${patient.patientName} fue actualizada correctamente.`);
+  };
+
+  const handleDeleteAppointmentRequest = async (appointment: AppointmentRecord) => {
+    if (!isSuperAdmin || !window.confirm('¿Eliminar esta solicitud de cita? Esta acción no se puede deshacer.')) return;
+    const response = await fetch(`/api/appointments?id=${encodeURIComponent(appointment.id)}`, { method: 'DELETE' });
+    const result = await response.json();
+    if (!response.ok || !result.success) {
+      setManagementMessage(result.error || 'No fue posible eliminar la solicitud.');
+      return;
+    }
+    setAppointments((prev) => prev.filter((item) => item.id !== appointment.id));
+    setManagementMessage('Solicitud de cita eliminada correctamente.');
   };
 
   // ACCIONES: REGISTRAR BENEFICIARIA CON CÓDIGO CSM Y CITA INMEDIATA
@@ -1310,7 +1322,7 @@ export default function AdminManagementPanel({ onOpenSOS }: { onOpenSOS?: () => 
               { id: 'profesionales', label: '🩺 Crear & Gestionar Médicos', icon: UserPlus },
               { id: 'beneficiarias', label: '👥 Registro de Beneficiaria', icon: UserCog },
               { id: 'citas', label: '📅 Asignar Cita', icon: CalendarPlus },
-              { id: 'citas-solicitadas', label: '🔔 Citas solicitadas en web institucional', icon: Bell },
+              { id: 'citas-solicitadas', label: '🔔 Citas solicitadas', icon: Bell },
               { id: 'clinica', label: '🩺 Expediente EHR & Módulo Jurídico', icon: Activity },
             ].filter((tab) => isSuperAdmin || tab.id === 'clinica').map((t) => {
               const Icon = t.icon;
@@ -2183,7 +2195,7 @@ export default function AdminManagementPanel({ onOpenSOS }: { onOpenSOS?: () => 
                 <div className="bg-[#240538] rounded-3xl p-6 border border-pink-500/30 space-y-4 shadow-xl">
                   <div className="flex items-center justify-between gap-4">
                     <div>
-                      <h2 className="text-base font-black text-white flex items-center gap-2"><Bell className="w-5 h-5 text-amber-300" /> Citas solicitadas en web institucional</h2>
+                      <h2 className="text-base font-black text-white flex items-center gap-2"><Bell className="w-5 h-5 text-amber-300" /> Citas solicitadas</h2>
                       <p className="text-xs text-pink-200/70 mt-1">Solicitudes recibidas desde el formulario público, con todos los datos enviados.</p>
                     </div>
                     <span className="text-xs font-black text-amber-300 bg-amber-400/10 border border-amber-400/30 px-3 py-1 rounded-full">{appointments.filter((appointment: any) => appointment.requestSource === 'WEB_INSTITUCIONAL').length} nuevas</span>
@@ -2207,6 +2219,7 @@ export default function AdminManagementPanel({ onOpenSOS }: { onOpenSOS?: () => 
                             <p><strong className="text-pink-300">Modalidad/sede:</strong> {appointment.location}</p>
                           </div>
                           <div className="rounded-xl bg-[#240538] p-3 text-xs text-slate-200"><strong className="text-pink-300">Motivo o notas:</strong> {appointment.notes || 'Sin notas adicionales.'}</div>
+                          <div className="flex justify-end"><button type="button" onClick={() => handleDeleteAppointmentRequest(appointment)} className="text-xs font-black text-red-300 border border-red-400/30 px-3 py-2 rounded-xl hover:bg-red-500/10">Eliminar solicitud</button></div>
                         </article>
                       ))}
                     </div>
