@@ -84,3 +84,35 @@ export async function POST(req: NextRequest) {
     return NextResponse.json({ success: false, error: err.message }, { status: 500 });
   }
 }
+
+export async function PATCH(req: NextRequest) {
+  if (!isSuperAdminSession()) return NextResponse.json({ success: false, error: 'Solo el SuperAdministrador puede actualizar profesionales.' }, { status: 403 });
+  try {
+    const { id, ...updates } = await req.json();
+    if (!id) return NextResponse.json({ success: false, error: 'ID de profesional requerido.' }, { status: 400 });
+    await connectToDatabase();
+    if (updates.password) {
+      updates.passwordHash = await hashPassword(updates.password);
+      delete updates.password;
+    }
+    if (updates.documentNumber) updates.documentNumber = normalizeDocumentNumber(updates.documentNumber);
+    const doctor = await DoctorProfile.findOneAndUpdate({ id }, { $set: updates }, { new: true }).select('-passwordHash').lean();
+    if (!doctor) return NextResponse.json({ success: false, error: 'Profesional no encontrado.' }, { status: 404 });
+    return NextResponse.json({ success: true, doctor });
+  } catch (error: any) {
+    return NextResponse.json({ success: false, error: error.message }, { status: 500 });
+  }
+}
+
+export async function DELETE(req: NextRequest) {
+  if (!isSuperAdminSession()) return NextResponse.json({ success: false, error: 'Solo el SuperAdministrador puede eliminar profesionales.' }, { status: 403 });
+  try {
+    const id = new URL(req.url).searchParams.get('id');
+    if (!id || id === 'PROF-ADMIN') return NextResponse.json({ success: false, error: 'No se puede eliminar al SuperAdministrador.' }, { status: 400 });
+    await connectToDatabase();
+    const result = await DoctorProfile.deleteOne({ id });
+    return result.deletedCount ? NextResponse.json({ success: true }) : NextResponse.json({ success: false, error: 'Profesional no encontrado.' }, { status: 404 });
+  } catch (error: any) {
+    return NextResponse.json({ success: false, error: error.message }, { status: 500 });
+  }
+}

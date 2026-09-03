@@ -8,7 +8,7 @@ import {
   Clock, Info, Shield, Scale, HeartPulse, Brain, Home, Eye, Check,
   AlertTriangle, ChevronRight, UserCheck, RefreshCw, X, Printer, FilePlus,
   Pill, AlertCircle, Phone, MapPin, Hash, Sparkles, FolderOpen, Heart,
-  UserPlus, UserCog, CalendarPlus, BarChart3, Settings, ShieldCheck, EyeOff, Database, PackageCheck, Gavel, FileCheck
+  UserPlus, UserCog, CalendarPlus, BarChart3, Settings, ShieldCheck, EyeOff, Database, PackageCheck, Gavel, FileCheck, Bell
 } from 'lucide-react';
 import IPSCMeasurementForm from '@/components/caribe-seguro/IPSCMeasurementForm';
 import DeteriorationAlertsPanel from '@/components/caribe-seguro/DeteriorationAlertsPanel';
@@ -177,7 +177,9 @@ export interface PatientEHR {
   patientCode: string;
   patientName: string;
   firstName?: string;
+  secondName?: string;
   lastName?: string;
+  secondLastName?: string;
   documentType?: string;
   documentNumber?: string;
   docId: string;
@@ -253,6 +255,8 @@ export interface AppointmentRecord {
   modality: 'Presencial Sede Pie de la Popa' | 'Teleorientación Virtual' | 'Visita Domiciliaria';
   status: 'PROGRAMADA' | 'CONFIRMADA' | 'ATENDIDA' | 'CANCELADA';
   notes: string;
+  requestSource?: 'WEB_INSTITUCIONAL' | 'ADMINISTRATIVA' | 'PORTAL_BENEFICIARIA';
+  reviewStatus?: 'NUEVA' | 'EN_REVISION' | 'GESTIONADA' | 'CANCELADA';
 }
 
 const INITIAL_PATIENTS_EHR: PatientEHR[] = [
@@ -435,7 +439,7 @@ export default function AdminManagementPanel({ onOpenSOS }: { onOpenSOS?: () => 
   const [patientSearch, setPatientSearch] = useState('');
 
   // Admin Console Tab
-  const [adminTab, setAdminTab] = useState<'dashboard' | 'profesionales' | 'beneficiarias' | 'citas' | 'clinica'>('dashboard');
+  const [adminTab, setAdminTab] = useState<'dashboard' | 'profesionales' | 'beneficiarias' | 'citas' | 'citas-solicitadas' | 'clinica'>('dashboard');
   const [ehrTab, setEhrTab] = useState<'ipsc' | 'evoluciones' | 'juridico' | 'recursos' | 'rutas'>('ipsc');
 
   // Form State: Create Professional
@@ -461,6 +465,7 @@ export default function AdminManagementPanel({ onOpenSOS }: { onOpenSOS?: () => 
   const [newProfBio, setNewProfBio] = useState('');
   const [newProfConsent, setNewProfConsent] = useState(false);
   const [profCreateSuccess, setProfCreateSuccess] = useState('');
+  const [managementMessage, setManagementMessage] = useState('');
 
   const specialtyOptions = PROFESSIONAL_SPECIALTIES[newProfRole];
 
@@ -468,7 +473,9 @@ export default function AdminManagementPanel({ onOpenSOS }: { onOpenSOS?: () => 
   const [newPatName, setNewPatName] = useState('');
   const [newPatDocId, setNewPatDocId] = useState('');
   const [newPatFirstName, setNewPatFirstName] = useState('');
+  const [newPatSecondName, setNewPatSecondName] = useState('');
   const [newPatLastName, setNewPatLastName] = useState('');
+  const [newPatSecondLastName, setNewPatSecondLastName] = useState('');
   const [newPatDocumentType, setNewPatDocumentType] = useState('CC');
   const [newPatDocumentNumber, setNewPatDocumentNumber] = useState('');
   const [newPatBirthDate, setNewPatBirthDate] = useState('1998-01-01');
@@ -596,6 +603,8 @@ export default function AdminManagementPanel({ onOpenSOS }: { onOpenSOS?: () => 
               modality: appointment.modality || 'Presencial Sede Pie de la Popa',
               status: appointment.status === 'PENDIENTE' ? 'PROGRAMADA' : appointment.status,
               notes: appointment.notes || '',
+              requestSource: appointment.requestSource,
+              reviewStatus: appointment.reviewStatus,
             })));
           }
         }
@@ -740,11 +749,50 @@ export default function AdminManagementPanel({ onOpenSOS }: { onOpenSOS?: () => 
     setTimeout(() => setProfCreateSuccess(''), 5000);
   };
 
+  const handleArchiveProfessional = async (professional: ProfessionalProfile) => {
+    if (!isSuperAdmin || !window.confirm(`¿Archivar a ${professional.name}?`)) return;
+    const response = await fetch(`/api/admin/doctors?id=${encodeURIComponent(professional.id)}`, { method: 'DELETE' });
+    const result = await response.json();
+    if (!response.ok || !result.success) return setManagementMessage(result.error || 'No fue posible archivar el profesional.');
+    setProfessionals((prev) => prev.filter((item) => item.id !== professional.id));
+    setManagementMessage(`${professional.name} fue archivado correctamente.`);
+  };
+
+  const handleArchivePatient = async (patient: PatientEHR) => {
+    if (!isSuperAdmin || !window.confirm(`¿Archivar a ${patient.patientName}? Se conservará su trazabilidad.`)) return;
+    const response = await fetch(`/api/admin/patients?id=${encodeURIComponent(patient.id)}`, { method: 'DELETE' });
+    const result = await response.json();
+    if (!response.ok || !result.success) return setManagementMessage(result.error || 'No fue posible archivar la beneficiaria.');
+    setPatients((prev) => prev.filter((item) => item.id !== patient.id));
+    setManagementMessage(`${patient.patientName} fue archivada correctamente.`);
+  };
+
+  const handleUpdateProfessional = async (professional: ProfessionalProfile) => {
+    const name = window.prompt('Nombre completo:', professional.name);
+    const phone = window.prompt('Teléfono profesional:', professional.phone);
+    if (!name || !phone) return;
+    const response = await fetch('/api/admin/doctors', { method: 'PATCH', headers: { 'Content-Type': 'application/json' }, body: JSON.stringify({ id: professional.id, name, phone }) });
+    const result = await response.json();
+    if (!response.ok || !result.success) return setManagementMessage(result.error || 'No fue posible actualizar el profesional.');
+    setProfessionals((prev) => prev.map((item) => item.id === professional.id ? { ...item, ...result.doctor } : item));
+    setManagementMessage(`${name} fue actualizado correctamente.`);
+  };
+
+  const handleUpdatePatient = async (patient: PatientEHR) => {
+    const phone = window.prompt('Teléfono de la beneficiaria:', patient.phone);
+    if (!phone) return;
+    const response = await fetch('/api/admin/patients', { method: 'PATCH', headers: { 'Content-Type': 'application/json' }, body: JSON.stringify({ id: patient.id, phone }) });
+    const result = await response.json();
+    if (!response.ok || !result.success) return setManagementMessage(result.error || 'No fue posible actualizar la beneficiaria.');
+    setPatients((prev) => prev.map((item) => item.id === patient.id ? { ...item, ...result.patient } : item));
+    setManagementMessage(`${patient.patientName} fue actualizada correctamente.`);
+  };
+
   // ACCIONES: REGISTRAR BENEFICIARIA CON CÓDIGO CSM Y CITA INMEDIATA
   const handleCreatePatient = async (e: React.FormEvent) => {
     e.preventDefault();
     if (!isSuperAdmin) return;
-    const patientName = `${newPatFirstName} ${newPatLastName}`.trim();
+    const patientName = [newPatFirstName, newPatSecondName, newPatLastName, newPatSecondLastName].filter(Boolean).join(' ').trim();
     const docNumber = newPatDocumentNumber || newPatDocumentType;
     if (!patientName || !docNumber) return;
 
@@ -754,7 +802,9 @@ export default function AdminManagementPanel({ onOpenSOS }: { onOpenSOS?: () => 
       patientCode: generatedCode,
       patientName,
       firstName: newPatFirstName,
+      secondName: newPatSecondName,
       lastName: newPatLastName,
+      secondLastName: newPatSecondLastName,
       documentType: newPatDocumentType,
       documentNumber: newPatDocumentNumber,
       docId: docNumber,
@@ -879,7 +929,9 @@ export default function AdminManagementPanel({ onOpenSOS }: { onOpenSOS?: () => 
     }
 
     setNewPatFirstName('');
+    setNewPatSecondName('');
     setNewPatLastName('');
+    setNewPatSecondLastName('');
     setNewPatDocumentType('CC');
     setNewPatDocumentNumber('');
     setNewPatBirthDate('1998-01-01');
@@ -1258,6 +1310,7 @@ export default function AdminManagementPanel({ onOpenSOS }: { onOpenSOS?: () => 
               { id: 'profesionales', label: '🩺 Crear & Gestionar Médicos', icon: UserPlus },
               { id: 'beneficiarias', label: '👥 Registro de Beneficiaria', icon: UserCog },
               { id: 'citas', label: '📅 Asignar Cita', icon: CalendarPlus },
+              { id: 'citas-solicitadas', label: '🔔 Citas solicitadas en web institucional', icon: Bell },
               { id: 'clinica', label: '🩺 Expediente EHR & Módulo Jurídico', icon: Activity },
             ].filter((tab) => isSuperAdmin || tab.id === 'clinica').map((t) => {
               const Icon = t.icon;
@@ -1324,6 +1377,7 @@ export default function AdminManagementPanel({ onOpenSOS }: { onOpenSOS?: () => 
                             Ver Expediente & Jurídico
                           </button>
                         </div>
+                        {isSuperAdmin && <div className="flex gap-2"><button type="button" onClick={() => handleUpdatePatient(p)} className="text-[10px] font-black text-amber-300 hover:text-amber-200">Actualizar</button><button type="button" onClick={() => handleArchivePatient(p)} className="text-[10px] font-black text-red-300 hover:text-red-200">Archivar beneficiaria</button></div>}
                       </div>
                     ))}
                   </div>
@@ -1529,6 +1583,7 @@ export default function AdminManagementPanel({ onOpenSOS }: { onOpenSOS?: () => 
                 </div>
 
                 <div className="bg-[#240538] rounded-3xl p-6 border border-pink-500/20 space-y-4">
+                  {managementMessage && <div className="p-3 bg-emerald-500/20 border border-emerald-500/40 text-emerald-300 rounded-xl text-xs font-bold">{managementMessage}</div>}
                   <h3 className="text-sm font-black text-white uppercase tracking-wider">
                     Directorio de Médicos & Profesionales Registrados ({professionals.length})
                   </h3>
@@ -1552,6 +1607,7 @@ export default function AdminManagementPanel({ onOpenSOS }: { onOpenSOS?: () => 
                             <p className="text-[10px] text-amber-300/80 font-semibold">Verificación: {prof.verificationStatus || 'PENDIENTE'}</p>
                           </div>
                         </div>
+                        {prof.id !== 'PROF-ADMIN' && <div className="flex gap-2"><button type="button" onClick={() => handleUpdateProfessional(prof)} className="text-xs font-black text-amber-300 border border-amber-400/30 px-3 py-2 rounded-xl hover:bg-amber-500/10">Actualizar</button><button type="button" onClick={() => handleArchiveProfessional(prof)} className="text-xs font-black text-red-300 border border-red-400/30 px-3 py-2 rounded-xl hover:bg-red-500/10">Archivar</button></div>}
                       </div>
                     ))}
                   </div>
@@ -2118,6 +2174,43 @@ export default function AdminManagementPanel({ onOpenSOS }: { onOpenSOS?: () => 
                       </div>
                     ))}
                   </div>
+                </div>
+              </div>
+            )}
+
+            {adminTab === 'citas-solicitadas' && isSuperAdmin && (
+              <div className="space-y-6 animate-fadeIn">
+                <div className="bg-[#240538] rounded-3xl p-6 border border-pink-500/30 space-y-4 shadow-xl">
+                  <div className="flex items-center justify-between gap-4">
+                    <div>
+                      <h2 className="text-base font-black text-white flex items-center gap-2"><Bell className="w-5 h-5 text-amber-300" /> Citas solicitadas en web institucional</h2>
+                      <p className="text-xs text-pink-200/70 mt-1">Solicitudes recibidas desde el formulario público, con todos los datos enviados.</p>
+                    </div>
+                    <span className="text-xs font-black text-amber-300 bg-amber-400/10 border border-amber-400/30 px-3 py-1 rounded-full">{appointments.filter((appointment: any) => appointment.requestSource === 'WEB_INSTITUCIONAL').length} nuevas</span>
+                  </div>
+                  {appointments.filter((appointment: any) => appointment.requestSource === 'WEB_INSTITUCIONAL').length === 0 ? (
+                    <div className="border border-dashed border-pink-400/30 rounded-2xl p-10 text-center text-xs text-pink-200/70">Todavía no hay solicitudes de citas desde la web institucional.</div>
+                  ) : (
+                    <div className="space-y-3">
+                      {appointments.filter((appointment: any) => appointment.requestSource === 'WEB_INSTITUCIONAL').map((appointment: any) => (
+                        <article key={appointment.id} className="bg-[#140320] rounded-2xl border border-pink-500/20 p-4 space-y-3">
+                          <div className="flex flex-col md:flex-row md:items-start md:justify-between gap-3">
+                            <div><h3 className="text-sm font-black text-white">{appointment.patientName || appointment.fullName}</h3><p className="text-xs text-amber-300 font-mono">Solicitud #{appointment.id}</p></div>
+                            <span className="text-[10px] font-black text-amber-300 border border-amber-400/30 rounded-full px-2.5 py-1">{appointment.reviewStatus || 'NUEVA'}</span>
+                          </div>
+                          <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 gap-3 text-xs text-pink-100">
+                            <p><strong className="text-pink-300">Teléfono:</strong> {appointment.phone}</p>
+                            <p><strong className="text-pink-300">Correo:</strong> {appointment.email || 'No indicado'}</p>
+                            <p><strong className="text-pink-300">Especialidad:</strong> {appointment.specialty}</p>
+                            <p><strong className="text-pink-300">Fecha:</strong> {appointment.preferredDate}</p>
+                            <p><strong className="text-pink-300">Hora:</strong> {appointment.preferredTime}</p>
+                            <p><strong className="text-pink-300">Modalidad/sede:</strong> {appointment.location}</p>
+                          </div>
+                          <div className="rounded-xl bg-[#240538] p-3 text-xs text-slate-200"><strong className="text-pink-300">Motivo o notas:</strong> {appointment.notes || 'Sin notas adicionales.'}</div>
+                        </article>
+                      ))}
+                    </div>
+                  )}
                 </div>
               </div>
             )}

@@ -38,6 +38,7 @@ export async function POST(req: Request) {
       location,
       modality,
       notes,
+      requestSource,
     } = body;
 
     if (!fullName || !phone || !specialty || !preferredDate || !preferredTime) {
@@ -62,6 +63,8 @@ export async function POST(req: Request) {
         location: location || 'Sede Fundación Senda Mujer - Cartagena',
         modality: modality || 'Presencial Sede Pie de la Popa',
         notes,
+        requestSource: requestSource || (body.adminAction ? 'ADMINISTRATIVA' : 'WEB_INSTITUCIONAL'),
+        reviewStatus: body.adminAction ? 'GESTIONADA' : 'NUEVA',
         status: 'PENDIENTE',
       });
       if (body.adminAction === true && (patientId || beneficiaryId) && professionalId && professionalName) {

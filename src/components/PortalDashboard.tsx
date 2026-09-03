@@ -1,6 +1,6 @@
 'use client';
 import React, { useState } from 'react';
-import { GraduationCap, HeartPulse, LogOut, EyeOff, ShieldAlert, Award, PlayCircle, CheckCircle2, Download, FileText, Clock, ChevronRight } from 'lucide-react';
+import { GraduationCap, HeartPulse, LogOut, EyeOff, ShieldAlert, Award, PlayCircle, CheckCircle2, Download, FileText, Clock, ChevronRight, KeyRound } from 'lucide-react';
 import Link from 'next/link';
 
 interface UserData {
@@ -29,6 +29,10 @@ export default function PortalDashboard({ user, onLogout }: { user: UserData; on
   const [selCourse, setSelCourse] = useState(ALL_COURSES.find(c => c.id === user.assignedCourses[0]) || ALL_COURSES[0]);
   const [cert, setCert] = useState<number|null>(null);
   const [completedLocal, setCompletedLocal] = useState<number[]>(user.completedCourses);
+  const [showPasswordForm, setShowPasswordForm] = useState(false);
+  const [currentPassword, setCurrentPassword] = useState('');
+  const [newPassword, setNewPassword] = useState('');
+  const [passwordMessage, setPasswordMessage] = useState('');
 
   const myCourses = ALL_COURSES.filter(c => user.assignedCourses.includes(c.id));
   const isCompleted = (id:number) => completedLocal.includes(id);
@@ -37,6 +41,17 @@ export default function PortalDashboard({ user, onLogout }: { user: UserData; on
 
   const markComplete = (id:number) => {
     if (!isCompleted(id)) setCompletedLocal(prev => [...prev, id]);
+  };
+
+  const changePassword = async (event: React.FormEvent) => {
+    event.preventDefault();
+    const response = await fetch('/api/beneficiary/password', {
+      method: 'POST', headers: { 'Content-Type': 'application/json' },
+      body: JSON.stringify({ documentNumber: user.docId, currentPassword, newPassword }),
+    });
+    const result = await response.json();
+    setPasswordMessage(result.success ? result.message : result.error);
+    if (result.success) { setCurrentPassword(''); setNewPassword(''); }
   };
 
   return (
@@ -50,6 +65,9 @@ export default function PortalDashboard({ user, onLogout }: { user: UserData; on
             <p className="text-xs text-pink-200 mt-0.5">{user.specialist} • SENDA Index: <strong className="text-amber-300">{user.sendaIndex}/100</strong></p>
           </div>
           <div className="flex gap-2">
+            <button onClick={() => setShowPasswordForm((value) => !value)} className="flex items-center gap-1.5 bg-white/10 text-white font-bold px-3 py-1.5 rounded-full text-xs border border-white/20 cursor-pointer hover:bg-white/20">
+              <KeyRound className="w-3.5 h-3.5" /> Contraseña
+            </button>
             <Link href="/senda-sos" className="flex items-center gap-1.5 bg-red-500 text-white font-extrabold px-3 py-1.5 rounded-full text-xs animate-pulse">
               <ShieldAlert className="w-3.5 h-3.5" /> SOS
             </Link>
@@ -59,6 +77,14 @@ export default function PortalDashboard({ user, onLogout }: { user: UserData; on
           </div>
         </div>
       </div>
+
+      {showPasswordForm && <div className="max-w-6xl mx-auto px-4 mt-4"><form onSubmit={changePassword} className="bg-white rounded-2xl border border-pink-100 p-5 shadow-sm max-w-md space-y-3">
+        <h2 className="font-extrabold text-[#52166F]">Cambiar contraseña</h2>
+        {passwordMessage && <p className="text-xs font-bold text-emerald-700">{passwordMessage}</p>}
+        <input type="password" required value={currentPassword} onChange={(e) => setCurrentPassword(e.target.value)} placeholder="Contraseña actual" className="w-full px-3 py-2.5 rounded-xl border border-pink-200 text-sm" />
+        <input type="password" required minLength={6} value={newPassword} onChange={(e) => setNewPassword(e.target.value)} placeholder="Nueva contraseña (mínimo 6 caracteres)" className="w-full px-3 py-2.5 rounded-xl border border-pink-200 text-sm" />
+        <button type="submit" className="bg-[#E12880] text-white font-extrabold px-4 py-2 rounded-xl text-xs">Actualizar contraseña</button>
+      </form></div>}
 
       {/* Tabs */}
       <div className="max-w-6xl mx-auto px-4 mt-6">

@@ -43,6 +43,10 @@ export async function POST(req: NextRequest) {
         id: body.id || `EHR-${Date.now()}`,
         patientCode: body.patientCode || `CSM-2026-${Math.floor(100000 + Math.random() * 900000)}`,
         patientName: body.patientName,
+        firstName: body.firstName,
+        secondName: body.secondName,
+        lastName: body.lastName,
+        secondLastName: body.secondLastName,
         docId: body.docId,
         age: body.age || 25,
         birthDate: body.birthDate || '1999-01-01',
@@ -74,5 +78,33 @@ export async function POST(req: NextRequest) {
     }
   } catch (err: any) {
     return NextResponse.json({ success: false, error: err.message }, { status: 500 });
+  }
+}
+
+export async function PATCH(req: NextRequest) {
+  if (!isSuperAdminSession()) return NextResponse.json({ success: false, error: 'Solo el SuperAdministrador puede actualizar beneficiarias.' }, { status: 403 });
+  try {
+    const { id, ...updates } = await req.json();
+    if (!id) return NextResponse.json({ success: false, error: 'ID de beneficiaria requerido.' }, { status: 400 });
+    await connectToDatabase();
+    const patient = await PatientEHR.findOneAndUpdate({ id }, { $set: updates }, { new: true }).lean();
+    if (!patient) return NextResponse.json({ success: false, error: 'Beneficiaria no encontrada.' }, { status: 404 });
+    return NextResponse.json({ success: true, patient });
+  } catch (error: any) {
+    return NextResponse.json({ success: false, error: error.message }, { status: 500 });
+  }
+}
+
+export async function DELETE(req: NextRequest) {
+  if (!isSuperAdminSession()) return NextResponse.json({ success: false, error: 'Solo el SuperAdministrador puede eliminar beneficiarias.' }, { status: 403 });
+  try {
+    const id = new URL(req.url).searchParams.get('id');
+    if (!id) return NextResponse.json({ success: false, error: 'ID de beneficiaria requerido.' }, { status: 400 });
+    await connectToDatabase();
+    const patient = await PatientEHR.findOneAndUpdate({ id }, { $set: { status: 'COMPLETADA' } }, { new: true }).lean();
+    if (!patient) return NextResponse.json({ success: false, error: 'Beneficiaria no encontrada.' }, { status: 404 });
+    return NextResponse.json({ success: true, archived: true, patient });
+  } catch (error: any) {
+    return NextResponse.json({ success: false, error: error.message }, { status: 500 });
   }
 }

@@ -51,7 +51,9 @@ export interface IPatientEHR extends Document {
   patientCode: string;
   patientName: string;
   firstName?: string;
+  secondName?: string;
   lastName?: string;
+  secondLastName?: string;
   documentType?: string;
   documentNumber?: string;
   docId: string;
@@ -137,7 +139,9 @@ const PatientEHRSchema = new Schema<IPatientEHR>(
     patientCode: { type: String, required: true, unique: true },
     patientName: { type: String, required: true },
     firstName: { type: String },
+    secondName: { type: String },
     lastName: { type: String },
+    secondLastName: { type: String },
     documentType: { type: String, default: 'CC' },
     documentNumber: { type: String },
     docId: { type: String, required: true },

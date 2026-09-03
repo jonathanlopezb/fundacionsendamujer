@@ -56,9 +56,12 @@ export default function AppointmentBooking() {
       const data = await res.json();
       if (data.success) {
         setTicket(data.appointment);
+      } else {
+        throw new Error(data.error || 'No fue posible registrar la solicitud.');
       }
     } catch (err) {
       console.error('Error agendando cita:', err);
+      window.alert(err instanceof Error ? err.message : 'No fue posible registrar la solicitud.');
     } finally {
       setIsSubmitting(false);
     }

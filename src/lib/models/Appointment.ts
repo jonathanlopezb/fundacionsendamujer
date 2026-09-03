@@ -16,6 +16,8 @@ export interface IAppointment extends Document {
   location: string;
   modality?: string;
   notes?: string;
+  requestSource: 'WEB_INSTITUCIONAL' | 'ADMINISTRATIVA' | 'PORTAL_BENEFICIARIA';
+  reviewStatus: 'NUEVA' | 'EN_REVISION' | 'GESTIONADA' | 'CANCELADA';
   status: 'PENDIENTE' | 'CONFIRMADA' | 'ATENDIDA' | 'CANCELADA';
   createdAt: Date;
 }
@@ -37,6 +39,8 @@ const AppointmentSchema = new Schema<IAppointment>(
     location: { type: String, default: 'Sede Cartagena / Atención Directa' },
     modality: { type: String, default: 'Presencial Sede Pie de la Popa' },
     notes: { type: String },
+    requestSource: { type: String, enum: ['WEB_INSTITUCIONAL', 'ADMINISTRATIVA', 'PORTAL_BENEFICIARIA'], default: 'WEB_INSTITUCIONAL' },
+    reviewStatus: { type: String, enum: ['NUEVA', 'EN_REVISION', 'GESTIONADA', 'CANCELADA'], default: 'NUEVA' },
     status: {
       type: String,
       enum: ['PENDIENTE', 'CONFIRMADA', 'ATENDIDA', 'CANCELADA'],
