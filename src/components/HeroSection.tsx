@@ -38,7 +38,7 @@ export default function HeroSection() {
                 className="w-full sm:w-auto bg-gradient-to-r from-senda-pink to-senda-pink-dark text-white font-extrabold text-xs sm:text-sm px-6 py-3.5 rounded-full shadow-glass-pink hover:shadow-glow hover:scale-[1.02] active:scale-95 transition-all flex items-center justify-center space-x-2 group text-center"
               >
                 <Sparkles className="w-4 h-4 sm:w-5 sm:h-5 text-amber-300 shrink-0" />
-                <span>Realizar Test Psicológico Gratuito</span>
+                <span>Realizar Test Psicológico</span>
                 <ArrowRight className="w-4 h-4 group-hover:translate-x-1 transition-transform shrink-0" />
               </Link>
 
@@ -47,7 +47,7 @@ export default function HeroSection() {
                 className="w-full sm:w-auto bg-white text-senda-purple hover:text-senda-pink font-extrabold text-xs sm:text-sm px-5 py-3.5 rounded-full border-2 border-senda-purple/20 hover:border-senda-pink shadow-xs transition-all flex items-center justify-center space-x-2 text-center"
               >
                 <Calendar className="w-4 h-4 sm:w-5 sm:h-5 text-senda-purple shrink-0" />
-                <span>Agendar Cita (Médica, Dental, Legal)</span>
+                <span>Agendar Cita</span>
               </Link>
 
               <Link
@@ -55,7 +55,7 @@ export default function HeroSection() {
                 className="w-full sm:w-auto bg-senda-purple text-white hover:bg-senda-purple-dark font-extrabold text-xs sm:text-sm px-5 py-3.5 rounded-full shadow-xs transition-all flex items-center justify-center space-x-2 text-center"
               >
                 <Globe className="w-4 h-4 sm:w-5 sm:h-5 text-amber-300 shrink-0" />
-                <span>Ingresar al Sistema Operativo</span>
+                <span>Test de Vulnerabilidad</span>
               </Link>
             </div>
 
