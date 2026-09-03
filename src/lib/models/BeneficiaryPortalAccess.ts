@@ -3,7 +3,8 @@ import mongoose, { Schema, Document } from 'mongoose';
 export interface IBeneficiaryPortalAccess extends Document {
   patientId: string;
   documentNumber: string; // Usuario (cédula)
-  password: string; // Contraseña inicial (cédula)
+  passwordHash: string;
+  password?: string; // Compatibilidad temporal con registros antiguos
   patientName: string;
   patientCode: string;
   createdAt: Date;
@@ -14,7 +15,8 @@ const BeneficiaryPortalAccessSchema = new Schema(
   {
     patientId: { type: String, required: true, unique: true, index: true },
     documentNumber: { type: String, required: true, index: true },
-    password: { type: String, required: true },
+    passwordHash: { type: String, required: false, select: false },
+    password: { type: String, required: false, select: false },
     patientName: { type: String, required: true },
     patientCode: { type: String, required: true, index: true },
   },

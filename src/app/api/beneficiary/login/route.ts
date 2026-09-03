@@ -1,6 +1,7 @@
 import { NextRequest, NextResponse } from 'next/server';
 import { connectToDatabase } from '@/lib/mongodb';
 import BeneficiaryPortalAccess from '@/lib/models/BeneficiaryPortalAccess';
+import { hashPassword, normalizeDocumentNumber, verifyPassword } from '@/lib/password';
 
 export async function POST(req: NextRequest) {
   try {
@@ -14,13 +15,27 @@ export async function POST(req: NextRequest) {
       );
     }
 
-    const access = await BeneficiaryPortalAccess.findOne({ documentNumber });
+    const cleanDocumentNumber = normalizeDocumentNumber(documentNumber);
+    const access = await BeneficiaryPortalAccess.findOne({
+      $or: [{ documentNumber: cleanDocumentNumber }, { documentNumber: documentNumber.trim() }],
+    }).select('+passwordHash +password');
 
-    if (!access || access.password !== password) {
+    const validPassword = access?.passwordHash
+      ? await verifyPassword(password, access.passwordHash)
+      : access?.password === cleanDocumentNumber && normalizeDocumentNumber(password) === cleanDocumentNumber;
+
+    if (!access || !validPassword) {
       return NextResponse.json(
         { success: false, error: 'Credenciales incorrectas' },
         { status: 401 }
       );
+    }
+
+    if (!access.passwordHash) {
+      access.passwordHash = await hashPassword(cleanDocumentNumber);
+      access.documentNumber = cleanDocumentNumber;
+      access.password = undefined;
+      await access.save();
     }
 
     return NextResponse.json({

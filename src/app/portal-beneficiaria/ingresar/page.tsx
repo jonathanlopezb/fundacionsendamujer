@@ -5,40 +5,16 @@ import { Lock, KeyRound, ShieldAlert, Info, EyeOff } from 'lucide-react';
 import Link from 'next/link';
 import PortalDashboard from '@/components/PortalDashboard';
 
-const DEMO_USERS: Record<string, { pin: string; name: string; code: string; docId: string; program: string; specialist: string; sendaIndex: number; assignedCourses: number[]; completedCourses: number[]; }> = {
-  '1047892411': {
-    pin: '1234',
-    name: 'Maria Alejandra Torres',
-    code: 'SM-8842',
-    docId: '1.047.892.411',
-    program: 'Programa 4 — Ruta de Salud y Derechos Reproductivos',
-    specialist: 'Dra. Elena Ruiz — Ginecologia',
-    sendaIndex: 34,
-    assignedCourses: [1, 2, 3, 4],
-    completedCourses: [1, 2],
-  },
-  '1098765432': {
-    pin: '5678',
-    name: 'Luz Dary Paternina',
-    code: 'SM-9201',
-    docId: '1.098.765.432',
-    program: 'Programa 2 — Atencion a Victimas de Violencia',
-    specialist: 'Lic. Claudia Morales — Psicologia',
-    sendaIndex: 58,
-    assignedCourses: [1, 4, 5, 6],
-    completedCourses: [1],
-  },
-  'SM-8842': {
-    pin: '1234',
-    name: 'Maria Alejandra Torres',
-    code: 'SM-8842',
-    docId: '1.047.892.411',
-    program: 'Programa 4 — Ruta de Salud y Derechos Reproductivos',
-    specialist: 'Dra. Elena Ruiz — Ginecologia',
-    sendaIndex: 34,
-    assignedCourses: [1, 2, 3, 4],
-    completedCourses: [1, 2],
-  },
+type BeneficiaryPortalUser = {
+  pin: string;
+  name: string;
+  code: string;
+  docId: string;
+  program: string;
+  specialist: string;
+  sendaIndex: number;
+  assignedCourses: number[];
+  completedCourses: number[];
 };
 
 export default function IngresarPage() {
@@ -47,7 +23,7 @@ export default function IngresarPage() {
   const [accepted, setAccepted] = useState(false);
   const [error, setError] = useState('');
   const [loading, setLoading] = useState(false);
-  const [user, setUser] = useState<typeof DEMO_USERS[string] | null>(null);
+  const [user, setUser] = useState<BeneficiaryPortalUser | null>(null);
 
   const handleLogin = async (e: React.FormEvent) => {
     e.preventDefault();
@@ -68,8 +44,8 @@ export default function IngresarPage() {
         body: JSON.stringify({ documentNumber: documentId.trim(), password: pin.trim() }),
       });
 
-      if (res.ok) {
-        const data = await res.json();
+      const data = await res.json();
+      if (res.ok && data.success && data.user) {
         // Convertir respuesta de BD a formato esperado por PortalDashboard
         setUser({
           pin: pin.trim(),
@@ -85,22 +61,14 @@ export default function IngresarPage() {
         setLoading(false);
         return;
       }
+      setError(data.error || 'Credenciales incorrectas. Usa tu número de cédula como contraseña.');
     } catch (err) {
-      console.warn('Error conectando con BD, usando demo users:', err);
+      setError('No fue posible conectar con el servidor. Intenta nuevamente.');
     }
-
-    // Fallback: validar con DEMO_USERS
-    const found = DEMO_USERS[documentId.trim()];
-    if (!found || found.pin !== pin.trim()) {
-      setError('Credenciales incorrectas. Demo: Cedula 1047892411 / PIN 1234');
-      setLoading(false);
-      return;
-    }
-    setUser(found);
     setLoading(false);
   };
 
-  const fillDemo = () => { setDocumentId('1047892411'); setPin('1234'); setAccepted(true); };
+  const fillDemo = () => { setDocumentId('1047892411'); setPin('1047892411'); setAccepted(true); };
 
   if (user) return <PortalDashboard user={user} onLogout={() => setUser(null)} />;
 
@@ -114,12 +82,11 @@ export default function IngresarPage() {
           <div className="flex-1">
             <p className="text-xs font-extrabold text-amber-700">Usuarios Demo Disponibles</p>
             <p className="text-[11px] text-amber-600 mt-0.5">
-              Demo 1: <strong>1047892411</strong> / PIN <strong>1234</strong> — Maria Alejandra Torres<br/>
-              Demo 2: <strong>1098765432</strong> / PIN <strong>5678</strong> — Luz Dary Paternina
+              Ingresa con el número de cédula registrado. La contraseña inicial es la misma cédula.
             </p>
           </div>
           <button onClick={fillDemo} className="bg-amber-400 hover:bg-amber-500 text-[#3B0852] font-extrabold text-[10px] px-3 py-1.5 rounded-full cursor-pointer shrink-0">
-            Autocompletar
+            Usar ejemplo
           </button>
         </div>
 
@@ -140,18 +107,18 @@ export default function IngresarPage() {
             {error && <div className="p-3.5 bg-red-50 border border-red-200 rounded-xl text-xs font-bold text-red-600">{error}</div>}
 
             <div>
-              <label className="block text-xs font-extrabold text-slate-700 mb-1.5">Cedula o Codigo de Expediente *</label>
+              <label className="block text-xs font-extrabold text-slate-700 mb-1.5">Número de cédula *</label>
               <input
                 type="text"
                 value={documentId}
                 onChange={(e) => setDocumentId(e.target.value)}
-                placeholder="Ej: 1047892411 o SM-8842"
+                placeholder="Ej: 1047892411"
                 className="w-full px-4 py-3 rounded-xl border border-pink-200 focus:outline-none focus:ring-2 focus:ring-[#E12880] text-sm bg-pink-50/30"
               />
             </div>
 
             <div>
-              <label className="block text-xs font-extrabold text-slate-700 mb-1.5">Clave PIN Secreta *</label>
+              <label className="block text-xs font-extrabold text-slate-700 mb-1.5">Contraseña *</label>
               <input
                 type="password"
                 value={pin}
@@ -159,7 +126,7 @@ export default function IngresarPage() {
                 placeholder="••••"
                 className="w-full px-4 py-3 rounded-xl border border-pink-200 focus:outline-none focus:ring-2 focus:ring-[#E12880] text-sm bg-pink-50/30"
               />
-              <p className="text-[10px] text-slate-400 mt-1">Olvidé mi PIN — Contactar a Dra. Sorelvis (+57 301 469 2095)</p>
+              <p className="text-[10px] text-slate-400 mt-1">La contraseña inicial es tu número de cédula.</p>
             </div>
 
             <div className="bg-pink-50 p-4 rounded-2xl border border-pink-100">

@@ -1,6 +1,7 @@
 import { NextRequest, NextResponse } from 'next/server';
 import { connectToDatabase } from '@/lib/mongodb';
 import BeneficiaryPortalAccess from '@/lib/models/BeneficiaryPortalAccess';
+import { hashPassword, normalizeDocumentNumber } from '@/lib/password';
 
 export async function POST(req: NextRequest) {
   try {
@@ -15,12 +16,13 @@ export async function POST(req: NextRequest) {
     }
 
     // Crear o actualizar el registro de acceso al portal
+    const cleanDocumentNumber = normalizeDocumentNumber(documentNumber);
     const access = await BeneficiaryPortalAccess.findOneAndUpdate(
       { patientId },
       {
         patientId,
-        documentNumber,
-        password,
+        documentNumber: cleanDocumentNumber,
+        passwordHash: await hashPassword(cleanDocumentNumber),
         patientName,
         patientCode,
       },
@@ -59,7 +61,7 @@ export async function GET(req: NextRequest) {
       );
     }
 
-    const access = await BeneficiaryPortalAccess.findOne({ documentNumber });
+    const access = await BeneficiaryPortalAccess.findOne({ documentNumber: normalizeDocumentNumber(documentNumber) }).select('+passwordHash');
 
     if (!access) {
       return NextResponse.json(
