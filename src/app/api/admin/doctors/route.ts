@@ -78,7 +78,7 @@ export async function POST(req: NextRequest) {
     } catch (dbErr) {
       console.warn('MongoDB fallback save for doctor:', dbErr);
       const { password: _password, ...safeBody } = body;
-      return NextResponse.json({ success: true, doctor: safeBody, isDemoFallback: true });
+      return NextResponse.json({ success: false, error: 'No fue posible guardar el profesional en MongoDB.' }, { status: 500 });
     }
   } catch (err: any) {
     return NextResponse.json({ success: false, error: err.message }, { status: 500 });

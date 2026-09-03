@@ -14,6 +14,15 @@ import IPSCMeasurementForm from '@/components/caribe-seguro/IPSCMeasurementForm'
 import DeteriorationAlertsPanel from '@/components/caribe-seguro/DeteriorationAlertsPanel';
 import ObservatoryManager from '@/components/caribe-seguro/ObservatoryManager';
 
+const PROFESSIONAL_SPECIALTIES: Record<ProfessionalRole, string[]> = {
+  MEDICO: ['Medicina general', 'Ginecología y obstetricia', 'Psiquiatría', 'Medicina familiar', 'Pediatría', 'Odontología', 'Otra especialidad médica'],
+  JURIDICO: ['Violencias basadas en género (VBG)', 'Derecho de familia', 'Derecho penal', 'Derechos humanos', 'Derechos sexuales y reproductivos', 'Otra especialidad jurídica'],
+  PSICOLOGO: ['Psicología clínica', 'Psicología social', 'Psicología comunitaria', 'Trauma', 'VBG', 'Salud mental', 'Otra especialidad psicológica'],
+  TRABAJO_SOCIAL: ['Trabajo social comunitario', 'Trabajo social familiar', 'Intervención territorial', 'VBG', 'Protección social', 'Otra especialidad social'],
+  COORDINADOR: ['Coordinación de programas', 'Gestión de casos', 'Otra especialidad'],
+  ADMIN_SISTEMA: ['Administración del sistema', 'Otra especialidad'],
+};
+
 export type ProfessionalRole = 'MEDICO' | 'TRABAJO_SOCIAL' | 'JURIDICO' | 'PSICOLOGO' | 'COORDINADOR' | 'ADMIN_SISTEMA';
 
 interface ProfessionalProfile {
@@ -450,6 +459,8 @@ export default function AdminManagementPanel({ onOpenSOS }: { onOpenSOS?: () => 
   const [newProfConsent, setNewProfConsent] = useState(false);
   const [profCreateSuccess, setProfCreateSuccess] = useState('');
 
+  const specialtyOptions = PROFESSIONAL_SPECIALTIES[newProfRole];
+
   // Form State: Create Patient with Immediate Appointment
   const [newPatName, setNewPatName] = useState('');
   const [newPatDocId, setNewPatDocId] = useState('');
@@ -628,7 +639,10 @@ export default function AdminManagementPanel({ onOpenSOS }: { onOpenSOS?: () => 
   // ACCIONES: CREAR PROFESIONAL CON CÓDIGO Y CONTRASEÑA
   const handleCreateProfessional = async (e: React.FormEvent) => {
     e.preventDefault();
-    if (!newProfName || !newProfDocumentNumber || !newProfSpecialty || !newProfPassword || !newProfConsent) return;
+    if (!newProfName || !newProfDocumentNumber || !newProfSpecialty || !newProfPassword || !newProfConsent) {
+      setProfCreateSuccess('Completa los campos obligatorios, incluida la especialidad profesional y la autorización de verificación.');
+      return;
+    }
 
     const generatedCode = `${newProfRole.slice(0, 3)}-${Math.floor(1000 + Math.random() * 9000)}`;
     const newProf: ProfessionalProfile = {
@@ -660,17 +674,21 @@ export default function AdminManagementPanel({ onOpenSOS }: { onOpenSOS?: () => 
       status: 'ACTIVO',
     };
 
-    setProfessionals([...professionals, newProf]);
-    setProfCreateSuccess(`¡Médico / Profesional ${newProfName} creado exitosamente con código ${generatedCode}!`);
-
     try {
-      await fetch('/api/admin/doctors', {
+      const response = await fetch('/api/admin/doctors', {
         method: 'POST',
         headers: { 'Content-Type': 'application/json' },
         body: JSON.stringify({ ...newProf, password: newProfPassword }),
       });
+      const result = await response.json();
+      if (!response.ok || !result.success) {
+        throw new Error(result.error || 'No fue posible guardar el profesional.');
+      }
+      setProfessionals([...professionals, result.doctor || newProf]);
+      setProfCreateSuccess(`¡Profesional ${newProfName} creado exitosamente con código ${generatedCode}! Ya puede ingresar con su documento y contraseña.`);
     } catch (err) {
-      console.warn('Fallback local activo');
+      setProfCreateSuccess(err instanceof Error ? err.message : 'No fue posible guardar el profesional.');
+      return;
     }
 
     setNewProfName('');
@@ -1295,7 +1313,11 @@ export default function AdminManagementPanel({ onOpenSOS }: { onOpenSOS?: () => 
                         <label className="block text-[11px] font-extrabold text-pink-300 mb-1">Rol & Disciplina *</label>
                         <select
                           value={newProfRole}
-                          onChange={(e) => setNewProfRole(e.target.value as any)}
+                          onChange={(e) => {
+                            const role = e.target.value as ProfessionalRole;
+                            setNewProfRole(role);
+                            setNewProfSpecialty(PROFESSIONAL_SPECIALTIES[role][0]);
+                          }}
                           className="w-full p-3 rounded-xl bg-[#140320] border border-pink-500/30 text-xs text-white font-bold"
                         >
                           <option value="MEDICO">🩺 Médico (Ginecología / Med. General / Odontología)</option>
@@ -1306,15 +1328,16 @@ export default function AdminManagementPanel({ onOpenSOS }: { onOpenSOS?: () => 
                       </div>
 
                       <div>
-                        <label className="block text-[11px] font-extrabold text-pink-300 mb-1">Especialidad Clínica *</label>
-                        <input
-                          type="text"
+                        <label className="block text-[11px] font-extrabold text-pink-300 mb-1">Especialidad profesional *</label>
+                        <select
                           value={newProfSpecialty}
                           onChange={(e) => setNewProfSpecialty(e.target.value)}
-                          placeholder="Ej: Odontología Integral & Cirugía"
                           required
-                          className="w-full p-3 rounded-xl bg-[#140320] border border-pink-500/30 text-xs text-white"
-                        />
+                          className="w-full p-3 rounded-xl bg-[#140320] border border-pink-500/30 text-xs text-white font-bold"
+                        >
+                          <option value="">Selecciona una especialidad</option>
+                          {specialtyOptions.map((specialty) => <option key={specialty} value={specialty}>{specialty}</option>)}
+                        </select>
                       </div>
 
                       <div>

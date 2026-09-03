@@ -1,7 +1,6 @@
 import { NextRequest, NextResponse } from 'next/server';
 import { connectToDatabase } from '@/lib/mongodb';
 import DoctorProfile from '@/lib/models/DoctorProfile';
-import { seedCaribeSeguroData } from '@/lib/seedCaribeSeguro';
 import { normalizeDocumentNumber, verifyPassword } from '@/lib/password';
 
 export async function POST(req: NextRequest) {
@@ -39,8 +38,6 @@ export async function POST(req: NextRequest) {
 
     try {
       await connectToDatabase();
-      await seedCaribeSeguroData();
-
       const doctor = await DoctorProfile.findOne({ documentNumber: cleanDocumentNumber }).select('+passwordHash').lean() as any;
 
       if (doctor) {
