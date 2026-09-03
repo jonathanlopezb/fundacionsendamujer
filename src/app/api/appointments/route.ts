@@ -3,6 +3,18 @@ import { connectToDatabase } from '@/lib/mongodb';
 import Appointment from '@/lib/models/Appointment';
 import { isSuperAdminSession } from '@/lib/admin-auth';
 
+export async function GET() {
+  if (!isSuperAdminSession()) return NextResponse.json({ success: false, error: 'Solo el SuperAdministrador puede consultar el calendario administrativo.' }, { status: 403 });
+  try {
+    await connectToDatabase();
+    const appointments = await Appointment.find({}).sort({ createdAt: -1 }).lean();
+    return NextResponse.json({ success: true, appointments });
+  } catch (error) {
+    console.error('Appointment list error:', error);
+    return NextResponse.json({ success: false, error: 'No fue posible consultar las citas en MongoDB.' }, { status: 500 });
+  }
+}
+
 export async function POST(req: Request) {
   try {
     const body = await req.json();
@@ -16,6 +28,7 @@ export async function POST(req: Request) {
       patientId,
       professionalId,
       beneficiaryId,
+      patientCode,
       phone,
       email,
       specialty,
@@ -36,6 +49,7 @@ export async function POST(req: Request) {
         patientId: patientId || beneficiaryId || undefined,
         professionalId: professionalId || undefined,
         beneficiaryId: beneficiaryId || patientId || undefined,
+        patientCode: patientCode || undefined,
         fullName,
         patientName: patientName || fullName,
         professionalName: professionalName || undefined,
@@ -51,8 +65,9 @@ export async function POST(req: Request) {
       });
       return NextResponse.json({ success: true, appointment: newAppointment });
     } catch (dbErr) {
-      console.warn('DB Save fallback mode for appointments:', dbErr);
-      return NextResponse.json({ success: false, error: 'No fue posible guardar la cita en MongoDB.' }, { status: 500 });
+      console.error('DB Save error for appointments:', dbErr);
+      const message = dbErr instanceof Error ? dbErr.message : 'Error desconocido de MongoDB';
+      return NextResponse.json({ success: false, error: `No fue posible guardar la cita: ${message}` }, { status: 500 });
     }
   } catch (error: any) {
     console.error('Appointment API error:', error);

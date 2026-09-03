@@ -556,9 +556,10 @@ export default function AdminManagementPanel({ onOpenSOS }: { onOpenSOS?: () => 
     if (!isAdminAuth) return;
     const fetchMongoData = async () => {
       try {
-        const [patRes, docRes] = await Promise.all([
+        const [patRes, docRes, appointmentRes] = await Promise.all([
           fetch('/api/admin/patients'),
           fetch('/api/admin/doctors'),
+          isSuperAdmin ? fetch('/api/appointments') : Promise.resolve(null),
         ]);
 
         const patData = await patRes.json();
@@ -576,6 +577,25 @@ export default function AdminManagementPanel({ onOpenSOS }: { onOpenSOS?: () => 
 
         if (docData.success && docData.doctors && docData.doctors.length > 0) {
           setProfessionals(docData.doctors);
+        }
+
+        if (appointmentRes?.ok) {
+          const appointmentData = await appointmentRes.json();
+          if (appointmentData.success && Array.isArray(appointmentData.appointments)) {
+            setAppointments(appointmentData.appointments.map((appointment: any) => ({
+              id: appointment._id || appointment.id,
+              patientId: appointment.patientId || appointment.beneficiaryId || '',
+              patientName: appointment.patientName || appointment.fullName,
+              patientCode: appointment.patientCode || '',
+              doctorName: appointment.professionalName || '',
+              specialty: appointment.specialty,
+              date: appointment.preferredDate,
+              time: appointment.preferredTime,
+              modality: appointment.modality || 'Presencial Sede Pie de la Popa',
+              status: appointment.status === 'PENDIENTE' ? 'PROGRAMADA' : appointment.status,
+              notes: appointment.notes || '',
+            })));
+          }
         }
       } catch (err) {
         console.warn('Carga inicial MongoDB fallback activo:', err);
@@ -914,6 +934,7 @@ export default function AdminManagementPanel({ onOpenSOS }: { onOpenSOS?: () => 
       patientName: beneficiary.patientName,
       patientId: beneficiary.id,
       beneficiaryId: beneficiary.id,
+      patientCode: beneficiary.patientCode,
       professionalName: professional.name,
       professionalId: professional.id,
       phone: beneficiary.phone,

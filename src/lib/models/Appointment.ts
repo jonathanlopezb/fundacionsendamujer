@@ -4,18 +4,13 @@ export interface IAppointment extends Document {
   patientId?: string;
   professionalId?: string;
   beneficiaryId?: string;
+  patientCode?: string;
   fullName: string;
   patientName?: string;
   professionalName?: string;
   phone: string;
   email?: string;
-  specialty:
-    | 'Ginecología Especializada & Salud Reproductiva'
-    | 'Psicología & Salud Mental'
-    | 'Medicina General & Salud Reproductiva'
-    | 'Odontología Integral'
-    | 'Asesoría Jurídica & VBG'
-    | 'Trabajo Social';
+  specialty: string;
   preferredDate: string;
   preferredTime: string;
   location: string;
@@ -30,23 +25,13 @@ const AppointmentSchema = new Schema<IAppointment>(
     patientId: { type: String },
     professionalId: { type: String },
     beneficiaryId: { type: String },
+    patientCode: { type: String },
     fullName: { type: String, required: true },
     patientName: { type: String },
     professionalName: { type: String },
     phone: { type: String, required: true },
     email: { type: String },
-    specialty: {
-      type: String,
-      enum: [
-        'Ginecología Especializada & Salud Reproductiva',
-        'Psicología & Salud Mental',
-        'Medicina General & Salud Reproductiva',
-        'Odontología Integral',
-        'Asesoría Jurídica & VBG',
-        'Trabajo Social',
-      ],
-      required: true,
-    },
+    specialty: { type: String, required: true, trim: true },
     preferredDate: { type: String, required: true },
     preferredTime: { type: String, required: true },
     location: { type: String, default: 'Sede Cartagena / Atención Directa' },
