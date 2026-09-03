@@ -1,12 +1,48 @@
 'use client';
 
 import React, { useState } from 'react';
-import { Heart, Play, Volume2, VolumeX, Shield, Sparkles, ArrowRight, Quote, CheckCircle2 } from 'lucide-react';
+import { Heart, Volume2, VolumeX, Sparkles, ArrowRight, Quote, CheckCircle2, MapPin, Users, CalendarDays } from 'lucide-react';
 import Link from 'next/link';
+
+const CAMPAIGNS = [
+  {
+    id: 'salud',
+    category: 'Salud y derechos',
+    title: 'Tu salud, tus decisiones',
+    description: 'Jornadas de orientación en salud sexual y reproductiva con información clara y acompañamiento digno.',
+    image: 'https://images.unsplash.com/photo-1559757175-0eb30cd8c063?auto=format&fit=crop&w=1200&q=85',
+    date: '2026 · Cartagena',
+    impact: '86 mujeres orientadas',
+    tone: 'border-pink-400/30',
+  },
+  {
+    id: 'prevencion',
+    category: 'Prevención VBG',
+    title: 'Redes que protegen',
+    description: 'Encuentros comunitarios para reconocer señales de violencia y activar rutas de protección.',
+    image: 'https://images.unsplash.com/photo-1551836022-d5d88e9218df?auto=format&fit=crop&w=1200&q=85',
+    date: '2026 · Bolívar',
+    impact: '12 redes comunitarias',
+    tone: 'border-amber-300/30',
+  },
+  {
+    id: 'autonomia',
+    category: 'Autonomía económica',
+    title: 'Mujeres que emprenden',
+    description: 'Formación y herramientas para fortalecer ingresos, proyectos de vida y autonomía.',
+    image: 'https://images.unsplash.com/photo-1556761175-b413da4baf72?auto=format&fit=crop&w=1200&q=85',
+    date: '2026 · Caribe',
+    impact: '42 proyectos acompañados',
+    tone: 'border-emerald-300/30',
+  },
+];
 
 export default function FounderGreeting() {
   const [isPlaying, setIsPlaying] = useState(false);
   const [isMuted, setIsMuted] = useState(false);
+  const [campaignFilter, setCampaignFilter] = useState('Todas');
+  const campaignCategories = ['Todas', ...CAMPAIGNS.map((campaign) => campaign.category)];
+  const visibleCampaigns = campaignFilter === 'Todas' ? CAMPAIGNS : CAMPAIGNS.filter((campaign) => campaign.category === campaignFilter);
 
   return (
     <section className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 py-10">
@@ -122,6 +158,43 @@ export default function FounderGreeting() {
 
           </div>
 
+        </div>
+
+        <div className="relative z-10 mt-10 border-t border-white/10 pt-8">
+          <div className="flex flex-col lg:flex-row lg:items-end lg:justify-between gap-5 mb-5">
+            <div className="max-w-2xl">
+              <span className="inline-flex items-center gap-2 text-[11px] font-extrabold uppercase tracking-[0.18em] text-amber-300"><Sparkles className="w-3.5 h-3.5" /> Campañas que dejan huella</span>
+              <h3 className="text-2xl sm:text-3xl font-black text-white mt-2">Lo que construimos juntas</h3>
+              <p className="text-xs sm:text-sm text-pink-100/80 mt-2 leading-relaxed">Conoce las jornadas, alianzas y espacios de formación que convierten el acompañamiento en acción territorial.</p>
+            </div>
+            <div className="flex gap-2 overflow-x-auto pb-1" role="tablist" aria-label="Filtrar campañas">
+              {campaignCategories.map((category) => (
+                <button key={category} type="button" role="tab" aria-selected={campaignFilter === category} onClick={() => setCampaignFilter(category)} className={`whitespace-nowrap rounded-full border px-3 py-2 text-[11px] font-bold transition-colors ${campaignFilter === category ? 'border-amber-300 bg-amber-300 text-[#2E0540]' : 'border-white/20 bg-white/5 text-pink-100 hover:border-pink-300'}`}>
+                  {category}
+                </button>
+              ))}
+            </div>
+          </div>
+
+          <div className="grid grid-cols-1 md:grid-cols-3 gap-4">
+            {visibleCampaigns.map((campaign) => (
+              <article key={campaign.id} className={`overflow-hidden rounded-2xl border ${campaign.tone} bg-slate-950/35 shadow-xl`}>
+                <div className="relative aspect-[16/9] overflow-hidden">
+                  <img src={campaign.image} alt={`Campaña ${campaign.title}`} loading="lazy" className="h-full w-full object-cover transition-transform duration-500 hover:scale-105" />
+                  <span className="absolute left-3 top-3 rounded-full bg-[#2E0540]/90 px-2.5 py-1 text-[10px] font-extrabold text-amber-300">{campaign.category}</span>
+                </div>
+                <div className="p-4 space-y-3">
+                  <h4 className="text-base font-black text-white">{campaign.title}</h4>
+                  <p className="text-xs leading-relaxed text-slate-300">{campaign.description}</p>
+                  <div className="flex flex-wrap gap-x-4 gap-y-2 border-t border-white/10 pt-3 text-[10px] font-bold text-pink-200/80">
+                    <span className="inline-flex items-center gap-1"><CalendarDays className="w-3.5 h-3.5 text-amber-300" />{campaign.date}</span>
+                    <span className="inline-flex items-center gap-1"><Users className="w-3.5 h-3.5 text-emerald-300" />{campaign.impact}</span>
+                  </div>
+                  <span className="inline-flex items-center gap-1 text-[11px] font-extrabold text-pink-300"><MapPin className="w-3.5 h-3.5" /> Fundación Senda Mujer</span>
+                </div>
+              </article>
+            ))}
+          </div>
         </div>
 
       </div>
