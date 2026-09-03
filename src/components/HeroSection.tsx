@@ -3,7 +3,7 @@
 import React from 'react';
 import Link from 'next/link';
 import Image from 'next/image';
-import { Sparkles, Calendar, ShieldCheck, HeartHandshake, PhoneCall, ArrowRight, UserCheck, Stethoscope } from 'lucide-react';
+import { Sparkles, Calendar, ShieldCheck, HeartHandshake, PhoneCall, ArrowRight, UserCheck, Stethoscope, Globe } from 'lucide-react';
 
 export default function HeroSection() {
   return (
@@ -48,6 +48,14 @@ export default function HeroSection() {
               >
                 <Calendar className="w-4 h-4 sm:w-5 sm:h-5 text-senda-purple shrink-0" />
                 <span>Agendar Cita (Médica, Dental, Legal)</span>
+              </Link>
+
+              <Link
+                href="/senda-universal"
+                className="w-full sm:w-auto bg-senda-purple text-white hover:bg-senda-purple-dark font-extrabold text-xs sm:text-sm px-5 py-3.5 rounded-full shadow-xs transition-all flex items-center justify-center space-x-2 text-center"
+              >
+                <Globe className="w-4 h-4 sm:w-5 sm:h-5 text-amber-300 shrink-0" />
+                <span>Ingresar al Sistema Operativo</span>
               </Link>
             </div>
 

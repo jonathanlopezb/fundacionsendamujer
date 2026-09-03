@@ -6,7 +6,6 @@ import ProgramsGrid from '@/components/ProgramsGrid';
 import CartagenaDirectory from '@/components/CartagenaDirectory';
 import DonationCalculator from '@/components/DonationCalculator';
 import SendaUniversalModule from '@/components/SendaUniversalModule';
-import CharlaDelDia from '@/components/CharlaDelDia';
 import AlliesSection from '@/components/AlliesSection';
 import { BrainCircuit, ShieldCheck, Heart, Calendar, ArrowRight, UserCheck, Stethoscope, Smile, Scale, Brain, Globe, Compass, Workflow, Zap } from 'lucide-react';
 
@@ -18,9 +17,6 @@ export default function HomePage() {
 
       {/* 1.2. SALUDO Y MENSAJE DE BIENVENIDA DE LA FUNDADORA */}
       <FounderGreeting />
-
-      {/* 1.5. CHARLA DEL DÍA (Featured Video Section) */}
-      <CharlaDelDia />
 
       {/* 1.8. SENDA UNIVERSAL FLAGSHIP SYSTEM OPERATIVO — SÍNTESIS EJECUTIVA DE ALTA VELOCIDAD */}
       <section className="max-w-7xl mx-auto px-6 lg:px-8 py-6">

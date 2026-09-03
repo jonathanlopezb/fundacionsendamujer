@@ -2,6 +2,7 @@
 import React, { useState, useEffect } from 'react';
 import AcademiaNavbar from '@/components/academia/AcademiaNavbar';
 import LiveClassBanner from '@/components/academia/LiveClassBanner';
+import CharlaDelDia from '@/components/CharlaDelDia';
 import CourseCatalog from '@/components/academia/CourseCatalog';
 import AuthModal from '@/components/academia/AuthModal';
 import AcademiaFooter from '@/components/academia/AcademiaFooter';
@@ -37,6 +38,7 @@ export default function AcademiaPage() {
     <div className="min-h-screen" style={{ background: '#0a0a0f', color: '#f0f0f5' }}>
       <AcademiaNavbar user={user} onOpenAuth={openAuth} onLogout={handleLogout} />
       <LiveClassBanner onOpenAuth={() => openAuth('register')} user={user} />
+      <CharlaDelDia />
       <CourseCatalog user={user} onOpenAuth={() => openAuth('login')} />
       <AcademiaFooter />
       {authModalOpen && (
