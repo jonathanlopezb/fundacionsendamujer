@@ -37,6 +37,7 @@ interface ProfessionalProfile {
   urgentCases?: boolean;
   yearsExperience?: string;
   bio?: string;
+  consentsAccepted?: boolean;
   verificationStatus?: 'PENDIENTE' | 'VERIFICADO' | 'RECHAZADO' | 'VENCIDO';
   email: string;
   phone: string;
