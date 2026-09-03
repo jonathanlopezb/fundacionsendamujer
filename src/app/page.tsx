@@ -10,8 +10,28 @@ import AlliesSection from '@/components/AlliesSection';
 import { BrainCircuit, ShieldCheck, Heart, Calendar, ArrowRight, UserCheck, Stethoscope, Smile, Scale, Brain, Globe, Compass, Workflow, Zap } from 'lucide-react';
 
 export default function HomePage() {
+  const organizationSchema = {
+    '@context': 'https://schema.org',
+    '@type': 'NGO',
+    name: 'Fundación Senda Mujer',
+    url: 'https://fundacionsendamujer.vercel.app/',
+    logo: 'https://fundacionsendamujer.vercel.app/logo.png',
+    description: 'Fundación que ofrece acompañamiento integral, orientación en derechos, salud, protección y autonomía para mujeres y niñas en Cartagena, Colombia.',
+    areaServed: ['Cartagena de Indias', 'Bolívar', 'Colombia'],
+    telephone: '+57 301 469 2095',
+    sameAs: ['https://fundacionsendamujer.vercel.app/'],
+    contactPoint: {
+      '@type': 'ContactPoint',
+      telephone: '+57 301 469 2095',
+      contactType: 'customer support',
+      areaServed: 'CO',
+      availableLanguage: 'Spanish',
+    },
+  };
+
   return (
-    <div className="space-y-16 pb-16">
+    <div className="space-y-16 pb-16" itemScope itemType="https://schema.org/NGO">
+      <script type="application/ld+json" dangerouslySetInnerHTML={{ __html: JSON.stringify(organizationSchema) }} />
       {/* 1. Hero Section */}
       <HeroSection />
 
@@ -119,7 +139,7 @@ export default function HomePage() {
                 ¿Necesitas orientación psicológica, médica o jurídica urgente?
               </h2>
               <p className="text-xs sm:text-sm text-pink-100 leading-relaxed max-w-2xl">
-                Realiza nuestro **Test Psicológico & Triaje de Vulnerabilidad (SendaEval)**. El sistema evalúa tu situación en 4 áreas y te asigna directamente con la profesional correspondiente en Cartagena.
+                Realiza nuestro <strong>Test Psicológico y Triaje de Vulnerabilidad (SendaEval)</strong>. El sistema evalúa tu situación en 4 áreas y te asigna directamente con la profesional correspondiente en Cartagena.
               </p>
             </div>
 
