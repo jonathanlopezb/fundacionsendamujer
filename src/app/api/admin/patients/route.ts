@@ -1,6 +1,7 @@
 import { NextRequest, NextResponse } from 'next/server';
 import { connectToDatabase } from '@/lib/mongodb';
 import PatientEHR from '@/lib/models/PatientEHR';
+import Appointment from '@/lib/models/Appointment';
 import { isSuperAdminSession, readAdminSession } from '@/lib/admin-auth';
 
 export async function GET() {
@@ -11,7 +12,12 @@ export async function GET() {
       await connectToDatabase();
       const assignmentFilter = session.role === 'ADMIN_SISTEMA'
         ? {}
-        : { $or: [{ assignedDoctor: session.professionalName }, { primaryCategory: session.role }] };
+        : { $or: [{ assignedDoctor: session.professionalName }, { assignedProfessionalIds: session.professionalId }, { assignedProfessionalNames: session.professionalName }, { primaryCategory: session.role }] };
+      if (session.role !== 'ADMIN_SISTEMA') {
+        const appointments = await Appointment.find({ professionalId: session.professionalId }).select('patientId beneficiaryId').lean();
+        const appointmentPatientIds = appointments.flatMap((appointment: any) => [appointment.patientId, appointment.beneficiaryId]).filter(Boolean);
+        if (appointmentPatientIds.length > 0) (assignmentFilter as any).$or.push({ id: { $in: appointmentPatientIds } });
+      }
       const patients = await PatientEHR.find(assignmentFilter).sort({ createdAt: -1 }).lean();
       if (patients && patients.length > 0) {
         return NextResponse.json({ success: true, patients });
@@ -51,6 +57,8 @@ export async function POST(req: NextRequest) {
         dimensionsIPSC: body.dimensionsIPSC || {},
         primaryCategory: body.primaryCategory || 'MEDICO',
         assignedDoctor: body.assignedDoctor || 'Dra. Elena Ruiz',
+        assignedProfessionalIds: body.assignedProfessionalIds || [],
+        assignedProfessionalNames: body.assignedProfessionalNames || [body.assignedDoctor || 'Dra. Elena Ruiz'],
         status: body.status || 'ACTIVA',
         vitals: body.vitals || { bloodPressure: '120/80 mmHg', heartRate: 72, weightKg: 60, heightM: 1.6, bmi: 23.4, tempC: 36.5 },
         evolutions: body.evolutions || [],

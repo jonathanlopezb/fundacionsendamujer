@@ -221,6 +221,8 @@ export interface PatientEHR {
   dimensionsIPSC: Record<string, number>;
   primaryCategory: 'MEDICO' | 'TRABAJO_SOCIAL' | 'JURIDICO' | 'PSICOLOGO';
   assignedDoctor: string;
+  assignedProfessionalIds?: string[];
+  assignedProfessionalNames?: string[];
   status: 'ACTIVA' | 'EN_ORIENTACION' | 'RUTA_ACTIVADA' | 'EN_SEGUIMIENTO' | 'COMPLETADA';
   vitals: {
     bloodPressure: string;
@@ -971,6 +973,14 @@ export default function AdminManagementPanel({ onOpenSOS }: { onOpenSOS?: () => 
       const result = await response.json();
       if (!response.ok || !result.success) throw new Error(result.error || 'No fue posible guardar la cita.');
       setAppointments((prev) => [nextAppointment, ...prev]);
+      setPatients((prev) => prev.map((patient) => patient.id === beneficiary.id
+        ? {
+            ...patient,
+            assignedProfessionalIds: [...new Set([...(patient.assignedProfessionalIds || []), professional.id])],
+            assignedProfessionalNames: [...new Set([...(patient.assignedProfessionalNames || []), professional.name])],
+          }
+        : patient
+      ));
       setAppointmentCreateSuccess(`Cita programada para ${beneficiary.patientName} con ${professional.name}.`);
     } catch (err) {
       setAppointmentCreateSuccess(err instanceof Error ? err.message : 'No fue posible guardar la cita.');
@@ -1096,7 +1106,7 @@ export default function AdminManagementPanel({ onOpenSOS }: { onOpenSOS?: () => 
   const canViewClinical = isSuperAdmin || ['MEDICO', 'PSICOLOGO', 'TRABAJO_SOCIAL'].includes(selectedProfessional.role);
   const assignedPatients = isSuperAdmin
     ? patients
-    : patients.filter((patient) => patient.assignedDoctor === selectedProfessional.name || patient.primaryCategory === selectedProfessional.role);
+    : patients.filter((patient) => patient.assignedDoctor === selectedProfessional.name || patient.assignedProfessionalIds?.includes(selectedProfessional.id) || patient.assignedProfessionalNames?.includes(selectedProfessional.name) || patient.primaryCategory === selectedProfessional.role);
   const selectedPatient = assignedPatients.find((p) => p.id === selectedPatientId);
   const normalizedPatientSearch = patientSearch.trim().toLowerCase();
   const searchablePatients = patients.filter((patient) => {

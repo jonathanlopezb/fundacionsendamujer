@@ -86,6 +86,8 @@ export interface IPatientEHR extends Document {
   dimensionsIPSC: Record<string, number>;
   primaryCategory: 'MEDICO' | 'TRABAJO_SOCIAL' | 'JURIDICO' | 'PSICOLOGO';
   assignedDoctor: string;
+  assignedProfessionalIds?: string[];
+  assignedProfessionalNames?: string[];
   status: 'ACTIVA' | 'EN_ORIENTACION' | 'RUTA_ACTIVADA' | 'EN_SEGUIMIENTO' | 'COMPLETADA';
   vitals: {
     bloodPressure: string;
@@ -170,6 +172,8 @@ const PatientEHRSchema = new Schema<IPatientEHR>(
     dimensionsIPSC: { type: Schema.Types.Mixed, default: {} },
     primaryCategory: { type: String, enum: ['MEDICO', 'TRABAJO_SOCIAL', 'JURIDICO', 'PSICOLOGO'], default: 'MEDICO' },
     assignedDoctor: { type: String, default: 'Dra. Elena Ruiz' },
+    assignedProfessionalIds: { type: [String], default: [] },
+    assignedProfessionalNames: { type: [String], default: [] },
     status: {
       type: String,
       enum: ['ACTIVA', 'EN_ORIENTACION', 'RUTA_ACTIVADA', 'EN_SEGUIMIENTO', 'COMPLETADA'],

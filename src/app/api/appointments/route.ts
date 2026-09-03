@@ -1,6 +1,7 @@
 import { NextResponse } from 'next/server';
 import { connectToDatabase } from '@/lib/mongodb';
 import Appointment from '@/lib/models/Appointment';
+import PatientEHR from '@/lib/models/PatientEHR';
 import { isSuperAdminSession } from '@/lib/admin-auth';
 
 export async function GET() {
@@ -63,6 +64,13 @@ export async function POST(req: Request) {
         notes,
         status: 'PENDIENTE',
       });
+      if (body.adminAction === true && (patientId || beneficiaryId) && professionalId && professionalName) {
+        await PatientEHR.findOneAndUpdate(
+          { id: patientId || beneficiaryId },
+          { $addToSet: { assignedProfessionalIds: professionalId, assignedProfessionalNames: professionalName } },
+          { new: true }
+        );
+      }
       return NextResponse.json({ success: true, appointment: newAppointment });
     } catch (dbErr) {
       console.error('DB Save error for appointments:', dbErr);

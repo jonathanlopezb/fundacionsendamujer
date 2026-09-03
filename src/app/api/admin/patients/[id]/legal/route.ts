@@ -12,7 +12,7 @@ export async function GET(req: NextRequest, { params }: { params: { id: string }
       await connectToDatabase();
       const patient = await PatientEHR.findOne({ id: patientId }).lean() as any;
       if (patient) {
-        if (session.role !== 'ADMIN_SISTEMA' && patient.assignedDoctor !== session.professionalName && patient.primaryCategory !== session.role) {
+        if (session.role !== 'ADMIN_SISTEMA' && patient.assignedDoctor !== session.professionalName && patient.primaryCategory !== session.role && !patient.assignedProfessionalIds?.includes(session.professionalId) && !patient.assignedProfessionalNames?.includes(session.professionalName)) {
           return NextResponse.json({ success: false, error: 'No tienes acceso a este expediente.' }, { status: 403 });
         }
         return NextResponse.json({ success: true, legalProcedures: patient.legalProcedures || [] });
@@ -46,8 +46,8 @@ export async function POST(req: NextRequest, { params }: { params: { id: string 
 
     try {
       await connectToDatabase();
-      const patient = await PatientEHR.findOne({ id: patientId }).select('assignedDoctor primaryCategory').lean() as any;
-      if (!patient || (session?.role !== 'ADMIN_SISTEMA' && patient.assignedDoctor !== session?.professionalName && patient.primaryCategory !== session?.role)) {
+      const patient = await PatientEHR.findOne({ id: patientId }).select('assignedDoctor primaryCategory assignedProfessionalIds assignedProfessionalNames').lean() as any;
+      if (!patient || (session?.role !== 'ADMIN_SISTEMA' && patient.assignedDoctor !== session?.professionalName && patient.primaryCategory !== session?.role && !patient.assignedProfessionalIds?.includes(session?.professionalId) && !patient.assignedProfessionalNames?.includes(session?.professionalName))) {
         return NextResponse.json({ success: false, error: 'No tienes acceso a este expediente.' }, { status: 403 });
       }
       const updated = await PatientEHR.findOneAndUpdate(
