@@ -816,7 +816,8 @@ export default function AdminManagementPanel({ onOpenSOS }: { onOpenSOS?: () => 
   const handleCreatePatient = async (e: React.FormEvent) => {
     e.preventDefault();
     if (!isSuperAdmin) return;
-    const patientName = [newPatFirstName, newPatSecondName, newPatLastName, newPatSecondLastName].filter(Boolean).join(' ').trim();
+    const nameParts = [newPatFirstName, newPatSecondName, newPatLastName, newPatSecondLastName].map((part) => part.trim()).filter(Boolean);
+    const patientName = nameParts.join(' ');
     const docNumber = newPatDocumentNumber || newPatDocumentType;
     if (!patientName || !docNumber) return;
 
@@ -1663,8 +1664,16 @@ export default function AdminManagementPanel({ onOpenSOS }: { onOpenSOS?: () => 
                           <input value={newPatFirstName} onChange={(e) => setNewPatFirstName(e.target.value)} placeholder="Ej: Diana" required className="w-full p-3 rounded-xl bg-[#240538] border border-pink-500/30 text-xs text-white" />
                         </div>
                         <div>
+                          <label className="block text-[11px] font-extrabold text-pink-300 mb-1">Segundo nombre</label>
+                          <input value={newPatSecondName} onChange={(e) => setNewPatSecondName(e.target.value)} placeholder="Ej: María" className="w-full p-3 rounded-xl bg-[#240538] border border-pink-500/30 text-xs text-white" />
+                        </div>
+                        <div>
                           <label className="block text-[11px] font-extrabold text-pink-300 mb-1">Primer apellido *</label>
                           <input value={newPatLastName} onChange={(e) => setNewPatLastName(e.target.value)} placeholder="Ej: Gómez" required className="w-full p-3 rounded-xl bg-[#240538] border border-pink-500/30 text-xs text-white" />
+                        </div>
+                        <div>
+                          <label className="block text-[11px] font-extrabold text-pink-300 mb-1">Segundo apellido</label>
+                          <input value={newPatSecondLastName} onChange={(e) => setNewPatSecondLastName(e.target.value)} placeholder="Ej: Rodríguez" className="w-full p-3 rounded-xl bg-[#240538] border border-pink-500/30 text-xs text-white" />
                         </div>
                         <div>
                           <label className="block text-[11px] font-extrabold text-pink-300 mb-1">Tipo de documento *</label>
