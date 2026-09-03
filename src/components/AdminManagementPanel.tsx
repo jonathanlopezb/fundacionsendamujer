@@ -255,6 +255,12 @@ export interface AppointmentRecord {
   modality: 'Presencial Sede Pie de la Popa' | 'Teleorientación Virtual' | 'Visita Domiciliaria';
   status: 'PROGRAMADA' | 'CONFIRMADA' | 'ATENDIDA' | 'CANCELADA';
   notes: string;
+  fullName?: string;
+  phone?: string;
+  email?: string;
+  preferredDate?: string;
+  preferredTime?: string;
+  location?: string;
   requestSource?: 'WEB_INSTITUCIONAL' | 'ADMINISTRATIVA' | 'PORTAL_BENEFICIARIA';
   reviewStatus?: 'NUEVA' | 'EN_REVISION' | 'GESTIONADA' | 'CANCELADA';
 }
@@ -603,6 +609,12 @@ export default function AdminManagementPanel({ onOpenSOS }: { onOpenSOS?: () => 
               modality: appointment.modality || appointment.location || 'No indicada',
               status: appointment.status === 'PENDIENTE' ? 'PROGRAMADA' : appointment.status,
               notes: appointment.notes || 'Sin notas adicionales.',
+              fullName: appointment.fullName,
+              phone: appointment.phone,
+              email: appointment.email,
+              preferredDate: appointment.preferredDate,
+              preferredTime: appointment.preferredTime,
+              location: appointment.location,
               requestSource: appointment.requestSource,
               reviewStatus: appointment.reviewStatus,
             })));
