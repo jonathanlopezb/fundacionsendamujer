@@ -630,15 +630,17 @@ export default function AdminManagementPanel({ onOpenSOS }: { onOpenSOS?: () => 
     setAdminTab(prof.role === 'ADMIN_SISTEMA' ? 'dashboard' : 'clinica');
   };
 
-  const handleLogout = () => {
+  const handleLogout = async () => {
     setIsAdminAuth(false);
     sessionStorage.removeItem('senda_admin_auth');
     sessionStorage.removeItem('senda_prof_id');
+    await fetch('/api/admin/logout', { method: 'POST' }).catch(() => undefined);
   };
 
   // ACCIONES: CREAR PROFESIONAL CON CÓDIGO Y CONTRASEÑA
   const handleCreateProfessional = async (e: React.FormEvent) => {
     e.preventDefault();
+    if (!isSuperAdmin) return;
     if (!newProfName || !newProfDocumentNumber || !newProfSpecialty || !newProfPassword || !newProfConsent) {
       setProfCreateSuccess('Completa los campos obligatorios, incluida la especialidad profesional y la autorización de verificación.');
       return;
@@ -711,6 +713,7 @@ export default function AdminManagementPanel({ onOpenSOS }: { onOpenSOS?: () => 
   // ACCIONES: REGISTRAR BENEFICIARIA CON CÓDIGO CSM Y CITA INMEDIATA
   const handleCreatePatient = async (e: React.FormEvent) => {
     e.preventDefault();
+    if (!isSuperAdmin) return;
     const patientName = `${newPatFirstName} ${newPatLastName}`.trim();
     const docNumber = newPatDocumentNumber || newPatDocumentType;
     if (!patientName || !docNumber) return;
@@ -884,6 +887,7 @@ export default function AdminManagementPanel({ onOpenSOS }: { onOpenSOS?: () => 
 
   const handleCreateAppointment = async (e: React.FormEvent) => {
     e.preventDefault();
+    if (!isSuperAdmin) return;
     const beneficiary = patients.find((p) => p.id === newAppointmentBeneficiaryId);
     const professional = professionals.find((p) => p.id === newAppointmentProfessionalId);
 
@@ -906,6 +910,7 @@ export default function AdminManagementPanel({ onOpenSOS }: { onOpenSOS?: () => 
       preferredTime: newAppointmentTime,
       location: 'Sede Fundación Senda Mujer - Cartagena',
       modality: newAppointmentModality,
+      adminAction: true,
       notes: newAppointmentNotes || 'Cita programada desde el panel administrativo del rol ADMIN_SISTEMA.',
     };
 
@@ -948,6 +953,7 @@ export default function AdminManagementPanel({ onOpenSOS }: { onOpenSOS?: () => 
   // RADICAR TRÁMITE JURÍDICO (LEY 1257, COMISARÍA, FISCALÍA)
   const handleAddLegalProcedure = async (e: React.FormEvent) => {
     e.preventDefault();
+    if (!canManageLegal) return;
     if (!newLegalNotes) return;
 
     const newProcedure: LegalProcedureItem = {
@@ -986,6 +992,7 @@ export default function AdminManagementPanel({ onOpenSOS }: { onOpenSOS?: () => 
   // ARCHIVAR RECURSO / AYUDA PRESTADA
   const handleAddResourceProvided = (e: React.FormEvent) => {
     e.preventDefault();
+    if (!isSuperAdmin) return;
     if (!newResDesc) return;
 
     const newResource: ResourceProvidedItem = {
@@ -1012,6 +1019,7 @@ export default function AdminManagementPanel({ onOpenSOS }: { onOpenSOS?: () => 
   // EVOLUCIÓN SOAP
   const handleAddSoapEvolution = async (e: React.FormEvent) => {
     e.preventDefault();
+    if (!canWriteClinical) return;
     if (!newSoapSubjective || !newSoapAnalysis || !newSoapPlan) return;
 
     const newEvo: ClinicalEvolutionNote = {
@@ -1047,7 +1055,9 @@ export default function AdminManagementPanel({ onOpenSOS }: { onOpenSOS?: () => 
   };
 
   const selectedPatient = patients.find((p) => p.id === selectedPatientId) || patients[0];
-  const isAdminRole = selectedProfessional.role === 'ADMIN_SISTEMA' || selectedProfessional.role === 'COORDINADOR';
+  const isSuperAdmin = selectedProfessional.role === 'ADMIN_SISTEMA';
+  const canManageLegal = isSuperAdmin || selectedProfessional.role === 'JURIDICO';
+  const canWriteClinical = isSuperAdmin || ['MEDICO', 'PSICOLOGO', 'TRABAJO_SOCIAL'].includes(selectedProfessional.role);
 
   return (
     <div className="min-h-screen bg-[#0F0218] text-slate-100 font-sans selection:bg-[#E12880] selection:text-white">
@@ -1182,7 +1192,7 @@ export default function AdminManagementPanel({ onOpenSOS }: { onOpenSOS?: () => 
               { id: 'beneficiarias', label: '👥 Registro de Beneficiaria', icon: UserCog },
               { id: 'citas', label: '📅 Asignar Cita', icon: CalendarPlus },
               { id: 'clinica', label: '🩺 Expediente EHR & Módulo Jurídico', icon: Activity },
-            ].map((t) => {
+            ].filter((tab) => isSuperAdmin || tab.id === 'clinica').map((t) => {
               const Icon = t.icon;
               const isActive = adminTab === t.id;
 
@@ -1206,7 +1216,7 @@ export default function AdminManagementPanel({ onOpenSOS }: { onOpenSOS?: () => 
           <main className="flex-1 bg-[#1A042B] p-6 overflow-y-auto space-y-6">
             
             {/* DASHBOARD EJECUTIVO */}
-            {adminTab === 'dashboard' && (
+            {adminTab === 'dashboard' && isSuperAdmin && (
               <div className="space-y-6 animate-fadeIn">
                 <div className="bg-gradient-to-r from-[#3B0852] via-[#52166F] to-[#E12880] text-white rounded-3xl p-6 sm:p-8 shadow-2xl space-y-4">
                   <div className="flex items-center gap-2">
@@ -1255,7 +1265,7 @@ export default function AdminManagementPanel({ onOpenSOS }: { onOpenSOS?: () => 
             )}
 
             {/* CREACIÓN & GESTIÓN DE MÉDICOS Y PROFESIONALES */}
-            {adminTab === 'profesionales' && (
+            {adminTab === 'profesionales' && isSuperAdmin && (
               <div className="space-y-6 animate-fadeIn">
                 <div className="bg-[#240538] rounded-3xl p-6 border border-pink-500/30 space-y-4 shadow-xl">
                   <h3 className="text-base font-black text-white flex items-center gap-2">
@@ -1483,7 +1493,7 @@ export default function AdminManagementPanel({ onOpenSOS }: { onOpenSOS?: () => 
             )}
 
             {/* CREACIÓN DE BENEFICIARIA CON CÓDIGO CSM & CITA INMEDIATA */}
-            {adminTab === 'beneficiarias' && (
+            {adminTab === 'beneficiarias' && isSuperAdmin && (
               <div className="space-y-6 animate-fadeIn">
                 <div className="bg-[#240538] rounded-3xl p-6 border border-pink-500/30 space-y-4 shadow-xl">
                   <h3 className="text-base font-black text-white flex items-center gap-2">
@@ -1896,7 +1906,7 @@ export default function AdminManagementPanel({ onOpenSOS }: { onOpenSOS?: () => 
             )}
 
             {/* ASIGNACIÓN DE CITA CON BENEFICIARIA Y PROFESIONAL */}
-            {adminTab === 'citas' && (
+            {adminTab === 'citas' && isSuperAdmin && (
               <div className="space-y-6 animate-fadeIn">
                 <div className="bg-[#240538] rounded-3xl p-6 border border-pink-500/30 space-y-4 shadow-xl">
                   <h3 className="text-base font-black text-white flex items-center gap-2">
@@ -2075,7 +2085,7 @@ export default function AdminManagementPanel({ onOpenSOS }: { onOpenSOS?: () => 
                     { id: 'juridico', label: '⚖️ Módulo Jurídico & Ley 1257', icon: Gavel },
                     { id: 'recursos', label: '📦 Ayudas & Recursos Entregados', icon: PackageCheck },
                     { id: 'evoluciones', label: '🩺 Evoluciones Clínicas (SOAP)', icon: Activity },
-                  ].map((t) => {
+                  ].filter((tab) => tab.id === 'ipsc' || (tab.id === 'juridico' && canManageLegal) || (tab.id === 'recursos' && isSuperAdmin) || (tab.id === 'evoluciones' && canWriteClinical)).map((t) => {
                     const Icon = t.icon;
                     const isActive = ehrTab === t.id;
 
@@ -2097,7 +2107,7 @@ export default function AdminManagementPanel({ onOpenSOS }: { onOpenSOS?: () => 
                 </div>
 
                 {/* PESTAÑA MÓDULO JURÍDICO LEY 1257 & COMISARÍAS */}
-                {ehrTab === 'juridico' && (
+                {ehrTab === 'juridico' && canManageLegal && (
                   <div className="space-y-6 animate-fadeIn">
                     <div className="bg-[#240538] rounded-3xl p-6 border border-pink-500/30 space-y-4 shadow-xl">
                       <h3 className="text-sm font-black text-white uppercase tracking-wider flex items-center gap-2">
@@ -2200,7 +2210,7 @@ export default function AdminManagementPanel({ onOpenSOS }: { onOpenSOS?: () => 
                 )}
 
                 {/* PESTAÑA RECURSOS & AYUDAS PRESTADAS */}
-                {ehrTab === 'recursos' && (
+                {ehrTab === 'recursos' && isSuperAdmin && (
                   <div className="space-y-6 animate-fadeIn">
                     <div className="bg-[#240538] rounded-3xl p-6 border border-pink-500/30 space-y-4 shadow-xl">
                       <h3 className="text-sm font-black text-white uppercase tracking-wider flex items-center gap-2">

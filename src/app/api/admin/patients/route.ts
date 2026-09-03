@@ -2,8 +2,10 @@ import { NextRequest, NextResponse } from 'next/server';
 import { connectToDatabase } from '@/lib/mongodb';
 import PatientEHR from '@/lib/models/PatientEHR';
 import { seedCaribeSeguroData } from '@/lib/seedCaribeSeguro';
+import { isSuperAdminSession } from '@/lib/admin-auth';
 
 export async function GET() {
+  if (!isSuperAdminSession()) return NextResponse.json({ success: false, error: 'Se requiere sesión de SuperAdministrador.' }, { status: 403 });
   try {
     try {
       await connectToDatabase();
@@ -24,6 +26,7 @@ export async function GET() {
 }
 
 export async function POST(req: NextRequest) {
+  if (!isSuperAdminSession()) return NextResponse.json({ success: false, error: 'Solo el SuperAdministrador puede registrar beneficiarias.' }, { status: 403 });
   try {
     const body = await req.json();
 

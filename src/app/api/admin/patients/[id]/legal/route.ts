@@ -1,5 +1,6 @@
 import { NextRequest, NextResponse } from 'next/server';
 import { connectToDatabase } from '@/lib/mongodb';
+import { readAdminSession } from '@/lib/admin-auth';
 import PatientEHR from '@/lib/models/PatientEHR';
 
 export async function GET(req: NextRequest, { params }: { params: { id: string } }) {
@@ -21,6 +22,7 @@ export async function GET(req: NextRequest, { params }: { params: { id: string }
 }
 
 export async function POST(req: NextRequest, { params }: { params: { id: string } }) {
+  if (!['ADMIN_SISTEMA', 'JURIDICO'].includes(readAdminSession()?.role || '')) return NextResponse.json({ success: false, error: 'No tienes permisos para registrar trámites jurídicos.' }, { status: 403 });
   try {
     const patientId = params.id;
     const body = await req.json();

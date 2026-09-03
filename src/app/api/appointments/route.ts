@@ -1,10 +1,14 @@
 import { NextResponse } from 'next/server';
 import { connectToDatabase } from '@/lib/mongodb';
 import Appointment from '@/lib/models/Appointment';
+import { isSuperAdminSession } from '@/lib/admin-auth';
 
 export async function POST(req: Request) {
   try {
     const body = await req.json();
+    if (body.adminAction === true && !isSuperAdminSession()) {
+      return NextResponse.json({ success: false, error: 'Solo el SuperAdministrador puede asignar citas desde la consola.' }, { status: 403 });
+    }
     const {
       fullName,
       patientName,

@@ -2,6 +2,19 @@ import { NextRequest, NextResponse } from 'next/server';
 import { connectToDatabase } from '@/lib/mongodb';
 import DoctorProfile from '@/lib/models/DoctorProfile';
 import { normalizeDocumentNumber, verifyPassword } from '@/lib/password';
+import { createAdminSession, COOKIE_NAME, SESSION_TTL_SECONDS } from '@/lib/admin-auth';
+
+function authenticatedResponse(professional: Record<string, unknown>) {
+  const response = NextResponse.json({ success: true, professional });
+  response.cookies.set(COOKIE_NAME, createAdminSession({ professionalId: String(professional.id), role: String(professional.role) }), {
+    httpOnly: true,
+    secure: process.env.NODE_ENV === 'production',
+    sameSite: 'strict',
+    maxAge: SESSION_TTL_SECONDS,
+    path: '/',
+  });
+  return response;
+}
 
 export async function POST(req: NextRequest) {
   try {
@@ -15,9 +28,7 @@ export async function POST(req: NextRequest) {
 
     // Verificación especial para Administrador del Sistema
     if (cleanDocumentNumber === '1000000001' && password === (process.env.ADMIN_DEMO_PASSWORD || 'senda2026')) {
-      return NextResponse.json({
-        success: true,
-        professional: {
+      return authenticatedResponse({
           id: 'PROF-ADMIN',
           name: 'Dra. Sorelvis Murillo (Administración)',
           role: 'ADMIN_SISTEMA',
@@ -32,7 +43,6 @@ export async function POST(req: NextRequest) {
           avatarBg: 'bg-amber-600',
           badgeColor: 'bg-amber-100 text-amber-900 border-amber-300',
           status: 'ACTIVO',
-        },
       });
     }
 
@@ -46,7 +56,7 @@ export async function POST(req: NextRequest) {
           : false;
         if (!validPassword) return NextResponse.json({ success: false, error: 'Contraseña incorrecta' }, { status: 401 });
         const { passwordHash: _passwordHash, ...safeDoctor } = doctor;
-        return NextResponse.json({ success: true, professional: safeDoctor });
+        return authenticatedResponse(safeDoctor);
       }
     } catch (dbErr) {
       console.warn('Fallback login MongoDB:', dbErr);
