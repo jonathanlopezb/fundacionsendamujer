@@ -32,6 +32,16 @@ export interface Ally {
   isFlagship?: boolean;
 }
 
+function getOfficialLogoUrl(website?: string) {
+  if (!website) return undefined;
+  try {
+    const domain = new URL(website).hostname.replace(/^www\./, '');
+    return `https://www.google.com/s2/favicons?domain=${domain}&sz=128`;
+  } catch {
+    return undefined;
+  }
+}
+
 const ALLIES_DATA: Ally[] = [
   {
     id: 'defensoria',
@@ -418,16 +428,14 @@ export default function AlliesSection() {
             en <span className="bg-gradient-to-r from-amber-300 via-pink-400 to-purple-400 bg-clip-text text-transparent">Cartagena y Colombia</span>
           </h2>
 
-          <p className="text-sm sm:text-base text-purple-100/80 leading-relaxed">
-            Trabajamos de la mano con el sector público, autoridades judiciales, organismos internacionales, clínicas y universidades para garantizar que ninguna mujer enfrente barreras burocráticas al exigir sus derechos.
-          </p>
+          <p className="text-sm text-purple-100/80 leading-relaxed">Instituciones que fortalecen nuestras rutas de salud, protección, justicia y autonomía.</p>
         </div>
 
         {/* ── Marquee / Ticker Ribbon of Key Partners ── */}
         <div className="bg-white/5 border border-white/10 rounded-2xl p-4 sm:p-5 backdrop-blur-md overflow-hidden shadow-inner space-y-3">
           <p className="text-[10px] uppercase font-extrabold tracking-widest text-pink-300/90 text-center flex items-center justify-center gap-2">
             <Sparkles className="w-3.5 h-3.5 text-amber-400" />
-            <span>Red Interinstitucional Certificada en Cartagena y Bolívar</span>
+            <span>Red institucional · Cartagena y Colombia</span>
             <Sparkles className="w-3.5 h-3.5 text-amber-400" />
           </p>
           <div className="flex flex-wrap items-center justify-center gap-2.5 sm:gap-4">
@@ -437,10 +445,10 @@ export default function AlliesSection() {
                 <button
                   key={ally.id}
                   onClick={() => setActiveModalAlly(ally)}
-                  className="bg-purple-950/80 hover:bg-pink-950/80 border border-purple-700/50 hover:border-pink-500/60 text-purple-100 text-xs font-bold px-3 py-1.5 rounded-2xl shadow-xs flex items-center gap-2.5 transition-all cursor-pointer group"
+                  className="bg-white/95 hover:bg-amber-50 border border-white/20 hover:border-amber-300 text-slate-700 text-xs font-bold px-3 py-2 rounded-xl shadow-sm flex items-center gap-2.5 transition-all cursor-pointer group"
                 >
-                  {LogoComp && <LogoComp className="w-6 h-6 shrink-0 group-hover:scale-110 transition-transform" size={24} />}
-                  <span className="group-hover:text-amber-300 transition-colors whitespace-nowrap">{ally.acronym || ally.name}</span>
+                  {getOfficialLogoUrl(ally.website) ? <img src={getOfficialLogoUrl(ally.website)} alt="" aria-hidden="true" className="w-7 h-7 rounded-md object-contain shrink-0 group-hover:scale-110 transition-transform" /> : LogoComp && <LogoComp className="w-7 h-7 shrink-0 group-hover:scale-110 transition-transform" size={28} />}
+                  <span className="group-hover:text-senda-purple transition-colors whitespace-nowrap">{ally.acronym || ally.name}</span>
                 </button>
               );
             })}
@@ -529,7 +537,11 @@ export default function AlliesSection() {
                   <div className="space-y-4">
                     {/* Header with Logo Badge & Category */}
                     <div className="flex items-start gap-3.5 pt-1">
-                      {LogoComponent ? (
+                      {getOfficialLogoUrl(ally.website) ? (
+                        <div className="w-14 h-14 rounded-2xl p-2 bg-white border border-white/80 flex items-center justify-center shrink-0 shadow-xl group-hover:scale-110 group-hover:border-amber-400 transition-all">
+                          <img src={getOfficialLogoUrl(ally.website)} alt={`Logo de ${ally.name}`} className="w-10 h-10 rounded-lg object-contain" />
+                        </div>
+                      ) : LogoComponent ? (
                         <div className="w-14 h-14 rounded-2xl p-1 bg-slate-950/90 border border-purple-500/40 flex items-center justify-center shrink-0 shadow-xl group-hover:scale-110 group-hover:border-amber-400 transition-all">
                           <LogoComponent className="w-12 h-12" size={48} />
                         </div>
@@ -554,28 +566,14 @@ export default function AlliesSection() {
                     </div>
 
                     {/* Description */}
-                    <p className="text-xs text-purple-100/80 leading-relaxed line-clamp-3">
-                      {ally.description}
-                    </p>
-
-                    {/* Scope Pill & Key Services */}
+                    {/* Scope Pill */}
                     <div className="space-y-2 pt-2 border-t border-white/5">
                       <div className="flex items-center gap-1.5 text-[11px] font-semibold text-purple-200">
                         <MapPin className="w-3.5 h-3.5 text-pink-400" />
                         <span>Cobertura: <strong className="text-white">{ally.scope}</strong></span>
                       </div>
 
-                      <div className="space-y-1.5">
-                        <span className="text-[10px] font-extrabold text-slate-400 uppercase tracking-widest block">
-                          Servicios Articulados:
-                        </span>
-                        {ally.services.slice(0, 2).map((srv, i) => (
-                          <div key={i} className="flex items-start gap-1.5 text-xs text-purple-100/90">
-                            <CheckCircle2 className="w-3.5 h-3.5 text-emerald-400 shrink-0 mt-0.5" />
-                            <span className="line-clamp-1">{srv}</span>
-                          </div>
-                        ))}
-                      </div>
+                      <p className="text-xs text-purple-100/80 line-clamp-2">{ally.services[0]}</p>
                     </div>
                   </div>
 
