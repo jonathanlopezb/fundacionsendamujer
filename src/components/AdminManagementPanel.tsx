@@ -976,8 +976,8 @@ export default function AdminManagementPanel({ onOpenSOS }: { onOpenSOS?: () => 
       setPatients((prev) => prev.map((patient) => patient.id === beneficiary.id
         ? {
             ...patient,
-            assignedProfessionalIds: [...new Set([...(patient.assignedProfessionalIds || []), professional.id])],
-            assignedProfessionalNames: [...new Set([...(patient.assignedProfessionalNames || []), professional.name])],
+            assignedProfessionalIds: Array.from(new Set([...(patient.assignedProfessionalIds || []), professional.id])),
+            assignedProfessionalNames: Array.from(new Set([...(patient.assignedProfessionalNames || []), professional.name])),
           }
         : patient
       ));
