@@ -23,9 +23,22 @@ interface ProfessionalProfile {
   roleTitle: string;
   specialty: string;
   code: string;
+  documentType: string;
+  documentNumber: string;
   rethus: string;
+  professionalCard?: string;
+  institutionName?: string;
+  organizationType?: string;
+  city?: string;
+  department?: string;
+  modalities?: string[];
+  services?: string[];
+  availability?: string;
+  urgentCases?: boolean;
+  yearsExperience?: string;
+  bio?: string;
+  verificationStatus?: 'PENDIENTE' | 'VERIFICADO' | 'RECHAZADO' | 'VENCIDO';
   email: string;
-  password?: string;
   phone: string;
   avatarBg: string;
   badgeColor: string;
@@ -40,9 +53,10 @@ const INITIAL_PROFESSIONALS: ProfessionalProfile[] = [
     roleTitle: 'Directora Ejecutiva & Administradora del Sistema',
     specialty: 'Gestión Global, Creación de Médicos, Citas & Pacientes',
     code: 'ADMIN-001',
+    documentType: 'CC',
+    documentNumber: '1000000001',
     rethus: 'DIR-EJECUTIVA-2026',
     email: 'admin.senda@sendamujer.org',
-    password: 'senda2026',
     phone: '+57 301 469 2095',
     avatarBg: 'bg-amber-600',
     badgeColor: 'bg-amber-100 text-amber-900 border-amber-300',
@@ -55,9 +69,10 @@ const INITIAL_PROFESSIONALS: ProfessionalProfile[] = [
     roleTitle: 'Médica Especialista en Ginecología & Obstetricia',
     specialty: 'Salud Reproductiva & Ecografía Pélvica',
     code: 'MED-7712',
+    documentType: 'CC',
+    documentNumber: '1000000002',
     rethus: 'RETHUS 1047892-BOL',
     email: 'elena.ruiz@sendamujer.org',
-    password: 'senda2026',
     phone: '+57 300 112 4490',
     avatarBg: 'bg-emerald-600',
     badgeColor: 'bg-emerald-100 text-emerald-800 border-emerald-300',
@@ -70,9 +85,10 @@ const INITIAL_PROFESSIONALS: ProfessionalProfile[] = [
     roleTitle: 'Trabajadora Social de Territorio',
     specialty: 'Acompañamiento Domiciliario & Proyectos',
     code: 'SOC-4401',
+    documentType: 'CC',
+    documentNumber: '1000000003',
     rethus: 'RETHUS 99281-TS-COL',
     email: 'sorelvis.murillo@sendamujer.org',
-    password: 'senda2026',
     phone: '+57 301 469 2095',
     avatarBg: 'bg-purple-600',
     badgeColor: 'bg-purple-100 text-purple-800 border-purple-300',
@@ -85,9 +101,10 @@ const INITIAL_PROFESSIONALS: ProfessionalProfile[] = [
     roleTitle: 'Abogada Especialista en VBG & Ley 1257 de 2008',
     specialty: 'Derecho de Familia & Medidas de Protección',
     code: 'JUR-9923',
+    documentType: 'CC',
+    documentNumber: '1000000004',
     rethus: 'TP 204918-CSJ',
     email: 'patricia.herrera@sendamujer.org',
-    password: 'senda2026',
     phone: '+57 315 889 0011',
     avatarBg: 'bg-blue-600',
     badgeColor: 'bg-blue-100 text-blue-800 border-blue-300',
@@ -100,9 +117,10 @@ const INITIAL_PROFESSIONALS: ProfessionalProfile[] = [
     roleTitle: 'Psicóloga Clínica & Salud Mental',
     specialty: 'Contención Emocional & Trauma de Género',
     code: 'PSI-3320',
+    documentType: 'CC',
+    documentNumber: '1000000005',
     rethus: 'COLPSIC 449102-PSI',
     email: 'claudia.morales@sendamujer.org',
-    password: 'senda2026',
     phone: '+57 312 443 8810',
     avatarBg: 'bg-pink-600',
     badgeColor: 'bg-pink-100 text-pink-800 border-pink-300',
@@ -394,7 +412,7 @@ export default function AdminManagementPanel({ onOpenSOS }: { onOpenSOS?: () => 
   const [professionals, setProfessionals] = useState<ProfessionalProfile[]>(INITIAL_PROFESSIONALS);
   const [selectedProfessional, setSelectedProfessional] = useState<ProfessionalProfile>(INITIAL_PROFESSIONALS[0]);
   
-  const [usernameInput, setUsernameInput] = useState('');
+  const [documentNumberInput, setDocumentNumberInput] = useState('');
   const [passwordInput, setPasswordInput] = useState('');
   const [loginError, setLoginError] = useState('');
 
@@ -409,12 +427,26 @@ export default function AdminManagementPanel({ onOpenSOS }: { onOpenSOS?: () => 
 
   // Form State: Create Professional
   const [newProfName, setNewProfName] = useState('');
+  const [newProfDocumentNumber, setNewProfDocumentNumber] = useState('');
+  const [newProfDocumentType, setNewProfDocumentType] = useState('CC');
   const [newProfRole, setNewProfRole] = useState<ProfessionalRole>('MEDICO');
   const [newProfSpecialty, setNewProfSpecialty] = useState('');
   const [newProfRethus, setNewProfRethus] = useState('');
+  const [newProfProfessionalCard, setNewProfProfessionalCard] = useState('');
   const [newProfEmail, setNewProfEmail] = useState('');
-  const [newProfPassword, setNewProfPassword] = useState('senda2026');
+  const [newProfPassword, setNewProfPassword] = useState('');
   const [newProfPhone, setNewProfPhone] = useState('');
+  const [newProfInstitution, setNewProfInstitution] = useState('');
+  const [newProfOrganizationType, setNewProfOrganizationType] = useState('Independiente');
+  const [newProfCity, setNewProfCity] = useState('Cartagena');
+  const [newProfDepartment, setNewProfDepartment] = useState('Bolívar');
+  const [newProfModalities, setNewProfModalities] = useState<string[]>(['Presencial']);
+  const [newProfServices, setNewProfServices] = useState('');
+  const [newProfAvailability, setNewProfAvailability] = useState('');
+  const [newProfUrgentCases, setNewProfUrgentCases] = useState(false);
+  const [newProfYearsExperience, setNewProfYearsExperience] = useState('');
+  const [newProfBio, setNewProfBio] = useState('');
+  const [newProfConsent, setNewProfConsent] = useState(false);
   const [profCreateSuccess, setProfCreateSuccess] = useState('');
 
   // Form State: Create Patient with Immediate Appointment
@@ -548,7 +580,7 @@ export default function AdminManagementPanel({ onOpenSOS }: { onOpenSOS?: () => 
     }
   }, [professionals]);
 
-  // LOGIN POR CORREO INSTITUCIONAL EXCLUSIVO
+  // LOGIN POR CEDULA Y CONTRASENA
   const handleLoginSubmit = async (e: React.FormEvent) => {
     e.preventDefault();
     setLoginError('');
@@ -557,7 +589,7 @@ export default function AdminManagementPanel({ onOpenSOS }: { onOpenSOS?: () => 
       const res = await fetch('/api/admin/login', {
         method: 'POST',
         headers: { 'Content-Type': 'application/json' },
-        body: JSON.stringify({ email: usernameInput, password: passwordInput }),
+        body: JSON.stringify({ documentNumber: documentNumberInput, password: passwordInput }),
       });
       const data = await res.json();
 
@@ -578,8 +610,8 @@ export default function AdminManagementPanel({ onOpenSOS }: { onOpenSOS?: () => 
 
   const handleQuickDemoLogin = (prof: ProfessionalProfile) => {
     setSelectedProfessional(prof);
-    setUsernameInput(prof.email);
-    setPasswordInput(prof.password || 'senda2026');
+    setDocumentNumberInput(prof.documentNumber);
+    setPasswordInput('senda2026');
     setIsAdminAuth(true);
     sessionStorage.setItem('senda_admin_auth', 'true');
     sessionStorage.setItem('senda_prof_id', prof.id);
@@ -595,19 +627,32 @@ export default function AdminManagementPanel({ onOpenSOS }: { onOpenSOS?: () => 
   // ACCIONES: CREAR PROFESIONAL CON CÓDIGO Y CONTRASEÑA
   const handleCreateProfessional = async (e: React.FormEvent) => {
     e.preventDefault();
-    if (!newProfName || !newProfSpecialty || !newProfRethus) return;
+    if (!newProfName || !newProfDocumentNumber || !newProfSpecialty || !newProfPassword || !newProfConsent) return;
 
     const generatedCode = `${newProfRole.slice(0, 3)}-${Math.floor(1000 + Math.random() * 9000)}`;
     const newProf: ProfessionalProfile = {
       id: `PROF-${Date.now()}`,
       name: newProfName,
+      documentType: newProfDocumentType,
+      documentNumber: newProfDocumentNumber,
       role: newProfRole,
       roleTitle: `${newProfRole === 'MEDICO' ? 'Médico Especialista' : newProfRole === 'JURIDICO' ? 'Abogada Especialista' : newProfRole === 'TRABAJO_SOCIAL' ? 'Trabajadora Social' : 'Psicóloga Clínica'} en ${newProfSpecialty}`,
       specialty: newProfSpecialty,
       code: generatedCode,
       rethus: newProfRethus,
+      professionalCard: newProfProfessionalCard,
+      institutionName: newProfInstitution,
+      organizationType: newProfOrganizationType,
+      city: newProfCity,
+      department: newProfDepartment,
+      modalities: newProfModalities,
+      services: newProfServices.split(',').map((service) => service.trim()).filter(Boolean),
+      availability: newProfAvailability,
+      urgentCases: newProfUrgentCases,
+      yearsExperience: newProfYearsExperience,
+      bio: newProfBio,
+      consentsAccepted: newProfConsent,
       email: newProfEmail || `${newProfName.toLowerCase().replace(/\s+/g, '.')}@sendamujer.org`,
-      password: newProfPassword || 'senda2026',
       phone: newProfPhone || '+57 300 000 0000',
       avatarBg: newProfRole === 'MEDICO' ? 'bg-emerald-600' : newProfRole === 'JURIDICO' ? 'bg-blue-600' : newProfRole === 'TRABAJO_SOCIAL' ? 'bg-purple-600' : 'bg-pink-600',
       badgeColor: newProfRole === 'MEDICO' ? 'bg-emerald-100 text-emerald-800 border-emerald-300' : newProfRole === 'JURIDICO' ? 'bg-blue-100 text-blue-800 border-blue-300' : 'bg-purple-100 text-purple-800 border-purple-300',
@@ -621,18 +666,26 @@ export default function AdminManagementPanel({ onOpenSOS }: { onOpenSOS?: () => 
       await fetch('/api/admin/doctors', {
         method: 'POST',
         headers: { 'Content-Type': 'application/json' },
-        body: JSON.stringify(newProf),
+        body: JSON.stringify({ ...newProf, password: newProfPassword }),
       });
     } catch (err) {
       console.warn('Fallback local activo');
     }
 
     setNewProfName('');
+    setNewProfDocumentNumber('');
     setNewProfSpecialty('');
     setNewProfRethus('');
+    setNewProfProfessionalCard('');
     setNewProfEmail('');
-    setNewProfPassword('senda2026');
+    setNewProfPassword('');
     setNewProfPhone('');
+    setNewProfInstitution('');
+    setNewProfServices('');
+    setNewProfAvailability('');
+    setNewProfYearsExperience('');
+    setNewProfBio('');
+    setNewProfConsent(false);
     setTimeout(() => setProfCreateSuccess(''), 5000);
   };
 
@@ -980,7 +1033,7 @@ export default function AdminManagementPanel({ onOpenSOS }: { onOpenSOS?: () => 
   return (
     <div className="min-h-screen bg-[#0F0218] text-slate-100 font-sans selection:bg-[#E12880] selection:text-white">
       {!isAdminAuth ? (
-        /* PANTALLA DE INICIO DE SESIÓN POR CORREO INSTITUCIONAL */
+        /* PANTALLA DE INICIO DE SESIÓN POR CEDULA */
         <div className="min-h-screen flex items-center justify-center p-4 bg-gradient-to-br from-[#0F0218] via-[#1A042B] to-[#31084A]">
           <div className="max-w-md w-full bg-white/95 text-slate-900 rounded-3xl p-8 shadow-2xl border border-pink-500/30 backdrop-blur-xl space-y-6 animate-fadeIn">
             
@@ -994,7 +1047,7 @@ export default function AdminManagementPanel({ onOpenSOS }: { onOpenSOS?: () => 
               </p>
             </div>
 
-            {/* ACCESO POR CORREO INSTITUCIONAL EXCLUSIVO */}
+            {/* ACCESO POR CEDULA Y CONTRASENA */}
             <form onSubmit={handleLoginSubmit} className="space-y-4">
               {loginError && (
                 <div className="p-3 bg-red-50 border border-red-200 text-red-600 rounded-xl text-xs font-bold flex items-center gap-2">
@@ -1005,13 +1058,14 @@ export default function AdminManagementPanel({ onOpenSOS }: { onOpenSOS?: () => 
 
               <div>
                 <label className="block text-xs font-black text-slate-700 uppercase tracking-wider mb-1">
-                  Correo Electrónico Institucional *
+                  Número de cédula *
                 </label>
                 <input
-                  type="email"
-                  value={usernameInput}
-                  onChange={(e) => setUsernameInput(e.target.value)}
-                  placeholder="admin.senda@sendamujer.org"
+                  type="text"
+                  inputMode="numeric"
+                  value={documentNumberInput}
+                  onChange={(e) => setDocumentNumberInput(e.target.value)}
+                  placeholder="1000000001"
                   required
                   className="w-full px-4 py-3 rounded-xl border border-slate-300 text-xs focus:ring-2 focus:ring-[#E12880] focus:outline-none bg-slate-50 font-mono"
                 />
@@ -1199,7 +1253,7 @@ export default function AdminManagementPanel({ onOpenSOS }: { onOpenSOS?: () => 
                   <form onSubmit={handleCreateProfessional} className="space-y-4">
                     <div className="grid grid-cols-1 sm:grid-cols-2 md:grid-cols-3 gap-4">
                       <div>
-                        <label className="block text-[11px] font-extrabold text-pink-300 mb-1">Nombre Completo *</label>
+                        <label className="block text-[11px] font-extrabold text-pink-300 mb-1">Nombre completo *</label>
                         <input
                           type="text"
                           value={newProfName}
@@ -1207,6 +1261,32 @@ export default function AdminManagementPanel({ onOpenSOS }: { onOpenSOS?: () => 
                           placeholder="Ej: Dr. Camilo Vargas"
                           required
                           className="w-full p-3 rounded-xl bg-[#140320] border border-pink-500/30 text-xs text-white"
+                        />
+                      </div>
+
+                      <div>
+                        <label className="block text-[11px] font-extrabold text-pink-300 mb-1">Tipo de documento *</label>
+                        <select
+                          value={newProfDocumentType}
+                          onChange={(e) => setNewProfDocumentType(e.target.value)}
+                          className="w-full p-3 rounded-xl bg-[#140320] border border-pink-500/30 text-xs text-white font-bold"
+                        >
+                          <option value="CC">Cédula de ciudadanía</option>
+                          <option value="CE">Cédula de extranjería</option>
+                          <option value="PA">Pasaporte</option>
+                        </select>
+                      </div>
+
+                      <div>
+                        <label className="block text-[11px] font-extrabold text-pink-300 mb-1">Número de documento *</label>
+                        <input
+                          type="text"
+                          inputMode="numeric"
+                          value={newProfDocumentNumber}
+                          onChange={(e) => setNewProfDocumentNumber(e.target.value)}
+                          placeholder="Ej: 1047892411"
+                          required
+                          className="w-full p-3 rounded-xl bg-[#140320] border border-pink-500/30 text-xs text-white font-mono"
                         />
                       </div>
 
@@ -1237,13 +1317,23 @@ export default function AdminManagementPanel({ onOpenSOS }: { onOpenSOS?: () => 
                       </div>
 
                       <div>
-                        <label className="block text-[11px] font-extrabold text-pink-300 mb-1">Registro RETHUS / Tarjeta Profesional *</label>
+                        <label className="block text-[11px] font-extrabold text-pink-300 mb-1">Registro RETHUS</label>
                         <input
                           type="text"
                           value={newProfRethus}
                           onChange={(e) => setNewProfRethus(e.target.value)}
                           placeholder="Ej: RETHUS 554901-BOL"
-                          required
+                          className="w-full p-3 rounded-xl bg-[#140320] border border-pink-500/30 text-xs text-white font-mono"
+                        />
+                      </div>
+
+                      <div>
+                        <label className="block text-[11px] font-extrabold text-pink-300 mb-1">Tarjeta profesional</label>
+                        <input
+                          type="text"
+                          value={newProfProfessionalCard}
+                          onChange={(e) => setNewProfProfessionalCard(e.target.value)}
+                          placeholder="Ej: TP 204918"
                           className="w-full p-3 rounded-xl bg-[#140320] border border-pink-500/30 text-xs text-white font-mono"
                         />
                       </div>
@@ -1261,16 +1351,68 @@ export default function AdminManagementPanel({ onOpenSOS }: { onOpenSOS?: () => 
                       </div>
 
                       <div>
-                        <label className="block text-[11px] font-extrabold text-pink-300 mb-1">Contraseña de Acceso Asignada *</label>
+                        <label className="block text-[11px] font-extrabold text-pink-300 mb-1">Contraseña *</label>
                         <input
-                          type="text"
+                          type="password"
                           value={newProfPassword}
                           onChange={(e) => setNewProfPassword(e.target.value)}
-                          placeholder="senda2026"
+                          placeholder="Crea una contraseña segura"
                           required
                           className="w-full p-3 rounded-xl bg-[#140320] border border-pink-500/30 text-xs text-white font-mono"
                         />
                       </div>
+
+                      <div>
+                        <label className="block text-[11px] font-extrabold text-pink-300 mb-1">Teléfono profesional</label>
+                        <input type="tel" value={newProfPhone} onChange={(e) => setNewProfPhone(e.target.value)} placeholder="+57 300 000 0000" className="w-full p-3 rounded-xl bg-[#140320] border border-pink-500/30 text-xs text-white" />
+                      </div>
+
+                      <div>
+                        <label className="block text-[11px] font-extrabold text-pink-300 mb-1">Institución / organización</label>
+                        <input type="text" value={newProfInstitution} onChange={(e) => setNewProfInstitution(e.target.value)} placeholder="IPS, clínica, fundación o independiente" className="w-full p-3 rounded-xl bg-[#140320] border border-pink-500/30 text-xs text-white" />
+                      </div>
+
+                      <div>
+                        <label className="block text-[11px] font-extrabold text-pink-300 mb-1">Tipo de organización</label>
+                        <select value={newProfOrganizationType} onChange={(e) => setNewProfOrganizationType(e.target.value)} className="w-full p-3 rounded-xl bg-[#140320] border border-pink-500/30 text-xs text-white font-bold">
+                          <option>Independiente</option><option>IPS</option><option>Hospital</option><option>Clínica</option><option>Fundación</option><option>Universidad</option><option>Entidad pública</option><option>ONG</option>
+                        </select>
+                      </div>
+
+                      <div>
+                        <label className="block text-[11px] font-extrabold text-pink-300 mb-1">Ciudad / departamento</label>
+                        <input type="text" value={`${newProfCity}, ${newProfDepartment}`} onChange={(e) => { const [city, ...department] = e.target.value.split(','); setNewProfCity(city.trim()); setNewProfDepartment(department.join(',').trim()); }} placeholder="Cartagena, Bolívar" className="w-full p-3 rounded-xl bg-[#140320] border border-pink-500/30 text-xs text-white" />
+                      </div>
+
+                      <div className="md:col-span-2">
+                        <label className="block text-[11px] font-extrabold text-pink-300 mb-2">Modalidad de atención</label>
+                        <div className="flex flex-wrap gap-3">
+                          {['Presencial', 'Virtual', 'Domiciliaria', 'Telefónica'].map((modality) => (
+                            <label key={modality} className="flex items-center gap-2 text-xs text-white"><input type="checkbox" checked={newProfModalities.includes(modality)} onChange={() => toggleChecklist(modality, newProfModalities, setNewProfModalities)} />{modality}</label>
+                          ))}
+                        </div>
+                      </div>
+
+                      <div className="md:col-span-2">
+                        <label className="block text-[11px] font-extrabold text-pink-300 mb-1">Servicios que presta</label>
+                        <input type="text" value={newProfServices} onChange={(e) => setNewProfServices(e.target.value)} placeholder="Medicina general, SSR, orientación médica (separados por coma)" className="w-full p-3 rounded-xl bg-[#140320] border border-pink-500/30 text-xs text-white" />
+                      </div>
+
+                      <div>
+                        <label className="block text-[11px] font-extrabold text-pink-300 mb-1">Disponibilidad</label>
+                        <input type="text" value={newProfAvailability} onChange={(e) => setNewProfAvailability(e.target.value)} placeholder="Lun-Vie, 8:00-17:00" className="w-full p-3 rounded-xl bg-[#140320] border border-pink-500/30 text-xs text-white" />
+                      </div>
+
+                      <div>
+                        <label className="block text-[11px] font-extrabold text-pink-300 mb-1">Experiencia</label>
+                        <select value={newProfYearsExperience} onChange={(e) => setNewProfYearsExperience(e.target.value)} className="w-full p-3 rounded-xl bg-[#140320] border border-pink-500/30 text-xs text-white font-bold"><option value="">Seleccionar años</option><option>&lt; 1 año</option><option>1-3 años</option><option>4-6 años</option><option>7-10 años</option><option>10+ años</option></select>
+                      </div>
+                    </div>
+
+                    <div className="space-y-3 border-t border-pink-500/20 pt-4">
+                      <label className="flex items-start gap-2 text-xs text-pink-100"><input type="checkbox" checked={newProfUrgentCases} onChange={(e) => setNewProfUrgentCases(e.target.checked)} className="mt-0.5" />Disponible para casos prioritarios.</label>
+                      <textarea value={newProfBio} onChange={(e) => setNewProfBio(e.target.value.slice(0, 500))} maxLength={500} placeholder="Perfil profesional público (máximo 500 caracteres)" className="w-full min-h-20 p-3 rounded-xl bg-[#140320] border border-pink-500/30 text-xs text-white" />
+                      <label className="flex items-start gap-2 text-xs text-pink-100"><input type="checkbox" checked={newProfConsent} onChange={(e) => setNewProfConsent(e.target.checked)} required className="mt-0.5" />Autorizo a SENDA a verificar mis credenciales profesionales y acepto su política de privacidad, confidencialidad y código de conducta.</label>
                     </div>
 
                     <div className="flex justify-end pt-2">
@@ -1305,7 +1447,8 @@ export default function AdminManagementPanel({ onOpenSOS }: { onOpenSOS?: () => 
                               </span>
                             </div>
                             <p className="text-xs text-pink-200/80">{prof.roleTitle} • {prof.rethus}</p>
-                            <p className="text-[10px] text-slate-400 font-mono">{prof.email} • Clave: {prof.password || 'senda2026'}</p>
+                            <p className="text-[10px] text-slate-400 font-mono">{prof.documentType} {prof.documentNumber} • {prof.email}</p>
+                            <p className="text-[10px] text-amber-300/80 font-semibold">Verificación: {prof.verificationStatus || 'PENDIENTE'}</p>
                           </div>
                         </div>
                       </div>

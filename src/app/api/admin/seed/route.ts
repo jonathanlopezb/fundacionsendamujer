@@ -2,6 +2,7 @@ import { NextResponse } from 'next/server';
 import { connectToDatabase } from '@/lib/mongodb';
 import DoctorProfile from '@/lib/models/DoctorProfile';
 import PatientEHR from '@/lib/models/PatientEHR';
+import { hashPassword } from '@/lib/password';
 
 const INITIAL_PROFESSIONALS = [
   {
@@ -276,7 +277,16 @@ export async function POST() {
     await connectToDatabase();
 
     await DoctorProfile.deleteMany({});
-    await DoctorProfile.insertMany(INITIAL_PROFESSIONALS);
+    const demoPassword = process.env.ADMIN_DEMO_PASSWORD || 'senda2026';
+    const professionalsWithCredentials = await Promise.all(
+      INITIAL_PROFESSIONALS.map(async (professional, index) => ({
+        ...professional,
+        documentType: 'CC',
+        documentNumber: `100000000${index + 1}`,
+        passwordHash: await hashPassword(demoPassword),
+      }))
+    );
+    await DoctorProfile.insertMany(professionalsWithCredentials);
 
     await PatientEHR.deleteMany({});
     await PatientEHR.insertMany(INITIAL_PATIENTS_EHR);
