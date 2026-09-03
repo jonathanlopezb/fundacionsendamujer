@@ -38,7 +38,7 @@ export default function HeroSection() {
                 className="w-full sm:w-auto bg-gradient-to-r from-senda-pink to-senda-pink-dark text-white font-extrabold text-xs sm:text-sm px-6 py-3.5 rounded-full shadow-glass-pink hover:shadow-glow hover:scale-[1.02] active:scale-95 transition-all flex items-center justify-center space-x-2 group text-center"
               >
                 <Sparkles className="w-4 h-4 sm:w-5 sm:h-5 text-amber-300 shrink-0" />
-                <span>Realizar Test Psicológico</span>
+                <span>Test Psicológico</span>
                 <ArrowRight className="w-4 h-4 group-hover:translate-x-1 transition-transform shrink-0" />
               </Link>
 
@@ -48,6 +48,7 @@ export default function HeroSection() {
               >
                 <Calendar className="w-4 h-4 sm:w-5 sm:h-5 text-senda-purple shrink-0" />
                 <span>Agendar Cita</span>
+                <ArrowRight className="w-4 h-4 group-hover:translate-x-1 transition-transform shrink-0" />
               </Link>
 
               <Link
