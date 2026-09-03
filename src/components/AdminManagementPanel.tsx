@@ -427,9 +427,10 @@ export default function AdminManagementPanel({ onOpenSOS }: { onOpenSOS?: () => 
   const [loginError, setLoginError] = useState('');
 
   // Active Data State
-  const [patients, setPatients] = useState<PatientEHR[]>(INITIAL_PATIENTS_EHR);
+  const [patients, setPatients] = useState<PatientEHR[]>([]);
   const [appointments, setAppointments] = useState<AppointmentRecord[]>(INITIAL_APPOINTMENTS);
-  const [selectedPatientId, setSelectedPatientId] = useState<string>(INITIAL_PATIENTS_EHR[0].id);
+  const [selectedPatientId, setSelectedPatientId] = useState<string>('');
+  const [patientSearch, setPatientSearch] = useState('');
 
   // Admin Console Tab
   const [adminTab, setAdminTab] = useState<'dashboard' | 'profesionales' | 'beneficiarias' | 'citas' | 'clinica'>('dashboard');
@@ -550,8 +551,9 @@ export default function AdminManagementPanel({ onOpenSOS }: { onOpenSOS?: () => 
   const [newSoapAnalysis, setNewSoapAnalysis] = useState('');
   const [newSoapPlan, setNewSoapPlan] = useState('');
 
-  // Carga inicial dinámica desde MongoDB
+  // Carga dinámica desde MongoDB después de autenticar la sesión
   useEffect(() => {
+    if (!isAdminAuth) return;
     const fetchMongoData = async () => {
       try {
         const [patRes, docRes] = await Promise.all([
@@ -581,7 +583,7 @@ export default function AdminManagementPanel({ onOpenSOS }: { onOpenSOS?: () => 
     };
 
     fetchMongoData();
-  }, []);
+  }, [isAdminAuth]);
 
   useEffect(() => {
     if (typeof window === 'undefined') return;
@@ -616,6 +618,7 @@ export default function AdminManagementPanel({ onOpenSOS }: { onOpenSOS?: () => 
         sessionStorage.setItem('senda_admin_auth', 'true');
         sessionStorage.setItem('senda_prof_id', data.professional.id);
         setAdminTab(data.professional.role === 'ADMIN_SISTEMA' ? 'dashboard' : 'clinica');
+        setPatients([]);
         return;
       } else {
         setLoginError(data.error || 'Credenciales inválidas');
@@ -803,37 +806,40 @@ export default function AdminManagementPanel({ onOpenSOS }: { onOpenSOS?: () => 
       documents: [],
     };
 
-    setPatients([newPat, ...patients]);
-    setSelectedPatientId(newPat.id);
-
-    if (scheduleImmediateAppointment) {
-      const newApp: AppointmentRecord = {
-        id: `APT-${Date.now()}`,
-        patientId: newPat.id,
-        patientName: newPat.patientName,
-        patientCode: generatedCode,
-        doctorName: newPatDoctor,
-        specialty: newPatCategory,
-        date: newPatAppDate,
-        time: newPatAppTime,
-        modality: newPatAppModality,
-        status: 'CONFIRMADA',
-        notes: 'Cita de ingreso inicial agendada de forma automática al registrar a la beneficiaria.',
-      };
-      setAppointments([newApp, ...appointments]);
-    }
-
-    setPatientCreateSuccess(`¡Beneficiaria ${patientName} registrada con Código Protegido ${generatedCode} y Cita Inicial Agendada!`);
-
     try {
-      await fetch('/api/admin/patients', {
+      const patientResponse = await fetch('/api/admin/patients', {
         method: 'POST',
         headers: { 'Content-Type': 'application/json' },
         body: JSON.stringify(newPat),
       });
+      const patientResult = await patientResponse.json();
+      if (!patientResponse.ok || !patientResult.success) throw new Error(patientResult.error || 'No fue posible guardar la beneficiaria.');
+
+      const savedPatient = patientResult.patient || newPat;
+      setPatients((prev) => [savedPatient, ...prev]);
+      setSelectedPatientId(savedPatient.id);
+
+      if (scheduleImmediateAppointment) {
+        const newApp: AppointmentRecord = {
+          id: `APT-${Date.now()}`,
+          patientId: savedPatient.id,
+          patientName: savedPatient.patientName,
+          patientCode: savedPatient.patientCode,
+          doctorName: newPatDoctor,
+          specialty: newPatCategory,
+          date: newPatAppDate,
+          time: newPatAppTime,
+          modality: newPatAppModality,
+          status: 'CONFIRMADA',
+          notes: 'Cita de ingreso inicial agendada de forma automática al registrar a la beneficiaria.',
+        };
+        setAppointments((prev) => [newApp, ...prev]);
+      }
+
+      setPatientCreateSuccess(`¡Beneficiaria ${patientName} registrada con Código Protegido ${generatedCode}${scheduleImmediateAppointment ? ' y cita inicial agendada' : ''}!`);
       
       // Guardar credenciales de acceso al portal: usuario y contraseña = número de cédula
-      await fetch('/api/beneficiary/access', {
+      const accessResponse = await fetch('/api/beneficiary/access', {
         method: 'POST',
         headers: { 'Content-Type': 'application/json' },
         body: JSON.stringify({
@@ -844,8 +850,10 @@ export default function AdminManagementPanel({ onOpenSOS }: { onOpenSOS?: () => 
           patientCode: generatedCode,
         }),
       });
+      if (!accessResponse.ok) console.warn('Beneficiaria guardada, pero no se pudo crear su acceso al portal.');
     } catch (err) {
-      console.warn('Fallback local activo');
+      setPatientCreateSuccess(err instanceof Error ? err.message : 'No fue posible guardar la beneficiaria.');
+      return;
     }
 
     setNewPatFirstName('');
@@ -933,17 +941,19 @@ export default function AdminManagementPanel({ onOpenSOS }: { onOpenSOS?: () => 
       notes: appointmentPayload.notes,
     };
 
-    setAppointments((prev) => [nextAppointment, ...prev]);
-    setAppointmentCreateSuccess(`Cita programada para ${beneficiary.patientName} con ${professional.name}.`);
-
     try {
-      await fetch('/api/appointments', {
+      const response = await fetch('/api/appointments', {
         method: 'POST',
         headers: { 'Content-Type': 'application/json' },
         body: JSON.stringify(appointmentPayload),
       });
+      const result = await response.json();
+      if (!response.ok || !result.success) throw new Error(result.error || 'No fue posible guardar la cita.');
+      setAppointments((prev) => [nextAppointment, ...prev]);
+      setAppointmentCreateSuccess(`Cita programada para ${beneficiary.patientName} con ${professional.name}.`);
     } catch (err) {
-      console.warn('Fallback local de cita:', err);
+      setAppointmentCreateSuccess(err instanceof Error ? err.message : 'No fue posible guardar la cita.');
+      return;
     }
 
     setNewAppointmentBeneficiaryId('');
@@ -1067,6 +1077,13 @@ export default function AdminManagementPanel({ onOpenSOS }: { onOpenSOS?: () => 
     ? patients
     : patients.filter((patient) => patient.assignedDoctor === selectedProfessional.name || patient.primaryCategory === selectedProfessional.role);
   const selectedPatient = assignedPatients.find((p) => p.id === selectedPatientId);
+  const normalizedPatientSearch = patientSearch.trim().toLowerCase();
+  const searchablePatients = patients.filter((patient) => {
+    if (!normalizedPatientSearch) return true;
+    return [patient.patientName, patient.patientCode, patient.documentNumber, patient.docId, patient.phone]
+      .filter(Boolean)
+      .some((value) => String(value).toLowerCase().includes(normalizedPatientSearch));
+  });
 
   useEffect(() => {
     if (assignedPatients.length > 0 && !assignedPatients.some((patient) => patient.id === selectedPatientId)) {
@@ -1140,10 +1157,14 @@ export default function AdminManagementPanel({ onOpenSOS }: { onOpenSOS?: () => 
             {/* BOTÓN DEMO RÁPIDO DISCRETO */}
             <div className="border-t border-slate-200 pt-4 text-center space-y-2">
               <button
-                onClick={() => handleQuickDemoLogin(professionals[0])}
+                type="button"
+                onClick={() => {
+                  setDocumentNumberInput('1000000001');
+                  setPasswordInput('senda2026');
+                }}
                 className="w-full py-2 bg-amber-50 hover:bg-amber-100 border border-amber-300 text-amber-900 font-extrabold text-[11px] rounded-xl transition-colors cursor-pointer"
               >
-                ⚡ Acceso Demostración SuperAdmin (1 Clic)
+                Completar credenciales SuperAdmin de prueba
               </button>
               <span className="text-[10px] text-slate-400 block font-bold">
                 🔒 Ley 1581 de 2012 • Sesión aislada y cifrada en MongoDB Atlas.
@@ -1939,19 +1960,29 @@ export default function AdminManagementPanel({ onOpenSOS }: { onOpenSOS?: () => 
                     <div className="grid grid-cols-1 sm:grid-cols-2 gap-4">
                       <div>
                         <label className="block text-[11px] font-extrabold text-pink-300 mb-1">Beneficiaria *</label>
-                        <select
-                          value={newAppointmentBeneficiaryId}
-                          onChange={(e) => setNewAppointmentBeneficiaryId(e.target.value)}
-                          required
-                          className="w-full p-3 rounded-xl bg-[#140320] border border-pink-500/30 text-xs text-white font-bold"
-                        >
-                          <option value="">Selecciona una beneficiaria</option>
-                          {patients.map((patient) => (
-                            <option key={patient.id} value={patient.id}>
-                              {patient.patientName} • {patient.patientCode}
-                            </option>
+                        <input
+                          type="search"
+                          value={patientSearch}
+                          onChange={(e) => setPatientSearch(e.target.value)}
+                          placeholder="Buscar por cédula, código, nombre o teléfono"
+                          className="w-full p-3 rounded-xl bg-[#140320] border border-pink-500/30 text-xs text-white"
+                        />
+                        <div className="mt-2 max-h-44 overflow-y-auto space-y-1">
+                          {searchablePatients.length === 0 ? (
+                            <p className="p-3 rounded-xl bg-[#140320] text-[11px] text-pink-200/70">No hay beneficiarias que coincidan con la búsqueda.</p>
+                          ) : searchablePatients.map((patient) => (
+                            <button
+                              key={patient.id}
+                              type="button"
+                              onClick={() => setNewAppointmentBeneficiaryId(patient.id)}
+                              className={`w-full text-left p-2.5 rounded-xl border text-[11px] ${newAppointmentBeneficiaryId === patient.id ? 'border-pink-400 bg-pink-500/20 text-white' : 'border-pink-500/20 bg-[#140320] text-pink-100 hover:border-pink-400/60'}`}
+                            >
+                              <span className="font-black">{patient.patientName}</span>
+                              <span className="block text-[10px] text-amber-300 font-mono">{patient.documentType || 'CC'} {patient.documentNumber || patient.docId} · {patient.patientCode}</span>
+                            </button>
                           ))}
-                        </select>
+                        </div>
+                        <input type="text" value={newAppointmentBeneficiaryId} required readOnly aria-label="Beneficiaria seleccionada" className="sr-only" />
                       </div>
 
                       <div>

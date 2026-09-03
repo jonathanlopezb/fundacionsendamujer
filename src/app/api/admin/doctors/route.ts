@@ -1,7 +1,6 @@
 import { NextRequest, NextResponse } from 'next/server';
 import { connectToDatabase } from '@/lib/mongodb';
 import DoctorProfile from '@/lib/models/DoctorProfile';
-import { seedCaribeSeguroData } from '@/lib/seedCaribeSeguro';
 import { hashPassword, normalizeDocumentNumber } from '@/lib/password';
 import { isSuperAdminSession } from '@/lib/admin-auth';
 
@@ -10,8 +9,6 @@ export async function GET() {
   try {
     try {
       await connectToDatabase();
-      await seedCaribeSeguroData();
-
       const doctors = await DoctorProfile.find({}).select('-passwordHash').sort({ createdAt: -1 }).lean();
       if (doctors && doctors.length > 0) {
         return NextResponse.json({ success: true, doctors });

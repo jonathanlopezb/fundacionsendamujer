@@ -52,22 +52,7 @@ export async function POST(req: Request) {
       return NextResponse.json({ success: true, appointment: newAppointment });
     } catch (dbErr) {
       console.warn('DB Save fallback mode for appointments:', dbErr);
-      return NextResponse.json({
-        success: true,
-        appointment: {
-          fullName,
-          patientName: patientName || fullName,
-          professionalName,
-          patientId: patientId || beneficiaryId || undefined,
-          professionalId: professionalId || undefined,
-          specialty,
-          preferredDate,
-          preferredTime,
-          location: location || 'Sede Fundación Senda Mujer - Cartagena',
-          modality: modality || 'Presencial Sede Pie de la Popa',
-          status: 'PENDIENTE (Confirmación enviada)',
-        },
-      });
+      return NextResponse.json({ success: false, error: 'No fue posible guardar la cita en MongoDB.' }, { status: 500 });
     }
   } catch (error: any) {
     console.error('Appointment API error:', error);

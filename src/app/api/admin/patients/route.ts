@@ -1,7 +1,6 @@
 import { NextRequest, NextResponse } from 'next/server';
 import { connectToDatabase } from '@/lib/mongodb';
 import PatientEHR from '@/lib/models/PatientEHR';
-import { seedCaribeSeguroData } from '@/lib/seedCaribeSeguro';
 import { isSuperAdminSession, readAdminSession } from '@/lib/admin-auth';
 
 export async function GET() {
@@ -10,8 +9,6 @@ export async function GET() {
   try {
     try {
       await connectToDatabase();
-      await seedCaribeSeguroData();
-
       const assignmentFilter = session.role === 'ADMIN_SISTEMA'
         ? {}
         : { $or: [{ assignedDoctor: session.professionalName }, { primaryCategory: session.role }] };
@@ -65,7 +62,7 @@ export async function POST(req: NextRequest) {
       return NextResponse.json({ success: true, patient });
     } catch (dbErr) {
       console.warn('MongoDB fallback save for patient:', dbErr);
-      return NextResponse.json({ success: true, patient: body, isDemoFallback: true });
+      return NextResponse.json({ success: false, error: 'No fue posible guardar la beneficiaria en MongoDB.' }, { status: 500 });
     }
   } catch (err: any) {
     return NextResponse.json({ success: false, error: err.message }, { status: 500 });
