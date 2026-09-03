@@ -14,7 +14,7 @@ export default function HeroSection() {
 
       <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
         <div className="grid grid-cols-1 lg:grid-cols-12 gap-8 lg:gap-12 items-center">
-          
+
           {/* Left Content */}
           <div className="lg:col-span-7 space-y-5 sm:space-y-6">
             <div className="inline-flex items-center space-x-2 bg-gradient-to-r from-senda-pink-light to-amber-50 border border-senda-pink/20 px-3.5 py-1.5 rounded-full shadow-xs text-[11px] sm:text-xs font-bold text-senda-purple">
@@ -48,7 +48,6 @@ export default function HeroSection() {
               >
                 <Calendar className="w-4 h-4 sm:w-5 sm:h-5 text-senda-purple shrink-0" />
                 <span>Agendar Cita</span>
-                <ArrowRight className="w-4 h-4 group-hover:translate-x-1 transition-transform shrink-0" />
               </Link>
 
               <Link
@@ -57,6 +56,7 @@ export default function HeroSection() {
               >
                 <Globe className="w-4 h-4 sm:w-5 sm:h-5 text-amber-300 shrink-0" />
                 <span>Test de Vulnerabilidad</span>
+                <ArrowRight className="w-4 h-4 group-hover:translate-x-1 transition-transform shrink-0" />
               </Link>
             </div>
 
@@ -107,7 +107,7 @@ export default function HeroSection() {
                   <p className="text-[11px] sm:text-xs text-pink-100 leading-relaxed">
                     Si eres víctima de violencia sexual, estás enfrentando un embarazo no deseado o requieres apoyo psicológico, dental o legal en Cartagena, estamos para ayudarte.
                   </p>
-                  
+
                   <div className="pt-2 border-t border-pink-500/30 flex justify-between items-center text-[11px] sm:text-xs">
                     <span className="text-pink-200">Línea Púrpura Cartagena:</span>
                     <a href="tel:3014692095" className="font-extrabold text-amber-300 hover:underline flex items-center gap-1">
