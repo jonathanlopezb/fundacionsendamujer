@@ -13,6 +13,10 @@ export interface IConsentRecord extends Document {
   grantedAt: Date;
   revokedAt?: Date | null;
   status: 'CONCEDIDO' | 'REVOCADO';
+  signatureData?: string;
+  collectorCode?: string;
+  signatureData?: string;
+  collectorCode?: string;
 }
 
 const ConsentRecordSchema = new Schema<IConsentRecord>(
@@ -24,6 +28,10 @@ const ConsentRecordSchema = new Schema<IConsentRecord>(
     grantedAt: { type: Date, default: Date.now },
     revokedAt: { type: Date, default: null },
     status: { type: String, enum: ['CONCEDIDO', 'REVOCADO'], default: 'CONCEDIDO' },
+    signatureData: { type: String, select: false },
+    collectorCode: { type: String, trim: true, maxlength: 30 },
+    signatureData: { type: String, select: false },
+    collectorCode: { type: String, trim: true, maxlength: 30 },
   },
   { timestamps: true, collection: 'caribe_consents' }
 );
