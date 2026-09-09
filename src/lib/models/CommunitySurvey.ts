@@ -107,6 +107,9 @@ export interface ICommunitySurvey extends Document {
   /* ── Necesidades priorizadas (multi-select) ──────────────────── */
   needs: string[];
 
+  /* ── 7 Programas Oficiales Senda Mujer Asignados ─────────────── */
+  assignedPrograms?: string[];
+
   /* ── Consentimiento Ley 1581 ─────────────────────────────────── */
   consentGranted: boolean;
   minorImageConsent?: boolean;
@@ -244,6 +247,9 @@ const CommunitySurveySchema = new Schema<ICommunitySurvey>(
 
     /* Necesidades */
     needs: [{ type: String }],
+
+    /* 7 Programas Oficiales Asignados */
+    assignedPrograms: [{ type: String }],
 
     /* Consentimiento */
     consentGranted: { type: Boolean, required: true },

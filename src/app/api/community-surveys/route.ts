@@ -6,6 +6,7 @@
 import { NextResponse } from 'next/server';
 import { connectToDatabase } from '@/lib/mongodb';
 import CommunitySurvey from '@/lib/models/CommunitySurvey';
+import { computeAssignedPrograms } from '@/lib/sendaPrograms';
 
 const ALLOWED_NEEDS = new Set([
   'salud', 'afiliacion', 'materna', 'vacunacion', 'cronica', 'acceso_salud',
@@ -213,6 +214,9 @@ export async function POST(request: Request) {
       immediateRouteType: str(body.immediateRouteType, 200),
 
       needs,
+      assignedPrograms: Array.isArray(body.assignedPrograms) && body.assignedPrograms.length > 0
+        ? body.assignedPrograms
+        : computeAssignedPrograms({ ...body, needs }),
       consentGranted: true,
       minorImageConsent: bool(body.minorImageConsent),
       priority,

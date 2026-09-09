@@ -3,8 +3,9 @@
  * Datos representativos levantados en Arroz Barato y Nelson Mandela (Cartagena D.T. y C.)
  * Utilizados como respaldo analítico y visualización en tiempo real.
  */
+import { computeAssignedPrograms } from './sendaPrograms';
 
-export const DEMO_SURVEYS: any[] = [
+const RAW_DEMO_SURVEYS: any[] = [
   {
     _id: 'demo-arz-001',
     surveyCode: 'CS-ARZ-001',
@@ -547,3 +548,9 @@ export const DEMO_SURVEYS: any[] = [
     ]
   }
 ];
+
+export const DEMO_SURVEYS: any[] = RAW_DEMO_SURVEYS.map((s) => ({
+  ...s,
+  assignedPrograms: computeAssignedPrograms(s),
+}));
+

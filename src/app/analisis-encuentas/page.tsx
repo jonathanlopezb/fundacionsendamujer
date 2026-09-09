@@ -15,6 +15,7 @@ import {
 } from 'lucide-react';
 import { exportSurveysToExcel } from '@/lib/excelExport';
 import { DEMO_SURVEYS } from '@/lib/demoSurveys';
+import { SENDA_PROGRAMS, computeAssignedPrograms } from '@/lib/sendaPrograms';
 
 /* ── Interfaces ──────────────────────────────────────────────────────────── */
 interface HouseholdMember {
@@ -115,6 +116,7 @@ interface SurveyData {
   needs: string[];
   priority: 'NORMAL' | 'PRIORITARIA' | 'INMEDIATA';
   householdMembers?: HouseholdMember[];
+  assignedPrograms?: string[];
   createdAt?: string;
 }
 
@@ -126,7 +128,7 @@ export default function AnalisisEncuestasPage() {
   const [error, setError] = useState('');
   const [selectedBarrio, setSelectedBarrio] = useState('TODOS');
   const [activeTab, setActiveTab] = useState<
-    'HOGARES' | 'INFORME_TECNICO' | 'GLOBAL' | 'DEMOGRAFIA' | 'SALUD_EPIDEMIOLOGIA' | 'JURIDICO_PROTECCION' | 'ECONOMICO_SOCIAL' | 'RIESGOS_CASOS'
+    'HOGARES' | 'INFORME_TECNICO' | 'PROGRAMAS_SENDA' | 'GLOBAL' | 'DEMOGRAFIA' | 'SALUD_EPIDEMIOLOGIA' | 'JURIDICO_PROTECCION' | 'ECONOMICO_SOCIAL' | 'RIESGOS_CASOS'
   >('HOGARES');
 
   /* Estados de Filtros para Lista de Hogares */
@@ -287,6 +289,31 @@ export default function AnalisisEncuestasPage() {
       { category: 'Deserción Escolar', total: desercionEscolar },
     ];
 
+    /* ── Demanda por Programa Senda Mujer ─────────────────────────────────── */
+    const programDemand = SENDA_PROGRAMS.map((prog) => ({
+      id: prog.id,
+      code: prog.code,
+      title: prog.title,
+      badge: prog.badge,
+      color: prog.color,
+      bgBadge: prog.bgBadge,
+      textBadge: prog.textBadge,
+      summary: prog.summary,
+      targetCriteria: prog.targetCriteria,
+      count: surveys.filter((s) =>
+        Array.isArray(s.assignedPrograms)
+          ? s.assignedPrograms.includes(prog.id)
+          : computeAssignedPrograms(s).includes(prog.id)
+      ).length,
+    }));
+
+    const programChartData = programDemand.map((p) => ({
+      name: p.code,
+      label: p.title.length > 22 ? p.title.slice(0, 22) + '…' : p.title,
+      Hogares: p.count,
+      fill: p.color,
+    }));
+
     return {
       totalHogares,
       totalPersonas,
@@ -324,6 +351,8 @@ export default function AnalisisEncuestasPage() {
       housingChartData,
       healthDeficitData,
       legalVulnerabilityData,
+      programDemand,
+      programChartData,
     };
   }, [surveys]);
 
@@ -468,6 +497,7 @@ export default function AnalisisEncuestasPage() {
         {[
           { id: 'HOGARES', label: `📋 Lista de Todos los Hogares (${surveys.length})` },
           { id: 'INFORME_TECNICO', label: '📖 Informe Cualitativo & Diagnóstico Escrito' },
+          { id: 'PROGRAMAS_SENDA', label: `🎯 Programas Senda Mujer` },
           { id: 'GLOBAL', label: '🌐 Panorama Global & Prioridades' },
           { id: 'DEMOGRAFIA', label: '👥 Demografía & Hábitat' },
           { id: 'SALUD_EPIDEMIOLOGIA', label: '🩺 Salud Integral & Epidemiología' },
@@ -604,6 +634,7 @@ export default function AnalisisEncuestasPage() {
                     <th className="p-3.5">Hábitat & Agua</th>
                     <th className="p-3.5">Salud & Gineco/ITS</th>
                     <th className="p-3.5">Protección & Riesgo</th>
+                    <th className="p-3.5">Programas Senda</th>
                     <th className="p-3.5 text-center">Triaje</th>
                     <th className="p-3.5 text-right">Acción</th>
                   </tr>
@@ -729,6 +760,28 @@ export default function AnalisisEncuestasPage() {
                           )}
                         </td>
 
+                        {/* Programas Senda Mujer */}
+                        <td className="p-3.5 align-top">
+                          <div className="flex flex-wrap gap-1">
+                            {(Array.isArray(s.assignedPrograms)
+                              ? s.assignedPrograms
+                              : computeAssignedPrograms(s)
+                            ).map((progId) => {
+                              const prog = SENDA_PROGRAMS.find((p) => p.id === progId);
+                              if (!prog) return null;
+                              return (
+                                <span
+                                  key={progId}
+                                  title={prog.title}
+                                  className={`text-[9px] font-black px-1.5 py-0.5 rounded-md border ${prog.bgBadge} cursor-help`}
+                                >
+                                  {prog.code}
+                                </span>
+                              );
+                            })}
+                          </div>
+                        </td>
+
                         {/* Triaje */}
                         <td className="p-3.5 align-top text-center">
                           <span className={`text-[10px] font-black uppercase px-2.5 py-1 rounded-full border inline-block ${
@@ -767,7 +820,7 @@ export default function AnalisisEncuestasPage() {
 
                   {filteredHogares.length === 0 && (
                     <tr>
-                      <td colSpan={7} className="p-12 text-center text-purple-300/70 space-y-2">
+                      <td colSpan={8} className="p-12 text-center text-purple-300/70 space-y-2">
                         <p className="text-base font-bold text-white">No se encontraron hogares con los filtros aplicados.</p>
                         <p className="text-xs">Prueba borrando el texto de búsqueda o cambiando la condición de filtro.</p>
                         <button
@@ -909,6 +962,185 @@ export default function AnalisisEncuestasPage() {
                 </p>
               </div>
             </div>
+          </div>
+
+        </div>
+      )}
+
+      {/* ─────────────────────────────────────────────────────────────────
+          PESTAÑA: PROGRAMAS SENDA MUJER — DERIVACIÓN AUTOMÁTICA
+      ───────────────────────────────────────────────────────────────── */}
+      {activeTab === 'PROGRAMAS_SENDA' && (
+        <div className="space-y-8 animate-fadeIn">
+
+          {/* Cabecera */}
+          <div className="bg-[#150426] border border-pink-800/50 rounded-3xl p-6 shadow-xl">
+            <div className="flex items-center gap-3 mb-2">
+              <span className="bg-pink-500/20 text-pink-300 border border-pink-500/40 text-[10px] font-black px-3 py-0.5 rounded-full uppercase tracking-wider">
+                Derivación Multidimensional Automática
+              </span>
+              <span className="text-[10px] text-purple-300">· Sistema Inteligente Senda Mujer</span>
+            </div>
+            <h3 className="text-xl font-black text-white">
+              🎯 Los 7 Programas de la Fundación Senda Mujer — Demanda Detectada en Terreno
+            </h3>
+            <p className="text-xs text-purple-200/70 mt-1 max-w-3xl">
+              Cada hogar censado es analizado automáticamente con base en sus indicadores de vulnerabilidad para derivarlo a uno o más programas.
+              Un mismo hogar puede requerir atención simultánea de varios programas. Las cifras muestran cuántos hogares presentan criterios de ingreso a cada programa.
+            </p>
+          </div>
+
+          {/* Tarjetas de los 7 Programas */}
+          <div className="grid sm:grid-cols-2 lg:grid-cols-3 xl:grid-cols-4 gap-4">
+            {metrics.programDemand.map((prog) => (
+              <div
+                key={prog.id}
+                className="bg-[#150426] border border-purple-800/50 rounded-3xl p-5 shadow-lg hover:border-pink-700/60 transition-all space-y-3"
+                style={{ borderLeftColor: prog.color, borderLeftWidth: 3 }}
+              >
+                <div className="flex items-start justify-between">
+                  <span
+                    className={`text-[10px] font-black px-2.5 py-1 rounded-lg border ${prog.bgBadge}`}
+                  >
+                    {prog.code}
+                  </span>
+                  <span className="text-3xl font-black text-white">
+                    {prog.count}
+                    <span className="text-xs text-purple-400 ml-1">hogares</span>
+                  </span>
+                </div>
+                <div>
+                  <p className="text-white font-black text-sm leading-tight">{prog.title}</p>
+                  <p className={`text-[10px] font-bold mt-0.5 ${prog.textBadge}`}>{prog.badge}</p>
+                </div>
+                <p className="text-[10px] text-purple-300/80 leading-relaxed">{prog.summary}</p>
+                <div className="pt-2 border-t border-purple-900/60">
+                  <p className="text-[9px] text-purple-400 uppercase font-bold tracking-wider mb-1">Criterios de ingreso</p>
+                  <p className="text-[9px] text-purple-300/70 leading-relaxed">{prog.targetCriteria}</p>
+                </div>
+                {/* Mini barra de progreso */}
+                <div className="w-full bg-purple-950 rounded-full h-1.5 overflow-hidden">
+                  <div
+                    className="h-full rounded-full transition-all"
+                    style={{
+                      width: `${metrics.totalHogares > 0 ? (prog.count / metrics.totalHogares) * 100 : 0}%`,
+                      backgroundColor: prog.color,
+                    }}
+                  />
+                </div>
+                <p className="text-[9px] text-purple-400">
+                  {metrics.totalHogares > 0
+                    ? `${Math.round((prog.count / metrics.totalHogares) * 100)}% de los hogares censados`
+                    : '0%'}
+                </p>
+              </div>
+            ))}
+          </div>
+
+          {/* Gráfico de Demanda por Programa */}
+          <div className="bg-[#150426] border border-purple-800/50 rounded-3xl p-6 shadow-xl">
+            <h4 className="text-base font-black text-white mb-1">
+              📊 Distribución de Demanda por Programa — {metrics.totalHogares} Hogares Analizados
+            </h4>
+            <p className="text-xs text-purple-300/70 mb-5">
+              Un hogar puede ser contabilizado en múltiples programas simultáneamente según su perfil de vulnerabilidad.
+            </p>
+            <ResponsiveContainer width="100%" height={300}>
+              <BarChart data={metrics.programChartData} margin={{ top: 5, right: 20, left: 0, bottom: 20 }}>
+                <CartesianGrid strokeDasharray="3 3" stroke="#3730a3" opacity={0.3} />
+                <XAxis
+                  dataKey="name"
+                  tick={{ fill: '#c4b5fd', fontSize: 11, fontWeight: 700 }}
+                  axisLine={{ stroke: '#6d28d9' }}
+                />
+                <YAxis
+                  tick={{ fill: '#c4b5fd', fontSize: 11 }}
+                  axisLine={{ stroke: '#6d28d9' }}
+                  allowDecimals={false}
+                />
+                <Tooltip
+                  contentStyle={{ background: '#1e0545', border: '1px solid #7c3aed', borderRadius: 12, color: '#e9d5ff' }}
+                  formatter={(value: number, name: string, props: any) => [
+                    `${value} hogar${value !== 1 ? 'es' : ''}`,
+                    props?.payload?.label || name,
+                  ]}
+                />
+                <Bar dataKey="Hogares" radius={[6, 6, 0, 0]}>
+                  {metrics.programChartData.map((entry, index) => (
+                    <Cell key={`cell-${index}`} fill={entry.fill} />
+                  ))}
+                </Bar>
+              </BarChart>
+            </ResponsiveContainer>
+          </div>
+
+          {/* Tabla: Hogares por Programa */}
+          <div className="bg-[#150426] border border-purple-800/50 rounded-3xl p-6 shadow-xl space-y-5">
+            <h4 className="text-base font-black text-white">
+              📋 Hogares Identificados por Programa — Detalle
+            </h4>
+            {metrics.programDemand.map((prog) => {
+              const hogaresEnPrograma = surveys.filter((s) =>
+                Array.isArray(s.assignedPrograms)
+                  ? s.assignedPrograms.includes(prog.id)
+                  : computeAssignedPrograms(s).includes(prog.id)
+              );
+              if (hogaresEnPrograma.length === 0) return null;
+              return (
+                <div key={prog.id} className="border border-purple-900/60 rounded-2xl overflow-hidden">
+                  {/* Cabecera del programa */}
+                  <div
+                    className="px-5 py-3 flex items-center gap-3"
+                    style={{ backgroundColor: prog.color + '22', borderBottom: `2px solid ${prog.color}55` }}
+                  >
+                    <span className={`text-[10px] font-black px-2 py-0.5 rounded-md border ${prog.bgBadge}`}>
+                      {prog.code}
+                    </span>
+                    <div>
+                      <p className="text-white font-black text-sm">{prog.title}</p>
+                      <p className="text-[10px] text-purple-300">{prog.badge} · {hogaresEnPrograma.length} hogar{hogaresEnPrograma.length !== 1 ? 'es' : ''} derivados</p>
+                    </div>
+                  </div>
+                  {/* Lista de hogares */}
+                  <div className="divide-y divide-purple-900/30">
+                    {hogaresEnPrograma.map((s) => {
+                      const primaryMember = s.householdMembers && s.householdMembers.length > 0 ? s.householdMembers[0] : null;
+                      return (
+                        <div
+                          key={s._id}
+                          className="px-5 py-3 flex items-center justify-between gap-4 hover:bg-purple-900/10 transition-colors cursor-pointer"
+                          onClick={() => { setSelectedHousehold(s); setActiveTab('HOGARES'); }}
+                        >
+                          <div className="flex items-center gap-3 min-w-0">
+                            <span className="font-mono text-pink-300 font-black text-[10px] shrink-0">{s.surveyCode}</span>
+                            <div className="min-w-0">
+                              <p className="text-white font-bold text-xs truncate">
+                                {primaryMember?.fullName || 'Sin nombre registrado'} · {s.barrio}
+                              </p>
+                              <p className="text-[10px] text-purple-300 truncate">
+                                {s.householdSize} hab. · {s.manzana || 'Mz s/n'} {s.fieldZone ? `· ${s.fieldZone}` : ''}
+                              </p>
+                            </div>
+                          </div>
+                          <div className="flex items-center gap-2 shrink-0">
+                            <span className={`text-[9px] font-black px-2 py-0.5 rounded-full border ${
+                              s.priority === 'INMEDIATA'
+                                ? 'bg-rose-500/20 text-rose-300 border-rose-500/40'
+                                : s.priority === 'PRIORITARIA'
+                                ? 'bg-amber-500/20 text-amber-300 border-amber-500/40'
+                                : 'bg-emerald-500/20 text-emerald-300 border-emerald-500/40'
+                            }`}>
+                              {s.priority}
+                            </span>
+                            <span className="text-[10px] text-purple-400">Ver ficha →</span>
+                          </div>
+                        </div>
+                      );
+                    })}
+                  </div>
+                </div>
+              );
+            })}
           </div>
 
         </div>
@@ -1681,8 +1913,42 @@ export default function AnalisisEncuestasPage() {
                   6. Observaciones de Campo del Encuestador
                 </h4>
                 <p className="text-xs text-purple-200/90 leading-relaxed italic bg-purple-950/50 p-3 rounded-xl border border-purple-900/60">
-                  "{selectedHousehold.collectorObservations || selectedHousehold.urgentCaseDescription || 'Ficha validada sin novedades adicionales.'}"
+                  &quot;{selectedHousehold.collectorObservations || selectedHousehold.urgentCaseDescription || 'Ficha validada sin novedades adicionales.'}&quot;
                 </p>
+              </div>
+
+              {/* Bloque 7: Programas Senda Mujer Asignados */}
+              <div className="bg-[#18052e] border border-pink-800/50 rounded-2xl p-4 space-y-3">
+                <h4 className="font-black text-sm text-pink-300 flex items-center gap-2">
+                  <span className="text-base">🎯</span>
+                  7. Derivación Automática a Programas Senda Mujer
+                </h4>
+                <p className="text-[10px] text-purple-300/70">
+                  Basado en los indicadores de vulnerabilidad registrados en esta ficha censal, el hogar fue derivado a los siguientes programas de atención:
+                </p>
+                <div className="grid sm:grid-cols-2 gap-2">
+                  {(Array.isArray(selectedHousehold.assignedPrograms)
+                    ? selectedHousehold.assignedPrograms
+                    : computeAssignedPrograms(selectedHousehold)
+                  ).map((progId) => {
+                    const prog = SENDA_PROGRAMS.find((p) => p.id === progId);
+                    if (!prog) return null;
+                    return (
+                      <div key={progId} className="bg-purple-950/50 border border-purple-800/60 rounded-xl p-3 flex items-start gap-2.5">
+                        <span
+                          className={`text-[10px] font-black px-2 py-1 rounded-lg border shrink-0 ${prog.bgBadge}`}
+                        >
+                          {prog.code}
+                        </span>
+                        <div>
+                          <p className="text-white font-bold text-xs">{prog.title}</p>
+                          <p className="text-[10px] text-purple-300 mt-0.5">{prog.badge}</p>
+                          <p className="text-[10px] text-purple-300/70 mt-1 leading-relaxed">{prog.summary}</p>
+                        </div>
+                      </div>
+                    );
+                  })}
+                </div>
               </div>
 
             </div>
