@@ -21,7 +21,8 @@ export default function RootLayout({
     pathname?.startsWith('/admin') ||
     pathname?.startsWith('/portal-beneficiaria') ||
     pathname?.startsWith('/academia') ||
-    pathname?.startsWith('/caribe-seguro');
+    pathname?.startsWith('/caribe-seguro') ||
+    pathname?.startsWith('/encuestas');
 
   return (
     <html lang="es" className="scroll-smooth">

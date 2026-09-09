@@ -1,6 +1,6 @@
-import JornadaArrozBaratoPage from '@/app/caribe-seguro/jornada-arroz-barato/page';
+import { redirect } from 'next/navigation';
 
-/** Micrositio autónomo para el equipo de encuestadoras. */
-export default function EncuestasPage() {
-  return <JornadaArrozBaratoPage />;
+/** Redirige automáticamente al primer barrio activo */
+export default function EncuestasIndexPage() {
+  redirect('/encuestas/arroz-barato');
 }

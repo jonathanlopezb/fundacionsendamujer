@@ -16,6 +16,10 @@ export default function sitemap(): MetadataRoute.Sitemap {
     '/proyecto-de-vida',
     '/academia',
     '/caribe-seguro',
+    '/observatorio',
+    '/galeria',
+    '/senda-sos',
+    '/certificacion',
   ];
 
   return routes.map((route) => ({
