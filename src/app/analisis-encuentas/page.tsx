@@ -11,7 +11,7 @@ import {
   ShieldAlert, AlertTriangle, CheckCircle2, Download, Building,
   Droplet, Home, GraduationCap, Briefcase, Stethoscope, Baby,
   Activity, ArrowUpRight, ChevronRight, Sparkles, FileText,
-  Search, X, Table, BookOpen, UserCheck, Phone, MapPin, Calendar, FileSpreadsheet
+  Search, X, Table, BookOpen, UserCheck, Phone, MapPin, Calendar, FileSpreadsheet, Trash2
 } from 'lucide-react';
 import { exportSurveysToExcel } from '@/lib/excelExport';
 import { DEMO_SURVEYS } from '@/lib/demoSurveys';
@@ -134,6 +134,7 @@ export default function AnalisisEncuestasPage() {
   const [priorityFilter, setPriorityFilter] = useState<'TODAS' | 'INMEDIATA' | 'PRIORITARIA' | 'NORMAL'>('TODAS');
   const [tagFilter, setTagFilter] = useState<'TODAS' | 'MENORES' | 'GESTANTES' | 'DISCAPACIDAD' | 'MAYORES' | 'VIF' | 'SIN_EPS' | 'CRONICOS' | 'SIN_ACUEDUCTO'>('TODAS');
   const [selectedHousehold, setSelectedHousehold] = useState<SurveyData | null>(null);
+  const [deletingId, setDeletingId] = useState<string | null>(null);
 
   async function fetchSurveys() {
     setLoading(true);
@@ -166,6 +167,39 @@ export default function AnalisisEncuestasPage() {
   useEffect(() => {
     fetchSurveys();
   }, [selectedBarrio]);
+
+  /* ── Eliminar Ficha Censal ────────────────────────────────────────────────── */
+  async function handleDeleteHousehold(s: SurveyData) {
+    const isConfirmed = window.confirm(
+      `¿Confirmas la eliminación permanente de la ficha censal ${s.surveyCode} (${s.barrio})?\n\nEsta acción suprimirá todos los registros de los integrantes, diagnósticos y alertas asociados.`
+    );
+    if (!isConfirmed) return;
+
+    setDeletingId(s._id);
+    try {
+      if (!s._id.startsWith('demo-')) {
+        const res = await fetch(
+          `/api/community-surveys?id=${encodeURIComponent(s._id)}&surveyCode=${encodeURIComponent(s.surveyCode)}`,
+          { method: 'DELETE' }
+        );
+        const data = await res.json();
+        if (!res.ok) {
+          throw new Error(data.message || 'No fue posible eliminar la ficha del sistema.');
+        }
+      }
+
+      setSurveys((prev) => prev.filter((item) => item._id !== s._id && item.surveyCode !== s.surveyCode));
+
+      if (selectedHousehold?._id === s._id || selectedHousehold?.surveyCode === s.surveyCode) {
+        setSelectedHousehold(null);
+      }
+    } catch (err) {
+      alert(err instanceof Error ? err.message : 'Error al eliminar la ficha censal.');
+    } finally {
+      setDeletingId(null);
+    }
+  }
+
 
 
   /* ── Métricas Globales Calculadas ───────────────────────────────────────── */
@@ -710,12 +744,22 @@ export default function AnalisisEncuestasPage() {
 
                         {/* Botón Acción */}
                         <td className="p-3.5 align-top text-right">
-                          <button
-                            onClick={() => setSelectedHousehold(s)}
-                            className="bg-purple-900/60 hover:bg-pink-600 text-white font-bold text-[11px] px-3 py-1.5 rounded-xl border border-purple-700 hover:border-pink-500 transition-all cursor-pointer whitespace-nowrap shadow-sm"
-                          >
-                            Ver Ficha
-                          </button>
+                          <div className="flex items-center justify-end gap-1.5">
+                            <button
+                              onClick={() => setSelectedHousehold(s)}
+                              className="bg-purple-900/60 hover:bg-pink-600 text-white font-bold text-[11px] px-3 py-1.5 rounded-xl border border-purple-700 hover:border-pink-500 transition-all cursor-pointer whitespace-nowrap shadow-sm"
+                            >
+                              Ver Ficha
+                            </button>
+                            <button
+                              onClick={() => handleDeleteHousehold(s)}
+                              disabled={deletingId === s._id}
+                              className="bg-rose-950/40 hover:bg-rose-600 text-rose-300 hover:text-white p-1.5 rounded-xl border border-rose-800/60 hover:border-rose-500 transition-all cursor-pointer shadow-sm disabled:opacity-50"
+                              title={`Eliminar ficha ${s.surveyCode}`}
+                            >
+                              <Trash2 className={`w-3.5 h-3.5 ${deletingId === s._id ? 'animate-spin' : ''}`} />
+                            </button>
+                          </div>
                         </td>
                       </tr>
                     );
@@ -1649,6 +1693,15 @@ export default function AnalisisEncuestasPage() {
                 Fundación Senda Mujer · Registro confidencial Ley 1581 de 2012
               </span>
               <div className="flex items-center gap-2">
+                <button
+                  onClick={() => handleDeleteHousehold(selectedHousehold)}
+                  disabled={deletingId === selectedHousehold._id}
+                  className="bg-rose-950/60 hover:bg-rose-600 text-rose-300 hover:text-white font-bold text-xs px-3.5 py-2 rounded-xl transition-all cursor-pointer flex items-center gap-1.5 border border-rose-800/80 hover:border-rose-500 shadow disabled:opacity-50"
+                  title="Eliminar permanentemente esta ficha del sistema"
+                >
+                  <Trash2 className={`w-3.5 h-3.5 ${deletingId === selectedHousehold._id ? 'animate-spin' : ''}`} />
+                  <span>Eliminar Ficha</span>
+                </button>
                 <button
                   onClick={() => exportSurveysToExcel([selectedHousehold], metrics, selectedHousehold.barrio)}
                   className="bg-emerald-600 hover:bg-emerald-500 text-white font-bold text-xs px-3.5 py-2 rounded-xl transition-all cursor-pointer flex items-center gap-1.5 shadow"

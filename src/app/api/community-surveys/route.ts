@@ -238,3 +238,43 @@ export async function POST(request: Request) {
     );
   }
 }
+
+export async function DELETE(request: Request) {
+  try {
+    const { searchParams } = new URL(request.url);
+    const id = searchParams.get('id');
+    const surveyCode = searchParams.get('surveyCode');
+
+    if (!id && !surveyCode) {
+      return NextResponse.json(
+        { success: false, message: 'Se requiere el ID o código de la ficha a eliminar.' },
+        { status: 400 }
+      );
+    }
+
+    const db = await connectToDatabase();
+    if (db.connection.readyState !== 1) throw new Error('MongoDB no disponible');
+
+    let result = null;
+    if (id && id.length === 24) {
+      result = await CommunitySurvey.findByIdAndDelete(id);
+    } else if (surveyCode) {
+      result = await CommunitySurvey.findOneAndDelete({ surveyCode });
+    } else if (id) {
+      result = await CommunitySurvey.findOneAndDelete({ _id: id });
+    }
+
+    return NextResponse.json({
+      success: true,
+      message: 'Ficha censal eliminada correctamente.',
+      deleted: Boolean(result),
+    });
+  } catch (err) {
+    console.error('[community-surveys DELETE] Error al eliminar:', err);
+    return NextResponse.json(
+      { success: false, message: 'Error al eliminar la ficha del sistema.' },
+      { status: 500 }
+    );
+  }
+}
+
