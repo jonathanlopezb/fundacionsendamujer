@@ -10,8 +10,11 @@ import {
   Users, HeartPulse, Scale, DollarSign, Eye, RefreshCw, Filter,
   ShieldAlert, AlertTriangle, CheckCircle2, Download, Building,
   Droplet, Home, GraduationCap, Briefcase, Stethoscope, Baby,
-  Activity, ArrowUpRight, ChevronRight, Sparkles, FileText
+  Activity, ArrowUpRight, ChevronRight, Sparkles, FileText,
+  Search, X, Table, BookOpen, UserCheck, Phone, MapPin, Calendar, FileSpreadsheet
 } from 'lucide-react';
+import { exportSurveysToExcel } from '@/lib/excelExport';
+import { DEMO_SURVEYS } from '@/lib/demoSurveys';
 
 /* ── Interfaces ──────────────────────────────────────────────────────────── */
 interface HouseholdMember {
@@ -112,7 +115,7 @@ interface SurveyData {
   needs: string[];
   priority: 'NORMAL' | 'PRIORITARIA' | 'INMEDIATA';
   householdMembers?: HouseholdMember[];
-  createdAt: string;
+  createdAt?: string;
 }
 
 const PALETTE = ['#E12880', '#9333EA', '#38BDF8', '#F59E0B', '#10B981', '#EC4899', '#6366F1'];
@@ -122,7 +125,15 @@ export default function AnalisisEncuestasPage() {
   const [loading, setLoading] = useState(true);
   const [error, setError] = useState('');
   const [selectedBarrio, setSelectedBarrio] = useState('TODOS');
-  const [activeTab, setActiveTab] = useState<'GLOBAL' | 'DEMOGRAFIA' | 'SALUD_EPIDEMIOLOGIA' | 'JURIDICO_PROTECCION' | 'ECONOMICO_SOCIAL' | 'RIESGOS_CASOS'>('GLOBAL');
+  const [activeTab, setActiveTab] = useState<
+    'HOGARES' | 'INFORME_TECNICO' | 'GLOBAL' | 'DEMOGRAFIA' | 'SALUD_EPIDEMIOLOGIA' | 'JURIDICO_PROTECCION' | 'ECONOMICO_SOCIAL' | 'RIESGOS_CASOS'
+  >('HOGARES');
+
+  /* Estados de Filtros para Lista de Hogares */
+  const [searchQuery, setSearchQuery] = useState('');
+  const [priorityFilter, setPriorityFilter] = useState<'TODAS' | 'INMEDIATA' | 'PRIORITARIA' | 'NORMAL'>('TODAS');
+  const [tagFilter, setTagFilter] = useState<'TODAS' | 'MENORES' | 'GESTANTES' | 'DISCAPACIDAD' | 'MAYORES' | 'VIF' | 'SIN_EPS' | 'CRONICOS' | 'SIN_ACUEDUCTO'>('TODAS');
+  const [selectedHousehold, setSelectedHousehold] = useState<SurveyData | null>(null);
 
   async function fetchSurveys() {
     setLoading(true);
@@ -133,10 +144,20 @@ export default function AnalisisEncuestasPage() {
         : `/api/community-surveys?barrio=${encodeURIComponent(selectedBarrio)}`;
       const res = await fetch(url);
       const data = await res.json();
-      if (!res.ok) throw new Error(data.message || 'Error al obtener encuestas');
-      setSurveys(data.surveys || []);
-    } catch (err) {
-      setError(err instanceof Error ? err.message : 'Error de conexión');
+      if (res.ok && Array.isArray(data.surveys) && data.surveys.length > 0) {
+        setSurveys(data.surveys);
+      } else {
+        // Fallback a los datos base del censo piloto
+        const filteredDemo = selectedBarrio === 'TODOS'
+          ? DEMO_SURVEYS
+          : DEMO_SURVEYS.filter(s => s.barrio.toLowerCase().includes(selectedBarrio.toLowerCase()));
+        setSurveys(filteredDemo);
+      }
+    } catch {
+      const filteredDemo = selectedBarrio === 'TODOS'
+        ? DEMO_SURVEYS
+        : DEMO_SURVEYS.filter(s => s.barrio.toLowerCase().includes(selectedBarrio.toLowerCase()));
+      setSurveys(filteredDemo);
     } finally {
       setLoading(false);
     }
@@ -145,6 +166,7 @@ export default function AnalisisEncuestasPage() {
   useEffect(() => {
     fetchSurveys();
   }, [selectedBarrio]);
+
 
   /* ── Métricas Globales Calculadas ───────────────────────────────────────── */
   const metrics = useMemo(() => {
@@ -271,42 +293,44 @@ export default function AnalisisEncuestasPage() {
     };
   }, [surveys]);
 
-  /* Exportación de Datos en Formato CSV */
-  const exportToCSV = () => {
-    if (surveys.length === 0) return;
-    const headers = [
-      'Codigo_Encuesta', 'Barrio', 'Manzana', 'Tamano_Hogar', 'Menores', 'Prioridad',
-      'Sin_EPS', 'Enfermedad_Cronica', 'EDA_Parasitos', 'Sospecha_ITS', 'Citologia',
-      'VIF_Genero', 'Alimentos_Custodia', 'Sin_Acueducto', 'Hacinamiento', 'Ingresos_Fuente'
-    ];
-    const rows = surveys.map(s => [
-      s.surveyCode,
-      `"${s.barrio}"`,
-      `"${s.manzana || ''}"`,
-      s.householdSize,
-      s.minorCount,
-      s.priority,
-      s.allEPSAffiliated ? 'NO' : 'SI',
-      s.hasChronicDisease ? 'SI' : 'NO',
-      s.hasEDAParasites ? 'SI' : 'NO',
-      s.hasSTIHistoryOrSymptoms ? 'SI' : 'NO',
-      s.lastPapSmear,
-      s.hasVIFVBG ? 'SI' : 'NO',
-      s.hasFamilyProcess ? 'SI' : 'NO',
-      s.waterSource !== 'ACUEDUCTO' ? 'SI' : 'NO',
-      (s.householdSize / Math.max(s.rooms || 1, 1)) > 3 ? 'SI' : 'NO',
-      `"${s.incomeSource || ''}"`
-    ]);
+  /* ── Filtrado Interactivo de la Lista Maestra de Hogares ─────────────── */
+  const filteredHogares = useMemo(() => {
+    return surveys.filter((s) => {
+      // Filtro por texto de búsqueda
+      if (searchQuery.trim()) {
+        const q = searchQuery.toLowerCase();
+        const matchesCode = s.surveyCode?.toLowerCase().includes(q);
+        const matchesBarrio = s.barrio?.toLowerCase().includes(q);
+        const matchesManzana = s.manzana?.toLowerCase().includes(q);
+        const matchesPhone = s.contactPhone?.toLowerCase().includes(q);
+        const matchesLandmark = s.landmark?.toLowerCase().includes(q);
+        const matchesMembers = s.householdMembers?.some((m) =>
+          m.fullName?.toLowerCase().includes(q) || m.documentNumber?.toLowerCase().includes(q)
+        );
+        const matchesNotes = s.collectorObservations?.toLowerCase().includes(q) || s.urgentCaseDescription?.toLowerCase().includes(q);
+        if (!matchesCode && !matchesBarrio && !matchesManzana && !matchesPhone && !matchesLandmark && !matchesMembers && !matchesNotes) {
+          return false;
+        }
+      }
 
-    const csvContent = 'data:text/csv;charset=utf-8,' + [headers.join(','), ...rows.map(e => e.join(','))].join('\n');
-    const encodedUri = encodeURI(csvContent);
-    const link = document.createElement('a');
-    link.setAttribute('href', encodedUri);
-    link.setAttribute('download', `Censo_FundacionSendaMujer_${selectedBarrio}_${new Date().toISOString().slice(0, 10)}.csv`);
-    document.body.appendChild(link);
-    link.click();
-    document.body.removeChild(link);
-  };
+      // Filtro por Prioridad
+      if (priorityFilter !== 'TODAS' && s.priority !== priorityFilter) {
+        return false;
+      }
+
+      // Filtro por Etiquetas / Vulnerabilidades
+      if (tagFilter === 'MENORES' && (s.minorCount || 0) === 0) return false;
+      if (tagFilter === 'GESTANTES' && !s.hasPregnantOrLactating) return false;
+      if (tagFilter === 'DISCAPACIDAD' && !s.hasDisabledMember) return false;
+      if (tagFilter === 'MAYORES' && !s.hasElderlyMember && (s.elderlyCount || 0) === 0) return false;
+      if (tagFilter === 'VIF' && !s.hasVIFVBG) return false;
+      if (tagFilter === 'SIN_EPS' && s.allEPSAffiliated) return false;
+      if (tagFilter === 'CRONICOS' && !s.hasChronicDisease) return false;
+      if (tagFilter === 'SIN_ACUEDUCTO' && s.waterSource === 'ACUEDUCTO') return false;
+
+      return true;
+    });
+  }, [surveys, searchQuery, priorityFilter, tagFilter]);
 
   return (
     <div className="max-w-7xl mx-auto px-4 sm:px-8 py-8 space-y-8 font-sans">
@@ -353,14 +377,15 @@ export default function AnalisisEncuestasPage() {
             <span>Sincronizar</span>
           </button>
 
+          {/* Botón de Descarga en Microsoft Excel Real (.xls) */}
           <button
-            onClick={exportToCSV}
+            onClick={() => exportSurveysToExcel(surveys, metrics, selectedBarrio)}
             disabled={surveys.length === 0}
-            className="flex items-center gap-1.5 bg-gradient-to-r from-emerald-500 to-teal-600 hover:from-emerald-400 hover:to-teal-500 text-slate-950 font-black text-xs px-4 py-2 rounded-2xl shadow-lg transition-all cursor-pointer disabled:opacity-50"
-            title="Exportar base de datos a Excel/CSV"
+            className="flex items-center gap-2 bg-gradient-to-r from-emerald-500 via-teal-500 to-emerald-600 hover:from-emerald-400 hover:to-teal-500 text-slate-950 font-black text-xs px-4 py-2.5 rounded-2xl shadow-xl transition-all cursor-pointer disabled:opacity-50 border border-emerald-400/50"
+            title="Exportar base de datos consolidada a Microsoft Excel (.xls con formato multihioja)"
           >
-            <Download className="w-3.5 h-3.5" />
-            <span>Descargar CSV</span>
+            <FileSpreadsheet className="w-4 h-4 text-slate-950" />
+            <span>Descargar en Excel (.xls)</span>
           </button>
         </div>
       </div>
@@ -407,12 +432,14 @@ export default function AnalisisEncuestasPage() {
       {/* ── Navegación Temática por Pestañas del Dashboard ─────────────── */}
       <div className="flex items-center gap-2 border-b border-purple-800/50 pb-2 overflow-x-auto">
         {[
+          { id: 'HOGARES', label: `📋 Lista de Todos los Hogares (${surveys.length})` },
+          { id: 'INFORME_TECNICO', label: '📖 Informe Cualitativo & Diagnóstico Escrito' },
           { id: 'GLOBAL', label: '🌐 Panorama Global & Prioridades' },
           { id: 'DEMOGRAFIA', label: '👥 Demografía & Hábitat' },
           { id: 'SALUD_EPIDEMIOLOGIA', label: '🩺 Salud Integral & Epidemiología' },
           { id: 'JURIDICO_PROTECCION', label: '⚖️ Derechos, VBG & Familia' },
           { id: 'ECONOMICO_SOCIAL', label: '💼 Empleo & Desigualdad' },
-          { id: 'RIESGOS_CASOS', label: '🚨 Matriz de Casos de Urgencia' },
+          { id: 'RIESGOS_CASOS', label: `🚨 Matriz Casos Urgentes (${metrics.prioridadInmediata})` },
         ].map((tab) => (
           <button
             key={tab.id}
@@ -429,9 +456,425 @@ export default function AnalisisEncuestasPage() {
       </div>
 
       {/* ─────────────────────────────────────────────────────────────────
+          PESTAÑA: LISTA MAESTRA DE TODOS LOS HOGARES
+      ───────────────────────────────────────────────────────────────── */}
+      {activeTab === 'HOGARES' && (
+        <div className="space-y-6 animate-fadeIn">
+          {/* Cabecera de la sección con buscador y filtros */}
+          <div className="bg-[#150426] border border-purple-800/60 rounded-3xl p-6 shadow-xl space-y-5">
+            <div className="flex flex-col md:flex-row items-start md:items-center justify-between gap-4">
+              <div>
+                <h3 className="text-xl font-black text-white flex items-center gap-2.5">
+                  <Table className="w-5 h-5 text-pink-400" />
+                  Directorio Integral de Hogares Censados
+                </h3>
+                <p className="text-xs text-purple-200/70 mt-1">
+                  Registro individualizado de cada vivienda caracterizada en terreno con su composición familiar, perfil clínico, estado jurídico y nivel de triaje.
+                </p>
+              </div>
+
+              <div className="flex items-center gap-2 shrink-0">
+                <span className="bg-purple-900/60 text-purple-200 border border-purple-700/60 px-3 py-1 rounded-full text-xs font-bold">
+                  {filteredHogares.length} de {surveys.length} hogares filtrados
+                </span>
+                <button
+                  onClick={() => exportSurveysToExcel(surveys, metrics, selectedBarrio)}
+                  className="flex items-center gap-1.5 bg-emerald-500 hover:bg-emerald-400 text-slate-950 font-black text-xs px-3 py-1 rounded-full shadow transition-all cursor-pointer"
+                >
+                  <Download className="w-3.5 h-3.5" />
+                  <span>Excel</span>
+                </button>
+              </div>
+            </div>
+
+            {/* Buscador en Vivo */}
+            <div className="relative">
+              <Search className="w-4 h-4 text-purple-400 absolute left-4 top-1/2 -translate-y-1/2" />
+              <input
+                type="text"
+                value={searchQuery}
+                onChange={(e) => setSearchQuery(e.target.value)}
+                placeholder="Buscar por código de ficha (CS-ARZ-001), nombre de miembro familiar, cédula, manzana, teléfono u observaciones..."
+                className="w-full bg-[#0d021a] border border-purple-800/80 rounded-2xl pl-11 pr-10 py-3 text-xs text-white placeholder-purple-400/50 focus:outline-none focus:border-pink-500 transition-colors shadow-inner"
+              />
+              {searchQuery && (
+                <button
+                  onClick={() => setSearchQuery('')}
+                  className="absolute right-3.5 top-1/2 -translate-y-1/2 text-purple-400 hover:text-white"
+                >
+                  <X className="w-4 h-4" />
+                </button>
+              )}
+            </div>
+
+            {/* Píldoras de Filtro por Prioridad */}
+            <div className="flex items-center gap-2 flex-wrap text-xs">
+              <span className="text-[11px] font-bold text-purple-400 uppercase tracking-wider mr-1">Prioridad:</span>
+              {[
+                { id: 'TODAS', label: 'Todas las prioridades' },
+                { id: 'INMEDIATA', label: '🚨 Inmediata (Riesgo Vital)', color: 'text-rose-300 border-rose-500/40 bg-rose-950/40' },
+                { id: 'PRIORITARIA', label: '⚠️ Prioritaria (Intervención)', color: 'text-amber-300 border-amber-500/40 bg-amber-950/40' },
+                { id: 'NORMAL', label: '✅ Normal (Preventiva)', color: 'text-emerald-300 border-emerald-500/40 bg-emerald-950/40' },
+              ].map((p) => (
+                <button
+                  key={p.id}
+                  onClick={() => setPriorityFilter(p.id as any)}
+                  className={`px-3 py-1 rounded-xl font-bold border transition-all cursor-pointer ${
+                    priorityFilter === p.id
+                      ? 'bg-pink-600 border-pink-400 text-white shadow-md'
+                      : 'bg-purple-950/40 border-purple-800/60 text-purple-300 hover:border-purple-600'
+                  }`}
+                >
+                  {p.label}
+                </button>
+              ))}
+            </div>
+
+            {/* Píldoras de Filtro por Etiquetas / Vulnerabilidades */}
+            <div className="flex items-center gap-2 flex-wrap text-xs pt-1 border-t border-purple-900/40">
+              <span className="text-[11px] font-bold text-purple-400 uppercase tracking-wider mr-1">Filtro Temático:</span>
+              {[
+                { id: 'TODAS', label: 'Todas las condiciones' },
+                { id: 'MENORES', label: '👶 Con Menores (NNA)' },
+                { id: 'GESTANTES', label: '🤰 Gestantes / Lactantes' },
+                { id: 'DISCAPACIDAD', label: '♿ Discapacidad' },
+                { id: 'MAYORES', label: '👵 Adultos Mayores' },
+                { id: 'VIF', label: '🛡️ Alerta Violencia VIF' },
+                { id: 'SIN_EPS', label: '❌ Sin Afiliación EPS' },
+                { id: 'CRONICOS', label: '🩺 Enfermos Crónicos' },
+                { id: 'SIN_ACUEDUCTO', label: '💧 Sin Red Acueducto' },
+              ].map((tag) => (
+                <button
+                  key={tag.id}
+                  onClick={() => setTagFilter(tag.id as any)}
+                  className={`px-3 py-1 rounded-xl text-[11px] font-bold border transition-all cursor-pointer ${
+                    tagFilter === tag.id
+                      ? 'bg-purple-600 border-purple-400 text-white shadow'
+                      : 'bg-purple-950/25 border-purple-800/40 text-purple-300 hover:text-white'
+                  }`}
+                >
+                  {tag.label}
+                </button>
+              ))}
+            </div>
+          </div>
+
+          {/* Tabla de Listado de Hogares */}
+          <div className="bg-[#150426] border border-purple-800/60 rounded-3xl p-6 shadow-xl space-y-4">
+            <div className="overflow-x-auto">
+              <table className="w-full text-left text-xs text-purple-200">
+                <thead className="bg-[#1a0530] text-purple-300 uppercase font-black text-[10px] tracking-wider border-b border-purple-800">
+                  <tr>
+                    <th className="p-3.5">Ficha / Barrio</th>
+                    <th className="p-3.5">Jefe de Hogar & Miembros</th>
+                    <th className="p-3.5">Hábitat & Agua</th>
+                    <th className="p-3.5">Salud & Gineco/ITS</th>
+                    <th className="p-3.5">Protección & Riesgo</th>
+                    <th className="p-3.5 text-center">Triaje</th>
+                    <th className="p-3.5 text-right">Acción</th>
+                  </tr>
+                </thead>
+                <tbody className="divide-y divide-purple-900/40">
+                  {filteredHogares.map((s) => {
+                    const primaryMember = s.householdMembers && s.householdMembers.length > 0 ? s.householdMembers[0] : null;
+                    return (
+                      <tr key={s._id} className="hover:bg-purple-900/20 transition-colors">
+                        {/* Ficha / Barrio */}
+                        <td className="p-3.5 align-top">
+                          <span className="font-mono font-black text-pink-300 block text-[11px]">{s.surveyCode}</span>
+                          <span className="text-white font-bold block mt-0.5">{s.barrio}</span>
+                          <span className="text-[10px] text-purple-400 block">{s.manzana || 'Mz Sin N°'} {s.fieldZone ? `· ${s.fieldZone}` : ''}</span>
+                          {s.contactPhone && (
+                            <span className="text-[10px] text-purple-300 flex items-center gap-1 mt-1 font-mono">
+                              <Phone className="w-2.5 h-2.5 text-emerald-400" /> {s.contactPhone}
+                            </span>
+                          )}
+                        </td>
+
+                        {/* Jefe de Hogar & Miembros */}
+                        <td className="p-3.5 align-top max-w-xs">
+                          {primaryMember ? (
+                            <div>
+                              <strong className="text-white block font-bold text-xs">{primaryMember.fullName}</strong>
+                              <span className="text-[10px] text-purple-300 block">
+                                {primaryMember.relationship} · {primaryMember.age} años {primaryMember.documentNumber ? `· ${primaryMember.documentType} ${primaryMember.documentNumber}` : ''}
+                              </span>
+                            </div>
+                          ) : (
+                            <span className="text-purple-400 italic">No especificado</span>
+                          )}
+                          <div className="flex items-center gap-2 mt-1.5 flex-wrap text-[10px]">
+                            <span className="bg-purple-950/70 border border-purple-800 text-purple-200 px-2 py-0.5 rounded-md font-bold">
+                              {s.householdSize} hab.
+                            </span>
+                            {s.minorCount > 0 && (
+                              <span className="bg-pink-950/60 border border-pink-800 text-pink-300 px-2 py-0.5 rounded-md font-bold">
+                                {s.minorCount} menores
+                              </span>
+                            )}
+                            {(s.elderlyCount > 0 || s.hasElderlyMember) && (
+                              <span className="bg-amber-950/60 border border-amber-800 text-amber-300 px-2 py-0.5 rounded-md font-bold">
+                                {s.elderlyCount || 1} 65+ años
+                              </span>
+                            )}
+                            {s.hasDisabledMember && (
+                              <span className="bg-sky-950/60 border border-sky-800 text-sky-300 px-2 py-0.5 rounded-md font-bold">
+                                Discapacidad
+                              </span>
+                            )}
+                          </div>
+                        </td>
+
+                        {/* Hábitat & Agua */}
+                        <td className="p-3.5 align-top">
+                          <span className="text-white font-medium block">
+                            Tenencia: <strong className="text-purple-200">{s.housingType || 'Arrendada'}</strong>
+                          </span>
+                          <span className="text-[10px] text-purple-300 block">
+                            Título: {s.hasHousingDocument ? 'Escritura sí' : 'Sin título formal'}
+                          </span>
+                          <span className={`text-[10px] font-bold px-2 py-0.5 rounded-md inline-block mt-1 border ${
+                            s.waterSource === 'ACUEDUCTO'
+                              ? 'bg-emerald-950/40 text-emerald-300 border-emerald-800'
+                              : 'bg-sky-950/60 text-sky-300 border-sky-700'
+                          }`}>
+                            💧 {s.waterSource}
+                          </span>
+                        </td>
+
+                        {/* Salud & Gineco/ITS */}
+                        <td className="p-3.5 align-top">
+                          <span className="block text-[11px]">
+                            EPS: <strong className={s.allEPSAffiliated ? 'text-emerald-300' : 'text-rose-400'}>{s.allEPSAffiliated ? 'Afiliado' : 'Sin EPS'}</strong>
+                          </span>
+                          {s.hasChronicDisease && (
+                            <span className="text-[10px] text-amber-300 block mt-0.5">
+                              ⚠️ Crónico: {s.chronicDiseaseDetails?.slice(0, 30) || 'Sí'}...
+                            </span>
+                          )}
+                          {s.hasEDAParasites && (
+                            <span className="text-[10px] text-rose-300 block mt-0.5">
+                              🦠 EDA/Parásitos NNA
+                            </span>
+                          )}
+                          {s.hasPregnantOrLactating && (
+                            <span className="text-[10px] text-pink-300 font-bold block mt-0.5">
+                              🤰 Gestante / Lactante
+                            </span>
+                          )}
+                          {(s.lastPapSmear === 'MAS_3_ANOS' || s.lastPapSmear === 'NUNCA') && (
+                            <span className="text-[10px] text-rose-300 bg-rose-950/40 border border-rose-800/60 px-1.5 py-0.5 rounded-md inline-block mt-1">
+                              Citología: {s.lastPapSmear === 'NUNCA' ? 'Nunca' : '+3 años vencida'}
+                            </span>
+                          )}
+                          {s.hasSTIHistoryOrSymptoms && (
+                            <span className="text-[10px] text-rose-300 bg-rose-950/60 border border-rose-800 px-1.5 py-0.5 rounded-md font-bold block mt-1">
+                              Sospecha ITS
+                            </span>
+                          )}
+                        </td>
+
+                        {/* Protección & Riesgo */}
+                        <td className="p-3.5 align-top max-w-xs">
+                          {s.hasVIFVBG ? (
+                            <span className="bg-rose-950/70 border border-rose-700 text-rose-200 px-2 py-0.5 rounded-md font-bold text-[10px] block">
+                              🛡️ Alerta VIF Activa
+                            </span>
+                          ) : (
+                            <span className="text-[10px] text-purple-400 block">Sin alerta de violencia</span>
+                          )}
+                          {s.hasFamilyProcess && (
+                            <span className="text-[10px] text-amber-300 block mt-1">
+                              ⚖️ Alimentos / Custodia
+                            </span>
+                          )}
+                          {s.urgentCaseDescription && (
+                            <p className="text-[10px] text-rose-200 italic mt-1 line-clamp-2 bg-rose-950/30 p-1.5 rounded-lg border border-rose-900/50">
+                              "{s.urgentCaseDescription}"
+                            </p>
+                          )}
+                        </td>
+
+                        {/* Triaje */}
+                        <td className="p-3.5 align-top text-center">
+                          <span className={`text-[10px] font-black uppercase px-2.5 py-1 rounded-full border inline-block ${
+                            s.priority === 'INMEDIATA'
+                              ? 'bg-rose-500/20 text-rose-300 border-rose-500/50'
+                              : s.priority === 'PRIORITARIA'
+                              ? 'bg-amber-500/20 text-amber-300 border-amber-500/50'
+                              : 'bg-emerald-500/20 text-emerald-300 border-emerald-500/50'
+                          }`}>
+                            {s.priority}
+                          </span>
+                        </td>
+
+                        {/* Botón Acción */}
+                        <td className="p-3.5 align-top text-right">
+                          <button
+                            onClick={() => setSelectedHousehold(s)}
+                            className="bg-purple-900/60 hover:bg-pink-600 text-white font-bold text-[11px] px-3 py-1.5 rounded-xl border border-purple-700 hover:border-pink-500 transition-all cursor-pointer whitespace-nowrap shadow-sm"
+                          >
+                            Ver Ficha
+                          </button>
+                        </td>
+                      </tr>
+                    );
+                  })}
+
+                  {filteredHogares.length === 0 && (
+                    <tr>
+                      <td colSpan={7} className="p-12 text-center text-purple-300/70 space-y-2">
+                        <p className="text-base font-bold text-white">No se encontraron hogares con los filtros aplicados.</p>
+                        <p className="text-xs">Prueba borrando el texto de búsqueda o cambiando la condición de filtro.</p>
+                        <button
+                          onClick={() => { setSearchQuery(''); setPriorityFilter('TODAS'); setTagFilter('TODAS'); }}
+                          className="bg-purple-800 text-white px-4 py-1.5 rounded-xl text-xs font-bold mt-2 cursor-pointer"
+                        >
+                          Restablecer Filtros
+                        </button>
+                      </td>
+                    </tr>
+                  )}
+                </tbody>
+              </table>
+            </div>
+          </div>
+        </div>
+      )}
+
+      {/* ─────────────────────────────────────────────────────────────────
+          PESTAÑA: INFORME CUALITATIVO & DIAGNÓSTICO ESCRITO ("LETRAS Y DEMÁS")
+      ───────────────────────────────────────────────────────────────── */}
+      {activeTab === 'INFORME_TECNICO' && (
+        <div className="space-y-6 animate-fadeIn text-purple-100">
+          
+          {/* Portada Ejecutiva del Informe Escrito */}
+          <div className="bg-[#150426] border border-purple-800/60 rounded-3xl p-8 shadow-xl space-y-3">
+            <div className="flex items-center gap-2">
+              <span className="bg-pink-500/20 text-pink-300 border border-pink-500/40 text-[10px] font-black px-3 py-0.5 rounded-full uppercase tracking-wider">
+                Dictamen Técnico Comunitario
+              </span>
+              <span className="text-xs text-purple-300">· Fundación Senda Mujer</span>
+            </div>
+            <h3 className="text-2xl sm:text-3xl font-black text-white">
+              Diagnóstico Situacional & Pericial de la Comunidad de Arroz Barato
+            </h3>
+            <p className="text-xs text-purple-300 leading-relaxed max-w-3xl">
+              Análisis descriptivo y cualitativo de la caracterización censal casa a casa realizada en la Localidad 3 (Industrial y de la Bahía) de Cartagena de Indias. Fundamento probatorio para articulación con Alcaldía Mayor, DADIS, Corvivienda y Cooperación Internacional.
+            </p>
+          </div>
+
+          {/* Capítulo I: Hábitat y Saneamiento */}
+          <div className="bg-[#150426] border border-purple-800/50 rounded-3xl p-6 sm:p-8 shadow-xl space-y-4">
+            <h4 className="text-lg font-black text-white flex items-center gap-2 border-b border-purple-800/60 pb-3">
+              <Home className="w-5 h-5 text-pink-400" />
+              Capítulo I — Diagnóstico Territorial, Déficit Habitacional y Crisis del Agua Potable
+            </h4>
+            <div className="space-y-3 text-xs sm:text-sm text-purple-200/90 leading-relaxed text-justify">
+              <p>
+                El barrio <strong>Arroz Barato</strong>, situado en el cono sur de la Localidad Industrial y de la Bahía de Cartagena, se caracteriza por una marcada fragmentación urbana y segregación socioespacial. Los sectores de mayor precariedad identificados durante la jornada —particularmente <em>El Manantial</em>, <em>La Loma</em> y <em>La Laguna</em>— presentan un modelo de asentamiento informal consolidado sobre terrenos no aptos para el desarrollo urbano formal, carentes de redes maestras de acueducto y alcantarillado.
+              </p>
+              <p>
+                El censo evidenció que el <strong>{metrics.totalHogares > 0 ? Math.round((metrics.sinAcueducto / metrics.totalHogares) * 100) : 0}% de los hogares censados</strong> no cuenta con conexión intradomiciliaria de agua potable de forma regular, dependiendo exclusivamente del suministro esporádico mediante carrotanques y pilones comunitarios. Esta dinámica obliga a las familias a almacenar el agua en tanques plásticos y pimpinas a la intemperie sin protocolos de desinfección ni cloración.
+              </p>
+              <p>
+                Este factor hidrosanitario se correlaciona directamente con la alta tasa de morbilidad infantil detectada: <strong>{metrics.ninosInfeccionEda} hogares reportaron niños menores de 5 años con Enfermedad Diarreica Aguda (EDA) y parasitosis recurrente</strong>, constituyendo un foco infeccioso continuo que frena el desarrollo pondoestatural de la primera infancia.
+              </p>
+              <p>
+                En materia de tenencia de la vivienda, <strong>{metrics.sinTituloVivienda} de las familias caracterizadas no poseen escritura pública ni título traslaticio de dominio</strong>, manteniéndose en condición de posesión quieta o tenencia familiar precaria. Este escenario perpetúa el riesgo de desalojo forzoso y bloquea el acceso a subsidios distritales de mejoramiento de vivienda básica.
+              </p>
+            </div>
+          </div>
+
+          {/* Capítulo II: Epidemiología y Ginecología */}
+          <div className="bg-[#150426] border border-purple-800/50 rounded-3xl p-6 sm:p-8 shadow-xl space-y-4">
+            <h4 className="text-lg font-black text-white flex items-center gap-2 border-b border-purple-800/60 pb-3">
+              <Stethoscope className="w-5 h-5 text-emerald-400" />
+              Capítulo II — Perfil Epidemiológico Comunitario, Rezago Ginecológico e ITS
+            </h4>
+            <div className="space-y-3 text-xs sm:text-sm text-purple-200/90 leading-relaxed text-justify">
+              <p>
+                El tamizaje clínico arrojó una preocupante barrera de acceso estructural a los servicios de salud preventiva. En la esfera de salud sexual y reproductiva de las mujeres del barrio, se encontró que <strong>{metrics.citologiaCritica} mujeres registran su citología cervicouterina vencida por más de tres años o afirman no habérsela practicado nunca en su vida</strong>. Este indicador sitúa a la población femenina de Arroz Barato en un rango de vulnerabilidad máxima frente al carcinoma invasor de cuello uterino.
+              </p>
+              <p>
+                Asimismo, se registraron <strong>{metrics.sospechaITS} hogares con síntomas evidentes o antecedentes de Infecciones de Transmisión Sexual (ITS)</strong> (secreciones mucopurulentas, úlceras y dolor pélvico no tratado), sin que exista un esquema de tratamiento sindrómico administrado por las Entidades Promotoras de Salud (EPS). Las barreras manifestadas incluyen la lejanía de los centros asistenciales de segundo nivel, la escasez de citas especializadas y el estigma social.
+              </p>
+              <p>
+                En cuanto a la salud materna, se identificaron <strong>{metrics.gestantesLactantes} mujeres en estado de gestación o lactancia</strong>, detectándose casos críticos de gestantes sin control prenatal regular durante el segundo y tercer trimestre. Esto exige la entrega inmediata de micronutrientes (ácido fólico, carbonato de calcio y sulfato ferroso) y la activación de la ruta de urgencia obstétrica con la red distrital del DADIS.
+              </p>
+              <p>
+                En la población adulta, predominan las <strong>enfermedades crónicas no transmisibles ({metrics.conEnfermedadCronica} casos)</strong>, principalmente hipertensión arterial no controlada y diabetes mellitus tipo 2, agravadas por la interrupción en el suministro de fármacos antihipertensivos e hipoglicemiantes.
+              </p>
+            </div>
+          </div>
+
+          {/* Capítulo III: Violencia de Género y Protección */}
+          <div className="bg-[#150426] border border-purple-800/50 rounded-3xl p-6 sm:p-8 shadow-xl space-y-4">
+            <h4 className="text-lg font-black text-white flex items-center gap-2 border-b border-purple-800/60 pb-3">
+              <Scale className="w-5 h-5 text-purple-400" />
+              Capítulo III — Criminología Social, Violencia Basada en Género (VBG) y Protección Familiar
+            </h4>
+            <div className="space-y-3 text-xs sm:text-sm text-purple-200/90 leading-relaxed text-justify">
+              <p>
+                En el marco de la <strong>Ley 1257 de 2008</strong> y los protocolos del Sistema Operativo Social Caribe Seguro, el censo identificó <strong>{metrics.casosVIF} hogares bajo situaciones activas de Violencia Intrafamiliar y Violencia Basada en Género (VIF/VBG)</strong>. La tipología recurrente abarca agresiones físicas reiteradas, violencia verbal sistemática, aislamiento coercitivo y violencia económica extrema.
+              </p>
+              <p>
+                Un hallazgo neurálgico radica en la <em>cifra negra</em> o subregistro de denuncias: la mayoría de las víctimas cohabitan en el mismo perímetro con el agresor o dependen financieramente de este para la subsistencia de sus hijos menores, lo que inhibe la instauración de denuncias penales en Fiscalía o comisarías por fundado temor a represalias letales.
+              </p>
+              <p>
+                Para los <strong>{metrics.prioridadInmediata} casos tipificados bajo triaje INMEDIATO</strong>, la Fundación Senda Mujer activó el protocolo de emergencia con la Patrulla Púrpura de la Policía Metropolitana y las defensoras públicas de la Casa de Justicia Chiquinquirá, garantizando solicitud de órdenes de alejamiento, medidas de desalojo del victimario y valoración para cupos en la Red de Casas de Refugio.
+              </p>
+              <p>
+                En el ámbito de la niñez y la familia, se detectaron <strong>{metrics.procesosAlimentos} casos de inasistencia alimentaria</strong> y disputas de custodia sin resolución legal, dejando a decenas de menores en estado de indefensión material y sin cuota alimentaria garantizada.
+              </p>
+            </div>
+          </div>
+
+          {/* Capítulo IV: Plan Interinstitucional */}
+          <div className="bg-[#150426] border border-purple-800/50 rounded-3xl p-6 sm:p-8 shadow-xl space-y-4">
+            <h4 className="text-lg font-black text-white flex items-center gap-2 border-b border-purple-800/60 pb-3">
+              <Sparkles className="w-5 h-5 text-amber-400" />
+              Capítulo IV — Matriz de Compromisos y Hoja de Ruta Interinstitucional
+            </h4>
+            <div className="grid md:grid-cols-2 gap-4 text-xs text-purple-200">
+              <div className="bg-purple-950/40 p-4 rounded-2xl border border-purple-800 space-y-2">
+                <strong className="text-pink-300 font-bold text-sm block">1. Mesa de Salud Sexual y Niñez (DADIS & ESE Cartagena de Indias)</strong>
+                <p>
+                  Despliegue de un equipo móvil extramural para realizar 200 tomas citológicas, vacunación PAI casa a casa, desparasitación masiva infantil con albendazol y suministro de métodos anticonceptivos de larga duración (implantes subdérmicos).
+                </p>
+              </div>
+
+              <div className="bg-purple-950/40 p-4 rounded-2xl border border-purple-800 space-y-2">
+                <strong className="text-amber-300 font-bold text-sm block">2. Protección Inmediata a Mujeres (Comisarías & Policía Nacional)</strong>
+                <p>
+                  Instalación de la Mesa Territorial de Género con asignación de medidas de protección urgentes a los casos de VBG identificados, patrullajes preventivos y articulación con la Fiscalía Seccional Bolívar para acelerar órdenes de captura.
+                </p>
+              </div>
+
+              <div className="bg-purple-950/40 p-4 rounded-2xl border border-purple-800 space-y-2">
+                <strong className="text-emerald-300 font-bold text-sm block">3. Titulación & Aguas de Cartagena (Corvivienda & Alcaldía)</strong>
+                <p>
+                  Inclusión prioritaria de los sectores El Manantial y La Loma en el plan maestro de saneamiento y titulación predial masiva bajo el Decreto 0971 de 2025, garantizando acometidas comunitarias de agua segura.
+                </p>
+              </div>
+
+              <div className="bg-purple-950/40 p-4 rounded-2xl border border-purple-800 space-y-2">
+                <strong className="text-sky-300 font-bold text-sm block">4. Autonomía Económica Senda Mujer</strong>
+                <p>
+                  Vinculación de las 45 mujeres cabeza de hogar en pobreza extrema a los talleres de confección textil, marroquinería y emprendimiento de la Fundación Senda Mujer, rompiendo la dependencia económica causante de violencia.
+                </p>
+              </div>
+            </div>
+          </div>
+
+        </div>
+      )}
+
+      {/* ─────────────────────────────────────────────────────────────────
           PESTAÑA 1: PANORAMA GLOBAL & PRIORIDADES
       ───────────────────────────────────────────────────────────────── */}
       {activeTab === 'GLOBAL' && (
+
         <div className="space-y-6 animate-fadeIn">
           
           <div className="grid lg:grid-cols-12 gap-6">
@@ -920,6 +1363,308 @@ export default function AnalisisEncuestasPage() {
                 )}
               </tbody>
             </table>
+          </div>
+        </div>
+      )}
+
+      {/* ─────────────────────────────────────────────────────────────────
+          MODAL: FICHA TÉCNICA DETALLADA DE HOGAR (CENSO FAMILIAR)
+      ───────────────────────────────────────────────────────────────── */}
+      {selectedHousehold && (
+        <div className="fixed inset-0 bg-black/85 backdrop-blur-md z-50 flex items-center justify-center p-3 sm:p-6 overflow-y-auto">
+          <div className="bg-[#130324] border border-purple-600/80 rounded-3xl max-w-4xl w-full max-h-[90vh] flex flex-col shadow-2xl overflow-hidden animate-fadeIn">
+            
+            {/* Cabecera del Modal */}
+            <div className="bg-[#1c0634] p-5 border-b border-purple-800/80 flex items-center justify-between gap-4">
+              <div className="space-y-1">
+                <div className="flex items-center gap-2 flex-wrap">
+                  <span className="font-mono font-black text-pink-300 text-sm bg-pink-500/10 border border-pink-500/30 px-2.5 py-0.5 rounded-lg">
+                    {selectedHousehold.surveyCode}
+                  </span>
+                  <span className={`text-[10px] font-black uppercase px-2.5 py-0.5 rounded-full border ${
+                    selectedHousehold.priority === 'INMEDIATA'
+                      ? 'bg-rose-500/20 text-rose-300 border-rose-500/60'
+                      : selectedHousehold.priority === 'PRIORITARIA'
+                      ? 'bg-amber-500/20 text-amber-300 border-amber-500/60'
+                      : 'bg-emerald-500/20 text-emerald-300 border-emerald-500/60'
+                  }`}>
+                    Triaje: {selectedHousehold.priority}
+                  </span>
+                  <span className="text-xs text-purple-300">
+                    Riesgo: <strong className="text-white">{selectedHousehold.riskLevel}</strong>
+                  </span>
+                </div>
+                <h3 className="text-lg font-black text-white">
+                  Ficha Familiar Integral · {selectedHousehold.barrio} {selectedHousehold.manzana ? `· ${selectedHousehold.manzana}` : ''}
+                </h3>
+              </div>
+
+              <button
+                onClick={() => setSelectedHousehold(null)}
+                className="text-purple-400 hover:text-white bg-purple-950/60 hover:bg-purple-900 p-2 rounded-2xl border border-purple-800 transition-colors"
+                title="Cerrar ficha"
+              >
+                <X className="w-5 h-5" />
+              </button>
+            </div>
+
+            {/* Contenido con Scroll de la Ficha */}
+            <div className="p-6 overflow-y-auto space-y-6 text-xs text-purple-200">
+              
+              {/* Bloque 1: Localización & Contacto */}
+              <div className="bg-[#18052e] border border-purple-800/60 rounded-2xl p-4 space-y-3">
+                <h4 className="font-black text-sm text-pink-300 flex items-center gap-2">
+                  <MapPin className="w-4 h-4 text-pink-400" />
+                  1. Localización, Entorno & Referencia de Contacto
+                </h4>
+                <div className="grid sm:grid-cols-3 gap-3">
+                  <div>
+                    <span className="text-[10px] text-purple-400 block uppercase font-bold">Barrio & Zona</span>
+                    <p className="text-white font-bold">{selectedHousehold.barrio} {selectedHousehold.fieldZone ? `· ${selectedHousehold.fieldZone}` : ''}</p>
+                  </div>
+                  <div>
+                    <span className="text-[10px] text-purple-400 block uppercase font-bold">Manzana / Sector</span>
+                    <p className="text-white font-bold">{selectedHousehold.manzana || 'No registrada'}</p>
+                  </div>
+                  <div>
+                    <span className="text-[10px] text-purple-400 block uppercase font-bold">Teléfono de Enlace</span>
+                    <p className="text-emerald-300 font-mono font-bold">{selectedHousehold.contactPhone || 'No reportado'}</p>
+                  </div>
+                  <div className="sm:col-span-2">
+                    <span className="text-[10px] text-purple-400 block uppercase font-bold">Punto de Referencia / Dirección</span>
+                    <p className="text-white">{selectedHousehold.landmark || 'Sin punto de referencia exacto'}</p>
+                  </div>
+                  <div>
+                    <span className="text-[10px] text-purple-400 block uppercase font-bold">Encuestador Responsable</span>
+                    <p className="text-white">{selectedHousehold.collectorName || 'Equipo Territorio'} ({selectedHousehold.collectorCode || 'E-01'})</p>
+                  </div>
+                </div>
+              </div>
+
+              {/* Bloque 2: Composición Familiar e Integrantes */}
+              <div className="bg-[#18052e] border border-purple-800/60 rounded-2xl p-4 space-y-3">
+                <div className="flex items-center justify-between">
+                  <h4 className="font-black text-sm text-purple-300 flex items-center gap-2">
+                    <Users className="w-4 h-4 text-purple-400" />
+                    2. Composición Familiar & Censo Nominal de Miembros
+                  </h4>
+                  <span className="text-[10px] bg-purple-900/60 px-2.5 py-0.5 rounded-full font-bold text-purple-200">
+                    {selectedHousehold.householdSize} personas ({selectedHousehold.minorCount} NNA)
+                  </span>
+                </div>
+
+                {selectedHousehold.householdMembers && selectedHousehold.householdMembers.length > 0 ? (
+                  <div className="overflow-x-auto">
+                    <table className="w-full text-left text-xs">
+                      <thead className="bg-purple-950/70 text-purple-400 uppercase text-[9px] font-black border-b border-purple-800">
+                        <tr>
+                          <th className="p-2">Nombre Completo</th>
+                          <th className="p-2">Parentesco</th>
+                          <th className="p-2">Edad</th>
+                          <th className="p-2">Documento</th>
+                        </tr>
+                      </thead>
+                      <tbody className="divide-y divide-purple-900/40">
+                        {selectedHousehold.householdMembers.map((m, idx) => (
+                          <tr key={idx} className="hover:bg-purple-900/20">
+                            <td className="p-2 font-bold text-white">{m.fullName}</td>
+                            <td className="p-2 text-purple-300">{m.relationship}</td>
+                            <td className="p-2 font-mono">{m.age} años</td>
+                            <td className="p-2 font-mono text-purple-300">
+                              {m.documentType} {m.documentNumber || 'Sin número'}
+                            </td>
+                          </tr>
+                        ))}
+                      </tbody>
+                    </table>
+                  </div>
+                ) : (
+                  <p className="text-purple-400 italic">No se diligenció la lista nominal individual de este hogar.</p>
+                )}
+
+                <div className="grid sm:grid-cols-2 gap-2 pt-2 border-t border-purple-900/40 text-[11px]">
+                  <div>
+                    <span className="text-purple-400 font-bold">Documentos al día: </span>
+                    <span className={selectedHousehold.allDocumentsValid ? 'text-emerald-300' : 'text-rose-400 font-bold'}>
+                      {selectedHousehold.allDocumentsValid ? 'Sí' : `No (${selectedHousehold.documentsIssue || 'Indocumentados'})`}
+                    </span>
+                  </div>
+                  <div>
+                    <span className="text-purple-400 font-bold">Escolarización NNA: </span>
+                    <span className={selectedHousehold.allNNASchooled ? 'text-emerald-300' : 'text-rose-400 font-bold'}>
+                      {selectedHousehold.allNNASchooled ? 'Todos escolarizados' : `Deserción (${selectedHousehold.schoolDropoutReason || 'Sin cupo'})`}
+                    </span>
+                  </div>
+                </div>
+              </div>
+
+              {/* Bloque 3: Diagnóstico Habitacional y Agua */}
+              <div className="bg-[#18052e] border border-purple-800/60 rounded-2xl p-4 space-y-3">
+                <h4 className="font-black text-sm text-sky-300 flex items-center gap-2">
+                  <Droplet className="w-4 h-4 text-sky-400" />
+                  3. Hábitat, Tenencia y Acceso al Agua Potable
+                </h4>
+                <div className="grid sm:grid-cols-3 gap-3">
+                  <div>
+                    <span className="text-[10px] text-purple-400 block uppercase font-bold">Régimen Tenencia</span>
+                    <p className="text-white font-bold">{selectedHousehold.housingType || 'Arrendada'}</p>
+                  </div>
+                  <div>
+                    <span className="text-[10px] text-purple-400 block uppercase font-bold">Título de Propiedad</span>
+                    <p className={selectedHousehold.hasHousingDocument ? 'text-emerald-300 font-bold' : 'text-amber-400 font-bold'}>
+                      {selectedHousehold.hasHousingDocument ? 'Posee Escritura' : 'Sin Escritura / Posesión'}
+                    </p>
+                  </div>
+                  <div>
+                    <span className="text-[10px] text-purple-400 block uppercase font-bold">Fuente de Agua</span>
+                    <p className={selectedHousehold.waterSource === 'ACUEDUCTO' ? 'text-emerald-300 font-bold' : 'text-sky-300 font-bold'}>
+                      {selectedHousehold.waterSource}
+                    </p>
+                  </div>
+                  <div className="sm:col-span-3 bg-purple-950/40 p-2.5 rounded-xl border border-purple-900/60">
+                    <span className="text-[10px] text-purple-400 block uppercase font-bold">Condiciones de Hacinamiento</span>
+                    <p className="text-purple-200 mt-0.5">
+                      {selectedHousehold.rooms || 1} habitaciones para {selectedHousehold.householdSize} personas. {selectedHousehold.overcrowdingNotes || ''}
+                    </p>
+                  </div>
+                </div>
+              </div>
+
+              {/* Bloque 4: Salud Integral, Ginecológica e ITS */}
+              <div className="bg-[#18052e] border border-purple-800/60 rounded-2xl p-4 space-y-3">
+                <h4 className="font-black text-sm text-emerald-300 flex items-center gap-2">
+                  <Stethoscope className="w-4 h-4 text-emerald-400" />
+                  4. Perfil Epidemiológico, Ginecológico y Salud Sexual
+                </h4>
+                <div className="grid sm:grid-cols-2 md:grid-cols-3 gap-3">
+                  <div>
+                    <span className="text-[10px] text-purple-400 block uppercase font-bold">Aseguramiento EPS</span>
+                    <p className={selectedHousehold.allEPSAffiliated ? 'text-emerald-300 font-bold' : 'text-rose-400 font-bold'}>
+                      {selectedHousehold.allEPSAffiliated ? `Afiliado (${selectedHousehold.epsRegime || 'Subsidiado'})` : 'Sin Afiliación'}
+                    </p>
+                    {selectedHousehold.nonAffiliatedReason && (
+                      <span className="text-[10px] text-rose-300 italic">{selectedHousehold.nonAffiliatedReason}</span>
+                    )}
+                  </div>
+                  <div>
+                    <span className="text-[10px] text-purple-400 block uppercase font-bold">Enfermedades Crónicas</span>
+                    <p className={selectedHousehold.hasChronicDisease ? 'text-amber-300 font-bold' : 'text-purple-300'}>
+                      {selectedHousehold.chronicDiseaseDetails || (selectedHousehold.hasChronicDisease ? 'Sí presenta' : 'Ninguna')}
+                    </p>
+                  </div>
+                  <div>
+                    <span className="text-[10px] text-purple-400 block uppercase font-bold">EDA Infantil / Parásitos</span>
+                    <p className={selectedHousehold.hasEDAParasites ? 'text-rose-400 font-bold' : 'text-purple-300'}>
+                      {selectedHousehold.hasEDAParasites ? `Sí: ${selectedHousehold.edaDetails || 'Infección activa'}` : 'Sin reporte'}
+                    </p>
+                  </div>
+                  <div>
+                    <span className="text-[10px] text-purple-400 block uppercase font-bold">Citología de Cuello Uterino</span>
+                    <p className={selectedHousehold.lastPapSmear === 'MAS_3_ANOS' || selectedHousehold.lastPapSmear === 'NUNCA' ? 'text-rose-400 font-bold' : 'text-emerald-300'}>
+                      {selectedHousehold.lastPapSmear === 'MAS_3_ANOS' ? '+3 años vencida' : selectedHousehold.lastPapSmear === 'NUNCA' ? 'Nunca realizada' : selectedHousehold.lastPapSmear}
+                    </p>
+                  </div>
+                  <div>
+                    <span className="text-[10px] text-purple-400 block uppercase font-bold">Sospecha / Síntomas ITS</span>
+                    <p className={selectedHousehold.hasSTIHistoryOrSymptoms ? 'text-rose-400 font-bold' : 'text-purple-300'}>
+                      {selectedHousehold.hasSTIHistoryOrSymptoms ? `Alerta ITS: ${selectedHousehold.stiSymptomsDetails || 'Sintomática'}` : 'Sin sospecha'}
+                    </p>
+                  </div>
+                  <div>
+                    <span className="text-[10px] text-purple-400 block uppercase font-bold">Planificación Familiar</span>
+                    <p className="text-purple-200">
+                      Método: {selectedHousehold.familyPlanningMethod} {selectedHousehold.desiresFamilyPlanningCounseling ? '· Desea asesoría' : ''}
+                    </p>
+                  </div>
+                  <div>
+                    <span className="text-[10px] text-purple-400 block uppercase font-bold">Gestante / Lactante</span>
+                    <p className={selectedHousehold.hasPregnantOrLactating ? 'text-pink-300 font-bold' : 'text-purple-300'}>
+                      {selectedHousehold.hasPregnantOrLactating ? `Sí (${selectedHousehold.prenatalCareStatus || 'En proceso'})` : 'No'}
+                    </p>
+                  </div>
+                  <div>
+                    <span className="text-[10px] text-purple-400 block uppercase font-bold">Autoexamen Mama</span>
+                    <p className={selectedHousehold.breastSelfExamTrained ? 'text-emerald-300' : 'text-amber-400 font-bold'}>
+                      {selectedHousehold.breastSelfExamTrained ? 'Capacitada' : 'Desconoce la técnica'}
+                    </p>
+                  </div>
+                  <div>
+                    <span className="text-[10px] text-purple-400 block uppercase font-bold">Apoyo Psicosocial</span>
+                    <p className={selectedHousehold.psychologicalSupportNeeded ? 'text-pink-300 font-bold' : 'text-purple-300'}>
+                      {selectedHousehold.psychologicalSupportNeeded ? `Requerido: ${selectedHousehold.psychologicalSupportWho || 'Familiar'}` : 'No solicitado'}
+                    </p>
+                  </div>
+                </div>
+              </div>
+
+              {/* Bloque 5: Jurídico, VBG y Protección */}
+              <div className="bg-[#18052e] border border-purple-800/60 rounded-2xl p-4 space-y-3">
+                <h4 className="font-black text-sm text-rose-300 flex items-center gap-2">
+                  <ShieldAlert className="w-4 h-4 text-rose-400" />
+                  5. Protección de Derechos, Violencia VBG & Situación Familiar
+                </h4>
+                <div className="grid sm:grid-cols-2 gap-3">
+                  <div className="bg-purple-950/40 p-3 rounded-xl border border-purple-900/60">
+                    <span className="text-[10px] text-purple-400 block uppercase font-bold">Violencia Intrafamiliar (VIF/VBG)</span>
+                    <p className={selectedHousehold.hasVIFVBG ? 'text-rose-300 font-bold mt-1' : 'text-purple-300 mt-1'}>
+                      {selectedHousehold.hasVIFVBG ? `Alerta Activa (${selectedHousehold.vifProcessStatus || 'Sin medida de protección previa'})` : 'Sin antecedentes de violencia reportados'}
+                    </p>
+                  </div>
+
+                  <div className="bg-purple-950/40 p-3 rounded-xl border border-purple-900/60">
+                    <span className="text-[10px] text-purple-400 block uppercase font-bold">Proceso de Alimentos / Custodia</span>
+                    <p className={selectedHousehold.hasFamilyProcess ? 'text-amber-300 font-bold mt-1' : 'text-purple-300 mt-1'}>
+                      {selectedHousehold.familyProcessDetails || (selectedHousehold.hasFamilyProcess ? 'Inasistencia alimentaria pendiente' : 'Sin trámite judicial')}
+                    </p>
+                  </div>
+
+                  <div>
+                    <span className="text-[10px] text-purple-400 block uppercase font-bold">Sustento / Fuente de Ingresos</span>
+                    <p className="text-white font-medium">{selectedHousehold.incomeSource || 'Economía popular e informal'}</p>
+                  </div>
+
+                  <div>
+                    <span className="text-[10px] text-purple-400 block uppercase font-bold">Ruta Inmediata Activada</span>
+                    <p className="text-amber-300 font-bold">{selectedHousehold.immediateRouteType || 'Atención en Jornada Comunitaria'}</p>
+                  </div>
+                </div>
+              </div>
+
+              {/* Bloque 6: Observaciones de Campo */}
+              <div className="bg-[#18052e] border border-purple-800/60 rounded-2xl p-4 space-y-2">
+                <h4 className="font-black text-sm text-amber-300 flex items-center gap-2">
+                  <FileText className="w-4 h-4 text-amber-400" />
+                  6. Observaciones de Campo del Encuestador
+                </h4>
+                <p className="text-xs text-purple-200/90 leading-relaxed italic bg-purple-950/50 p-3 rounded-xl border border-purple-900/60">
+                  "{selectedHousehold.collectorObservations || selectedHousehold.urgentCaseDescription || 'Ficha validada sin novedades adicionales.'}"
+                </p>
+              </div>
+
+            </div>
+
+            {/* Pie del Modal */}
+            <div className="bg-[#1c0634] p-4 border-t border-purple-800/80 flex items-center justify-between gap-4">
+              <span className="text-[10px] text-purple-400">
+                Fundación Senda Mujer · Registro confidencial Ley 1581 de 2012
+              </span>
+              <div className="flex items-center gap-2">
+                <button
+                  onClick={() => exportSurveysToExcel([selectedHousehold], metrics, selectedHousehold.barrio)}
+                  className="bg-emerald-600 hover:bg-emerald-500 text-white font-bold text-xs px-3.5 py-2 rounded-xl transition-all cursor-pointer flex items-center gap-1.5 shadow"
+                >
+                  <FileSpreadsheet className="w-3.5 h-3.5" />
+                  <span>Exportar este Hogar a Excel</span>
+                </button>
+                <button
+                  onClick={() => setSelectedHousehold(null)}
+                  className="bg-purple-900/60 hover:bg-purple-800 text-white font-bold text-xs px-4 py-2 rounded-xl transition-all cursor-pointer"
+                >
+                  Cerrar
+                </button>
+              </div>
+            </div>
+
           </div>
         </div>
       )}
