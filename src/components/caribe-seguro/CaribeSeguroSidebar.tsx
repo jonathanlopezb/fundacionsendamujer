@@ -12,7 +12,7 @@ import React, { useState } from 'react';
 import Link from 'next/link';
 import { usePathname } from 'next/navigation';
 import {
-  Shield, LayoutDashboard, HelpCircle, ShieldCheck, ShieldAlert,
+  Shield, LayoutDashboard, HelpCircle, ShieldCheck, ShieldAlert, ClipboardList,
   Route, PhoneCall, GraduationCap, Users, TrendingUp, BarChart3,
   Award, Globe, BookOpen, ChevronLeft, ChevronRight, LogOut, Lock, ExternalLink
 } from 'lucide-react';
@@ -28,6 +28,7 @@ const MENU_GROUPS = [
     items: [
       { href: '/caribe-seguro', label: 'Centro de Control', icon: LayoutDashboard },
       { href: '/caribe-seguro/como-funciona', label: '¿Cómo Funciona?', icon: HelpCircle },
+      { href: '/caribe-seguro/jornada-arroz-barato', label: 'Jornada Arroz Barato', icon: ClipboardList },
     ],
   },
   {
