@@ -11,12 +11,15 @@ const ALLOWED_NEEDS = new Set([
   'salud', 'afiliacion', 'materna', 'vacunacion', 'cronica', 'acceso_salud',
   'educacion', 'documentacion', 'familia', 'violencia',
   'vivienda', 'tramites', 'subsidios', 'empleo',
+  'its_ginecologia', 'citologia_urgente', 'planificacion_familiar',
 ]);
 
 const ALLOWED_WATER = new Set(['ACUEDUCTO', 'PILA_PUBLICA', 'CARROTANQUE', 'POZO', 'OTRO']);
 const ALLOWED_HOUSING = new Set(['PROPIA', 'ARRENDADA', 'FAMILIAR', 'OTRA']);
 const ALLOWED_RISK = new Set(['BAJO', 'MEDIO', 'ALTO']);
 const ALLOWED_DOC_TYPES = new Set(['RC', 'TI', 'CC', 'CE', 'PA', 'OTRO', 'SIN_DOC']);
+const ALLOWED_PAP = new Set(['MENOS_1_ANO', '1_A_3_ANOS', 'MAS_3_ANOS', 'NUNCA', 'NO_APLICA']);
+const ALLOWED_PLANNING = new Set(['NINGUNO', 'ORAL', 'INYECTABLE', 'IMPLANTE', 'DIU', 'BARRERA', 'QUIRURGICO', 'OTRO']);
 
 function str(v: unknown, max = 400): string {
   return typeof v === 'string' ? v.trim().slice(0, max) : '';
@@ -28,6 +31,30 @@ function num(v: unknown, min = 0, max = 50): number {
   const n = Number(v);
   if (!Number.isFinite(n)) return min;
   return Math.min(Math.max(Math.round(n), min), max);
+}
+
+export async function GET(request: Request) {
+  try {
+    const { searchParams } = new URL(request.url);
+    const barrio = searchParams.get('barrio');
+
+    const db = await connectToDatabase();
+    if (db.connection.readyState !== 1) throw new Error('MongoDB no disponible');
+
+    const query: Record<string, unknown> = {};
+    if (barrio && barrio !== 'TODOS') {
+      query.barrio = new RegExp(`^${barrio.replace(/[.*+?^${}()|[\]\\]/g, '\\$&')}$`, 'i');
+    }
+
+    const surveys = await CommunitySurvey.find(query).sort({ createdAt: -1 }).lean();
+    return NextResponse.json({ success: true, surveys });
+  } catch (err) {
+    console.error('[community-surveys GET] Error al consultar:', err);
+    return NextResponse.json(
+      { success: false, message: 'Error al obtener encuestas registradas', surveys: [] },
+      { status: 500 }
+    );
+  }
 }
 
 export async function POST(request: Request) {
@@ -81,7 +108,7 @@ export async function POST(request: Request) {
     const priority =
       bool(body.activateImmediateRoute) || bool(body.hasUrgentCase) || riskLevel === 'ALTO'
         ? 'INMEDIATA'
-        : needs.includes('violencia') || needs.includes('cronica') || bool(body.hasVIFVBG) || riskLevel === 'MEDIO'
+        : needs.includes('violencia') || needs.includes('cronica') || bool(body.hasVIFVBG) || riskLevel === 'MEDIO' || bool(body.hasSTIHistoryOrSymptoms)
         ? 'PRIORITARIA'
         : 'NORMAL';
 
@@ -116,7 +143,7 @@ export async function POST(request: Request) {
       rooms: num(body.rooms, 1, 30),
       overcrowdingNotes: str(body.overcrowdingNotes, 300),
 
-      /* B */
+      /* B - Salud General */
       allEPSAffiliated: bool(body.allEPSAffiliated),
       epsRegime: str(body.epsRegime, 100),
       nonAffiliatedReason: str(body.nonAffiliatedReason),
@@ -136,6 +163,20 @@ export async function POST(request: Request) {
         : 'ACUEDUCTO',
       psychologicalSupportNeeded: bool(body.psychologicalSupportNeeded),
       psychologicalSupportWho: str(body.psychologicalSupportWho, 300),
+
+      /* B.1 - Salud Sexual, Reproductiva, Ginecológica e ITS */
+      hasSTIHistoryOrSymptoms: bool(body.hasSTIHistoryOrSymptoms),
+      stiSymptomsDetails: str(body.stiSymptomsDetails, 400),
+      lastPapSmear: ALLOWED_PAP.has(str(body.lastPapSmear, 30))
+        ? str(body.lastPapSmear, 30)
+        : 'NO_APLICA',
+      familyPlanningMethod: ALLOWED_PLANNING.has(str(body.familyPlanningMethod, 30))
+        ? str(body.familyPlanningMethod, 30)
+        : 'NINGUNO',
+      desiresFamilyPlanningCounseling: bool(body.desiresFamilyPlanningCounseling),
+      vaginalInfectionSymptoms: bool(body.vaginalInfectionSymptoms),
+      breastSelfExamTrained: bool(body.breastSelfExamTrained),
+      hasMammographyOrUltrasoundNeeded: bool(body.hasMammographyOrUltrasoundNeeded),
 
       /* C */
       hasFamilyProcess: bool(body.hasFamilyProcess),

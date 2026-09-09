@@ -4,7 +4,7 @@ const BASE_URL = 'https://fundacionsendamujer.vercel.app';
 
 export default function robots(): MetadataRoute.Robots {
   return {
-    rules: [{ userAgent: '*', allow: '/', disallow: ['/admin', '/api/', '/portal-beneficiaria/ingresar', '/encuestas'] }],
+    rules: [{ userAgent: '*', allow: '/', disallow: ['/admin', '/api/', '/portal-beneficiaria/ingresar', '/encuestas', '/analisis-encuentas'] }],
     sitemap: `${BASE_URL}/sitemap.xml`,
     host: BASE_URL,
   };

@@ -22,7 +22,8 @@ export default function RootLayout({
     pathname?.startsWith('/portal-beneficiaria') ||
     pathname?.startsWith('/academia') ||
     pathname?.startsWith('/caribe-seguro') ||
-    pathname?.startsWith('/encuestas');
+    pathname?.startsWith('/encuestas') ||
+    pathname?.startsWith('/analisis-encuentas');
 
   return (
     <html lang="es" className="scroll-smooth">

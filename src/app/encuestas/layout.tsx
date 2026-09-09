@@ -12,6 +12,8 @@ import {
   ShieldCheck,
   Menu,
   X,
+  BarChart3,
+  Stethoscope,
 } from 'lucide-react';
 
 /** Barrios activos en el módulo de encuestadoras */
@@ -80,18 +82,37 @@ export default function EncuestasLayout({ children }: { children: React.ReactNod
           </button>
         </div>
 
-        {/* Inicio */}
-        <div className="px-3 pt-4 pb-2">
+        {/* Navegación Principal */}
+        <div className="px-3 pt-4 pb-2 space-y-1.5">
           <Link
             href="/encuestas"
             className={`flex items-center gap-3 px-3 py-2.5 rounded-xl text-sm font-bold transition-all ${
-              pathname === '/encuestas'
+              pathname === '/encuestas' || pathname.startsWith('/encuestas/arroz-barato') || pathname.startsWith('/encuestas/nelson-mandela')
                 ? 'bg-purple-800/60 text-white'
                 : 'text-purple-300 hover:bg-purple-900/40 hover:text-white'
             }`}
           >
-            <Home className="h-4 w-4 shrink-0" />
-            {sidebarOpen && <span>Inicio · Módulo</span>}
+            <Home className="h-4 w-4 shrink-0 text-pink-400" />
+            {sidebarOpen && <span>Fichas de Campo</span>}
+          </Link>
+
+          <Link
+            href="/analisis-encuentas"
+            className={`flex items-center gap-3 px-3 py-2.5 rounded-xl text-sm font-bold transition-all ${
+              pathname.startsWith('/analisis-encuentas')
+                ? 'bg-gradient-to-r from-pink-600 to-purple-700 text-white shadow-md'
+                : 'text-amber-300 hover:bg-purple-900/40 hover:text-white'
+            }`}
+          >
+            <BarChart3 className="h-4 w-4 shrink-0 text-amber-300" />
+            {sidebarOpen && (
+              <div className="flex items-center justify-between flex-1">
+                <span>Análisis Clínico & Censo</span>
+                <span className="text-[9px] font-black bg-amber-400 text-purple-950 px-1.5 py-0.5 rounded-md">
+                  BI
+                </span>
+              </div>
+            )}
           </Link>
         </div>
 
@@ -141,12 +162,16 @@ export default function EncuestasLayout({ children }: { children: React.ReactNod
 
         {/* Footer del sidebar */}
         {sidebarOpen && (
-          <div className="border-t border-purple-900/40 px-4 py-4">
+          <div className="border-t border-purple-900/40 px-4 py-4 space-y-1">
+            <div className="flex items-center gap-2 text-[10px] text-purple-400">
+              <Stethoscope className="h-3.5 w-3.5 text-pink-400 shrink-0" />
+              <span>Soporte Médico & Ginecológico</span>
+            </div>
             <div className="flex items-center gap-2 text-[10px] text-purple-400">
               <ShieldCheck className="h-3.5 w-3.5 text-emerald-400 shrink-0" />
               <span>Datos protegidos · Ley 1581/2012</span>
             </div>
-            <div className="flex items-center gap-2 text-[10px] text-purple-400 mt-1">
+            <div className="flex items-center gap-2 text-[10px] text-purple-400">
               <MapPin className="h-3.5 w-3.5 text-pink-400 shrink-0" />
               <span>Cartagena de Indias, D.T. y C.</span>
             </div>
@@ -176,6 +201,26 @@ export default function EncuestasLayout({ children }: { children: React.ReactNod
                 <X className="h-4 w-4" />
               </button>
             </div>
+
+            <div className="px-3 pt-3 space-y-1.5">
+              <Link
+                href="/encuestas"
+                onClick={() => setMobileSidebarOpen(false)}
+                className="flex items-center gap-3 px-3 py-2.5 rounded-xl text-sm font-bold bg-purple-800/60 text-white"
+              >
+                <Home className="h-4 w-4 text-pink-400" />
+                <span>Fichas de Campo</span>
+              </Link>
+              <Link
+                href="/analisis-encuentas"
+                onClick={() => setMobileSidebarOpen(false)}
+                className="flex items-center gap-3 px-3 py-2.5 rounded-xl text-sm font-bold bg-gradient-to-r from-pink-600 to-purple-700 text-white"
+              >
+                <BarChart3 className="h-4 w-4 text-amber-300" />
+                <span>Análisis Clínico & Censo</span>
+              </Link>
+            </div>
+
             <p className="px-5 py-3 text-[9px] font-black uppercase tracking-widest text-purple-500">Barrios activos</p>
             <nav className="flex-1 px-3 space-y-1.5 overflow-y-auto pb-4">
               {BARRIOS.map((b) => (
@@ -216,11 +261,14 @@ export default function EncuestasLayout({ children }: { children: React.ReactNod
           </button>
           <div className="flex items-center gap-2">
             <ClipboardList className="h-4 w-4 text-pink-400" />
-            <span className="text-sm font-black tracking-wide">ENCUESTAS</span>
+            <span className="text-sm font-black tracking-wide">ENCUESTAS & ANÁLISIS</span>
           </div>
-          <span className="rounded-full border border-purple-700 bg-purple-950/60 px-2.5 py-1 text-[9px] font-black tracking-wider text-purple-200">
-            CAMPO
-          </span>
+          <Link
+            href="/analisis-encuentas"
+            className="rounded-full border border-amber-400/50 bg-amber-400/20 px-2.5 py-1 text-[9px] font-black tracking-wider text-amber-300"
+          >
+            ANALÍTICA
+          </Link>
         </header>
 
         {/* Contenido */}

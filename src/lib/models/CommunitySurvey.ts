@@ -43,7 +43,7 @@ export interface ICommunitySurvey extends Document {
   rooms: number;
   overcrowdingNotes?: string;
 
-  /* ── Sección B — Salud ───────────────────────────────────────── */
+  /* ── Sección B — Salud General ───────────────────────────────── */
   allEPSAffiliated: boolean;
   epsRegime?: string;
   nonAffiliatedReason?: string;
@@ -61,6 +61,16 @@ export interface ICommunitySurvey extends Document {
   waterSource: 'ACUEDUCTO' | 'PILA_PUBLICA' | 'CARROTANQUE' | 'POZO' | 'OTRO';
   psychologicalSupportNeeded: boolean;
   psychologicalSupportWho?: string;
+
+  /* ── Sección B.1 — Salud Sexual y Reproductiva / Ginecológica (ITS & Prevención) ── */
+  hasSTIHistoryOrSymptoms: boolean;
+  stiSymptomsDetails?: string;
+  lastPapSmear: 'MENOS_1_ANO' | '1_A_3_ANOS' | 'MAS_3_ANOS' | 'NUNCA' | 'NO_APLICA';
+  familyPlanningMethod: 'NINGUNO' | 'ORAL' | 'INYECTABLE' | 'IMPLANTE' | 'DIU' | 'BARRERA' | 'QUIRURGICO' | 'OTRO';
+  desiresFamilyPlanningCounseling: boolean;
+  vaginalInfectionSymptoms: boolean;
+  breastSelfExamTrained: boolean;
+  hasMammographyOrUltrasoundNeeded: boolean;
 
   /* ── Sección C — Situación jurídica y familiar ───────────────── */
   hasFamilyProcess: boolean;
@@ -172,6 +182,24 @@ const CommunitySurveySchema = new Schema<ICommunitySurvey>(
     },
     psychologicalSupportNeeded: { type: Boolean, default: false },
     psychologicalSupportWho: { type: String, trim: true, maxlength: 300 },
+
+    /* Sección B.1 — Salud Sexual y Reproductiva (Ginecología & ITS) */
+    hasSTIHistoryOrSymptoms: { type: Boolean, default: false },
+    stiSymptomsDetails: { type: String, trim: true, maxlength: 400 },
+    lastPapSmear: {
+      type: String,
+      enum: ['MENOS_1_ANO', '1_A_3_ANOS', 'MAS_3_ANOS', 'NUNCA', 'NO_APLICA'],
+      default: 'NO_APLICA',
+    },
+    familyPlanningMethod: {
+      type: String,
+      enum: ['NINGUNO', 'ORAL', 'INYECTABLE', 'IMPLANTE', 'DIU', 'BARRERA', 'QUIRURGICO', 'OTRO'],
+      default: 'NINGUNO',
+    },
+    desiresFamilyPlanningCounseling: { type: Boolean, default: false },
+    vaginalInfectionSymptoms: { type: Boolean, default: false },
+    breastSelfExamTrained: { type: Boolean, default: false },
+    hasMammographyOrUltrasoundNeeded: { type: Boolean, default: false },
 
     /* Sección C */
     hasFamilyProcess: { type: Boolean, default: false },

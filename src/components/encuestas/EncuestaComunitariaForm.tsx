@@ -4,7 +4,7 @@ import { FormEvent, useState } from 'react';
 import {
   AlertTriangle, ArrowLeft, ArrowRight, Check, ClipboardList,
   HeartPulse, LockKeyhole, ShieldCheck, Users, Scale, DollarSign,
-  Eye, Plus, Trash2, UserCheck, FileText,
+  Eye, Plus, Trash2, UserCheck, FileText, Sparkles, Activity
 } from 'lucide-react';
 
 /* ── Tipos ───────────────────────────────────────────────────────────────── */
@@ -25,10 +25,13 @@ interface EncuestaFormProps {
 const NEEDS = [
   ['salud', 'Valoración médica general', 'Salud'],
   ['afiliacion', 'Afiliación a EPS o SISBÉN', 'Salud'],
-  ['materna', 'Embarazo, lactancia o planificación', 'Salud'],
-  ['vacunacion', 'Vacunación pendiente', 'Salud'],
-  ['cronica', 'Enfermedad crónica, discapacidad o adulto mayor', 'Salud'],
+  ['materna', 'Embarazo, lactancia o controles', 'Salud'],
+  ['vacunacion', 'Vacunación pendiente PAI', 'Salud'],
+  ['cronica', 'Enfermedad crónica (HTA/Diabetes)', 'Salud'],
   ['acceso_salud', 'Citas, medicamentos o remisiones', 'Salud'],
+  ['its_ginecologia', 'Consulta ginecológica y tamizaje ITS', 'Salud'],
+  ['citologia_urgente', 'Toma o resultado de citología cérvico-uterina', 'Salud'],
+  ['planificacion_familiar', 'Asesoría / métodos de planificación familiar', 'Salud'],
   ['educacion', 'Escolarización o riesgo de deserción', 'Familia y protección'],
   ['documentacion', 'Documentos de identidad', 'Familia y protección'],
   ['familia', 'Alimentos, custodia o asuntos de familia', 'Familia y protección'],
@@ -42,7 +45,8 @@ const NEEDS = [
 const STEPS = [
   { id: 'ficha', label: 'Ficha del hogar', icon: ClipboardList },
   { id: 'secA', label: 'Sección A · Composición', icon: Users },
-  { id: 'secB', label: 'Sección B · Salud', icon: HeartPulse },
+  { id: 'secB', label: 'Sección B · Salud General', icon: HeartPulse },
+  { id: 'secB1', label: 'Sección B.1 · Gineco & ITS', icon: Activity },
   { id: 'secC', label: 'Sección C · Jurídico', icon: Scale },
   { id: 'secD', label: 'Sección D · Económico', icon: DollarSign },
   { id: 'secE', label: 'Sección E · Riesgo', icon: Eye },
@@ -78,6 +82,25 @@ const RISK_LEVELS = [
   { value: 'BAJO', label: 'BAJO', color: 'border-emerald-400 bg-emerald-500/15 text-emerald-200' },
   { value: 'MEDIO', label: 'MEDIO', color: 'border-amber-400 bg-amber-500/15 text-amber-200' },
   { value: 'ALTO', label: 'ALTO', color: 'border-rose-400 bg-rose-500/15 text-rose-200' },
+];
+
+const PAP_SMEAR_OPTIONS = [
+  { value: 'MENOS_1_ANO', label: 'Hace menos de 1 año' },
+  { value: '1_A_3_ANOS', label: 'Entre 1 y 3 años' },
+  { value: 'MAS_3_ANOS', label: 'Hace más de 3 años' },
+  { value: 'NUNCA', label: 'Nunca se ha realizado una citología' },
+  { value: 'NO_APLICA', label: 'No aplica en el hogar' },
+];
+
+const PLANNING_OPTIONS = [
+  { value: 'NINGUNO', label: 'Ninguno (sin método)' },
+  { value: 'ORAL', label: 'Pastillas anticonceptivas' },
+  { value: 'INYECTABLE', label: 'Inyección mensual o trimestral' },
+  { value: 'IMPLANTE', label: 'Implante subdérmico (Jadelle/Implanon)' },
+  { value: 'DIU', label: 'DIU (Dispositivo intrauterino / T de cobre)' },
+  { value: 'BARRERA', label: 'Preservativo / Condón' },
+  { value: 'QUIRURGICO', label: 'Pomeroy / Ligadura / Vasectomía' },
+  { value: 'OTRO', label: 'Otro método tradicional o natural' },
 ];
 
 const ROUTE_TYPES = [
@@ -217,6 +240,16 @@ export default function EncuestaComunitariaForm({ barrio, localidad, jornada }: 
   const [psychoSupport, setPsychoSupport] = useState<boolean | null>(null);
   const [psychoSupportWho, setPsychoSupportWho] = useState('');
 
+  /* Sección B.1 — Gineco & ITS */
+  const [hasSTIHistory, setHasSTIHistory] = useState<boolean | null>(null);
+  const [stiDetails, setStiDetails] = useState('');
+  const [lastPapSmear, setLastPapSmear] = useState('NO_APLICA');
+  const [familyPlanning, setFamilyPlanning] = useState('NINGUNO');
+  const [desiresPlanningCounseling, setDesiresPlanningCounseling] = useState<boolean | null>(null);
+  const [vaginalInfection, setVaginalInfection] = useState<boolean | null>(null);
+  const [breastExamTrained, setBreastExamTrained] = useState<boolean | null>(null);
+  const [mammographyNeeded, setMammographyNeeded] = useState<boolean | null>(null);
+
   /* Sección C */
   const [hasFamilyProcess, setHasFamilyProcess] = useState<boolean | null>(null);
   const [familyProcessDetails, setFamilyProcessDetails] = useState('');
@@ -290,7 +323,10 @@ export default function EncuestaComunitariaForm({ barrio, localidad, jornada }: 
       if (vaccinesUpToDate === null) return 'Indica si las vacunas están al día.';
       if (!waterSource) return 'Selecciona la fuente de agua del hogar.';
     }
-    if (step === 6) {
+    if (step === 3) {
+      // Validaciones Sección B.1 opcionales pero recomendadas
+    }
+    if (step === 7) {
       if (!consent) return 'El hogar debe aceptar el consentimiento informado para guardar la ficha.';
     }
     return '';
@@ -355,6 +391,18 @@ export default function EncuestaComunitariaForm({ barrio, localidad, jornada }: 
           waterSource,
           psychologicalSupportNeeded: psychoSupport ?? false,
           psychologicalSupportWho: psychoSupportWho,
+
+          /* B.1 Gineco e ITS */
+          hasSTIHistoryOrSymptoms: hasSTIHistory ?? false,
+          stiSymptomsDetails: stiDetails,
+          lastPapSmear,
+          familyPlanningMethod: familyPlanning,
+          desiresFamilyPlanningCounseling: desiresPlanningCounseling ?? false,
+          vaginalInfectionSymptoms: vaginalInfection ?? false,
+          breastSelfExamTrained: breastExamTrained ?? false,
+          hasMammographyOrUltrasoundNeeded: mammographyNeeded ?? false,
+
+          /* C */
           hasFamilyProcess: hasFamilyProcess ?? false,
           familyProcessDetails,
           hasVIFVBG: hasVIF ?? false,
@@ -368,6 +416,8 @@ export default function EncuestaComunitariaForm({ barrio, localidad, jornada }: 
           pensionDetails: subsidyDetails,
           hasUrgentCase: hasUrgentCase ?? false,
           urgentCaseDescription: urgentDesc,
+
+          /* D */
           incomeSource,
           receivesSubsidies: receivesSubsidies ?? false,
           subsidiesDetails,
@@ -375,6 +425,8 @@ export default function EncuestaComunitariaForm({ barrio, localidad, jornada }: 
           jobSearchDifficulty: jobDifficulty,
           hasRecentGraduate: hasGraduate ?? false,
           graduateStatus,
+
+          /* E */
           riskLevel,
           observedRiskIndicators: observedRisk,
           authorizedRecontact: authorizedRecontact ?? false,
@@ -641,10 +693,10 @@ export default function EncuestaComunitariaForm({ barrio, localidad, jornada }: 
               </>
             )}
 
-            {/* ── STEP 2 — Sección B: Salud ────────────────────────────── */}
+            {/* ── STEP 2 — Sección B: Salud General ──────────────────────── */}
             {step === 2 && (
               <>
-                <SectionHeader icon={HeartPulse} title="Sección B — Salud" description="Construye el perfil epidemiológico del hogar para el brief médico de la jornada." />
+                <SectionHeader icon={HeartPulse} title="Sección B — Salud General y Niñez" description="Construye el perfil epidemiológico del hogar para el brief médico de la jornada." />
 
                 <Field label="¿Todos los miembros del hogar están afiliados a EPS?" required>
                   <YesNo value={allEPSAffiliated} onChange={setAllEPSAffiliated} name="eps" />
@@ -718,10 +770,56 @@ export default function EncuestaComunitariaForm({ barrio, localidad, jornada }: 
                     <Input className="mt-2" value={psychoSupportWho} onChange={(e) => setPsychoSupportWho(e.target.value)} placeholder="¿Quién? (solo referencia, no nombre completo)" />
                   )}
                 </Field>
+              </>
+            )}
 
-                {/* Necesidades de salud */}
-                <div className="space-y-2">
-                  <p className="text-sm font-black text-purple-100">Necesidades de salud identificadas (multi-selección)</p>
+            {/* ── STEP 3 — Sección B.1: Salud Sexual, Gineco e ITS ──────── */}
+            {step === 3 && (
+              <>
+                <SectionHeader icon={Activity} title="Sección B.1 — Salud Sexual, Reproductiva e ITS" description="Insumo clave para ginecología, planificación, enfermería y prevención de infecciones de transmisión sexual." />
+
+                <Field label="¿Alguna persona del hogar presenta síntomas compatibles o antecedente de ITS (Infección de Transmisión Sexual)?" hint="Úlceras, secreciones atípicas, ardor miccional, dolor pélvico o diagnóstico previo.">
+                  <YesNo value={hasSTIHistory} onChange={setHasSTIHistory} name="sti" />
+                  {hasSTIHistory === true && (
+                    <Textarea className="mt-2" value={stiDetails} onChange={(e) => setStiDetails(e.target.value)} placeholder="Síntomas observados o referidos (información confidencial para el médico/ginecólogo)" />
+                  )}
+                </Field>
+
+                <Field label="¿Cuándo se realizó la última citología cérvico-uterina en las mujeres del hogar?">
+                  <Select value={lastPapSmear} onChange={(e) => setLastPapSmear(e.target.value)}>
+                    {PAP_SMEAR_OPTIONS.map((p) => <option key={p.value} value={p.value}>{p.label}</option>)}
+                  </Select>
+                </Field>
+
+                <div className="grid sm:grid-cols-2 gap-4">
+                  <Field label="Método de planificación familiar actual">
+                    <Select value={familyPlanning} onChange={(e) => setFamilyPlanning(e.target.value)}>
+                      {PLANNING_OPTIONS.map((po) => <option key={po.value} value={po.value}>{po.label}</option>)}
+                    </Select>
+                  </Field>
+
+                  <Field label="¿Desea asesoría médica para iniciar o cambiar método anticonceptivo?">
+                    <YesNo value={desiresPlanningCounseling} onChange={setDesiresPlanningCounseling} name="counseling" />
+                  </Field>
+                </div>
+
+                <Field label="¿Alguna mujer del hogar refiere síntomas de flujo anormal, picazón o infección vaginal recurrente?">
+                  <YesNo value={vaginalInfection} onChange={setVaginalInfection} name="vaginal" />
+                </Field>
+
+                <div className="grid sm:grid-cols-2 gap-4">
+                  <Field label="¿Ha recibido capacitación o sabe realizarse el autoexamen de mama?">
+                    <YesNo value={breastExamTrained} onChange={setBreastExamTrained} name="breast" />
+                  </Field>
+
+                  <Field label="¿Requiere o tiene pendiente mamografía o ecografía mamaria?">
+                    <YesNo value={mammographyNeeded} onChange={setMammographyNeeded} name="mammo" />
+                  </Field>
+                </div>
+
+                {/* Necesidades ginecológicas y de salud */}
+                <div className="space-y-2 pt-2">
+                  <p className="text-sm font-black text-purple-100">Necesidades ginecológicas y médicas específicas a priorizar:</p>
                   <div className="grid sm:grid-cols-2 gap-2">
                     {NEEDS.filter((n) => n[2] === 'Salud').map(([id, label]) => (
                       <label key={id} className={`cursor-pointer rounded-xl border p-3 text-sm transition-colors ${
@@ -741,8 +839,8 @@ export default function EncuestaComunitariaForm({ barrio, localidad, jornada }: 
               </>
             )}
 
-            {/* ── STEP 3 — Sección C: Jurídico y familiar ─────────────── */}
-            {step === 3 && (
+            {/* ── STEP 4 — Sección C: Jurídico y familiar ─────────────── */}
+            {step === 4 && (
               <>
                 <SectionHeader icon={Scale} title="Sección C — Situación jurídica y familiar" description="Dimensiona la demanda de las mesas jurídicas y activa rutas de protección si es necesario." />
 
@@ -822,8 +920,8 @@ export default function EncuestaComunitariaForm({ barrio, localidad, jornada }: 
               </>
             )}
 
-            {/* ── STEP 4 — Sección D: Económico y social ──────────────── */}
-            {step === 4 && (
+            {/* ── STEP 5 — Sección D: Económico y social ──────────────── */}
+            {step === 5 && (
               <>
                 <SectionHeader icon={DollarSign} title="Sección D — Situación económica y social" description="Identifica déficit de oportunidades y subsidios no aprovechados." />
 
@@ -854,8 +952,8 @@ export default function EncuestaComunitariaForm({ barrio, localidad, jornada }: 
               </>
             )}
 
-            {/* ── STEP 5 — Sección E: Percepción de riesgo ────────────── */}
-            {step === 5 && (
+            {/* ── STEP 6 — Sección E: Percepción de riesgo ────────────── */}
+            {step === 6 && (
               <>
                 <SectionHeader icon={Eye} title="Sección E — Percepción de riesgo (encuestador)" description="Esta sección la diligencia exclusivamente el encuestador/a con base en lo observado, no el hogar." />
 
@@ -908,8 +1006,8 @@ export default function EncuestaComunitariaForm({ barrio, localidad, jornada }: 
               </>
             )}
 
-            {/* ── STEP 6 — Consentimiento informado ───────────────────── */}
-            {step === 6 && (
+            {/* ── STEP 7 — Consentimiento informado ───────────────────── */}
+            {step === 7 && (
               <>
                 <SectionHeader icon={ShieldCheck} title="Consentimiento informado y autorización" description="Base legal: Ley 1581 de 2012 (Habeas Data) · Decreto 1377 de 2013 · Ley 1098 de 2006 (art. 47)" />
 
@@ -919,6 +1017,7 @@ export default function EncuestaComunitariaForm({ barrio, localidad, jornada }: 
                   <p><strong>Encuestador/a:</strong> {collectorName}</p>
                   <p><strong>Personas en el hogar:</strong> {householdSize} · <strong>Menores:</strong> {minorCount}</p>
                   <p><strong>Necesidades identificadas:</strong> {pickedNeeds.length}</p>
+                  {hasSTIHistory && <p className="text-amber-300 font-bold">⚠ Atención prioritaria en Ginecología / ITS solicitada</p>}
                   {hasUrgentCase && <p className="text-amber-300 font-bold">⚠ Caso urgente declarado</p>}
                   {activateRoute && <p className="text-rose-300 font-bold">🔴 Ruta de atención inmediata activada</p>}
                 </div>
