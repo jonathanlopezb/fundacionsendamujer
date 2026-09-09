@@ -4,8 +4,9 @@ import { FormEvent, useState } from 'react';
 import {
   AlertTriangle, ArrowLeft, ArrowRight, Check, ClipboardList,
   HeartPulse, LockKeyhole, ShieldCheck, Users, Scale, DollarSign,
-  Eye, Plus, Trash2, UserCheck, FileText, Sparkles, Activity
+  Eye, Plus, Trash2, UserCheck, FileText, Sparkles, Activity, CheckSquare, Square
 } from 'lucide-react';
+import { SENDA_PROGRAMS } from '@/lib/sendaPrograms';
 
 /* ── Tipos ───────────────────────────────────────────────────────────────── */
 interface HouseholdMember {
@@ -49,6 +50,7 @@ const STEPS = [
   { id: 'secB1', label: 'Sección B.1 · Gineco & ITS', icon: Activity },
   { id: 'secC', label: 'Sección C · Jurídico', icon: Scale },
   { id: 'secD', label: 'Sección D · Económico', icon: DollarSign },
+  { id: 'secF', label: 'Sección F · Programas Senda', icon: Sparkles },
   { id: 'secE', label: 'Sección E · Riesgo', icon: Eye },
   { id: 'consentimiento', label: 'Consentimiento', icon: ShieldCheck },
 ];
@@ -239,6 +241,7 @@ export default function EncuestaComunitariaForm({ barrio, localidad, jornada }: 
   const [waterSource, setWaterSource] = useState('ACUEDUCTO');
   const [psychoSupport, setPsychoSupport] = useState<boolean | null>(null);
   const [psychoSupportWho, setPsychoSupportWho] = useState('');
+  const [hasCaregiverBurnout, setHasCaregiverBurnout] = useState<boolean | null>(null);
 
   /* Sección B.1 — Gineco & ITS */
   const [hasSTIHistory, setHasSTIHistory] = useState<boolean | null>(null);
@@ -249,6 +252,9 @@ export default function EncuestaComunitariaForm({ barrio, localidad, jornada }: 
   const [vaginalInfection, setVaginalInfection] = useState<boolean | null>(null);
   const [breastExamTrained, setBreastExamTrained] = useState<boolean | null>(null);
   const [mammographyNeeded, setMammographyNeeded] = useState<boolean | null>(null);
+  const [hasSexualViolence, setHasSexualViolence] = useState<boolean | null>(null);
+  const [hasTeenPregnancy, setHasTeenPregnancy] = useState<boolean | null>(null);
+  const [hasChildMalnutrition, setHasChildMalnutrition] = useState<boolean | null>(null);
 
   /* Sección C */
   const [hasFamilyProcess, setHasFamilyProcess] = useState<boolean | null>(null);
@@ -256,6 +262,8 @@ export default function EncuestaComunitariaForm({ barrio, localidad, jornada }: 
   const [hasVIF, setHasVIF] = useState<boolean | null>(null);
   const [vifComplaint, setVifComplaint] = useState<boolean | null>(null);
   const [vifStatus, setVifStatus] = useState('');
+  const [knowsRights, setKnowsRights] = useState<boolean | null>(null);
+  const [hasMedidaProteccion, setHasMedidaProteccion] = useState<boolean | null>(null);
   const [housingType, setHousingType] = useState('ARRENDADA');
   const [hasHousingDocument, setHasHousingDocument] = useState<boolean | null>(null);
   const [hasDebt, setHasDebt] = useState<boolean | null>(null);
@@ -273,6 +281,11 @@ export default function EncuestaComunitariaForm({ barrio, localidad, jornada }: 
   const [jobDifficulty, setJobDifficulty] = useState('');
   const [hasGraduate, setHasGraduate] = useState<boolean | null>(null);
   const [graduateStatus, setGraduateStatus] = useState('');
+  const [interestInTraining, setInterestInTraining] = useState<boolean | null>(null);
+  const [hasSmartphoneAccess, setHasSmartphoneAccess] = useState<boolean | null>(null);
+
+  /* Sección F — Programas de interés voluntario */
+  const [interestedPrograms, setInterestedPrograms] = useState<string[]>([]);
 
   /* Sección E */
   const [riskLevel, setRiskLevel] = useState<'BAJO' | 'MEDIO' | 'ALTO'>('BAJO');
@@ -305,6 +318,9 @@ export default function EncuestaComunitariaForm({ barrio, localidad, jornada }: 
   const toggleNeed = (id: string) =>
     setPickedNeeds((c) => (c.includes(id) ? c.filter((v) => v !== id) : [...c, id]));
 
+  const toggleProgramInterest = (id: string) =>
+    setInterestedPrograms((c) => (c.includes(id) ? c.filter((v) => v !== id) : [...c, id]));
+
   /* ── Validación por step ─────────────────────────────────────────────── */
   const validate = (): string => {
     if (step === 0) {
@@ -326,7 +342,7 @@ export default function EncuestaComunitariaForm({ barrio, localidad, jornada }: 
     if (step === 3) {
       // Validaciones Sección B.1 opcionales pero recomendadas
     }
-    if (step === 7) {
+    if (step === STEPS.length - 1) {
       if (!consent) return 'El hogar debe aceptar el consentimiento informado para guardar la ficha.';
     }
     return '';
@@ -391,6 +407,7 @@ export default function EncuestaComunitariaForm({ barrio, localidad, jornada }: 
           waterSource,
           psychologicalSupportNeeded: psychoSupport ?? false,
           psychologicalSupportWho: psychoSupportWho,
+          hasCaregiverBurnout: hasCaregiverBurnout ?? false,
 
           /* B.1 Gineco e ITS */
           hasSTIHistoryOrSymptoms: hasSTIHistory ?? false,
@@ -401,6 +418,9 @@ export default function EncuestaComunitariaForm({ barrio, localidad, jornada }: 
           vaginalInfectionSymptoms: vaginalInfection ?? false,
           breastSelfExamTrained: breastExamTrained ?? false,
           hasMammographyOrUltrasoundNeeded: mammographyNeeded ?? false,
+          hasSexualViolenceIndicator: hasSexualViolence ?? false,
+          hasTeenPregnancy: hasTeenPregnancy ?? false,
+          hasChildMalnutrition: hasChildMalnutrition ?? false,
 
           /* C */
           hasFamilyProcess: hasFamilyProcess ?? false,
@@ -408,6 +428,8 @@ export default function EncuestaComunitariaForm({ barrio, localidad, jornada }: 
           hasVIFVBG: hasVIF ?? false,
           vifComplaintFiled: vifComplaint ?? false,
           vifProcessStatus: vifStatus,
+          knowsRightsAndRoutes: knowsRights ?? false,
+          hasMedidaProteccion: hasMedidaProteccion ?? false,
           housingType,
           hasHousingDocument: hasHousingDocument ?? false,
           hasDebtOrProcess: hasDebt ?? false,
@@ -425,6 +447,11 @@ export default function EncuestaComunitariaForm({ barrio, localidad, jornada }: 
           jobSearchDifficulty: jobDifficulty,
           hasRecentGraduate: hasGraduate ?? false,
           graduateStatus,
+          interestInTraining: interestInTraining ?? false,
+          hasSmartphoneAccess: hasSmartphoneAccess ?? true,
+
+          /* F - Interés directo en programas */
+          interestedPrograms,
 
           /* E */
           riskLevel,
@@ -770,6 +797,13 @@ export default function EncuestaComunitariaForm({ barrio, localidad, jornada }: 
                     <Input className="mt-2" value={psychoSupportWho} onChange={(e) => setPsychoSupportWho(e.target.value)} placeholder="¿Quién? (solo referencia, no nombre completo)" />
                   )}
                 </Field>
+
+                <Field
+                  label="¿Alguna mujer del hogar cuida permanentemente a otra persona (adulto mayor, discapacidad, niños) y siente sobrecarga o agotamiento emocional por las labores de cuidado?"
+                  hint="Criterio de ingreso prioritario al Programa 03 · Contención Psicosocial y Círculos de Autocuidado."
+                >
+                  <YesNo value={hasCaregiverBurnout} onChange={setHasCaregiverBurnout} name="caregiverBurnout" />
+                </Field>
               </>
             )}
 
@@ -814,6 +848,35 @@ export default function EncuestaComunitariaForm({ barrio, localidad, jornada }: 
 
                   <Field label="¿Requiere o tiene pendiente mamografía o ecografía mamaria?">
                     <YesNo value={mammographyNeeded} onChange={setMammographyNeeded} name="mammo" />
+                  </Field>
+                </div>
+
+                {/* Preguntas de Identificación para Programas P02 y P05 */}
+                <div className="rounded-2xl border border-purple-800/70 bg-purple-950/40 p-4 space-y-4">
+                  <div className="flex items-center gap-2 text-pink-300">
+                    <Sparkles className="w-4 h-4 text-pink-400" />
+                    <span className="text-xs font-black uppercase tracking-wider">Identificación Focalizada de Rutas y Programas</span>
+                  </div>
+
+                  <Field
+                    label="¿Alguna mujer o menor del hogar ha vivido situaciones de agresión sexual, abuso o tocamientos no consentidos?"
+                    hint="Pregunta de máxima reserva ética. Deriva al Programa 02 · Víctimas de Violencia Sexual (asesoría legal, profilaxis ITS y contención psicológica inmediata sin revictimización)."
+                  >
+                    <YesNo value={hasSexualViolence} onChange={setHasSexualViolence} name="sexualViolence" />
+                  </Field>
+
+                  <Field
+                    label="¿Hay alguna adolescente menor de 18 años embarazada o con sospecha de embarazo en el hogar?"
+                    hint="Deriva al Programa 05 · Embarazo con Apoyo y al Programa 04 · Ruta de Salud y Derechos para control prenatal prioritario y protección de derechos de la menor."
+                  >
+                    <YesNo value={hasTeenPregnancy} onChange={setHasTeenPregnancy} name="teenPregnancy" />
+                  </Field>
+
+                  <Field
+                    label="¿Algún niño o niña del hogar presenta bajo peso, riesgo de desnutrición o retraso en talla/crecimiento?"
+                    hint="Prioriza entrega de paquete nutricional en el Programa 05 · Embarazo y Primera Infancia y valoración médica comunitaria."
+                  >
+                    <YesNo value={hasChildMalnutrition} onChange={setHasChildMalnutrition} name="childMalnutrition" />
                   </Field>
                 </div>
 
@@ -862,6 +925,22 @@ export default function EncuestaComunitariaForm({ barrio, localidad, jornada }: 
                     </div>
                   )}
                 </Field>
+
+                <div className="grid sm:grid-cols-2 gap-4">
+                  <Field
+                    label="¿Cuenta o ha contado con medida de protección formal?"
+                    hint="Orden de alejamiento, desalojo del agresor o protección de Policía (Programa 06 · Mujer y Justicia)"
+                  >
+                    <YesNo value={hasMedidaProteccion} onChange={setHasMedidaProteccion} name="medidaProteccion" />
+                  </Field>
+
+                  <Field
+                    label="¿Conoce las rutas de denuncia y sus derechos ante VBG?"
+                    hint="Línea 155, Comisarías de Familia, Fiscalía CAVIF (Programa 06 · Asesoría Legal)"
+                  >
+                    <YesNo value={knowsRights} onChange={setKnowsRights} name="knowsRights" />
+                  </Field>
+                </div>
 
                 <div className="grid sm:grid-cols-2 gap-4">
                   <Field label="Tipo de tenencia de la vivienda">
@@ -949,11 +1028,95 @@ export default function EncuestaComunitariaForm({ barrio, localidad, jornada }: 
                     <Input className="mt-2" value={graduateStatus} onChange={(e) => setGraduateStatus(e.target.value)} placeholder="¿Está estudiando o trabajando actualmente? ¿Qué dificultad?" />
                   )}
                 </Field>
+
+                <div className="grid sm:grid-cols-2 gap-4 pt-2">
+                  <Field
+                    label="¿Alguna mujer del hogar desea formarse para emprender o trabajar?"
+                    hint="Talleres de confección textil, gastronomía, habilidades digitales o negocios (Programa 07 · Proyecto de Vida y Autonomía)"
+                  >
+                    <YesNo value={interestInTraining} onChange={setInterestInTraining} name="training" />
+                  </Field>
+
+                  <Field
+                    label="¿El hogar cuenta con smartphone con WhatsApp e internet?"
+                    hint="Permite enviar convocatorias formativas y ofertas de empleo del Programa 07"
+                  >
+                    <YesNo value={hasSmartphoneAccess} onChange={setHasSmartphoneAccess} name="smartphone" />
+                  </Field>
+                </div>
               </>
             )}
 
-            {/* ── STEP 6 — Sección E: Percepción de riesgo ────────────── */}
+            {/* ── STEP 6 — Sección F: Programas Senda Mujer ────────────── */}
             {step === 6 && (
+              <>
+                <SectionHeader
+                  icon={Sparkles}
+                  title="Sección F — Oferta de Programas Senda Mujer"
+                  description="Presenta los 7 programas de la Fundación a la mujer y marca en cuáles expresa interés directo y voluntario de participar."
+                />
+
+                <div className="rounded-2xl border border-pink-500/40 bg-pink-950/30 p-4 mb-3">
+                  <p className="text-xs text-pink-200 leading-relaxed">
+                    <strong>Participación comunitaria informada:</strong> La mujer o jefa de hogar puede manifestar su voluntad de integrarse a uno o más de los 7 programas oficiales de la Fundación. Marca los que despierten su interés:
+                  </p>
+                </div>
+
+                <div className="grid sm:grid-cols-2 gap-3">
+                  {SENDA_PROGRAMS.map((prog) => {
+                    const isSelected = interestedPrograms.includes(prog.id);
+                    return (
+                      <div
+                        key={prog.id}
+                        onClick={() => toggleProgramInterest(prog.id)}
+                        className={`cursor-pointer rounded-2xl border p-4 transition-all space-y-2 select-none ${
+                          isSelected
+                            ? 'border-pink-400 bg-pink-950/50 shadow-lg ring-1 ring-pink-400/50'
+                            : 'border-purple-800/70 bg-purple-950/30 hover:border-purple-600'
+                        }`}
+                      >
+                        <div className="flex items-start justify-between gap-2">
+                          <div className="flex items-center gap-2">
+                            <span className={`text-[10px] font-black px-2 py-0.5 rounded-md border ${prog.bgBadge}`}>
+                              {prog.code}
+                            </span>
+                            <span className="text-xs text-purple-300 font-bold">{prog.badge}</span>
+                          </div>
+                          <div className="text-pink-400">
+                            {isSelected ? <CheckSquare className="w-5 h-5 text-pink-400" /> : <Square className="w-5 h-5 text-purple-600" />}
+                          </div>
+                        </div>
+
+                        <div>
+                          <h4 className="text-sm font-black text-white">{prog.title}</h4>
+                          <p className="text-xs text-purple-200/80 mt-1 leading-relaxed">{prog.summary}</p>
+                        </div>
+
+                        <div className="pt-2 border-t border-purple-900/50 text-[10px] text-purple-300/70">
+                          <strong className="text-purple-200">Criterio:</strong> {prog.targetCriteria}
+                        </div>
+                      </div>
+                    );
+                  })}
+                </div>
+
+                {interestedPrograms.length > 0 ? (
+                  <div className="mt-4 rounded-xl bg-purple-900/40 border border-purple-700/60 p-3 text-xs text-purple-200 flex items-center gap-2">
+                    <Check className="w-4 h-4 text-emerald-400 shrink-0" />
+                    <span>
+                      <strong>{interestedPrograms.length} programa(s)</strong> seleccionado(s) por el hogar.
+                    </span>
+                  </div>
+                ) : (
+                  <p className="text-xs text-purple-400 mt-2 italic text-center">
+                    (Si el hogar no desea participar en ningún programa específico en este momento, puede continuar).
+                  </p>
+                )}
+              </>
+            )}
+
+            {/* ── STEP 7 — Sección E: Percepción de riesgo ────────────── */}
+            {step === 7 && (
               <>
                 <SectionHeader icon={Eye} title="Sección E — Percepción de riesgo (encuestador)" description="Esta sección la diligencia exclusivamente el encuestador/a con base en lo observado, no el hogar." />
 
@@ -1006,8 +1169,8 @@ export default function EncuestaComunitariaForm({ barrio, localidad, jornada }: 
               </>
             )}
 
-            {/* ── STEP 7 — Consentimiento informado ───────────────────── */}
-            {step === 7 && (
+            {/* ── STEP 8 — Consentimiento informado ───────────────────── */}
+            {step === 8 && (
               <>
                 <SectionHeader icon={ShieldCheck} title="Consentimiento informado y autorización" description="Base legal: Ley 1581 de 2012 (Habeas Data) · Decreto 1377 de 2013 · Ley 1098 de 2006 (art. 47)" />
 
@@ -1017,6 +1180,10 @@ export default function EncuestaComunitariaForm({ barrio, localidad, jornada }: 
                   <p><strong>Encuestador/a:</strong> {collectorName}</p>
                   <p><strong>Personas en el hogar:</strong> {householdSize} · <strong>Menores:</strong> {minorCount}</p>
                   <p><strong>Necesidades identificadas:</strong> {pickedNeeds.length}</p>
+                  {interestedPrograms.length > 0 && (
+                    <p className="text-pink-300 font-bold">🎯 {interestedPrograms.length} programa(s) Senda Mujer de interés seleccionado(s)</p>
+                  )}
+                  {hasSexualViolence && <p className="text-rose-300 font-bold">⚠ Derivación confidencial al Programa 02 (Violencia Sexual)</p>}
                   {hasSTIHistory && <p className="text-amber-300 font-bold">⚠ Atención prioritaria en Ginecología / ITS solicitada</p>}
                   {hasUrgentCase && <p className="text-amber-300 font-bold">⚠ Caso urgente declarado</p>}
                   {activateRoute && <p className="text-rose-300 font-bold">🔴 Ruta de atención inmediata activada</p>}

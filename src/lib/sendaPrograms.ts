@@ -118,6 +118,11 @@ export const SENDA_PROGRAMS: SendaProgramDef[] = [
 export function computeAssignedPrograms(s: any): string[] {
   const assigned = new Set<string>();
 
+  // Si el hogar expresó interés directo en ciertos programas (Sección F), agregarlos
+  if (Array.isArray(s.interestedPrograms) && s.interestedPrograms.length > 0) {
+    s.interestedPrograms.forEach((p: string) => assigned.add(p));
+  }
+
   // Si ya tiene programas asignados explícitamente y no está vacío, respetarlos
   if (Array.isArray(s.assignedPrograms) && s.assignedPrograms.length > 0) {
     s.assignedPrograms.forEach((p: string) => assigned.add(p));
@@ -133,6 +138,7 @@ export function computeAssignedPrograms(s: any): string[] {
     isOvercrowded ||
     (s.waterSource && s.waterSource !== 'ACUEDUCTO') ||
     s.hasDisabledMember ||
+    s.hasChildMalnutrition ||
     (Array.isArray(s.needs) && (s.needs.includes('documentacion') || s.needs.includes('educacion') || s.needs.includes('vivienda')))
   ) {
     assigned.add('programa-1');
@@ -140,6 +146,7 @@ export function computeAssignedPrograms(s: any): string[] {
 
   /* ── P02: Víctimas de Violencia Sexual ── */
   if (
+    s.hasSexualViolenceIndicator ||
     s.activateImmediateRoute ||
     (typeof s.immediateRouteType === 'string' && s.immediateRouteType.toLowerCase().includes('violencia')) ||
     (typeof s.observedRiskIndicators === 'string' && s.observedRiskIndicators.toLowerCase().includes('sexual')) ||
@@ -151,6 +158,7 @@ export function computeAssignedPrograms(s: any): string[] {
   /* ── P03: Contención Psicosocial ── */
   if (
     s.psychologicalSupportNeeded ||
+    s.hasCaregiverBurnout ||
     s.hasVIFVBG ||
     (Array.isArray(s.needs) && s.needs.includes('psicosocial')) ||
     (typeof s.urgentCaseDescription === 'string' && s.urgentCaseDescription.toLowerCase().includes('amenaza'))
@@ -166,6 +174,7 @@ export function computeAssignedPrograms(s: any): string[] {
     s.vaginalInfectionSymptoms ||
     s.desiresFamilyPlanningCounseling ||
     s.hasMammographyOrUltrasoundNeeded ||
+    s.hasTeenPregnancy ||
     !s.allEPSAffiliated ||
     s.dentalCarePending ||
     (Array.isArray(s.needs) && (
@@ -182,6 +191,8 @@ export function computeAssignedPrograms(s: any): string[] {
   /* ── P05: Embarazo con Apoyo ── */
   if (
     s.hasPregnantOrLactating ||
+    s.hasTeenPregnancy ||
+    s.hasChildMalnutrition ||
     (Array.isArray(s.needs) && s.needs.includes('materna')) ||
     s.hasEDAParasites ||
     !s.vaccinesUpToDate
@@ -192,9 +203,11 @@ export function computeAssignedPrograms(s: any): string[] {
   /* ── P06: Mujer y Justicia ── */
   if (
     s.hasVIFVBG ||
+    s.hasMedidaProteccion ||
     s.hasFamilyProcess ||
     !s.hasHousingDocument ||
     s.hasDebtOrProcess ||
+    (s.knowsRightsAndRoutes === false && (s.hasVIFVBG || s.hasFamilyProcess)) ||
     (Array.isArray(s.needs) && (s.needs.includes('violencia') || s.needs.includes('familia') || s.needs.includes('tramites')))
   ) {
     assigned.add('programa-6');
@@ -204,6 +217,7 @@ export function computeAssignedPrograms(s: any): string[] {
   const incomeStr = typeof s.incomeSource === 'string' ? s.incomeSource.toLowerCase() : '';
   const isInformal = incomeStr.includes('rebusque') || incomeStr.includes('fritos') || incomeStr.includes('ambulante') || incomeStr.includes('reciclaje');
   if (
+    s.interestInTraining ||
     s.hasJobSeeker ||
     s.hasRecentGraduate ||
     isInformal ||

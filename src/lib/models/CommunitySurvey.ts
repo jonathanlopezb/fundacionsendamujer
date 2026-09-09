@@ -61,6 +61,7 @@ export interface ICommunitySurvey extends Document {
   waterSource: 'ACUEDUCTO' | 'PILA_PUBLICA' | 'CARROTANQUE' | 'POZO' | 'OTRO';
   psychologicalSupportNeeded: boolean;
   psychologicalSupportWho?: string;
+  hasCaregiverBurnout?: boolean;
 
   /* ── Sección B.1 — Salud Sexual y Reproductiva / Ginecológica (ITS & Prevención) ── */
   hasSTIHistoryOrSymptoms: boolean;
@@ -71,6 +72,9 @@ export interface ICommunitySurvey extends Document {
   vaginalInfectionSymptoms: boolean;
   breastSelfExamTrained: boolean;
   hasMammographyOrUltrasoundNeeded: boolean;
+  hasSexualViolenceIndicator?: boolean;
+  hasTeenPregnancy?: boolean;
+  hasChildMalnutrition?: boolean;
 
   /* ── Sección C — Situación jurídica y familiar ───────────────── */
   hasFamilyProcess: boolean;
@@ -78,6 +82,8 @@ export interface ICommunitySurvey extends Document {
   hasVIFVBG: boolean;
   vifComplaintFiled?: boolean;
   vifProcessStatus?: string;
+  knowsRightsAndRoutes?: boolean;
+  hasMedidaProteccion?: boolean;
   housingType: 'PROPIA' | 'ARRENDADA' | 'FAMILIAR' | 'OTRA';
   hasHousingDocument: boolean;
   hasDebtOrProcess: boolean;
@@ -95,6 +101,8 @@ export interface ICommunitySurvey extends Document {
   jobSearchDifficulty?: string;
   hasRecentGraduate: boolean;
   graduateStatus?: string;
+  interestInTraining?: boolean;
+  hasSmartphoneAccess?: boolean;
 
   /* ── Sección E — Percepción de riesgo (encuestador) ─────────── */
   riskLevel: 'BAJO' | 'MEDIO' | 'ALTO';
@@ -106,6 +114,9 @@ export interface ICommunitySurvey extends Document {
 
   /* ── Necesidades priorizadas (multi-select) ──────────────────── */
   needs: string[];
+
+  /* ── Programas de interés manifestado directamente por el hogar ── */
+  interestedPrograms?: string[];
 
   /* ── 7 Programas Oficiales Senda Mujer Asignados ─────────────── */
   assignedPrograms?: string[];
@@ -185,6 +196,7 @@ const CommunitySurveySchema = new Schema<ICommunitySurvey>(
     },
     psychologicalSupportNeeded: { type: Boolean, default: false },
     psychologicalSupportWho: { type: String, trim: true, maxlength: 300 },
+    hasCaregiverBurnout: { type: Boolean, default: false },
 
     /* Sección B.1 — Salud Sexual y Reproductiva (Ginecología & ITS) */
     hasSTIHistoryOrSymptoms: { type: Boolean, default: false },
@@ -203,6 +215,9 @@ const CommunitySurveySchema = new Schema<ICommunitySurvey>(
     vaginalInfectionSymptoms: { type: Boolean, default: false },
     breastSelfExamTrained: { type: Boolean, default: false },
     hasMammographyOrUltrasoundNeeded: { type: Boolean, default: false },
+    hasSexualViolenceIndicator: { type: Boolean, default: false },
+    hasTeenPregnancy: { type: Boolean, default: false },
+    hasChildMalnutrition: { type: Boolean, default: false },
 
     /* Sección C */
     hasFamilyProcess: { type: Boolean, default: false },
@@ -210,6 +225,8 @@ const CommunitySurveySchema = new Schema<ICommunitySurvey>(
     hasVIFVBG: { type: Boolean, default: false },
     vifComplaintFiled: { type: Boolean },
     vifProcessStatus: { type: String, trim: true, maxlength: 400 },
+    knowsRightsAndRoutes: { type: Boolean, default: false },
+    hasMedidaProteccion: { type: Boolean, default: false },
     housingType: {
       type: String,
       enum: ['PROPIA', 'ARRENDADA', 'FAMILIAR', 'OTRA'],
@@ -231,6 +248,8 @@ const CommunitySurveySchema = new Schema<ICommunitySurvey>(
     jobSearchDifficulty: { type: String, trim: true, maxlength: 400 },
     hasRecentGraduate: { type: Boolean, default: false },
     graduateStatus: { type: String, trim: true, maxlength: 300 },
+    interestInTraining: { type: Boolean, default: false },
+    hasSmartphoneAccess: { type: Boolean, default: true },
 
     /* Sección E */
     riskLevel: {
@@ -247,6 +266,9 @@ const CommunitySurveySchema = new Schema<ICommunitySurvey>(
 
     /* Necesidades */
     needs: [{ type: String }],
+
+    /* Programas de interés voluntario */
+    interestedPrograms: [{ type: String }],
 
     /* 7 Programas Oficiales Asignados */
     assignedPrograms: [{ type: String }],

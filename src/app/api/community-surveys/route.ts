@@ -107,7 +107,7 @@ export async function POST(request: Request) {
       : 'BAJO';
 
     const priority =
-      bool(body.activateImmediateRoute) || bool(body.hasUrgentCase) || riskLevel === 'ALTO'
+      bool(body.activateImmediateRoute) || bool(body.hasUrgentCase) || riskLevel === 'ALTO' || bool(body.hasSexualViolenceIndicator)
         ? 'INMEDIATA'
         : needs.includes('violencia') || needs.includes('cronica') || bool(body.hasVIFVBG) || riskLevel === 'MEDIO' || bool(body.hasSTIHistoryOrSymptoms)
         ? 'PRIORITARIA'
@@ -164,6 +164,7 @@ export async function POST(request: Request) {
         : 'ACUEDUCTO',
       psychologicalSupportNeeded: bool(body.psychologicalSupportNeeded),
       psychologicalSupportWho: str(body.psychologicalSupportWho, 300),
+      hasCaregiverBurnout: bool(body.hasCaregiverBurnout),
 
       /* B.1 - Salud Sexual, Reproductiva, Ginecológica e ITS */
       hasSTIHistoryOrSymptoms: bool(body.hasSTIHistoryOrSymptoms),
@@ -178,6 +179,9 @@ export async function POST(request: Request) {
       vaginalInfectionSymptoms: bool(body.vaginalInfectionSymptoms),
       breastSelfExamTrained: bool(body.breastSelfExamTrained),
       hasMammographyOrUltrasoundNeeded: bool(body.hasMammographyOrUltrasoundNeeded),
+      hasSexualViolenceIndicator: bool(body.hasSexualViolenceIndicator),
+      hasTeenPregnancy: bool(body.hasTeenPregnancy),
+      hasChildMalnutrition: bool(body.hasChildMalnutrition),
 
       /* C */
       hasFamilyProcess: bool(body.hasFamilyProcess),
@@ -185,6 +189,8 @@ export async function POST(request: Request) {
       hasVIFVBG: bool(body.hasVIFVBG),
       vifComplaintFiled: bool(body.vifComplaintFiled),
       vifProcessStatus: str(body.vifProcessStatus),
+      knowsRightsAndRoutes: bool(body.knowsRightsAndRoutes),
+      hasMedidaProteccion: bool(body.hasMedidaProteccion),
       housingType: ALLOWED_HOUSING.has(str(body.housingType, 20))
         ? str(body.housingType, 20)
         : 'ARRENDADA',
@@ -204,6 +210,8 @@ export async function POST(request: Request) {
       jobSearchDifficulty: str(body.jobSearchDifficulty),
       hasRecentGraduate: bool(body.hasRecentGraduate),
       graduateStatus: str(body.graduateStatus, 300),
+      interestInTraining: bool(body.interestInTraining),
+      hasSmartphoneAccess: bool(body.hasSmartphoneAccess),
 
       /* E */
       riskLevel,
@@ -214,9 +222,23 @@ export async function POST(request: Request) {
       immediateRouteType: str(body.immediateRouteType, 200),
 
       needs,
+      interestedPrograms: Array.isArray(body.interestedPrograms)
+        ? body.interestedPrograms.filter((p: unknown) => typeof p === 'string')
+        : [],
       assignedPrograms: Array.isArray(body.assignedPrograms) && body.assignedPrograms.length > 0
         ? body.assignedPrograms
-        : computeAssignedPrograms({ ...body, needs }),
+        : computeAssignedPrograms({
+            ...body,
+            needs,
+            hasCaregiverBurnout: bool(body.hasCaregiverBurnout),
+            hasSexualViolenceIndicator: bool(body.hasSexualViolenceIndicator),
+            hasTeenPregnancy: bool(body.hasTeenPregnancy),
+            hasChildMalnutrition: bool(body.hasChildMalnutrition),
+            knowsRightsAndRoutes: bool(body.knowsRightsAndRoutes),
+            hasMedidaProteccion: bool(body.hasMedidaProteccion),
+            interestInTraining: bool(body.interestInTraining),
+            interestedPrograms: Array.isArray(body.interestedPrograms) ? body.interestedPrograms : []
+          }),
       consentGranted: true,
       minorImageConsent: bool(body.minorImageConsent),
       priority,

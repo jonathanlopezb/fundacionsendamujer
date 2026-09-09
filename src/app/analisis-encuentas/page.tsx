@@ -116,7 +116,16 @@ interface SurveyData {
   needs: string[];
   priority: 'NORMAL' | 'PRIORITARIA' | 'INMEDIATA';
   householdMembers?: HouseholdMember[];
+  interestedPrograms?: string[];
   assignedPrograms?: string[];
+  hasCaregiverBurnout?: boolean;
+  hasSexualViolenceIndicator?: boolean;
+  hasTeenPregnancy?: boolean;
+  hasChildMalnutrition?: boolean;
+  knowsRightsAndRoutes?: boolean;
+  hasMedidaProteccion?: boolean;
+  interestInTraining?: boolean;
+  hasSmartphoneAccess?: boolean;
   createdAt?: string;
 }
 
@@ -1941,7 +1950,14 @@ export default function AnalisisEncuestasPage() {
                           {prog.code}
                         </span>
                         <div>
-                          <p className="text-white font-bold text-xs">{prog.title}</p>
+                          <div className="flex items-center gap-1.5 flex-wrap">
+                            <p className="text-white font-bold text-xs">{prog.title}</p>
+                            {selectedHousehold.interestedPrograms?.includes(prog.id) && (
+                              <span className="text-[9px] bg-pink-500/30 text-pink-200 border border-pink-500/50 px-1.5 py-0.2 rounded font-bold">
+                                Postulación directa
+                              </span>
+                            )}
+                          </div>
                           <p className="text-[10px] text-purple-300 mt-0.5">{prog.badge}</p>
                           <p className="text-[10px] text-purple-300/70 mt-1 leading-relaxed">{prog.summary}</p>
                         </div>
