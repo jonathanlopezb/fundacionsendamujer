@@ -307,6 +307,117 @@ export default function EncuestaComunitariaForm({ barrio, localidad, jornada }: 
   const [consent, setConsent] = useState(false);
   const [minorImageConsent, setMinorImageConsent] = useState(false);
 
+  /* ── Reset Formulario ─────────────────────────────────────────────────── */
+  const resetForm = () => {
+    setResult(null);
+    setStep(0);
+    setError('');
+    setSending(false);
+
+    /* Ficha */
+    setManzana('');
+    // Mantenemos collectorName y collectorCode para conveniencia del encuestador en campo, pero limpiamos los datos del hogar
+    setFieldZone('');
+    setContactPhone('');
+    setLandmark('');
+    setParticipationAccepted(null);
+
+    /* Sección A */
+    setMembers([
+      { fullName: '', age: '', relationship: 'Persona referente', documentType: 'CC', documentNumber: '' },
+    ]);
+    setHouseholdSize('');
+    setMinorCount('');
+    setAllDocumentsValid(null);
+    setDocumentsIssue('');
+    setAllNNASchooled(null);
+    setSchoolDropoutReason('');
+    setHasDisabledMember(null);
+    setDisabledDetails('');
+    setHasElderlyMember(null);
+    setElderlyCount('');
+    setRooms('');
+    setOvercrowdingNotes('');
+
+    /* Sección B */
+    setAllEPSAffiliated(null);
+    setEpsRegime('');
+    setNonAffiliatedReason('');
+    setHasPregnant(null);
+    setPrenatalCare('');
+    setVaccinesUpToDate(null);
+    setVaccineCard(null);
+    setHasChronicDisease(null);
+    setChronicDiseaseDetails('');
+    setHasEDAParasites(null);
+    setEdaDetails('');
+    setDentalPending(null);
+    setHealthAccessDifficulty(null);
+    setHealthAccessDetails('');
+    setWaterSource('ACUEDUCTO');
+    setPsychoSupport(null);
+    setPsychoSupportWho('');
+    setHasCaregiverBurnout(null);
+
+    /* Sección B.1 */
+    setNeedsGynecology(null);
+    setGynecologySymptoms('');
+    setLastPapSmear('NO_APLICA');
+    setFamilyPlanning('NINGUNO');
+    setDesiresPlanningCounseling(null);
+    setBreastExamTrained(null);
+    setMammographyNeeded(null);
+    setNeedsGeneralMedicine(null);
+    setGeneralMedicineReason('');
+    setNeedsPediatrics(null);
+    setPediatricsReason('');
+    setNeedsDental(null);
+    setDentalReason('');
+    setNeedsPsychology(null);
+    setPsychologyReason('');
+    setNeedsNutrition(null);
+    setNutritionReason('');
+
+    /* Sección C */
+    setHasFamilyProcess(null);
+    setFamilyProcessDetails('');
+    setHasVIF(null);
+    setVifComplaint(null);
+    setVifStatus('');
+    setKnowsRights(null);
+    setHasMedidaProteccion(null);
+    setHousingType('ARRENDADA');
+    setHasHousingDocument(null);
+    setHasDebt(null);
+    setDebtDetails('');
+    setNeedsSubsidy(null);
+    setSubsidyDetails('');
+    setHasUrgentCase(null);
+    setUrgentDesc('');
+
+    /* Sección D */
+    setIncomeSource('');
+    setReceivesSubsidies(null);
+    setSubsidiesDetails('');
+    setHasJobSeeker(null);
+    setJobDifficulty('');
+    setHasGraduate(null);
+    setGraduateStatus('');
+    setInterestInTraining(null);
+    setHasSmartphoneAccess(null);
+
+    /* Sección E */
+    setRiskLevel('BAJO');
+    setObservedRisk('');
+    setAuthorizedRecontact(null);
+    setCollectorObs('');
+    setActivateRoute(null);
+    setRouteType('');
+    setPickedNeeds([]);
+    setConsent(false);
+    setMinorImageConsent(false);
+  };
+
   /* ── Funciones de miembros del hogar ─────────────────────────────────── */
   const addMember = () =>
     setMembers((m) => [
@@ -508,7 +619,7 @@ export default function EncuestaComunitariaForm({ barrio, localidad, jornada }: 
           )}
           <button
             type="button"
-            onClick={() => { setResult(null); setStep(0); }}
+            onClick={resetForm}
             className="text-sm font-bold text-pink-300 hover:text-white transition-colors"
           >
             Registrar otro hogar
@@ -527,7 +638,7 @@ export default function EncuestaComunitariaForm({ barrio, localidad, jornada }: 
           <p className="text-sm text-purple-300/70">Gracias por respetar la decisión. Pasa al siguiente domicilio.</p>
           <button
             type="button"
-            onClick={() => { setParticipationAccepted(null); setStep(0); }}
+            onClick={resetForm}
             className="text-sm font-bold text-pink-300 hover:text-white"
           >
             Ir al siguiente hogar
@@ -799,7 +910,43 @@ export default function EncuestaComunitariaForm({ barrio, localidad, jornada }: 
                 <Field label="¿Alguna persona del hogar considera que necesita apoyo emocional o psicológico?">
                   <YesNo value={psychoSupport} onChange={setPsychoSupport} name="psycho" />
                   {psychoSupport === true && (
-                    <Input className="mt-2" value={psychoSupportWho} onChange={(e) => setPsychoSupportWho(e.target.value)} placeholder="¿Quién? (solo referencia, no nombre completo)" />
+                    <div className="mt-2.5 space-y-2">
+                      <span className="block text-xs font-semibold text-purple-200">
+                        Selecciona el integrante del hogar que requiere apoyo psicológico o emocional:
+                      </span>
+                      {members.filter((m) => m.fullName.trim().length > 0).length > 0 ? (
+                        <Select
+                          value={psychoSupportWho}
+                          onChange={(e) => setPsychoSupportWho(e.target.value)}
+                        >
+                          <option value="">Selecciona un integrante registrado en la Sección A…</option>
+                          {members
+                            .filter((m) => m.fullName.trim().length > 0)
+                            .map((m, idx) => {
+                              const desc = `${m.fullName.trim()} (${m.relationship || 'Integrante'}, ${m.age ? `${m.age} años` : 'edad n/d'})`;
+                              return (
+                                <option key={idx} value={desc}>
+                                  {desc}
+                                </option>
+                              );
+                            })}
+                          <option value="OTRO">Otro integrante / Todo el núcleo familiar</option>
+                        </Select>
+                      ) : (
+                        <Input
+                          value={psychoSupportWho}
+                          onChange={(e) => setPsychoSupportWho(e.target.value)}
+                          placeholder="Escribe el nombre o parentesco del integrante que requiere apoyo…"
+                        />
+                      )}
+                      {psychoSupportWho === 'OTRO' && (
+                        <Input
+                          className="mt-2"
+                          onChange={(e) => setPsychoSupportWho(`Otro: ${e.target.value}`)}
+                          placeholder="Especifica quién o si requiere atención familiar conjunta…"
+                        />
+                      )}
+                    </div>
                   )}
                 </Field>
 
