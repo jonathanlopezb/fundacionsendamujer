@@ -14,7 +14,6 @@ import {
   Search, X, Table, BookOpen, UserCheck, Phone, MapPin, Calendar, FileSpreadsheet, Trash2
 } from 'lucide-react';
 import { exportSurveysToExcel } from '@/lib/excelExport';
-import { DEMO_SURVEYS } from '@/lib/demoSurveys';
 
 /* ── Interfaces ──────────────────────────────────────────────────────────── */
 interface HouseholdMember {
@@ -168,20 +167,15 @@ export default function AnalisisEncuestasPage() {
         : `/api/community-surveys?barrio=${encodeURIComponent(selectedBarrio)}`;
       const res = await fetch(url);
       const data = await res.json();
-      if (res.ok && Array.isArray(data.surveys) && data.surveys.length > 0) {
+      if (res.ok && Array.isArray(data.surveys)) {
         setSurveys(data.surveys);
       } else {
-        // Fallback a los datos base del censo piloto
-        const filteredDemo = selectedBarrio === 'TODOS'
-          ? DEMO_SURVEYS
-          : DEMO_SURVEYS.filter(s => s.barrio.toLowerCase().includes(selectedBarrio.toLowerCase()));
-        setSurveys(filteredDemo);
+        setSurveys([]);
+        if (data.message) setError(data.message);
       }
     } catch {
-      const filteredDemo = selectedBarrio === 'TODOS'
-        ? DEMO_SURVEYS
-        : DEMO_SURVEYS.filter(s => s.barrio.toLowerCase().includes(selectedBarrio.toLowerCase()));
-      setSurveys(filteredDemo);
+      setSurveys([]);
+      setError('Error al conectar con la base de datos.');
     } finally {
       setLoading(false);
     }
@@ -200,15 +194,13 @@ export default function AnalisisEncuestasPage() {
 
     setDeletingId(s._id);
     try {
-      if (!s._id.startsWith('demo-')) {
-        const res = await fetch(
-          `/api/community-surveys?id=${encodeURIComponent(s._id)}&surveyCode=${encodeURIComponent(s.surveyCode)}`,
-          { method: 'DELETE' }
-        );
-        const data = await res.json();
-        if (!res.ok) {
-          throw new Error(data.message || 'No fue posible eliminar la ficha del sistema.');
-        }
+      const res = await fetch(
+        `/api/community-surveys?id=${encodeURIComponent(s._id)}&surveyCode=${encodeURIComponent(s.surveyCode)}`,
+        { method: 'DELETE' }
+      );
+      const data = await res.json();
+      if (!res.ok) {
+        throw new Error(data.message || 'No fue posible eliminar la ficha del sistema.');
       }
 
       setSurveys((prev) => prev.filter((item) => item._id !== s._id && item.surveyCode !== s.surveyCode));
@@ -362,6 +354,15 @@ export default function AnalisisEncuestasPage() {
     };
   }, [surveys]);
 
+  /* ── Barrios únicos encontrados en la base de datos ──────────────────── */
+  const availableBarrios = useMemo(() => {
+    const set = new Set<string>();
+    surveys.forEach((s) => {
+      if (s.barrio) set.add(s.barrio.trim());
+    });
+    return Array.from(set).sort();
+  }, [surveys]);
+
   /* ── Filtrado Interactivo de la Lista Maestra de Hogares ─────────────── */
   const filteredHogares = useMemo(() => {
     return surveys.filter((s) => {
@@ -431,8 +432,11 @@ export default function AnalisisEncuestasPage() {
               className="bg-transparent text-white focus:outline-none cursor-pointer pr-2"
             >
               <option value="TODOS" className="bg-[#130324]">Todos los barrios ({surveys.length})</option>
-              <option value="Arroz Barato" className="bg-[#130324]">Arroz Barato (Localidad 3)</option>
-              <option value="Nelson Mandela" className="bg-[#130324]">Nelson Mandela (Localidad 4)</option>
+              {availableBarrios.map((b) => (
+                <option key={b} value={b} className="bg-[#130324]">
+                  {b}
+                </option>
+              ))}
             </select>
           </div>
 
@@ -837,15 +841,36 @@ export default function AnalisisEncuestasPage() {
 
                   {filteredHogares.length === 0 && (
                     <tr>
-                      <td colSpan={8} className="p-12 text-center text-purple-300/70 space-y-2">
-                        <p className="text-base font-bold text-white">No se encontraron hogares con los filtros aplicados.</p>
-                        <p className="text-xs">Prueba borrando el texto de búsqueda o cambiando la condición de filtro.</p>
-                        <button
-                          onClick={() => { setSearchQuery(''); setPriorityFilter('TODAS'); setTagFilter('TODAS'); }}
-                          className="bg-purple-800 text-white px-4 py-1.5 rounded-xl text-xs font-bold mt-2 cursor-pointer"
-                        >
-                          Restablecer Filtros
-                        </button>
+                      <td colSpan={8} className="p-12 text-center text-purple-300/70 space-y-3">
+                        {surveys.length === 0 ? (
+                          <>
+                            <div className="w-12 h-12 rounded-2xl bg-purple-950/60 border border-purple-800 flex items-center justify-center mx-auto text-2xl">
+                              📋
+                            </div>
+                            <p className="text-base font-bold text-white">No hay fichas censales registradas en la base de datos todavía.</p>
+                            <p className="text-xs text-purple-300/70 max-w-md mx-auto">
+                              Las encuestas que se diligencien desde el formulario en terreno se almacenarán automáticamente en MongoDB y aparecerán aquí en tiempo real.
+                            </p>
+                            <Link
+                              href="/encuestas"
+                              className="inline-flex items-center gap-2 bg-gradient-to-r from-pink-600 to-purple-600 hover:from-pink-500 hover:to-purple-500 text-white px-4 py-2 rounded-xl text-xs font-black shadow-lg transition-all"
+                            >
+                              <span>Diligenciar Nueva Ficha en Terreno</span>
+                              <ChevronRight className="w-4 h-4" />
+                            </Link>
+                          </>
+                        ) : (
+                          <>
+                            <p className="text-base font-bold text-white">No se encontraron hogares con los filtros aplicados.</p>
+                            <p className="text-xs">Prueba borrando el texto de búsqueda o cambiando la condición de filtro.</p>
+                            <button
+                              onClick={() => { setSearchQuery(''); setPriorityFilter('TODAS'); setTagFilter('TODAS'); }}
+                              className="bg-purple-800 text-white px-4 py-1.5 rounded-xl text-xs font-bold mt-2 cursor-pointer"
+                            >
+                              Restablecer Filtros
+                            </button>
+                          </>
+                        )}
                       </td>
                     </tr>
                   )}
