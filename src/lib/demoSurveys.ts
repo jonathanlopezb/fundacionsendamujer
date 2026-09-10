@@ -79,7 +79,7 @@ const RAW_DEMO_SURVEYS: any[] = [
     needs: ['salud', 'materna', 'its_ginecologia', 'citologia_urgente', 'violencia', 'familia', 'vivienda'],
     priority: 'INMEDIATA',
     householdMembers: [
-      { fullName: 'Yuleidis María Gómez Torres', age: 29, relationship: 'Jefa de Hogar', documentType: 'CC', documentNumber: '1.047.889.213' },
+      { fullName: 'Yuleidis María Gómez Torres', age: 29, relationship: 'Persona Referente', documentType: 'CC', documentNumber: '1.047.889.213' },
       { fullName: 'Rosaura Torres de Gómez', age: 69, relationship: 'Madre / Abuela', documentType: 'CC', documentNumber: '22.845.119' },
       { fullName: 'Brayan José Gómez', age: 14, relationship: 'Hijo', documentType: 'TI', documentNumber: '1.143.901.882' },
       { fullName: 'Keiler David Gómez', age: 7, relationship: 'Hijo', documentType: 'RC', documentNumber: '1.209.431.112' },
@@ -144,7 +144,7 @@ const RAW_DEMO_SURVEYS: any[] = [
     needs: ['salud', 'acceso_salud', 'subsidios', 'vivienda'],
     priority: 'PRIORITARIA',
     householdMembers: [
-      { fullName: 'Doris Cecilia Paternina', age: 41, relationship: 'Jefa de Hogar', documentType: 'CC', documentNumber: '45.712.980' },
+      { fullName: 'Doris Cecilia Paternina', age: 41, relationship: 'Persona Referente', documentType: 'CC', documentNumber: '45.712.980' },
       { fullName: 'Carlos Alberto Sierra', age: 44, relationship: 'Cónyuge', documentType: 'CC', documentNumber: '73.190.542' },
       { fullName: 'Mateo Sierra Paternina', age: 16, relationship: 'Hijo (Condición de discapacidad)', documentType: 'TI', documentNumber: '1.098.223.411' },
       { fullName: 'Camila Andrea Sierra', age: 10, relationship: 'Hija', documentType: 'TI', documentNumber: '1.144.567.890' },
@@ -214,7 +214,7 @@ const RAW_DEMO_SURVEYS: any[] = [
     needs: ['salud', 'afiliacion', 'materna', 'vacunacion', 'documentacion', 'educacion', 'its_ginecologia', 'citologia_urgente'],
     priority: 'INMEDIATA',
     householdMembers: [
-      { fullName: 'Marianyelis Chiquinquirá Rivas', age: 22, relationship: 'Jefa de Hogar', documentType: 'PA', documentNumber: '15.987.234-VZ' },
+      { fullName: 'Marianyelis Chiquinquirá Rivas', age: 22, relationship: 'Persona Referente', documentType: 'PA', documentNumber: '15.987.234-VZ' },
       { fullName: 'Moisés Alejandro Rivas', age: 6, relationship: 'Hijo', documentType: 'RC', documentNumber: 'SIN_DOC' },
       { fullName: 'Aranza Sofía Rivas', age: 4, relationship: 'Hija', documentType: 'RC', documentNumber: 'SIN_DOC' },
       { fullName: 'Thiago José Rivas', age: 0, relationship: 'Hijo (Lactante 5 meses)', documentType: 'RC', documentNumber: '1.244.908.112' },
@@ -276,7 +276,7 @@ const RAW_DEMO_SURVEYS: any[] = [
     needs: ['salud', 'cronica'],
     priority: 'NORMAL',
     householdMembers: [
-      { fullName: 'Gladys Ester Beltrán Ortiz', age: 52, relationship: 'Jefa de Hogar', documentType: 'CC', documentNumber: '33.123.456' },
+      { fullName: 'Gladys Ester Beltrán Ortiz', age: 52, relationship: 'Persona Referente', documentType: 'CC', documentNumber: '33.123.456' },
       { fullName: 'Jorge Enrique Castro Beltrán', age: 30, relationship: 'Hijo', documentType: 'CC', documentNumber: '1.047.456.789' },
       { fullName: 'Samuel Castro Morales', age: 8, relationship: 'Nieto', documentType: 'TI', documentNumber: '1.144.112.334' },
     ]
@@ -343,7 +343,7 @@ const RAW_DEMO_SURVEYS: any[] = [
     needs: ['salud', 'cronica', 'citologia_urgente', 'subsidios', 'empleo'],
     priority: 'PRIORITARIA',
     householdMembers: [
-      { fullName: 'Marta Luz Guerrero Polo', age: 48, relationship: 'Jefa de Hogar / Cuidadora', documentType: 'CC', documentNumber: '45.890.123' },
+      { fullName: 'Marta Luz Guerrero Polo', age: 48, relationship: 'Persona Referente / Cuidadora', documentType: 'CC', documentNumber: '45.890.123' },
       { fullName: 'Manuel Salvador Guerrero', age: 72, relationship: 'Padre (Postrado en cama)', documentType: 'CC', documentNumber: '9.123.456' },
       { fullName: 'Daniela Andrea Polo Guerrero', age: 18, relationship: 'Hija (Bachiller egresada)', documentType: 'CC', documentNumber: '1.047.990.112' },
       { fullName: 'Nicolás Polo Guerrero', age: 12, relationship: 'Hijo', documentType: 'TI', documentNumber: '1.144.332.119' },
@@ -413,7 +413,7 @@ const RAW_DEMO_SURVEYS: any[] = [
     needs: ['salud', 'violencia', 'familia', 'citologia_urgente', 'its_ginecologia', 'vivienda', 'empleo'],
     priority: 'INMEDIATA',
     householdMembers: [
-      { fullName: 'Leidis Johana Carmona', age: 26, relationship: 'Jefa de Hogar', documentType: 'CC', documentNumber: '1.047.662.339' },
+      { fullName: 'Leidis Johana Carmona', age: 26, relationship: 'Persona Referente', documentType: 'CC', documentNumber: '1.047.662.339' },
       { fullName: 'Esteban Andrés Carmona', age: 6, relationship: 'Hijo', documentType: 'RC', documentNumber: '1.209.771.223' },
       { fullName: 'Lucía Milena Carmona', age: 4, relationship: 'Hija', documentType: 'RC', documentNumber: '1.288.990.114' },
       { fullName: 'Carmen Alicia Carmona', age: 49, relationship: 'Madre', documentType: 'CC', documentNumber: '33.456.789' },
@@ -476,7 +476,7 @@ const RAW_DEMO_SURVEYS: any[] = [
     needs: ['salud', 'materna', 'planificacion_familiar', 'subsidios'],
     priority: 'PRIORITARIA',
     householdMembers: [
-      { fullName: 'Luz Marina Orozco', age: 39, relationship: 'Jefa de Hogar', documentType: 'CC', documentNumber: '45.112.908' },
+      { fullName: 'Luz Marina Orozco', age: 39, relationship: 'Persona Referente', documentType: 'CC', documentNumber: '45.112.908' },
       { fullName: 'Jaime Luis Salcedo', age: 43, relationship: 'Cónyuge', documentType: 'CC', documentNumber: '9.887.654' },
       { fullName: 'Andrea Paola Salcedo Orozco', age: 17, relationship: 'Hija (Gestante 18 sem)', documentType: 'TI', documentNumber: '1.099.112.876' },
       { fullName: 'Santiago Salcedo Orozco', age: 11, relationship: 'Hijo', documentType: 'TI', documentNumber: '1.144.665.432' },
@@ -541,7 +541,7 @@ const RAW_DEMO_SURVEYS: any[] = [
     needs: ['salud', 'cronica', 'acceso_salud', 'tramites'],
     priority: 'NORMAL',
     householdMembers: [
-      { fullName: 'Sandra Patricia Miranda', age: 44, relationship: 'Jefa de Hogar', documentType: 'CC', documentNumber: '45.667.112' },
+      { fullName: 'Sandra Patricia Miranda', age: 44, relationship: 'Persona Referente', documentType: 'CC', documentNumber: '45.667.112' },
       { fullName: 'Ana Joaquina Miranda de Ávila', age: 78, relationship: 'Madre', documentType: 'CC', documentNumber: '22.901.456' },
       { fullName: 'Jesús David Ávila Miranda', age: 21, relationship: 'Hijo (Estudiante SENA)', documentType: 'CC', documentNumber: '1.047.882.341' },
       { fullName: 'Mariana Ávila Miranda', age: 13, relationship: 'Hija', documentType: 'TI', documentNumber: '1.144.778.901' },

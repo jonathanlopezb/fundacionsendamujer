@@ -63,15 +63,28 @@ export interface ICommunitySurvey extends Document {
   psychologicalSupportWho?: string;
   hasCaregiverBurnout?: boolean;
 
-  /* ── Sección B.1 — Salud Sexual y Reproductiva / Ginecológica (ITS & Prevención) ── */
-  hasSTIHistoryOrSymptoms: boolean;
-  stiSymptomsDetails?: string;
+  /* ── Sección B.1 — Citas Médicas por Especialidad & Salud de la Mujer ── */
+  needsGynecology?: boolean;
+  gynecologySymptoms?: string;
+  needsGeneralMedicine?: boolean;
+  generalMedicineReason?: string;
+  needsPediatrics?: boolean;
+  pediatricsReason?: string;
+  needsDental?: boolean;
+  dentalReason?: string;
+  needsPsychology?: boolean;
+  psychologyReason?: string;
+  needsNutrition?: boolean;
+  nutritionReason?: string;
+
   lastPapSmear: 'MENOS_1_ANO' | '1_A_3_ANOS' | 'MAS_3_ANOS' | 'NUNCA' | 'NO_APLICA';
   familyPlanningMethod: 'NINGUNO' | 'ORAL' | 'INYECTABLE' | 'IMPLANTE' | 'DIU' | 'BARRERA' | 'QUIRURGICO' | 'OTRO';
   desiresFamilyPlanningCounseling: boolean;
-  vaginalInfectionSymptoms: boolean;
   breastSelfExamTrained: boolean;
   hasMammographyOrUltrasoundNeeded: boolean;
+  hasSTIHistoryOrSymptoms?: boolean;
+  stiSymptomsDetails?: string;
+  vaginalInfectionSymptoms?: boolean;
   hasSexualViolenceIndicator?: boolean;
   hasTeenPregnancy?: boolean;
   hasChildMalnutrition?: boolean;
@@ -198,7 +211,20 @@ const CommunitySurveySchema = new Schema<ICommunitySurvey>(
     psychologicalSupportWho: { type: String, trim: true, maxlength: 300 },
     hasCaregiverBurnout: { type: Boolean, default: false },
 
-    /* Sección B.1 — Salud Sexual y Reproductiva (Ginecología & ITS) */
+    /* Sección B.1 — Citas Médicas por Especialidad & Salud de la Mujer */
+    needsGynecology: { type: Boolean, default: false },
+    gynecologySymptoms: { type: String, trim: true, maxlength: 500 },
+    needsGeneralMedicine: { type: Boolean, default: false },
+    generalMedicineReason: { type: String, trim: true, maxlength: 500 },
+    needsPediatrics: { type: Boolean, default: false },
+    pediatricsReason: { type: String, trim: true, maxlength: 500 },
+    needsDental: { type: Boolean, default: false },
+    dentalReason: { type: String, trim: true, maxlength: 500 },
+    needsPsychology: { type: Boolean, default: false },
+    psychologyReason: { type: String, trim: true, maxlength: 500 },
+    needsNutrition: { type: Boolean, default: false },
+    nutritionReason: { type: String, trim: true, maxlength: 500 },
+
     hasSTIHistoryOrSymptoms: { type: Boolean, default: false },
     stiSymptomsDetails: { type: String, trim: true, maxlength: 400 },
     lastPapSmear: {

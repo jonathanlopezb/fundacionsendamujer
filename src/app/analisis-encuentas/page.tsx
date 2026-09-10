@@ -15,7 +15,6 @@ import {
 } from 'lucide-react';
 import { exportSurveysToExcel } from '@/lib/excelExport';
 import { DEMO_SURVEYS } from '@/lib/demoSurveys';
-import { SENDA_PROGRAMS, computeAssignedPrograms } from '@/lib/sendaPrograms';
 
 /* ── Interfaces ──────────────────────────────────────────────────────────── */
 interface HouseholdMember {
@@ -31,7 +30,7 @@ interface SurveyData {
   surveyCode: string;
   barrio: string;
   manzana?: string;
-  visitDate: string;
+  visitDate?: string;
   collectorName?: string;
   collectorCode?: string;
   fieldZone?: string;
@@ -71,13 +70,26 @@ interface SurveyData {
   psychologicalSupportNeeded: boolean;
   psychologicalSupportWho?: string;
 
-  /* B.1 Gineco & ITS */
-  hasSTIHistoryOrSymptoms: boolean;
+  /* B.1 Citas por Especialidad & Salud de la Mujer */
+  needsGynecology?: boolean;
+  gynecologySymptoms?: string;
+  needsGeneralMedicine?: boolean;
+  generalMedicineReason?: string;
+  needsPediatrics?: boolean;
+  pediatricsReason?: string;
+  needsDental?: boolean;
+  dentalReason?: string;
+  needsPsychology?: boolean;
+  psychologyReason?: string;
+  needsNutrition?: boolean;
+  nutritionReason?: string;
+
+  hasSTIHistoryOrSymptoms?: boolean;
   stiSymptomsDetails?: string;
   lastPapSmear: string;
   familyPlanningMethod: string;
   desiresFamilyPlanningCounseling: boolean;
-  vaginalInfectionSymptoms: boolean;
+  vaginalInfectionSymptoms?: boolean;
   breastSelfExamTrained: boolean;
   hasMammographyOrUltrasoundNeeded: boolean;
 
@@ -137,7 +149,7 @@ export default function AnalisisEncuestasPage() {
   const [error, setError] = useState('');
   const [selectedBarrio, setSelectedBarrio] = useState('TODOS');
   const [activeTab, setActiveTab] = useState<
-    'HOGARES' | 'INFORME_TECNICO' | 'PROGRAMAS_SENDA' | 'GLOBAL' | 'DEMOGRAFIA' | 'SALUD_EPIDEMIOLOGIA' | 'JURIDICO_PROTECCION' | 'ECONOMICO_SOCIAL' | 'RIESGOS_CASOS'
+    'HOGARES' | 'INFORME_TECNICO' | 'GLOBAL' | 'DEMOGRAFIA' | 'SALUD_EPIDEMIOLOGIA' | 'JURIDICO_PROTECCION' | 'ECONOMICO_SOCIAL' | 'RIESGOS_CASOS'
   >('HOGARES');
 
   /* Estados de Filtros para Lista de Hogares */
@@ -298,30 +310,12 @@ export default function AnalisisEncuestasPage() {
       { category: 'Deserción Escolar', total: desercionEscolar },
     ];
 
-    /* ── Demanda por Programa Senda Mujer ─────────────────────────────────── */
-    const programDemand = SENDA_PROGRAMS.map((prog) => ({
-      id: prog.id,
-      code: prog.code,
-      title: prog.title,
-      badge: prog.badge,
-      color: prog.color,
-      bgBadge: prog.bgBadge,
-      textBadge: prog.textBadge,
-      summary: prog.summary,
-      targetCriteria: prog.targetCriteria,
-      count: surveys.filter((s) =>
-        Array.isArray(s.assignedPrograms)
-          ? s.assignedPrograms.includes(prog.id)
-          : computeAssignedPrograms(s).includes(prog.id)
-      ).length,
-    }));
-
-    const programChartData = programDemand.map((p) => ({
-      name: p.code,
-      label: p.title.length > 22 ? p.title.slice(0, 22) + '…' : p.title,
-      Hogares: p.count,
-      fill: p.color,
-    }));
+    /* ── Demanda de Citas por Especialidad Médica ── */
+    const citasGinecologia = surveys.filter(s => s.needsGynecology || (Array.isArray(s.needs) && s.needs.includes('ginecologia')) || s.lastPapSmear === 'MAS_3_ANOS' || s.lastPapSmear === 'NUNCA').length;
+    const citasMedicinaGeneral = surveys.filter(s => s.needsGeneralMedicine || (Array.isArray(s.needs) && s.needs.includes('medicina_general')) || s.hasChronicDisease).length;
+    const citasPediatria = surveys.filter(s => s.needsPediatrics || (Array.isArray(s.needs) && s.needs.includes('pediatria')) || (s.minorCount > 0 && s.hasEDAParasites)).length;
+    const citasOdontologia = surveys.filter(s => s.needsDental || (Array.isArray(s.needs) && s.needs.includes('odontologia')) || s.dentalCarePending).length;
+    const citasPsicologia = surveys.filter(s => s.needsPsychology || (Array.isArray(s.needs) && s.needs.includes('psicologia')) || s.psychologicalSupportNeeded || s.hasCaregiverBurnout).length;
 
     return {
       totalHogares,
@@ -360,8 +354,11 @@ export default function AnalisisEncuestasPage() {
       housingChartData,
       healthDeficitData,
       legalVulnerabilityData,
-      programDemand,
-      programChartData,
+      citasGinecologia,
+      citasMedicinaGeneral,
+      citasPediatria,
+      citasOdontologia,
+      citasPsicologia,
     };
   }, [surveys]);
 
@@ -506,7 +503,6 @@ export default function AnalisisEncuestasPage() {
         {[
           { id: 'HOGARES', label: `📋 Lista de Todos los Hogares (${surveys.length})` },
           { id: 'INFORME_TECNICO', label: '📖 Informe Cualitativo & Diagnóstico Escrito' },
-          { id: 'PROGRAMAS_SENDA', label: `🎯 Programas Senda Mujer` },
           { id: 'GLOBAL', label: '🌐 Panorama Global & Prioridades' },
           { id: 'DEMOGRAFIA', label: '👥 Demografía & Hábitat' },
           { id: 'SALUD_EPIDEMIOLOGIA', label: '🩺 Salud Integral & Epidemiología' },
@@ -639,11 +635,11 @@ export default function AnalisisEncuestasPage() {
                 <thead className="bg-[#1a0530] text-purple-300 uppercase font-black text-[10px] tracking-wider border-b border-purple-800">
                   <tr>
                     <th className="p-3.5">Ficha / Barrio</th>
-                    <th className="p-3.5">Jefe de Hogar & Miembros</th>
+                    <th className="p-3.5">Persona Referente & Miembros</th>
                     <th className="p-3.5">Hábitat & Agua</th>
-                    <th className="p-3.5">Salud & Gineco/ITS</th>
+                    <th className="p-3.5">Salud & Niñez</th>
                     <th className="p-3.5">Protección & Riesgo</th>
-                    <th className="p-3.5">Programas Senda</th>
+                    <th className="p-3.5">Citas Solicitadas</th>
                     <th className="p-3.5 text-center">Triaje</th>
                     <th className="p-3.5 text-right">Acción</th>
                   </tr>
@@ -665,7 +661,7 @@ export default function AnalisisEncuestasPage() {
                           )}
                         </td>
 
-                        {/* Jefe de Hogar & Miembros */}
+                        {/* Persona Referente & Miembros */}
                         <td className="p-3.5 align-top max-w-xs">
                           {primaryMember ? (
                             <div>
@@ -769,25 +765,37 @@ export default function AnalisisEncuestasPage() {
                           )}
                         </td>
 
-                        {/* Programas Senda Mujer */}
+                        {/* Citas Médicas Solicitadas */}
                         <td className="p-3.5 align-top">
-                          <div className="flex flex-wrap gap-1">
-                            {(Array.isArray(s.assignedPrograms)
-                              ? s.assignedPrograms
-                              : computeAssignedPrograms(s)
-                            ).map((progId) => {
-                              const prog = SENDA_PROGRAMS.find((p) => p.id === progId);
-                              if (!prog) return null;
-                              return (
-                                <span
-                                  key={progId}
-                                  title={prog.title}
-                                  className={`text-[9px] font-black px-1.5 py-0.5 rounded-md border ${prog.bgBadge} cursor-help`}
-                                >
-                                  {prog.code}
-                                </span>
-                              );
-                            })}
+                          <div className="flex flex-col gap-1 text-[10px]">
+                            {(s.needsGynecology || s.lastPapSmear === 'MAS_3_ANOS' || s.lastPapSmear === 'NUNCA' || (Array.isArray(s.needs) && s.needs.includes('ginecologia'))) && (
+                              <span className="inline-flex items-center gap-1 px-2 py-0.5 rounded-md font-bold bg-pink-500/20 text-pink-300 border border-pink-500/40 w-fit" title={s.gynecologySymptoms || 'Ginecología y Citología'}>
+                                🌸 Ginecología
+                              </span>
+                            )}
+                            {(s.needsGeneralMedicine || s.hasChronicDisease || (Array.isArray(s.needs) && s.needs.includes('medicina_general'))) && (
+                              <span className="inline-flex items-center gap-1 px-2 py-0.5 rounded-md font-bold bg-purple-500/20 text-purple-300 border border-purple-500/40 w-fit" title={s.generalMedicineReason || 'Medicina General'}>
+                                🩺 Med. General
+                              </span>
+                            )}
+                            {(s.needsPediatrics || (s.minorCount > 0 && s.hasEDAParasites) || (Array.isArray(s.needs) && s.needs.includes('pediatria'))) && (
+                              <span className="inline-flex items-center gap-1 px-2 py-0.5 rounded-md font-bold bg-amber-500/20 text-amber-300 border border-amber-500/40 w-fit" title={s.pediatricsReason || 'Pediatría'}>
+                                👶 Pediatría
+                              </span>
+                            )}
+                            {(s.needsDental || s.dentalCarePending || (Array.isArray(s.needs) && s.needs.includes('odontologia'))) && (
+                              <span className="inline-flex items-center gap-1 px-2 py-0.5 rounded-md font-bold bg-cyan-500/20 text-cyan-300 border border-cyan-500/40 w-fit" title={s.dentalReason || 'Odontología'}>
+                                🦷 Odontología
+                              </span>
+                            )}
+                            {(s.needsPsychology || s.psychologicalSupportNeeded || s.hasCaregiverBurnout || (Array.isArray(s.needs) && s.needs.includes('psicologia'))) && (
+                              <span className="inline-flex items-center gap-1 px-2 py-0.5 rounded-md font-bold bg-sky-500/20 text-sky-300 border border-sky-500/40 w-fit" title={s.psychologyReason || 'Psicología'}>
+                                🧠 Psicología
+                              </span>
+                            )}
+                            {(!s.needsGynecology && !s.needsGeneralMedicine && !s.needsPediatrics && !s.needsDental && !s.needsPsychology && s.lastPapSmear !== 'MAS_3_ANOS' && s.lastPapSmear !== 'NUNCA' && !s.hasChronicDisease && !s.dentalCarePending) && (
+                              <span className="text-purple-400/60 italic text-[10px]">Triage en evento</span>
+                            )}
                           </div>
                         </td>
 
@@ -976,184 +984,7 @@ export default function AnalisisEncuestasPage() {
         </div>
       )}
 
-      {/* ─────────────────────────────────────────────────────────────────
-          PESTAÑA: PROGRAMAS SENDA MUJER — DERIVACIÓN AUTOMÁTICA
-      ───────────────────────────────────────────────────────────────── */}
-      {activeTab === 'PROGRAMAS_SENDA' && (
-        <div className="space-y-8 animate-fadeIn">
 
-          {/* Cabecera */}
-          <div className="bg-[#150426] border border-pink-800/50 rounded-3xl p-6 shadow-xl">
-            <div className="flex items-center gap-3 mb-2">
-              <span className="bg-pink-500/20 text-pink-300 border border-pink-500/40 text-[10px] font-black px-3 py-0.5 rounded-full uppercase tracking-wider">
-                Derivación Multidimensional Automática
-              </span>
-              <span className="text-[10px] text-purple-300">· Sistema Inteligente Senda Mujer</span>
-            </div>
-            <h3 className="text-xl font-black text-white">
-              🎯 Los 7 Programas de la Fundación Senda Mujer — Demanda Detectada en Terreno
-            </h3>
-            <p className="text-xs text-purple-200/70 mt-1 max-w-3xl">
-              Cada hogar censado es analizado automáticamente con base en sus indicadores de vulnerabilidad para derivarlo a uno o más programas.
-              Un mismo hogar puede requerir atención simultánea de varios programas. Las cifras muestran cuántos hogares presentan criterios de ingreso a cada programa.
-            </p>
-          </div>
-
-          {/* Tarjetas de los 7 Programas */}
-          <div className="grid sm:grid-cols-2 lg:grid-cols-3 xl:grid-cols-4 gap-4">
-            {metrics.programDemand.map((prog) => (
-              <div
-                key={prog.id}
-                className="bg-[#150426] border border-purple-800/50 rounded-3xl p-5 shadow-lg hover:border-pink-700/60 transition-all space-y-3"
-                style={{ borderLeftColor: prog.color, borderLeftWidth: 3 }}
-              >
-                <div className="flex items-start justify-between">
-                  <span
-                    className={`text-[10px] font-black px-2.5 py-1 rounded-lg border ${prog.bgBadge}`}
-                  >
-                    {prog.code}
-                  </span>
-                  <span className="text-3xl font-black text-white">
-                    {prog.count}
-                    <span className="text-xs text-purple-400 ml-1">hogares</span>
-                  </span>
-                </div>
-                <div>
-                  <p className="text-white font-black text-sm leading-tight">{prog.title}</p>
-                  <p className={`text-[10px] font-bold mt-0.5 ${prog.textBadge}`}>{prog.badge}</p>
-                </div>
-                <p className="text-[10px] text-purple-300/80 leading-relaxed">{prog.summary}</p>
-                <div className="pt-2 border-t border-purple-900/60">
-                  <p className="text-[9px] text-purple-400 uppercase font-bold tracking-wider mb-1">Criterios de ingreso</p>
-                  <p className="text-[9px] text-purple-300/70 leading-relaxed">{prog.targetCriteria}</p>
-                </div>
-                {/* Mini barra de progreso */}
-                <div className="w-full bg-purple-950 rounded-full h-1.5 overflow-hidden">
-                  <div
-                    className="h-full rounded-full transition-all"
-                    style={{
-                      width: `${metrics.totalHogares > 0 ? (prog.count / metrics.totalHogares) * 100 : 0}%`,
-                      backgroundColor: prog.color,
-                    }}
-                  />
-                </div>
-                <p className="text-[9px] text-purple-400">
-                  {metrics.totalHogares > 0
-                    ? `${Math.round((prog.count / metrics.totalHogares) * 100)}% de los hogares censados`
-                    : '0%'}
-                </p>
-              </div>
-            ))}
-          </div>
-
-          {/* Gráfico de Demanda por Programa */}
-          <div className="bg-[#150426] border border-purple-800/50 rounded-3xl p-6 shadow-xl">
-            <h4 className="text-base font-black text-white mb-1">
-              📊 Distribución de Demanda por Programa — {metrics.totalHogares} Hogares Analizados
-            </h4>
-            <p className="text-xs text-purple-300/70 mb-5">
-              Un hogar puede ser contabilizado en múltiples programas simultáneamente según su perfil de vulnerabilidad.
-            </p>
-            <ResponsiveContainer width="100%" height={300}>
-              <BarChart data={metrics.programChartData} margin={{ top: 5, right: 20, left: 0, bottom: 20 }}>
-                <CartesianGrid strokeDasharray="3 3" stroke="#3730a3" opacity={0.3} />
-                <XAxis
-                  dataKey="name"
-                  tick={{ fill: '#c4b5fd', fontSize: 11, fontWeight: 700 }}
-                  axisLine={{ stroke: '#6d28d9' }}
-                />
-                <YAxis
-                  tick={{ fill: '#c4b5fd', fontSize: 11 }}
-                  axisLine={{ stroke: '#6d28d9' }}
-                  allowDecimals={false}
-                />
-                <Tooltip
-                  contentStyle={{ background: '#1e0545', border: '1px solid #7c3aed', borderRadius: 12, color: '#e9d5ff' }}
-                  formatter={(value: number, name: string, props: any) => [
-                    `${value} hogar${value !== 1 ? 'es' : ''}`,
-                    props?.payload?.label || name,
-                  ]}
-                />
-                <Bar dataKey="Hogares" radius={[6, 6, 0, 0]}>
-                  {metrics.programChartData.map((entry, index) => (
-                    <Cell key={`cell-${index}`} fill={entry.fill} />
-                  ))}
-                </Bar>
-              </BarChart>
-            </ResponsiveContainer>
-          </div>
-
-          {/* Tabla: Hogares por Programa */}
-          <div className="bg-[#150426] border border-purple-800/50 rounded-3xl p-6 shadow-xl space-y-5">
-            <h4 className="text-base font-black text-white">
-              📋 Hogares Identificados por Programa — Detalle
-            </h4>
-            {metrics.programDemand.map((prog) => {
-              const hogaresEnPrograma = surveys.filter((s) =>
-                Array.isArray(s.assignedPrograms)
-                  ? s.assignedPrograms.includes(prog.id)
-                  : computeAssignedPrograms(s).includes(prog.id)
-              );
-              if (hogaresEnPrograma.length === 0) return null;
-              return (
-                <div key={prog.id} className="border border-purple-900/60 rounded-2xl overflow-hidden">
-                  {/* Cabecera del programa */}
-                  <div
-                    className="px-5 py-3 flex items-center gap-3"
-                    style={{ backgroundColor: prog.color + '22', borderBottom: `2px solid ${prog.color}55` }}
-                  >
-                    <span className={`text-[10px] font-black px-2 py-0.5 rounded-md border ${prog.bgBadge}`}>
-                      {prog.code}
-                    </span>
-                    <div>
-                      <p className="text-white font-black text-sm">{prog.title}</p>
-                      <p className="text-[10px] text-purple-300">{prog.badge} · {hogaresEnPrograma.length} hogar{hogaresEnPrograma.length !== 1 ? 'es' : ''} derivados</p>
-                    </div>
-                  </div>
-                  {/* Lista de hogares */}
-                  <div className="divide-y divide-purple-900/30">
-                    {hogaresEnPrograma.map((s) => {
-                      const primaryMember = s.householdMembers && s.householdMembers.length > 0 ? s.householdMembers[0] : null;
-                      return (
-                        <div
-                          key={s._id}
-                          className="px-5 py-3 flex items-center justify-between gap-4 hover:bg-purple-900/10 transition-colors cursor-pointer"
-                          onClick={() => { setSelectedHousehold(s); setActiveTab('HOGARES'); }}
-                        >
-                          <div className="flex items-center gap-3 min-w-0">
-                            <span className="font-mono text-pink-300 font-black text-[10px] shrink-0">{s.surveyCode}</span>
-                            <div className="min-w-0">
-                              <p className="text-white font-bold text-xs truncate">
-                                {primaryMember?.fullName || 'Sin nombre registrado'} · {s.barrio}
-                              </p>
-                              <p className="text-[10px] text-purple-300 truncate">
-                                {s.householdSize} hab. · {s.manzana || 'Mz s/n'} {s.fieldZone ? `· ${s.fieldZone}` : ''}
-                              </p>
-                            </div>
-                          </div>
-                          <div className="flex items-center gap-2 shrink-0">
-                            <span className={`text-[9px] font-black px-2 py-0.5 rounded-full border ${
-                              s.priority === 'INMEDIATA'
-                                ? 'bg-rose-500/20 text-rose-300 border-rose-500/40'
-                                : s.priority === 'PRIORITARIA'
-                                ? 'bg-amber-500/20 text-amber-300 border-amber-500/40'
-                                : 'bg-emerald-500/20 text-emerald-300 border-emerald-500/40'
-                            }`}>
-                              {s.priority}
-                            </span>
-                            <span className="text-[10px] text-purple-400">Ver ficha →</span>
-                          </div>
-                        </div>
-                      );
-                    })}
-                  </div>
-                </div>
-              );
-            })}
-          </div>
-
-        </div>
-      )}
 
       {/* ─────────────────────────────────────────────────────────────────
           PESTAÑA 1: PANORAMA GLOBAL & PRIORIDADES
@@ -1926,44 +1757,99 @@ export default function AnalisisEncuestasPage() {
                 </p>
               </div>
 
-              {/* Bloque 7: Programas Senda Mujer Asignados */}
+              {/* Bloque 7: Citas Médicas Especializadas Solicitadas */}
               <div className="bg-[#18052e] border border-pink-800/50 rounded-2xl p-4 space-y-3">
                 <h4 className="font-black text-sm text-pink-300 flex items-center gap-2">
-                  <span className="text-base">🎯</span>
-                  7. Derivación Automática a Programas Senda Mujer
+                  <span className="text-base">🩺</span>
+                  7. Citas Médicas Especializadas Solicitadas & Motivo de Consulta
                 </h4>
                 <p className="text-[10px] text-purple-300/70">
-                  Basado en los indicadores de vulnerabilidad registrados en esta ficha censal, el hogar fue derivado a los siguientes programas de atención:
+                  Especialidades requeridas por el hogar para la jornada de salud comunitaria, con sus respectivos motivos o síntomas informados:
                 </p>
-                <div className="grid sm:grid-cols-2 gap-2">
-                  {(Array.isArray(selectedHousehold.assignedPrograms)
-                    ? selectedHousehold.assignedPrograms
-                    : computeAssignedPrograms(selectedHousehold)
-                  ).map((progId) => {
-                    const prog = SENDA_PROGRAMS.find((p) => p.id === progId);
-                    if (!prog) return null;
-                    return (
-                      <div key={progId} className="bg-purple-950/50 border border-purple-800/60 rounded-xl p-3 flex items-start gap-2.5">
-                        <span
-                          className={`text-[10px] font-black px-2 py-1 rounded-lg border shrink-0 ${prog.bgBadge}`}
-                        >
-                          {prog.code}
-                        </span>
-                        <div>
-                          <div className="flex items-center gap-1.5 flex-wrap">
-                            <p className="text-white font-bold text-xs">{prog.title}</p>
-                            {selectedHousehold.interestedPrograms?.includes(prog.id) && (
-                              <span className="text-[9px] bg-pink-500/30 text-pink-200 border border-pink-500/50 px-1.5 py-0.2 rounded font-bold">
-                                Postulación directa
-                              </span>
-                            )}
-                          </div>
-                          <p className="text-[10px] text-purple-300 mt-0.5">{prog.badge}</p>
-                          <p className="text-[10px] text-purple-300/70 mt-1 leading-relaxed">{prog.summary}</p>
-                        </div>
+                <div className="grid sm:grid-cols-2 gap-2.5">
+                  {(selectedHousehold.needsGynecology || selectedHousehold.lastPapSmear === 'MAS_3_ANOS' || selectedHousehold.lastPapSmear === 'NUNCA') && (
+                    <div className="bg-pink-950/30 border border-pink-700/50 rounded-xl p-3">
+                      <div className="flex items-center gap-2">
+                        <span className="text-xs">🌸</span>
+                        <span className="text-xs font-black text-pink-200">Ginecología / Citología</span>
+                        <span className="text-[9px] bg-pink-500/30 text-pink-200 px-1.5 py-0.5 rounded font-bold ml-auto">Requerida</span>
                       </div>
-                    );
-                  })}
+                      <p className="text-[11px] text-purple-200 mt-1.5">
+                        {selectedHousehold.gynecologySymptoms || (selectedHousehold.lastPapSmear === 'MAS_3_ANOS' ? 'Tamizaje cervical urgente: citología vencida hace más de 3 años' : selectedHousehold.lastPapSmear === 'NUNCA' ? 'Primera citología: nunca se ha realizado el examen' : 'Consulta ginecológica general preventiva')}
+                      </p>
+                    </div>
+                  )}
+
+                  {(selectedHousehold.needsGeneralMedicine || selectedHousehold.hasChronicDisease) && (
+                    <div className="bg-purple-950/40 border border-purple-700/50 rounded-xl p-3">
+                      <div className="flex items-center gap-2">
+                        <span className="text-xs">🩺</span>
+                        <span className="text-xs font-black text-purple-200">Medicina General</span>
+                        <span className="text-[9px] bg-purple-500/30 text-purple-200 px-1.5 py-0.5 rounded font-bold ml-auto">Requerida</span>
+                      </div>
+                      <p className="text-[11px] text-purple-200 mt-1.5">
+                        {selectedHousehold.generalMedicineReason || selectedHousehold.chronicDiseaseDetails || 'Revisión y control médico preventivo'}
+                      </p>
+                    </div>
+                  )}
+
+                  {(selectedHousehold.needsPediatrics || (selectedHousehold.minorCount > 0 && selectedHousehold.hasEDAParasites)) && (
+                    <div className="bg-amber-950/30 border border-amber-700/50 rounded-xl p-3">
+                      <div className="flex items-center gap-2">
+                        <span className="text-xs">👶</span>
+                        <span className="text-xs font-black text-amber-200">Pediatría</span>
+                        <span className="text-[9px] bg-amber-500/30 text-amber-200 px-1.5 py-0.5 rounded font-bold ml-auto">Requerida</span>
+                      </div>
+                      <p className="text-[11px] text-amber-100 mt-1.5">
+                        {selectedHousehold.pediatricsReason || selectedHousehold.edaDetails || `Control de crecimiento y desarrollo (${selectedHousehold.minorCount} menor${selectedHousehold.minorCount !== 1 ? 'es' : ''} en el hogar)`}
+                      </p>
+                    </div>
+                  )}
+
+                  {(selectedHousehold.needsDental || selectedHousehold.dentalCarePending) && (
+                    <div className="bg-cyan-950/30 border border-cyan-700/50 rounded-xl p-3">
+                      <div className="flex items-center gap-2">
+                        <span className="text-xs">🦷</span>
+                        <span className="text-xs font-black text-cyan-200">Odontología</span>
+                        <span className="text-[9px] bg-cyan-500/30 text-cyan-200 px-1.5 py-0.5 rounded font-bold ml-auto">Requerida</span>
+                      </div>
+                      <p className="text-[11px] text-cyan-100 mt-1.5">
+                        {selectedHousehold.dentalReason || 'Atención en salud oral y profilaxis comunitaria'}
+                      </p>
+                    </div>
+                  )}
+
+                  {(selectedHousehold.needsPsychology || selectedHousehold.psychologicalSupportNeeded || selectedHousehold.hasCaregiverBurnout) && (
+                    <div className="bg-sky-950/30 border border-sky-700/50 rounded-xl p-3">
+                      <div className="flex items-center gap-2">
+                        <span className="text-xs">🧠</span>
+                        <span className="text-xs font-black text-sky-200">Psicología & Apoyo Emocional</span>
+                        <span className="text-[9px] bg-sky-500/30 text-sky-200 px-1.5 py-0.5 rounded font-bold ml-auto">Requerida</span>
+                      </div>
+                      <p className="text-[11px] text-sky-100 mt-1.5">
+                        {selectedHousehold.psychologyReason || (selectedHousehold.hasCaregiverBurnout ? 'Sobrecarga extrema en labores de cuidado no remunerado' : 'Acompañamiento psicosocial')}
+                      </p>
+                    </div>
+                  )}
+
+                  {selectedHousehold.needsNutrition && (
+                    <div className="bg-emerald-950/30 border border-emerald-700/50 rounded-xl p-3">
+                      <div className="flex items-center gap-2">
+                        <span className="text-xs">🥗</span>
+                        <span className="text-xs font-black text-emerald-200">Nutrición & Dietética</span>
+                        <span className="text-[9px] bg-emerald-500/30 text-emerald-200 px-1.5 py-0.5 rounded font-bold ml-auto">Requerida</span>
+                      </div>
+                      <p className="text-[11px] text-emerald-100 mt-1.5">
+                        {selectedHousehold.nutritionReason || 'Evaluación de seguridad alimentaria y estado nutricional'}
+                      </p>
+                    </div>
+                  )}
+
+                  {!selectedHousehold.needsGynecology && !selectedHousehold.needsGeneralMedicine && !selectedHousehold.needsPediatrics && !selectedHousehold.needsDental && !selectedHousehold.needsPsychology && !selectedHousehold.needsNutrition && selectedHousehold.lastPapSmear !== 'MAS_3_ANOS' && selectedHousehold.lastPapSmear !== 'NUNCA' && !selectedHousehold.hasChronicDisease && !selectedHousehold.dentalCarePending && !selectedHousehold.psychologicalSupportNeeded && (
+                    <div className="sm:col-span-2 text-center py-4 bg-purple-950/30 rounded-xl border border-purple-900/50">
+                      <p className="text-xs text-purple-300/80">No se registraron solicitudes específicas de citas previas. Se realizará triaje preventivo al ingreso de la jornada.</p>
+                    </div>
+                  )}
                 </div>
               </div>
 

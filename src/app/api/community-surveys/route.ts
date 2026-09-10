@@ -166,9 +166,20 @@ export async function POST(request: Request) {
       psychologicalSupportWho: str(body.psychologicalSupportWho, 300),
       hasCaregiverBurnout: bool(body.hasCaregiverBurnout),
 
-      /* B.1 - Salud Sexual, Reproductiva, Ginecológica e ITS */
-      hasSTIHistoryOrSymptoms: bool(body.hasSTIHistoryOrSymptoms),
-      stiSymptomsDetails: str(body.stiSymptomsDetails, 400),
+      /* B.1 - Citas Médicas por Especialidad & Salud de la Mujer */
+      needsGynecology: bool(body.needsGynecology),
+      gynecologySymptoms: str(body.gynecologySymptoms, 500),
+      needsGeneralMedicine: bool(body.needsGeneralMedicine),
+      generalMedicineReason: str(body.generalMedicineReason, 500),
+      needsPediatrics: bool(body.needsPediatrics),
+      pediatricsReason: str(body.pediatricsReason, 500),
+      needsDental: bool(body.needsDental),
+      dentalReason: str(body.dentalReason, 500),
+      needsPsychology: bool(body.needsPsychology),
+      psychologyReason: str(body.psychologyReason, 500),
+      needsNutrition: bool(body.needsNutrition),
+      nutritionReason: str(body.nutritionReason, 500),
+
       lastPapSmear: ALLOWED_PAP.has(str(body.lastPapSmear, 30))
         ? str(body.lastPapSmear, 30)
         : 'NO_APLICA',
@@ -176,9 +187,11 @@ export async function POST(request: Request) {
         ? str(body.familyPlanningMethod, 30)
         : 'NINGUNO',
       desiresFamilyPlanningCounseling: bool(body.desiresFamilyPlanningCounseling),
-      vaginalInfectionSymptoms: bool(body.vaginalInfectionSymptoms),
       breastSelfExamTrained: bool(body.breastSelfExamTrained),
       hasMammographyOrUltrasoundNeeded: bool(body.hasMammographyOrUltrasoundNeeded),
+      hasSTIHistoryOrSymptoms: bool(body.hasSTIHistoryOrSymptoms),
+      stiSymptomsDetails: str(body.stiSymptomsDetails, 400),
+      vaginalInfectionSymptoms: bool(body.vaginalInfectionSymptoms),
       hasSexualViolenceIndicator: bool(body.hasSexualViolenceIndicator),
       hasTeenPregnancy: bool(body.hasTeenPregnancy),
       hasChildMalnutrition: bool(body.hasChildMalnutrition),
