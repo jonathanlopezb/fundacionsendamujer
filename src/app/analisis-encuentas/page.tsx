@@ -148,7 +148,7 @@ interface SurveyData {
 
 const PALETTE = ['#E12880', '#9333EA', '#38BDF8', '#F59E0B', '#10B981', '#EC4899', '#6366F1'];
 
-export function getHouseholdMedicalAppointments(s: SurveyData) {
+function getHouseholdMedicalAppointments(s: SurveyData) {
   const items: { label: string; badge: string; reason: string; color: string }[] = [];
   if (s.needsGynecology || s.lastPapSmear === 'MAS_3_ANOS' || s.lastPapSmear === 'NUNCA' || (Array.isArray(s.needs) && s.needs.includes('ginecologia'))) {
     items.push({
@@ -201,7 +201,7 @@ export function getHouseholdMedicalAppointments(s: SurveyData) {
   return items;
 }
 
-export function getHouseholdLegalCivicAppointments(s: SurveyData) {
+function getHouseholdLegalCivicAppointments(s: SurveyData) {
   const items: { label: string; badge: string; mesa: string; reason: string; color: string; type: 'JURIDICO' | 'CIVICO' }[] = [];
 
   // 1. Familia y Alimentos
