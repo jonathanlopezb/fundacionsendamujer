@@ -214,6 +214,10 @@ export async function POST(request: Request) {
       pensionDetails: str(body.pensionDetails),
       hasUrgentCase: bool(body.hasUrgentCase),
       urgentCaseDescription: str(body.urgentCaseDescription, 600),
+      needsLegalCounseling: bool(body.needsLegalCounseling),
+      legalCounselingReason: str(body.legalCounselingReason, 500),
+      needsCivicRegistration: bool(body.needsCivicRegistration),
+      civicRegistrationReason: str(body.civicRegistrationReason, 500),
 
       /* D */
       incomeSource: str(body.incomeSource, 300),

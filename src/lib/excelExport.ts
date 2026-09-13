@@ -149,10 +149,12 @@ export function exportSurveysToExcel(surveys: any[], metrics: any, selectedBarri
    <Column ss:Width="80"/>
    <Column ss:Width="100"/>
    <Column ss:Width="80"/>
+   <Column ss:Width="160"/>
+   <Column ss:Width="180"/>
    <Column ss:Width="220"/>
    <Column ss:Width="80"/>
    <Row ss:Height="30">
-    <Cell ss:MergeAcross="27" ss:StyleID="HeaderTitle">
+    <Cell ss:MergeAcross="29" ss:StyleID="HeaderTitle">
      <Data ss:Type="String">FUNDACIÓN SENDA MUJER — CENSO INTEGRAL Y DIAGNÓSTICO DE HOGARES (${escapeXml(selectedBarrio)})</Data>
     </Cell>
    </Row>
@@ -183,6 +185,8 @@ export function exportSurveysToExcel(surveys: any[], metrics: any, selectedBarri
     <Cell ss:StyleID="HeaderCol"><Data ss:Type="String">Proc. Alimentos</Data></Cell>
     <Cell ss:StyleID="HeaderCol"><Data ss:Type="String">Fuente Ingresos</Data></Cell>
     <Cell ss:StyleID="HeaderCol"><Data ss:Type="String">Recibe Subsidio</Data></Cell>
+    <Cell ss:StyleID="HeaderCol"><Data ss:Type="String">Citas Médicas Solicitadas</Data></Cell>
+    <Cell ss:StyleID="HeaderCol"><Data ss:Type="String">Citas Jurídicas &amp; Cívicas</Data></Cell>
     <Cell ss:StyleID="HeaderCol"><Data ss:Type="String">Observaciones del Encuestador</Data></Cell>
     <Cell ss:StyleID="HeaderCol"><Data ss:Type="String">Fecha Censo</Data></Cell>
    </Row>
@@ -198,6 +202,26 @@ export function exportSurveysToExcel(surveys: any[], metrics: any, selectedBarri
       : 'No detallado';
 
     const fechaVisita = s.visitDate ? new Date(s.visitDate).toISOString().slice(0, 10) : todayStr;
+
+    // Citas Médicas Solicitadas
+    const medList = [];
+    if (s.needsGynecology || s.lastPapSmear === 'MAS_3_ANOS' || s.lastPapSmear === 'NUNCA' || (Array.isArray(s.needs) && s.needs.includes('ginecologia'))) medList.push('Ginecología');
+    if (s.needsGeneralMedicine || s.hasChronicDisease || (Array.isArray(s.needs) && s.needs.includes('medicina_general'))) medList.push('Medicina General');
+    if (s.needsPediatrics || (s.minorCount > 0 && s.hasEDAParasites) || (Array.isArray(s.needs) && s.needs.includes('pediatria'))) medList.push('Pediatría');
+    if (s.needsDental || s.dentalCarePending || (Array.isArray(s.needs) && s.needs.includes('odontologia'))) medList.push('Odontología');
+    if (s.needsPsychology || s.psychologicalSupportNeeded || s.hasCaregiverBurnout || (Array.isArray(s.needs) && s.needs.includes('psicologia'))) medList.push('Psicología');
+    if (s.needsNutrition) medList.push('Nutrición');
+    const citasMedicasStr = medList.length > 0 ? medList.join(', ') : 'Triage en evento';
+
+    // Citas Jurídicas & Cívicas Solicitadas
+    const legList = [];
+    if (s.hasFamilyProcess || (Array.isArray(s.needs) && s.needs.includes('familia'))) legList.push('Familia/Alimentos');
+    if (s.hasVIFVBG || (Array.isArray(s.needs) && s.needs.includes('violencia')) || s.hasMedidaProteccion) legList.push('Protección VBG');
+    if (s.needsPensionOrSubsidy || s.hasDebtOrProcess || (Array.isArray(s.needs) && (s.needs.includes('tramites') || s.needs.includes('subsidios')))) legList.push('Tutela/Deudas');
+    if (s.needsLegalCounseling) legList.push('Asesoría Jurídica');
+    if (!s.allDocumentsValid || s.needsCivicRegistration || (Array.isArray(s.needs) && s.needs.includes('documentacion')) || (Array.isArray(s.householdMembers) && s.householdMembers.some(m => m.documentType === 'SIN_DOC' || !m.documentNumber))) legList.push('Mesa Registraduría');
+    if ((!s.hasHousingDocument && s.housingType !== 'ARRENDADA') || (Array.isArray(s.needs) && s.needs.includes('vivienda'))) legList.push('Titulación Vivienda');
+    const citasJuridicasStr = legList.length > 0 ? legList.join(', ') : 'Sin trámite cívico';
 
     xml += `   <Row ss:Height="22">
     <Cell ss:StyleID="RowCellCenter"><Data ss:Type="String">${escapeXml(s.surveyCode)}</Data></Cell>
@@ -226,6 +250,8 @@ export function exportSurveysToExcel(surveys: any[], metrics: any, selectedBarri
     <Cell ss:StyleID="RowCellCenter"><Data ss:Type="String">${s.hasFamilyProcess ? 'SÍ' : 'NO'}</Data></Cell>
     <Cell ss:StyleID="RowCell"><Data ss:Type="String">${escapeXml(s.incomeSource || 'Informal / Rebusque')}</Data></Cell>
     <Cell ss:StyleID="RowCellCenter"><Data ss:Type="String">${s.receivesSubsidies ? 'SÍ' : 'NO'}</Data></Cell>
+    <Cell ss:StyleID="RowCell"><Data ss:Type="String">${escapeXml(citasMedicasStr)}</Data></Cell>
+    <Cell ss:StyleID="RowCell"><Data ss:Type="String">${escapeXml(citasJuridicasStr)}</Data></Cell>
     <Cell ss:StyleID="RowCell"><Data ss:Type="String">${escapeXml(s.collectorObservations || s.urgentCaseDescription || 'Sin notas adicionales')}</Data></Cell>
     <Cell ss:StyleID="RowCellCenter"><Data ss:Type="String">${escapeXml(fechaVisita)}</Data></Cell>
    </Row>
@@ -316,6 +342,46 @@ export function exportSurveysToExcel(surveys: any[], metrics: any, selectedBarri
     <Cell ss:StyleID="RowCell"><Data ss:Type="String">Sospecha o Síntomas Activos de ITS</Data></Cell>
     <Cell ss:StyleID="RowCellCenter"><Data ss:Type="Number">${metrics.sospechaITS || 0}</Data></Cell>
     <Cell ss:StyleID="RowCellCenter"><Data ss:Type="String">Tratamiento sindrómico</Data></Cell>
+   </Row>
+   <Row>
+    <Cell ss:StyleID="RowCell"><Data ss:Type="String">🩺 Citas de Salud: Ginecología &amp; Citología</Data></Cell>
+    <Cell ss:StyleID="RowCellCenter"><Data ss:Type="Number">${metrics.citasGinecologia || 0}</Data></Cell>
+    <Cell ss:StyleID="RowCellCenter"><Data ss:Type="String">Citas de salud</Data></Cell>
+   </Row>
+   <Row>
+    <Cell ss:StyleID="RowCell"><Data ss:Type="String">🩺 Citas de Salud: Medicina General</Data></Cell>
+    <Cell ss:StyleID="RowCellCenter"><Data ss:Type="Number">${metrics.citasMedicinaGeneral || 0}</Data></Cell>
+    <Cell ss:StyleID="RowCellCenter"><Data ss:Type="String">Citas de salud</Data></Cell>
+   </Row>
+   <Row>
+    <Cell ss:StyleID="RowCell"><Data ss:Type="String">🩺 Citas de Salud: Pediatría (Menores)</Data></Cell>
+    <Cell ss:StyleID="RowCellCenter"><Data ss:Type="Number">${metrics.citasPediatria || 0}</Data></Cell>
+    <Cell ss:StyleID="RowCellCenter"><Data ss:Type="String">Citas de salud</Data></Cell>
+   </Row>
+   <Row>
+    <Cell ss:StyleID="RowCell"><Data ss:Type="String">⚖️ Citas Jurídicas: Mesa 1 Familia &amp; Alimentos</Data></Cell>
+    <Cell ss:StyleID="RowCellCenter"><Data ss:Type="Number">${metrics.citasFamiliaAlimentos || metrics.procesosAlimentos || 0}</Data></Cell>
+    <Cell ss:StyleID="RowCellCenter"><Data ss:Type="String">Defensoría de familia</Data></Cell>
+   </Row>
+   <Row>
+    <Cell ss:StyleID="RowCell"><Data ss:Type="String">⚖️ Citas Jurídicas: Mesa 2 Protección VBG &amp; CAVIF</Data></Cell>
+    <Cell ss:StyleID="RowCellCenter"><Data ss:Type="Number">${metrics.citasVBGProteccion || metrics.casosVIF || 0}</Data></Cell>
+    <Cell ss:StyleID="RowCellCenter"><Data ss:Type="String">Medidas cautelares</Data></Cell>
+   </Row>
+   <Row>
+    <Cell ss:StyleID="RowCell"><Data ss:Type="String">⚖️ Citas Jurídicas: Mesa 3 Tutelas, Deudas &amp; Trámites</Data></Cell>
+    <Cell ss:StyleID="RowCellCenter"><Data ss:Type="Number">${metrics.citasTutelaTramites || metrics.tramitesPensionales || 0}</Data></Cell>
+    <Cell ss:StyleID="RowCellCenter"><Data ss:Type="String">Consultorio jurídico</Data></Cell>
+   </Row>
+   <Row>
+    <Cell ss:StyleID="RowCell"><Data ss:Type="String">🏛️ Trámites Cívicos: Mesa Registraduría / Identidad</Data></Cell>
+    <Cell ss:StyleID="RowCellCenter"><Data ss:Type="Number">${metrics.citasIdentificacionCivica || metrics.indocumentados || 0}</Data></Cell>
+    <Cell ss:StyleID="RowCellCenter"><Data ss:Type="String">Cédulas / TI</Data></Cell>
+   </Row>
+   <Row>
+    <Cell ss:StyleID="RowCell"><Data ss:Type="String">🏛️ Trámites Cívicos: Mesa Titulación Vivienda</Data></Cell>
+    <Cell ss:StyleID="RowCellCenter"><Data ss:Type="Number">${metrics.citasViviendaCivica || metrics.sinTituloVivienda || 0}</Data></Cell>
+    <Cell ss:StyleID="RowCellCenter"><Data ss:Type="String">Corvivienda / Hábitat</Data></Cell>
    </Row>
    <Row>
     <Cell ss:StyleID="RowCell"><Data ss:Type="String">Alertas de Violencia Intrafamiliar y de Género (VIF)</Data></Cell>

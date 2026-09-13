@@ -105,6 +105,10 @@ export interface ICommunitySurvey extends Document {
   pensionDetails?: string;
   hasUrgentCase: boolean;
   urgentCaseDescription?: string;
+  needsLegalCounseling?: boolean;
+  legalCounselingReason?: string;
+  needsCivicRegistration?: boolean;
+  civicRegistrationReason?: string;
 
   /* ── Sección D — Situación económica y social ────────────────── */
   incomeSource?: string;
@@ -265,6 +269,10 @@ const CommunitySurveySchema = new Schema<ICommunitySurvey>(
     pensionDetails: { type: String, trim: true, maxlength: 400 },
     hasUrgentCase: { type: Boolean, default: false },
     urgentCaseDescription: { type: String, trim: true, maxlength: 600 },
+    needsLegalCounseling: { type: Boolean, default: false },
+    legalCounselingReason: { type: String, trim: true, maxlength: 500 },
+    needsCivicRegistration: { type: Boolean, default: false },
+    civicRegistrationReason: { type: String, trim: true, maxlength: 500 },
 
     /* Sección D */
     incomeSource: { type: String, trim: true, maxlength: 300 },

@@ -98,6 +98,8 @@ interface SurveyData {
   hasVIFVBG: boolean;
   vifComplaintFiled?: boolean;
   vifProcessStatus?: string;
+  knowsRightsAndRoutes?: boolean;
+  hasMedidaProteccion?: boolean;
   housingType: 'PROPIA' | 'ARRENDADA' | 'FAMILIAR' | 'OTRA';
   hasHousingDocument: boolean;
   hasDebtOrProcess: boolean;
@@ -106,6 +108,10 @@ interface SurveyData {
   pensionDetails?: string;
   hasUrgentCase: boolean;
   urgentCaseDescription?: string;
+  needsLegalCounseling?: boolean;
+  legalCounselingReason?: string;
+  needsCivicRegistration?: boolean;
+  civicRegistrationReason?: string;
 
   /* Sección D */
   incomeSource?: string;
@@ -142,6 +148,138 @@ interface SurveyData {
 
 const PALETTE = ['#E12880', '#9333EA', '#38BDF8', '#F59E0B', '#10B981', '#EC4899', '#6366F1'];
 
+export function getHouseholdMedicalAppointments(s: SurveyData) {
+  const items: { label: string; badge: string; reason: string; color: string }[] = [];
+  if (s.needsGynecology || s.lastPapSmear === 'MAS_3_ANOS' || s.lastPapSmear === 'NUNCA' || (Array.isArray(s.needs) && s.needs.includes('ginecologia'))) {
+    items.push({
+      label: 'Ginecología',
+      badge: '🌸 Ginecología',
+      reason: s.gynecologySymptoms || (s.lastPapSmear === 'MAS_3_ANOS' ? 'Citología vencida >3 años' : s.lastPapSmear === 'NUNCA' ? 'Nunca se ha hecho citología' : 'Consulta ginecológica y tamizaje cervical'),
+      color: 'bg-pink-500/20 text-pink-300 border-pink-500/40'
+    });
+  }
+  if (s.needsGeneralMedicine || s.hasChronicDisease || (Array.isArray(s.needs) && s.needs.includes('medicina_general'))) {
+    items.push({
+      label: 'Medicina General',
+      badge: '🩺 Med. General',
+      reason: s.generalMedicineReason || s.chronicDiseaseDetails || 'Revisión médica y control general',
+      color: 'bg-purple-500/20 text-purple-300 border-purple-500/40'
+    });
+  }
+  if (s.needsPediatrics || (s.minorCount > 0 && s.hasEDAParasites) || (Array.isArray(s.needs) && s.needs.includes('pediatria'))) {
+    items.push({
+      label: 'Pediatría',
+      badge: '👶 Pediatría',
+      reason: s.pediatricsReason || s.edaDetails || `Control pediátrico para ${s.minorCount} menor(es)`,
+      color: 'bg-amber-500/20 text-amber-300 border-amber-500/40'
+    });
+  }
+  if (s.needsDental || s.dentalCarePending || (Array.isArray(s.needs) && s.needs.includes('odontologia'))) {
+    items.push({
+      label: 'Odontología',
+      badge: '🦷 Odontología',
+      reason: s.dentalReason || 'Salud oral y profilaxis comunitaria',
+      color: 'bg-cyan-500/20 text-cyan-300 border-cyan-500/40'
+    });
+  }
+  if (s.needsPsychology || s.psychologicalSupportNeeded || s.hasCaregiverBurnout || (Array.isArray(s.needs) && s.needs.includes('psicologia'))) {
+    items.push({
+      label: 'Psicología',
+      badge: '🧠 Psicología',
+      reason: s.psychologyReason || (s.hasCaregiverBurnout ? 'Sobrecarga en cuidado no remunerado' : 'Apoyo psicosocial y salud mental'),
+      color: 'bg-sky-500/20 text-sky-300 border-sky-500/40'
+    });
+  }
+  if (s.needsNutrition) {
+    items.push({
+      label: 'Nutrición',
+      badge: '🥗 Nutrición',
+      reason: s.nutritionReason || 'Evaluación de seguridad nutricional',
+      color: 'bg-emerald-500/20 text-emerald-300 border-emerald-500/40'
+    });
+  }
+  return items;
+}
+
+export function getHouseholdLegalCivicAppointments(s: SurveyData) {
+  const items: { label: string; badge: string; mesa: string; reason: string; color: string; type: 'JURIDICO' | 'CIVICO' }[] = [];
+
+  // 1. Familia y Alimentos
+  if (s.hasFamilyProcess || (Array.isArray(s.needs) && s.needs.includes('familia'))) {
+    items.push({
+      label: 'Derecho de Familia',
+      badge: '⚖️ Jurídico Familia',
+      mesa: 'Mesa 1 · Familia y Alimentos',
+      reason: s.familyProcessDetails || 'Fijación o cobro de alimentos, custodia o visitas de menores',
+      color: 'bg-indigo-500/20 text-indigo-300 border-indigo-500/40',
+      type: 'JURIDICO',
+    });
+  }
+
+  // 2. Violencia de Género / Protección
+  if (s.hasVIFVBG || (Array.isArray(s.needs) && s.needs.includes('violencia')) || s.hasMedidaProteccion || s.hasSexualViolenceIndicator) {
+    items.push({
+      label: 'Protección VBG',
+      badge: '⚖️ Jurídico VBG',
+      mesa: 'Mesa 2 · Protección VBG & CAVIF',
+      reason: s.vifProcessStatus || (s.hasMedidaProteccion ? 'Seguimiento a medida de protección activa' : 'Ruta legal confidencial de protección y denuncia CAVIF'),
+      color: 'bg-rose-500/20 text-rose-300 border-rose-500/40',
+      type: 'JURIDICO',
+    });
+  }
+
+  // 3. Tutelas, Deudas, Pensiones y Trámites Públicos
+  if (s.needsPensionOrSubsidy || s.hasDebtOrProcess || (Array.isArray(s.needs) && (s.needs.includes('tramites') || s.needs.includes('subsidios')))) {
+    items.push({
+      label: 'Tutela y Trámites',
+      badge: '⚖️ Jurídico Tutela/Deudas',
+      mesa: 'Mesa 3 · Tutela, Deudas & Pensiones',
+      reason: [s.debtDetails, s.pensionDetails].filter(Boolean).join(' · ') || 'Acción de tutela, deudas/embargos, pensión o subsidios del Estado',
+      color: 'bg-violet-500/20 text-violet-300 border-violet-500/40',
+      type: 'JURIDICO',
+    });
+  }
+
+  // 4. Asesoría Jurídica Directa
+  if (s.needsLegalCounseling) {
+    items.push({
+      label: 'Asesoría Jurídica',
+      badge: '⚖️ Asesoría Jurídica',
+      mesa: 'Mesa Jurídica General',
+      reason: s.legalCounselingReason || 'Orientación y acompañamiento legal presencial',
+      color: 'bg-purple-500/20 text-purple-200 border-purple-500/40',
+      type: 'JURIDICO',
+    });
+  }
+
+  // 5. Registraduría / Identidad (Trámite Cívico)
+  const hasUnregisteredMember = Array.isArray(s.householdMembers) && s.householdMembers.some(m => m.documentType === 'SIN_DOC' || !m.documentNumber);
+  if (!s.allDocumentsValid || s.needsCivicRegistration || hasUnregisteredMember || (Array.isArray(s.needs) && s.needs.includes('documentacion'))) {
+    items.push({
+      label: 'Registraduría',
+      badge: '🏛️ Cívico Registraduría',
+      mesa: 'Mesa Cívica 1 · Registraduría e Identidad',
+      reason: s.civicRegistrationReason || s.documentsIssue || (hasUnregisteredMember ? 'Miembros del hogar indocumentados' : 'Expedición, corrección o duplicado de cédula / TI'),
+      color: 'bg-cyan-500/20 text-cyan-300 border-cyan-500/40',
+      type: 'CIVICO',
+    });
+  }
+
+  // 6. Titulación de Vivienda y Hábitat (Trámite Cívico)
+  if ((!s.hasHousingDocument && s.housingType !== 'ARRENDADA') || (Array.isArray(s.needs) && s.needs.includes('vivienda'))) {
+    items.push({
+      label: 'Titulación de Vivienda',
+      badge: '🏛️ Cívico Vivienda',
+      mesa: 'Mesa Cívica 2 · Titulación Predial & Corvivienda',
+      reason: `Tenencia ${s.housingType?.toLowerCase() || 'informal'} sin escritura. Asesoría Decreto 0971/2025`,
+      color: 'bg-emerald-500/20 text-emerald-300 border-emerald-500/40',
+      type: 'CIVICO',
+    });
+  }
+
+  return items;
+}
+
 export default function AnalisisEncuestasPage() {
   const [surveys, setSurveys] = useState<SurveyData[]>([]);
   const [loading, setLoading] = useState(true);
@@ -154,7 +292,9 @@ export default function AnalisisEncuestasPage() {
   /* Estados de Filtros para Lista de Hogares */
   const [searchQuery, setSearchQuery] = useState('');
   const [priorityFilter, setPriorityFilter] = useState<'TODAS' | 'INMEDIATA' | 'PRIORITARIA' | 'NORMAL'>('TODAS');
-  const [tagFilter, setTagFilter] = useState<'TODAS' | 'MENORES' | 'GESTANTES' | 'DISCAPACIDAD' | 'MAYORES' | 'VIF' | 'SIN_EPS' | 'CRONICOS' | 'SIN_ACUEDUCTO'>('TODAS');
+  const [tagFilter, setTagFilter] = useState<
+    'TODAS' | 'MENORES' | 'GESTANTES' | 'DISCAPACIDAD' | 'MAYORES' | 'VIF' | 'SIN_EPS' | 'CRONICOS' | 'SIN_ACUEDUCTO' | 'CITAS_JURIDICAS' | 'CITAS_CIVICAS' | 'CITAS_MEDICAS'
+  >('TODAS');
   const [selectedHousehold, setSelectedHousehold] = useState<SurveyData | null>(null);
   const [deletingId, setDeletingId] = useState<string | null>(null);
 
@@ -308,6 +448,57 @@ export default function AnalisisEncuestasPage() {
     const citasPediatria = surveys.filter(s => s.needsPediatrics || (Array.isArray(s.needs) && s.needs.includes('pediatria')) || (s.minorCount > 0 && s.hasEDAParasites)).length;
     const citasOdontologia = surveys.filter(s => s.needsDental || (Array.isArray(s.needs) && s.needs.includes('odontologia')) || s.dentalCarePending).length;
     const citasPsicologia = surveys.filter(s => s.needsPsychology || (Array.isArray(s.needs) && s.needs.includes('psicologia')) || s.psychologicalSupportNeeded || s.hasCaregiverBurnout).length;
+    const citasNutricion = surveys.filter(s => s.needsNutrition).length;
+
+    const hogaresConCitasMedicas = surveys.filter(s => getHouseholdMedicalAppointments(s).length > 0).length;
+
+    /* ── Demanda de Citas Jurídicas & Mesas Cívicas (Jornada Cívica) ── */
+    const citasFamiliaAlimentos = surveys.filter(s =>
+      s.hasFamilyProcess || (Array.isArray(s.needs) && s.needs.includes('familia'))
+    ).length;
+
+    const citasVBGProteccion = surveys.filter(s =>
+      s.hasVIFVBG || (Array.isArray(s.needs) && s.needs.includes('violencia')) || s.hasMedidaProteccion || s.hasSexualViolenceIndicator
+    ).length;
+
+    const citasTutelaTramites = surveys.filter(s =>
+      s.needsPensionOrSubsidy || s.hasDebtOrProcess || (Array.isArray(s.needs) && (s.needs.includes('tramites') || s.needs.includes('subsidios')))
+    ).length;
+
+    const citasAsesoriaDirecta = surveys.filter(s => s.needsLegalCounseling).length;
+
+    const citasIdentificacionCivica = surveys.filter(s =>
+      !s.allDocumentsValid || s.needsCivicRegistration || (Array.isArray(s.needs) && s.needs.includes('documentacion')) ||
+      (Array.isArray(s.householdMembers) && s.householdMembers.some(m => m.documentType === 'SIN_DOC' || !m.documentNumber))
+    ).length;
+
+    const citasViviendaCivica = surveys.filter(s =>
+      (!s.hasHousingDocument && s.housingType !== 'ARRENDADA') || (Array.isArray(s.needs) && s.needs.includes('vivienda'))
+    ).length;
+
+    const hogaresConCitasJuridicas = surveys.filter(s =>
+      getHouseholdLegalCivicAppointments(s).some(a => a.type === 'JURIDICO')
+    ).length;
+
+    const hogaresConCitasCivicas = surveys.filter(s =>
+      getHouseholdLegalCivicAppointments(s).some(a => a.type === 'CIVICO')
+    ).length;
+
+    const hogaresConCitasJuridicoCivicas = surveys.filter(s =>
+      getHouseholdLegalCivicAppointments(s).length > 0
+    ).length;
+
+    const totalCitasJornada = surveys.filter(s =>
+      getHouseholdMedicalAppointments(s).length > 0 || getHouseholdLegalCivicAppointments(s).length > 0
+    ).length;
+
+    const legalAppointmentsBreakdown = [
+      { mesa: 'Mesa 1: Familia & Alimentos', total: citasFamiliaAlimentos, icon: '⚖️', desc: 'Fijación y cobro de alimentos, custodia y visitas' },
+      { mesa: 'Mesa 2: Protección VBG & CAVIF', total: citasVBGProteccion, icon: '🛡️', desc: 'Ruta legal confidencial y medidas cautelares' },
+      { mesa: 'Mesa 3: Tutela, Deudas & Trámites', total: citasTutelaTramites, icon: '📜', desc: 'Acciones de tutela, defensa ante deudas y pensiones' },
+      { mesa: 'Mesa Cívica: Registraduría / Identidad', total: citasIdentificacionCivica, icon: '🏛️', desc: 'Cédulas, TI y registros civiles pendientes' },
+      { mesa: 'Mesa Cívica: Titulación de Vivienda', total: citasViviendaCivica, icon: '🏡', desc: 'Formalización predial y hábitat Decreto 0971/2025' },
+    ];
 
     return {
       totalHogares,
@@ -351,6 +542,19 @@ export default function AnalisisEncuestasPage() {
       citasPediatria,
       citasOdontologia,
       citasPsicologia,
+      citasNutricion,
+      hogaresConCitasMedicas,
+      citasFamiliaAlimentos,
+      citasVBGProteccion,
+      citasTutelaTramites,
+      citasAsesoriaDirecta,
+      citasIdentificacionCivica,
+      citasViviendaCivica,
+      hogaresConCitasJuridicas,
+      hogaresConCitasCivicas,
+      hogaresConCitasJuridicoCivicas,
+      totalCitasJornada,
+      legalAppointmentsBreakdown,
     };
   }, [surveys]);
 
@@ -397,6 +601,9 @@ export default function AnalisisEncuestasPage() {
       if (tagFilter === 'SIN_EPS' && s.allEPSAffiliated) return false;
       if (tagFilter === 'CRONICOS' && !s.hasChronicDisease) return false;
       if (tagFilter === 'SIN_ACUEDUCTO' && s.waterSource === 'ACUEDUCTO') return false;
+      if (tagFilter === 'CITAS_JURIDICAS' && !getHouseholdLegalCivicAppointments(s).some(a => a.type === 'JURIDICO')) return false;
+      if (tagFilter === 'CITAS_CIVICAS' && !getHouseholdLegalCivicAppointments(s).some(a => a.type === 'CIVICO')) return false;
+      if (tagFilter === 'CITAS_MEDICAS' && getHouseholdMedicalAppointments(s).length === 0) return false;
 
       return true;
     });
@@ -468,31 +675,31 @@ export default function AnalisisEncuestasPage() {
         <div className="bg-[#150426] border border-purple-800/50 rounded-3xl p-4 shadow-lg">
           <span className="text-[10px] font-black uppercase text-purple-400 block tracking-wider">Hogares Censados</span>
           <p className="text-2xl sm:text-3xl font-black text-white mt-1">{metrics.totalHogares}</p>
-          <span className="text-[10px] text-purple-300/70 mt-1 block">{metrics.totalPersonas} personas</span>
+          <span className="text-[10px] text-purple-300/70 mt-1 block">{metrics.totalPersonas} personas censadas</span>
+        </div>
+
+        <div className="bg-[#150426] border border-pink-600/40 rounded-3xl p-4 shadow-lg">
+          <span className="text-[10px] font-black uppercase text-pink-400 block tracking-wider">🩺 Citas Médicas</span>
+          <p className="text-2xl sm:text-3xl font-black text-pink-200 mt-1">{metrics.hogaresConCitasMedicas}</p>
+          <span className="text-[10px] text-pink-300/70 mt-1 block">{metrics.citasGinecologia} ginecología · {metrics.citasPediatria} ped.</span>
+        </div>
+
+        <div className="bg-[#150426] border border-indigo-600/50 rounded-3xl p-4 shadow-lg">
+          <span className="text-[10px] font-black uppercase text-indigo-300 block tracking-wider">⚖️ Citas Jurídico-Cívicas</span>
+          <p className="text-2xl sm:text-3xl font-black text-indigo-200 mt-1">{metrics.hogaresConCitasJuridicoCivicas}</p>
+          <span className="text-[10px] text-indigo-300/70 mt-1 block">{metrics.hogaresConCitasJuridicas} jurídicas · {metrics.hogaresConCitasCivicas} cívicas</span>
         </div>
 
         <div className="bg-[#150426] border border-purple-800/50 rounded-3xl p-4 shadow-lg">
-          <span className="text-[10px] font-black uppercase text-pink-400 block tracking-wider">Infancia & NNA</span>
-          <p className="text-2xl sm:text-3xl font-black text-pink-200 mt-1">{metrics.totalMenores}</p>
-          <span className="text-[10px] text-pink-300/70 mt-1 block">{metrics.desercionEscolar} no escolarizados</span>
+          <span className="text-[10px] font-black uppercase text-amber-400 block tracking-wider">Infancia & NNA</span>
+          <p className="text-2xl sm:text-3xl font-black text-amber-200 mt-1">{metrics.totalMenores}</p>
+          <span className="text-[10px] text-amber-300/70 mt-1 block">{metrics.desercionEscolar} no escolarizados</span>
         </div>
 
         <div className="bg-[#150426] border border-purple-800/50 rounded-3xl p-4 shadow-lg">
-          <span className="text-[10px] font-black uppercase text-amber-400 block tracking-wider">Brecha en Salud</span>
-          <p className="text-2xl sm:text-3xl font-black text-amber-200 mt-1">{metrics.sinEPS + metrics.conEnfermedadCronica}</p>
-          <span className="text-[10px] text-amber-300/70 mt-1 block">{metrics.sinEPS} sin afiliación EPS</span>
-        </div>
-
-        <div className="bg-[#150426] border border-purple-800/50 rounded-3xl p-4 shadow-lg">
-          <span className="text-[10px] font-black uppercase text-sky-400 block tracking-wider">Déficit Agua / San.</span>
-          <p className="text-2xl sm:text-3xl font-black text-sky-200 mt-1">{metrics.sinAcueducto}</p>
-          <span className="text-[10px] text-sky-300/70 mt-1 block">{metrics.hacinamientoHogares} en hacinamiento</span>
-        </div>
-
-        <div className="bg-[#150426] border border-purple-800/50 rounded-3xl p-4 shadow-lg">
-          <span className="text-[10px] font-black uppercase text-indigo-400 block tracking-wider">Alerta Jurídica VIF</span>
-          <p className="text-2xl sm:text-3xl font-black text-indigo-200 mt-1">{metrics.casosVIF}</p>
-          <span className="text-[10px] text-indigo-300/70 mt-1 block">{metrics.procesosAlimentos} proc. de alimentos</span>
+          <span className="text-[10px] font-black uppercase text-rose-400 block tracking-wider">Alerta Jurídica VIF</span>
+          <p className="text-2xl sm:text-3xl font-black text-rose-200 mt-1">{metrics.casosVIF}</p>
+          <span className="text-[10px] text-rose-300/70 mt-1 block">{metrics.procesosAlimentos} alimentos/custodia</span>
         </div>
 
         <div className="bg-[#150426] border border-rose-500/40 rounded-3xl p-4 shadow-lg">
@@ -608,6 +815,9 @@ export default function AnalisisEncuestasPage() {
               <span className="text-[11px] font-bold text-purple-400 uppercase tracking-wider mr-1">Filtro Temático:</span>
               {[
                 { id: 'TODAS', label: 'Todas las condiciones' },
+                { id: 'CITAS_JURIDICAS', label: '⚖️ Citas Jurídicas' },
+                { id: 'CITAS_CIVICAS', label: '🏛️ Trámites Cívicos' },
+                { id: 'CITAS_MEDICAS', label: '🩺 Citas Médicas' },
                 { id: 'MENORES', label: '👶 Con Menores (NNA)' },
                 { id: 'GESTANTES', label: '🤰 Gestantes / Lactantes' },
                 { id: 'DISCAPACIDAD', label: '♿ Discapacidad' },
@@ -643,7 +853,7 @@ export default function AnalisisEncuestasPage() {
                     <th className="p-3.5">Hábitat & Agua</th>
                     <th className="p-3.5">Salud & Niñez</th>
                     <th className="p-3.5">Protección & Riesgo</th>
-                    <th className="p-3.5">Citas Solicitadas</th>
+                    <th className="p-3.5">Citas Solicitadas (Médicas & Jurídico-Cívicas)</th>
                     <th className="p-3.5 text-center">Triaje</th>
                     <th className="p-3.5 text-right">Acción</th>
                   </tr>
@@ -769,38 +979,43 @@ export default function AnalisisEncuestasPage() {
                           )}
                         </td>
 
-                        {/* Citas Médicas Solicitadas */}
+                        {/* Citas Solicitadas: Médicas, Jurídicas & Cívicas */}
                         <td className="p-3.5 align-top">
-                          <div className="flex flex-col gap-1 text-[10px]">
-                            {(s.needsGynecology || s.lastPapSmear === 'MAS_3_ANOS' || s.lastPapSmear === 'NUNCA' || (Array.isArray(s.needs) && s.needs.includes('ginecologia'))) && (
-                              <span className="inline-flex items-center gap-1 px-2 py-0.5 rounded-md font-bold bg-pink-500/20 text-pink-300 border border-pink-500/40 w-fit" title={s.gynecologySymptoms || 'Ginecología y Citología'}>
-                                🌸 Ginecología
-                              </span>
-                            )}
-                            {(s.needsGeneralMedicine || s.hasChronicDisease || (Array.isArray(s.needs) && s.needs.includes('medicina_general'))) && (
-                              <span className="inline-flex items-center gap-1 px-2 py-0.5 rounded-md font-bold bg-purple-500/20 text-purple-300 border border-purple-500/40 w-fit" title={s.generalMedicineReason || 'Medicina General'}>
-                                🩺 Med. General
-                              </span>
-                            )}
-                            {(s.needsPediatrics || (s.minorCount > 0 && s.hasEDAParasites) || (Array.isArray(s.needs) && s.needs.includes('pediatria'))) && (
-                              <span className="inline-flex items-center gap-1 px-2 py-0.5 rounded-md font-bold bg-amber-500/20 text-amber-300 border border-amber-500/40 w-fit" title={s.pediatricsReason || 'Pediatría'}>
-                                👶 Pediatría
-                              </span>
-                            )}
-                            {(s.needsDental || s.dentalCarePending || (Array.isArray(s.needs) && s.needs.includes('odontologia'))) && (
-                              <span className="inline-flex items-center gap-1 px-2 py-0.5 rounded-md font-bold bg-cyan-500/20 text-cyan-300 border border-cyan-500/40 w-fit" title={s.dentalReason || 'Odontología'}>
-                                🦷 Odontología
-                              </span>
-                            )}
-                            {(s.needsPsychology || s.psychologicalSupportNeeded || s.hasCaregiverBurnout || (Array.isArray(s.needs) && s.needs.includes('psicologia'))) && (
-                              <span className="inline-flex items-center gap-1 px-2 py-0.5 rounded-md font-bold bg-sky-500/20 text-sky-300 border border-sky-500/40 w-fit" title={s.psychologyReason || 'Psicología'}>
-                                🧠 Psicología
-                              </span>
-                            )}
-                            {(!s.needsGynecology && !s.needsGeneralMedicine && !s.needsPediatrics && !s.needsDental && !s.needsPsychology && s.lastPapSmear !== 'MAS_3_ANOS' && s.lastPapSmear !== 'NUNCA' && !s.hasChronicDisease && !s.dentalCarePending) && (
-                              <span className="text-purple-400/60 italic text-[10px]">Triage en evento</span>
-                            )}
-                          </div>
+                          {(() => {
+                            const medAppts = getHouseholdMedicalAppointments(s);
+                            const legalAppts = getHouseholdLegalCivicAppointments(s);
+                            const hasAny = medAppts.length > 0 || legalAppts.length > 0;
+
+                            if (!hasAny) {
+                              return <span className="text-purple-400/60 italic text-[10px]">Triage en evento</span>;
+                            }
+
+                            return (
+                              <div className="flex flex-col gap-1 text-[10px]">
+                                {/* Citas Médicas */}
+                                {medAppts.map((m, idx) => (
+                                  <span
+                                    key={`med-${idx}`}
+                                    className={`inline-flex items-center gap-1 px-2 py-0.5 rounded-md font-bold border w-fit ${m.color}`}
+                                    title={`${m.label}: ${m.reason}`}
+                                  >
+                                    {m.badge}
+                                  </span>
+                                ))}
+
+                                {/* Citas Jurídicas & Cívicas */}
+                                {legalAppts.map((l, idx) => (
+                                  <span
+                                    key={`leg-${idx}`}
+                                    className={`inline-flex items-center gap-1 px-2 py-0.5 rounded-md font-bold border w-fit ${l.color}`}
+                                    title={`${l.mesa}: ${l.reason}`}
+                                  >
+                                    {l.badge}
+                                  </span>
+                                ))}
+                              </div>
+                            );
+                          })()}
                         </td>
 
                         {/* Triaje */}
@@ -965,6 +1180,9 @@ export default function AnalisisEncuestasPage() {
               </p>
               <p>
                 En el ámbito de la niñez y la familia, se detectaron <strong>{metrics.procesosAlimentos} casos de inasistencia alimentaria</strong> y disputas de custodia sin resolución legal, dejando a decenas de menores en estado de indefensión material y sin cuota alimentaria garantizada.
+              </p>
+              <p className="bg-indigo-950/40 p-3.5 rounded-2xl border border-indigo-800/60 text-indigo-100">
+                ⚖️ <strong>Demanda de Citas para la Jornada Cívica y Médica:</strong> En coherencia con la naturaleza cívico-social de la intervención, se programaron <strong>{metrics.hogaresConCitasJuridicoCivicas} hogares para atención presencial en mesas de acceso a la justicia y trámites ciudadanos</strong>: {metrics.citasFamiliaAlimentos} citas en la Mesa de Familia y Alimentos, {metrics.citasVBGProteccion} citas de protección legal ante violencia de género, {metrics.citasTutelaTramites} citas para tutela y defensa contra embargos/deudas, {metrics.citasIdentificacionCivica} gestiones de identidad ante la Registraduría y {metrics.citasViviendaCivica} trámites de formalización predial con Corvivienda.
               </p>
             </div>
           </div>
@@ -1377,6 +1595,127 @@ export default function AnalisisEncuestasPage() {
               </div>
             </div>
 
+          </div>
+
+          {/* ── Sección Especial: Demanda y Agendamiento de Citas Jurídicas & Mesas Cívicas ── */}
+          <div className="bg-[#150426] border border-indigo-700/60 rounded-3xl p-6 sm:p-8 shadow-2xl space-y-6">
+            <div className="flex flex-col md:flex-row md:items-center justify-between gap-4 border-b border-indigo-800/60 pb-4">
+              <div className="space-y-1">
+                <div className="flex items-center gap-2">
+                  <span className="bg-indigo-500/20 text-indigo-300 border border-indigo-500/40 text-[10px] font-black px-2.5 py-0.5 rounded-full uppercase tracking-wider">
+                    Jornada Cívica & Acceso a la Justicia
+                  </span>
+                  <span className="text-xs text-purple-300 font-bold">· Fundación Senda Mujer</span>
+                </div>
+                <h3 className="text-xl sm:text-2xl font-black text-white flex items-center gap-2.5">
+                  <Scale className="w-6 h-6 text-indigo-400" />
+                  Demanda de Citas Jurídicas & Mesas Cívicas Agendadas
+                </h3>
+                <p className="text-xs text-purple-200/80 max-w-3xl">
+                  Programación de beneficiarias y hogares para atención con abogadas, comisarías de familia, defensoras públicas, Registraduría y Corvivienda durante el componente cívico de la jornada.
+                </p>
+              </div>
+
+              <div className="flex items-center gap-2 self-start md:self-auto">
+                <div className="bg-indigo-950/60 border border-indigo-600/60 px-4 py-2 rounded-2xl text-center shadow-inner">
+                  <span className="text-[10px] uppercase font-bold text-indigo-300 block">Total Hogares con Citas</span>
+                  <span className="text-xl font-black text-white">{metrics.hogaresConCitasJuridicoCivicas}</span>
+                </div>
+              </div>
+            </div>
+
+            {/* 5 Tarjetas de Mesas de Atención Cívico-Jurídica */}
+            <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-5 gap-3">
+              {metrics.legalAppointmentsBreakdown.map((item, idx) => (
+                <div key={idx} className="bg-purple-950/40 border border-purple-800/60 rounded-2xl p-3.5 space-y-1.5 shadow-sm hover:border-indigo-500/60 transition-colors">
+                  <div className="flex items-center justify-between">
+                    <span className="text-base">{item.icon}</span>
+                    <span className="text-lg font-black text-white">{item.total}</span>
+                  </div>
+                  <h4 className="text-xs font-bold text-indigo-200 leading-snug">{item.mesa}</h4>
+                  <p className="text-[10px] text-purple-300/70 leading-relaxed">{item.desc}</p>
+                </div>
+              ))}
+            </div>
+
+            {/* Nómina de Hogares con Citas Jurídicas o Cívicas */}
+            <div className="space-y-3 pt-2">
+              <h4 className="text-sm font-black text-white flex items-center gap-2">
+                <Users className="w-4 h-4 text-indigo-400" />
+                Hogares Citados para Atención Legal & Cívica ({surveys.filter(s => getHouseholdLegalCivicAppointments(s).length > 0).length})
+              </h4>
+
+              <div className="grid md:grid-cols-2 gap-3 max-h-96 overflow-y-auto pr-1">
+                {surveys.filter(s => getHouseholdLegalCivicAppointments(s).length > 0).map((s) => {
+                  const appts = getHouseholdLegalCivicAppointments(s);
+                  const primaryMember = s.householdMembers && s.householdMembers.length > 0 ? s.householdMembers[0] : null;
+
+                  return (
+                    <div
+                      key={s._id}
+                      className="bg-purple-950/50 border border-indigo-800/50 hover:border-indigo-500/80 rounded-2xl p-4 text-xs space-y-2.5 transition-all shadow-md"
+                    >
+                      <div className="flex items-start justify-between gap-2">
+                        <div>
+                          <div className="flex items-center gap-2">
+                            <span className="font-mono font-black text-indigo-300 text-xs">{s.surveyCode}</span>
+                            <span className="text-[10px] text-purple-300">
+                              {s.barrio} {s.manzana ? `· Mz ${s.manzana}` : ''}
+                            </span>
+                          </div>
+                          <p className="font-bold text-white text-xs mt-0.5">
+                            {primaryMember ? primaryMember.fullName : 'Hogar sin nombre registrado'}
+                            {s.contactPhone ? ` · 📞 ${s.contactPhone}` : ''}
+                          </p>
+                        </div>
+
+                        <span className={`text-[9px] font-black uppercase px-2 py-0.5 rounded-full border shrink-0 ${
+                          s.priority === 'INMEDIATA'
+                            ? 'bg-rose-500/20 text-rose-300 border-rose-500/40'
+                            : s.priority === 'PRIORITARIA'
+                            ? 'bg-amber-500/20 text-amber-300 border-amber-500/40'
+                            : 'bg-emerald-500/20 text-emerald-300 border-emerald-500/40'
+                        }`}>
+                          {s.priority}
+                        </span>
+                      </div>
+
+                      {/* Lista de Mesas Asignadas */}
+                      <div className="space-y-1.5 pt-1 border-t border-purple-900/50">
+                        {appts.map((a, aIdx) => (
+                          <div key={aIdx} className="bg-purple-950/70 p-2 rounded-xl border border-purple-800/50 text-[11px] space-y-0.5">
+                            <div className="flex items-center justify-between">
+                              <span className="font-bold text-white flex items-center gap-1">
+                                <span>{a.type === 'JURIDICO' ? '⚖️' : '🏛️'}</span>
+                                {a.mesa}
+                              </span>
+                              <span className={`text-[9px] font-black uppercase px-1.5 py-0.2 rounded ${a.color}`}>
+                                {a.type}
+                              </span>
+                            </div>
+                            <p className="text-purple-200/90 text-[10px] italic">
+                              &quot;{a.reason}&quot;
+                            </p>
+                          </div>
+                        ))}
+                      </div>
+
+                      <div className="pt-1 flex items-center justify-between">
+                        <span className="text-[10px] text-purple-400">
+                          {s.householdSize} personas ({s.minorCount} menores)
+                        </span>
+                        <button
+                          onClick={() => setSelectedHousehold(s)}
+                          className="bg-indigo-600/80 hover:bg-indigo-500 text-white font-bold text-[10px] px-3 py-1 rounded-xl transition-all cursor-pointer shadow"
+                        >
+                          Ver Ficha Completa
+                        </button>
+                      </div>
+                    </div>
+                  );
+                })}
+              </div>
+            </div>
           </div>
 
         </div>
@@ -1877,6 +2216,52 @@ export default function AnalisisEncuestasPage() {
                   )}
                 </div>
               </div>
+
+              {/* Bloque 8: Citas Jurídicas & Mesas Cívicas Solicitadas */}
+              {(() => {
+                const legalCivicAppts = getHouseholdLegalCivicAppointments(selectedHousehold);
+                return (
+                  <div className="bg-[#18052e] border border-indigo-700/50 rounded-2xl p-4 space-y-3">
+                    <div className="flex items-center justify-between gap-2">
+                      <h4 className="font-black text-sm text-indigo-200 flex items-center gap-2">
+                        <Scale className="w-4 h-4 text-indigo-400" />
+                        8. Citas Jurídicas & Mesas Cívicas Solicitadas (Jornada Cívica & Acceso a la Justicia)
+                      </h4>
+                      <span className="text-[10px] bg-indigo-500/20 text-indigo-300 border border-indigo-500/40 px-2 py-0.5 rounded-full font-bold">
+                        {legalCivicAppts.length} mesa(s) requerida(s)
+                      </span>
+                    </div>
+                    <p className="text-[10px] text-purple-300/70">
+                      Asesorías legales y trámites cívicos solicitados por el hogar para la atención con abogadas, comisarías de familia, Registraduría y Corvivienda:
+                    </p>
+
+                    {legalCivicAppts.length > 0 ? (
+                      <div className="grid sm:grid-cols-2 gap-2.5">
+                        {legalCivicAppts.map((app, idx) => (
+                          <div key={idx} className="bg-purple-950/40 border border-purple-800/60 rounded-xl p-3 space-y-1.5">
+                            <div className="flex items-center justify-between gap-2">
+                              <div className="flex items-center gap-1.5">
+                                <span className="text-xs">{app.type === 'JURIDICO' ? '⚖️' : '🏛️'}</span>
+                                <span className="text-xs font-black text-white">{app.mesa}</span>
+                              </div>
+                              <span className={`text-[9px] px-1.5 py-0.5 rounded font-bold ${app.color}`}>
+                                {app.type === 'JURIDICO' ? 'Asesoría Jurídica' : 'Trámite Cívico'}
+                              </span>
+                            </div>
+                            <p className="text-[11px] text-purple-200 leading-relaxed">
+                              <strong>Motivo / Trámite:</strong> {app.reason}
+                            </p>
+                          </div>
+                        ))}
+                      </div>
+                    ) : (
+                      <div className="text-center py-3 bg-purple-950/30 rounded-xl border border-purple-900/50">
+                        <p className="text-xs text-purple-300/80">No se registraron solicitudes previas para mesas jurídicas o cívicas. Habrá orientación general disponible en la jornada.</p>
+                      </div>
+                    )}
+                  </div>
+                );
+              })()}
 
             </div>
 

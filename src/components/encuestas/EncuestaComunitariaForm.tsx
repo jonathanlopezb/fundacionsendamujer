@@ -4,7 +4,7 @@ import { FormEvent, useState } from 'react';
 import {
   AlertTriangle, ArrowLeft, ArrowRight, Check, ClipboardList,
   HeartPulse, LockKeyhole, ShieldCheck, Users, Scale, DollarSign,
-  Eye, Plus, Trash2, UserCheck, FileText, Sparkles, Activity, Stethoscope
+  Eye, Plus, Trash2, UserCheck, FileText, Stethoscope
 } from 'lucide-react';
 
 /* ── Tipos ───────────────────────────────────────────────────────────────── */
@@ -280,6 +280,10 @@ export default function EncuestaComunitariaForm({ barrio, localidad, jornada }: 
   const [subsidyDetails, setSubsidyDetails] = useState('');
   const [hasUrgentCase, setHasUrgentCase] = useState<boolean | null>(null);
   const [urgentDesc, setUrgentDesc] = useState('');
+  const [needsLegalCounseling, setNeedsLegalCounseling] = useState<boolean | null>(null);
+  const [legalCounselingReason, setLegalCounselingReason] = useState('');
+  const [needsCivicRegistration, setNeedsCivicRegistration] = useState<boolean | null>(null);
+  const [civicRegistrationReason, setCivicRegistrationReason] = useState('');
 
   /* Sección D */
   const [incomeSource, setIncomeSource] = useState('');
@@ -557,6 +561,10 @@ export default function EncuestaComunitariaForm({ barrio, localidad, jornada }: 
           pensionDetails: subsidyDetails,
           hasUrgentCase: hasUrgentCase ?? false,
           urgentCaseDescription: urgentDesc,
+          needsLegalCounseling: needsLegalCounseling ?? false,
+          legalCounselingReason: legalCounselingReason.trim(),
+          needsCivicRegistration: needsCivicRegistration ?? false,
+          civicRegistrationReason: civicRegistrationReason.trim(),
 
           /* D */
           incomeSource,
@@ -652,8 +660,8 @@ export default function EncuestaComunitariaForm({ barrio, localidad, jornada }: 
     <div className="p-4 sm:p-8 max-w-5xl mx-auto">
       {/* Header de la jornada */}
       <div className="mb-6">
-        <span className="inline-flex items-center gap-2 rounded-full bg-amber-300 text-[#2b0a39] px-3 py-1 text-[11px] font-black tracking-wider">
-          <ClipboardList className="w-3.5 h-3.5" /> MODO ENCUESTADORA · DIAGNÓSTICO COMUNITARIO
+        <span className="inline-flex items-center rounded-full bg-amber-300 text-[#2b0a39] px-3 py-1 text-[11px] font-black tracking-wider">
+          DIAGNÓSTICO COMUNITARIO · ENCUESTA DE CAMPO
         </span>
         <h1 className="mt-4 text-3xl sm:text-4xl font-black">
           Caracterización familiar{' '}
@@ -663,6 +671,13 @@ export default function EncuestaComunitariaForm({ barrio, localidad, jornada }: 
         {jornada && (
           <p className="mt-2 text-xs text-purple-200/60 italic">{jornada}</p>
         )}
+
+        {/* Alianza institucional */}
+        <div className="mt-3 flex flex-wrap items-center gap-2 text-[10px] font-bold text-purple-300/50">
+          <span className="rounded-full border border-purple-700/40 bg-purple-950/30 px-2.5 py-0.5">Fundación Senda Mujer</span>
+          <span className="rounded-full border border-amber-700/40 bg-amber-950/20 px-2.5 py-0.5 text-amber-300/60">Defensores de la Patria</span>
+          <span className="rounded-full border border-emerald-700/40 bg-emerald-950/20 px-2.5 py-0.5 text-emerald-300/60">Junta de Acción Comunal</span>
+        </div>
       </div>
 
       {/* Alerta de caso urgente */}
@@ -1176,6 +1191,43 @@ export default function EncuestaComunitariaForm({ barrio, localidad, jornada }: 
                   )}
                 </Field>
 
+                <div className="rounded-2xl border border-purple-500/40 bg-purple-950/40 p-4 space-y-4">
+                  <h4 className="text-sm font-black text-purple-200 flex items-center gap-2">
+                    <Scale className="w-4 h-4 text-purple-400" />
+                    Citas para la Jornada Cívico-Jurídica
+                  </h4>
+
+                  <Field
+                    label="¿El hogar solicita cita de Asesoría Jurídica presencial en la Jornada?"
+                    hint="Atención confidencial con abogadas en derecho de familia, alimentos, violencia de género, tutelas o deudas"
+                  >
+                    <YesNo value={needsLegalCounseling} onChange={setNeedsLegalCounseling} name="legalCounseling" />
+                    {needsLegalCounseling === true && (
+                      <Textarea
+                        className="mt-2"
+                        value={legalCounselingReason}
+                        onChange={(e) => setLegalCounselingReason(e.target.value)}
+                        placeholder="Describe el caso o consulta jurídica que requiere tratar en la mesa legal..."
+                      />
+                    )}
+                  </Field>
+
+                  <Field
+                    label="¿Requiere atención en la Mesa Cívica de Registraduría / Identificación?"
+                    hint="Trámite, duplicado o expedición de documento de identidad para miembros del hogar"
+                  >
+                    <YesNo value={needsCivicRegistration} onChange={setNeedsCivicRegistration} name="civicRegistration" />
+                    {needsCivicRegistration === true && (
+                      <Textarea
+                        className="mt-2"
+                        value={civicRegistrationReason}
+                        onChange={(e) => setCivicRegistrationReason(e.target.value)}
+                        placeholder="Nombres de las personas y tipo de documento que necesitan gestionar..."
+                      />
+                    )}
+                  </Field>
+                </div>
+
                 <Field label="¿Existe algún caso urgente que NO puede esperar al día del evento?" hint="Si responde Sí, activa el protocolo de ruta inmediata en la Sección E.">
                   <YesNo value={hasUrgentCase} onChange={setHasUrgentCase} name="urgent" />
                   {hasUrgentCase === true && (
@@ -1324,6 +1376,15 @@ export default function EncuestaComunitariaForm({ barrio, localidad, jornada }: 
                   {needsGynecology && <p className="text-pink-300 font-bold">🌸 Cita de Ginecología solicitada: {gynecologySymptoms || 'Valoración general'}</p>}
                   {needsGeneralMedicine && <p className="text-purple-300 font-bold">🩺 Cita de Medicina General solicitada</p>}
                   {needsPediatrics && <p className="text-amber-300 font-bold">👶 Cita de Pediatría para menores</p>}
+                  {needsDental && <p className="text-cyan-300 font-bold">🦷 Cita de Odontología solicitada</p>}
+                  {needsPsychology && <p className="text-sky-300 font-bold">🧠 Cita de Psicología solicitada</p>}
+                  {needsNutrition && <p className="text-emerald-300 font-bold">🥗 Cita de Nutrición solicitada</p>}
+                  {(needsLegalCounseling || hasFamilyProcess || hasVIF || hasDebt || needsSubsidy) && (
+                    <p className="text-indigo-300 font-bold">⚖️ Cita de Asesoría Jurídica solicitada (Jornada Cívica): {legalCounselingReason || familyProcessDetails || debtDetails || subsidyDetails || 'Atención en mesas jurídicas'}</p>
+                  )}
+                  {(needsCivicRegistration || hasHousingDocument === false) && (
+                    <p className="text-teal-300 font-bold">🏛️ Trámite Cívico solicitado (Mesa de Registraduría / Vivienda): {civicRegistrationReason || 'Gestión documental de identidad y hábitat'}</p>
+                  )}
                   {hasUrgentCase && <p className="text-amber-300 font-bold">⚠ Caso urgente declarado</p>}
                   {activateRoute && <p className="text-rose-300 font-bold">🔴 Ruta de atención inmediata activada</p>}
                 </div>
