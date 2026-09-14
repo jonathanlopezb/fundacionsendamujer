@@ -2,6 +2,7 @@
 
 import React, { useState, useEffect, useMemo } from 'react';
 import Link from 'next/link';
+import Image from 'next/image';
 import {
   ResponsiveContainer, BarChart, Bar, XAxis, YAxis, Tooltip, Legend,
   PieChart, Pie, Cell, LineChart, Line, CartesianGrid, AreaChart, Area
@@ -139,8 +140,6 @@ interface SurveyData {
   hasSexualViolenceIndicator?: boolean;
   hasTeenPregnancy?: boolean;
   hasChildMalnutrition?: boolean;
-  knowsRightsAndRoutes?: boolean;
-  hasMedidaProteccion?: boolean;
   interestInTraining?: boolean;
   hasSmartphoneAccess?: boolean;
   createdAt?: string;
@@ -614,19 +613,44 @@ export default function AnalisisEncuestasPage() {
       
       {/* ── Barra Superior de Control y Filtros ─────────────────────────── */}
       <div className="bg-[#130324] border border-purple-800/60 rounded-3xl p-6 shadow-2xl flex flex-col md:flex-row items-start md:items-center justify-between gap-5">
-        <div className="space-y-1">
-          <div className="flex items-center gap-2">
+        <div className="space-y-2">
+          <div className="flex items-center gap-3 flex-wrap">
+            {/* Logo Fundación Senda Mujer */}
+            <Image
+              src="/logo.png"
+              alt="Fundación Senda Mujer"
+              width={32}
+              height={32}
+              className="h-8 w-8 rounded-xl object-contain shadow-sm"
+            />
+            {/* Logo Defensores de la Patria */}
+            <Image
+              src="/defensores.png"
+              alt="Defensores de la Patria"
+              width={32}
+              height={32}
+              className="h-8 w-8 object-contain"
+            />
             <span className="bg-pink-500/20 text-pink-300 border border-pink-500/40 text-[10px] font-black px-3 py-0.5 rounded-full uppercase tracking-wider">
               Observatorio Social & Censo Multidimensional
             </span>
-            <span className="text-xs text-purple-300">· Fundación Senda Mujer</span>
           </div>
+
           <h2 className="text-2xl sm:text-3xl font-black text-white tracking-tight">
             Diagnóstico Comunitario & Inteligencia Territorial
           </h2>
           <p className="text-xs text-purple-200/70 max-w-2xl">
             Procesamiento analítico de determinantes sociales de la salud, brechas jurídicas, seguridad alimentaria, saneamiento y alertas críticas para el comité técnico intersectorial.
           </p>
+
+          {/* Alianza Institucional */}
+          <div className="flex flex-wrap items-center gap-2 pt-1 text-[10px] font-bold text-purple-300/60">
+            <span className="rounded-full border border-purple-700/40 bg-purple-950/40 px-2.5 py-0.5">Fundación Senda Mujer</span>
+            <span className="text-pink-500 font-black">×</span>
+            <span className="rounded-full border border-amber-700/40 bg-amber-950/30 px-2.5 py-0.5 text-amber-300/80">Defensores de la Patria</span>
+            <span className="text-pink-500 font-black">×</span>
+            <span className="rounded-full border border-emerald-700/40 bg-emerald-950/30 px-2.5 py-0.5 text-emerald-300/80">Junta de Acción Comunal</span>
+          </div>
         </div>
 
         <div className="flex items-center gap-3 flex-wrap">
