@@ -219,7 +219,7 @@ export function exportSurveysToExcel(surveys: any[], metrics: any, selectedBarri
     if (s.hasVIFVBG || (Array.isArray(s.needs) && s.needs.includes('violencia')) || s.hasMedidaProteccion) legList.push('Protección VBG');
     if (s.needsPensionOrSubsidy || s.hasDebtOrProcess || (Array.isArray(s.needs) && (s.needs.includes('tramites') || s.needs.includes('subsidios')))) legList.push('Tutela/Deudas');
     if (s.needsLegalCounseling) legList.push('Asesoría Jurídica');
-    if (!s.allDocumentsValid || s.needsCivicRegistration || (Array.isArray(s.needs) && s.needs.includes('documentacion')) || (Array.isArray(s.householdMembers) && s.householdMembers.some(m => m.documentType === 'SIN_DOC' || !m.documentNumber))) legList.push('Mesa Registraduría');
+    if (!s.allDocumentsValid || s.needsCivicRegistration || (Array.isArray(s.needs) && s.needs.includes('documentacion')) || (Array.isArray(s.householdMembers) && s.householdMembers.some((m: any) => m.documentType === 'SIN_DOC' || !m.documentNumber))) legList.push('Mesa Registraduría');
     if ((!s.hasHousingDocument && s.housingType !== 'ARRENDADA') || (Array.isArray(s.needs) && s.needs.includes('vivienda'))) legList.push('Titulación Vivienda');
     const citasJuridicasStr = legList.length > 0 ? legList.join(', ') : 'Sin trámite cívico';
 
