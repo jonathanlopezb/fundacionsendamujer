@@ -33,7 +33,7 @@ export default function Footer() {
           <ul className="text-xs space-y-2 text-pink-100">
             <li className="leading-relaxed">
               <span className="font-bold text-white block">Sede Principal:</span>
-              Cartagena de Indias, Bolívar (Barrio Manga / Pie de la Popa)
+              Barrio Arroz Barato, Cartagena de Indias, Bolívar
             </li>
             <li>
               <span className="font-bold text-white block">Línea Directa / WhatsApp:</span>

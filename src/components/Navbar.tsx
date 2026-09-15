@@ -58,20 +58,20 @@ export default function Navbar({ onOpenSOS, onOpenIncognito }: NavbarProps) {
     <header className={`sticky top-0 z-50 transition-all duration-300 ${scrolled ? 'shadow-lg' : 'shadow-sm'} bg-white/97 backdrop-blur-md border-b border-pink-100`}>
 
       {/* ── Top Emergency & Portals Bar ── */}
-      <div className="bg-gradient-to-r from-[#3B0852] via-[#52166F] to-[#E12880] text-white text-xs py-2 px-4 sm:px-8">
-        <div className="max-w-7xl mx-auto flex justify-between items-center gap-3">
+      <div className="bg-[#312826] text-[#f9f2eb] text-xs py-2.5 px-4 sm:px-8">
+        <div className="max-w-7xl mx-auto flex flex-col sm:flex-row justify-between items-start sm:items-center gap-2">
           <div className="flex items-center gap-3 flex-wrap">
-            <span className="bg-amber-400 text-[#3B0852] font-extrabold px-2.5 py-0.5 rounded-full text-[10px] uppercase tracking-wider">
+            <span className="font-extrabold text-[10px] uppercase tracking-wider">
               Cartagena 24/7
             </span>
-            <span className="hidden md:inline text-pink-100 font-medium">
+            <span className="text-[#d6c4bb] font-medium">
               Línea Púrpura Nacional:
             </span>
-            <a href="tel:155" className="font-extrabold text-amber-300 hover:text-white transition-colors">
+            <a href="tel:155" className="font-extrabold text-[#e7c49c] hover:text-white transition-colors">
               155
             </a>
-            <span className="text-pink-300 hidden md:inline">|</span>
-            <a href="tel:3014692095" className="font-bold text-pink-100 hover:text-amber-300 transition-colors hidden md:inline">
+            <span className="text-white/30">|</span>
+            <a href="tel:+573014692095" className="font-bold text-[#f9f2eb] hover:text-[#e7c49c] transition-colors">
               +57 301 469 2095
             </a>
           </div>
@@ -80,19 +80,19 @@ export default function Navbar({ onOpenSOS, onOpenIncognito }: NavbarProps) {
             <button
               type="button"
               onClick={onOpenIncognito || onOpenSOS}
-              className="hidden sm:inline-block text-[11px] font-extrabold text-pink-200 hover:text-amber-300 transition-colors cursor-pointer px-2 py-0.5 rounded-full hover:bg-white/10"
+              className="inline-block text-[11px] font-extrabold text-[#d6c4bb] hover:text-[#e7c49c] transition-colors cursor-pointer px-1 py-0.5"
               title="Modo Incógnito — Protege tu privacidad de navegación"
             >
               Modo Incógnito
             </button>
 
-            <span className="text-pink-400/60 hidden sm:inline">|</span>
+            <span className="text-white/30">|</span>
 
             <Link
               href="/academia"
               target="_blank"
               rel="noopener noreferrer"
-              className="bg-amber-400/20 hover:bg-amber-400/30 text-amber-300 border border-amber-400/30 text-[11px] font-extrabold px-2.5 py-1 rounded-full transition-all"
+              className="text-[#e7c49c] hover:text-white text-[11px] font-extrabold transition-all"
             >
               SendaAcademia ↗
             </Link>
@@ -101,7 +101,7 @@ export default function Navbar({ onOpenSOS, onOpenIncognito }: NavbarProps) {
               href="/portal-beneficiaria"
               target="_blank"
               rel="noopener noreferrer"
-              className="bg-pink-500/20 hover:bg-pink-500/30 text-pink-200 border border-pink-400/30 text-[11px] font-extrabold px-2.5 py-1 rounded-full transition-all"
+              className="text-[#f3d9de] hover:text-white text-[11px] font-extrabold transition-all"
             >
               Portal Usuarias ↗
             </Link>
@@ -110,7 +110,7 @@ export default function Navbar({ onOpenSOS, onOpenIncognito }: NavbarProps) {
               href="/admin"
               target="_blank"
               rel="noopener noreferrer"
-              className="bg-purple-500/30 hover:bg-purple-500/40 text-emerald-300 border border-emerald-400/30 text-[11px] font-extrabold px-2.5 py-1 rounded-full transition-all"
+              className="text-[#c4d9c8] hover:text-white text-[11px] font-extrabold transition-all"
             >
               Portal Profesional ↗
             </Link>
