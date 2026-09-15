@@ -253,15 +253,11 @@ export default function Navbar({ onOpenSOS, onOpenIncognito }: NavbarProps) {
               {[
             { href: '/', label: 'Inicio' },
             { href: '/#necesidades', label: 'Necesito ayuda' },
-            { href: '/senda-universal', label: 'SENDA Universal (Sistema Operativo)' },
-            { href: '/caribe-seguro', label: 'Senda Caribe (Protección territorial)' },
-            { href: '/academia', label: 'SendaAcademia (Plataforma EdTech) ↗' },
-            { href: '/portal-beneficiaria', label: 'Portal de Gestión de Usuarias' },
-            { href: '/admin', label: 'Portal de Gestión de Profesionales' },
-            { href: '/programas', label: '7 Programas Integrales' },
-            { href: '/triaje-psicologico', label: 'Test Psicológico SENDA EVAL' },
-            { href: '/galeria', label: 'Galería de Impacto Social' },
-            { href: '/#aliados', label: 'Nuestros Aliados Institucionales' },
+            { href: '/#programas', label: 'Cómo ayudamos' },
+            { href: '/#senda-caribe', label: 'Senda Caribe' },
+            { href: '/#impacto', label: 'Impacto' },
+            { href: '/#historias', label: 'Historias' },
+            { href: '/nosotros', label: 'Nosotros' },
               ].map((item) => (
             <Link
               key={item.href}

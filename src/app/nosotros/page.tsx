@@ -1,117 +1,18 @@
-'use client';
-
-import React from 'react';
 import Image from 'next/image';
-import { ShieldCheck, Heart, Scale, Users, Award, Sparkles, CheckCircle2 } from 'lucide-react';
-import AlliesSection from '@/components/AlliesSection';
+import Link from 'next/link';
+import { ArrowRight, HeartHandshake, Scale, ShieldCheck, Sparkles, Users } from 'lucide-react';
+import { DefensoriaLogo, ProfamiliaLogo, UnicartagenaLogo } from '@/components/AllyLogos';
+
+const principles = ['Dignidad humana', 'Autonomía', 'Confidencialidad', 'No discriminación', 'Enfoque de género', 'Derechos humanos'];
 
 export default function NosotrosPage() {
-  return (
-    <div className="max-w-6xl mx-auto px-6 py-12 space-y-16">
-      
-      {/* Header */}
-      <div className="text-center max-w-3xl mx-auto space-y-4">
-        <span className="bg-senda-purple-light text-senda-purple font-extrabold text-xs px-4 py-1.5 rounded-full uppercase tracking-wider">
-          Fundación Senda Mujer — Cartagena de Indias
-        </span>
-        <h1 className="text-4xl sm:text-5xl font-extrabold text-senda-purple-dark">
-          Nuestra Misión, Objeto Social & Principios
-        </h1>
-        <p className="text-base text-slate-600 leading-relaxed">
-          Nacemos con el firme compromiso de velar porque ninguna mujer o niña en situación de vulnerabilidad en Cartagena tenga que enfrentar sola un camino difícil o adverso.
-        </p>
-      </div>
-
-      {/* Objeto Social Section */}
-      <div className="bg-white rounded-3xl border border-pink-200 p-8 sm:p-12 shadow-md space-y-6">
-        <div className="flex items-center space-x-3 text-senda-pink font-extrabold text-sm uppercase tracking-wider">
-          <Sparkles className="w-5 h-5 text-amber-500" />
-          <span>1. Objeto Social Estatutario</span>
-        </div>
-        <h2 className="text-2xl font-extrabold text-senda-purple-dark leading-snug">
-          Acompañamiento, Protección y Fortalecimiento Integral
-        </h2>
-        <p className="text-slate-700 text-sm sm:text-base leading-relaxed">
-          Fundación para el acompañamiento, protección y fortalecimiento integral de mujeres y niñas en situación de vulnerabilidad, especialmente aquellas que enfrentan embarazos no deseados, embarazos derivados de violencia sexual, violencia basada en género, pobreza, exclusión social o ausencia de redes de apoyo, mediante orientación social, acompañamiento psicosocial, educación, orientación en derechos, articulación institucional, fortalecimiento familiar, prevención y promoción de los derechos sexuales y reproductivos, y construcción de alternativas de vida digna.
-        </p>
-        <div className="bg-pink-50 p-6 rounded-2xl border-l-4 border-senda-pink text-senda-purple font-bold text-sm">
-          &ldquo;La Fundación buscará que ninguna mujer vulnerable tenga que enfrentar sola un embarazo producto de circunstancias adversas, violencia o falta de oportunidades.&rdquo;
-        </div>
-      </div>
-
-      {/* Beneficiarias */}
-      <div className="space-y-8">
-        <h2 className="text-2xl font-extrabold text-senda-purple-dark text-center">
-          2. Población Beneficiaria
-        </h2>
-        <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-6">
-          {[
-            'Mujeres y adolescentes en situación de pobreza o vulnerabilidad socioeconómica.',
-            'Mujeres que enfrentan embarazos no planeados o no deseados.',
-            'Mujeres y niñas víctimas de violencia sexual (acceso carnal violento, abusos, explotación).',
-            'Mujeres víctimas de violencia basada en género (VBG) y violencia intrafamiliar.',
-            'Madres cabeza de hogar en contexto de vulnerabilidad.',
-            'Mujeres sin redes familiares o sociales de apoyo en Cartagena.',
-            'Mujeres víctimas de desplazamiento forzado o exclusión social.',
-            'Adolescentes y jóvenes con riesgo de embarazo no intencional.',
-            'Familias que requieran acompañamiento integral en contextos de maternidad o adopción.',
-          ].map((item, idx) => (
-            <div key={idx} className="bg-white p-5 rounded-2xl border border-pink-100 shadow-sm flex items-start space-x-3">
-              <CheckCircle2 className="w-5 h-5 text-senda-pink shrink-0 mt-0.5" />
-              <span className="text-xs text-slate-700 font-medium leading-relaxed">{item}</span>
-            </div>
-          ))}
-        </div>
-      </div>
-
-      {/* Enfoque Integral & Marco Legal */}
-      <div className="bg-gradient-to-r from-senda-purple-dark to-senda-purple text-white rounded-3xl p-8 sm:p-12 shadow-xl space-y-6">
-        <h2 className="text-2xl font-extrabold text-amber-300 flex items-center gap-2">
-          <Scale className="w-6 h-6" />
-          3. Marco Legal y Respeto a la Autonomía de la Mujer
-        </h2>
-        <p className="text-xs sm:text-sm text-pink-100 leading-relaxed">
-          No limitamos estatutariamente la Fundación únicamente a mujeres que quieran interrumpir un embarazo. Acompañamos con igual dedicación y amor a quienes decidan continuar con él, ofreciendo nutrición, redes de apoyo, fortalecimiento familiar y orientación sobre adopción.
-        </p>
-        <div className="bg-white/10 p-6 rounded-2xl border border-white/20 text-xs text-pink-100 space-y-2">
-          <p className="font-bold text-white">Jurisprudencia Colombiana de Referencia:</p>
-          <p>
-            • <strong>Sentencia C-055 de 2022:</strong> El aborto consentido no es punible cuando se realiza antes de la semana 24 de gestación.
-          </p>
-          <p>
-            • <strong>Sentencia C-355 de 2006:</strong> Mantiene las tres causales sin límite de tiempo (riesgo para la vida/salud física o mental, malformación incompatible con la vida, o violencia sexual).
-          </p>
-        </div>
-      </div>
-
-      {/* Principios Fundamentales */}
-      <div className="space-y-6 text-center">
-        <h2 className="text-2xl font-extrabold text-senda-purple-dark">
-          4. Nuestros Principios Fundamentales
-        </h2>
-        <div className="grid grid-cols-2 sm:grid-cols-4 gap-4 text-center">
-          {[
-            'Dignidad Humana',
-            'Autonomía de la Mujer',
-            'Confidencialidad Absoluta',
-            'No Discriminación',
-            'Enfoque de Género',
-            'Enfoque Diferencial',
-            'Derechos Humanos',
-            'Protección Integral',
-          ].map((prin, idx) => (
-            <div key={idx} className="bg-pink-50 p-4 rounded-2xl font-extrabold text-xs text-senda-purple border border-pink-200">
-              {prin}
-            </div>
-          ))}
-        </div>
-      </div>
-
-      {/* Red de Aliados Institucionales */}
-      <div className="-mx-6 -mb-12">
-        <AlliesSection />
-      </div>
-
-    </div>
-  );
+  return <main className="prototype-home senda-about">
+    <section className="senda-about__hero"><div className="senda-shell senda-about__hero-grid"><div><p className="senda-eyebrow">Fundación Senda Mujer · Cartagena</p><h1>Cuidar, orientar y abrir caminos posibles.</h1><p>Somos una fundación que acompaña a mujeres y niñas desde la escucha, el respeto por sus decisiones y la conexión con rutas de protección, salud, justicia y autonomía.</p><Link className="senda-button senda-button--primary" href="/agendar-cita">Hablar con Senda <ArrowRight/></Link></div><div className="senda-about__photo"><Image src="https://images.unsplash.com/photo-1551836022-d5d88e9218df?auto=format&fit=crop&w=1200&q=85" alt="Equipo de acompañamiento de Fundación Senda Mujer" fill priority className="object-cover" sizes="(max-width: 900px) 100vw, 44vw"/><span>Cartagena · Bolívar</span></div></div></section>
+    <section className="senda-section"><div className="senda-shell senda-about__intro"><p className="senda-eyebrow">Quiénes somos</p><h2>Una red humana para momentos que no deberían vivirse a solas.</h2><p>Trabajamos por el acompañamiento, protección y fortalecimiento integral de mujeres y niñas en situación de vulnerabilidad. Articulamos orientación social, apoyo psicosocial, salud, derechos y oportunidades para construir alternativas de vida digna.</p></div></section>
+    <section className="senda-about__purpose"><div className="senda-shell senda-about__purpose-grid"><article><span><HeartHandshake/></span><p className="senda-eyebrow">Nuestra misión</p><h2>Acompañar decisiones libres e informadas.</h2><p>Brindar atención integral, gratuita y confidencial a mujeres y niñas, fortaleciendo sus derechos, su bienestar y sus redes de apoyo mediante rutas claras y atención cercana.</p></article><article><span><Sparkles/></span><p className="senda-eyebrow">Nuestra visión</p><h2>Un Caribe donde ninguna mujer camine sola.</h2><p>Ser una referencia territorial de cuidado y protección, reconocida por transformar barreras en oportunidades y por impulsar comunidades más seguras, equitativas y solidarias.</p></article></div></section>
+    <section className="senda-section"><div className="senda-shell"><div className="senda-section-head"><div><p className="senda-eyebrow">Cómo actuamos</p><h2>Principios que guían cada atención.</h2></div><p>La persona, su seguridad y su decisión están siempre en el centro.</p></div><div className="senda-about__principles">{principles.map((principle, index) => <div key={principle}><span>0{index + 1}</span><h3>{principle}</h3></div>)}</div></div></section>
+    <section className="senda-about__rights"><div className="senda-shell"><Scale/><div><p className="senda-eyebrow">Autonomía y derechos</p><h2>Acompañamos sin juzgar.</h2><p>Ofrecemos orientación respetuosa para que cada mujer pueda conocer sus opciones y tomar decisiones informadas sobre su vida, su salud y su proyecto personal. La confidencialidad y el respeto son irrenunciables.</p></div><ShieldCheck/></div></section>
+    <section className="senda-allies senda-allies--logos" aria-labelledby="allies-title"><div className="senda-shell"><p className="senda-eyebrow">Alianzas que protegen</p><h2 id="allies-title">Una red que amplía el alcance del cuidado.</h2><p className="senda-allies__intro">Aliados institucionales que fortalecen las rutas de derechos, salud y formación en el territorio.</p><div className="senda-logo-row">{[[DefensoriaLogo, 'Defensoría del Pueblo'], [ProfamiliaLogo, 'Profamilia'], [UnicartagenaLogo, 'Universidad de Cartagena']].map(([Logo, name]) => <div className="senda-logo-card" key={name}><Logo size={76} className="h-[76px] w-[76px]"/><span>{name}</span></div>)}</div></div></section>
+    <section className="senda-section"><div className="senda-shell senda-donate"><div><p className="senda-eyebrow">Haz parte</p><h2>El cuidado colectivo transforma vidas.</h2><p>Tu aporte se convierte en atención, orientación y oportunidades concretas para mujeres y niñas de Cartagena.</p></div><Link href="/donar" className="senda-button senda-button--primary">Quiero apoyar <ArrowRight/></Link></div></section>
+  </main>;
 }
