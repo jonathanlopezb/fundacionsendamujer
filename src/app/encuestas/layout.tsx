@@ -27,14 +27,7 @@ export default function EncuestasLayout({ children }: { children: React.ReactNod
           </div>
 
           <div className="flex items-center gap-3">
-            {/* Emblema Defensores de la Patria */}
-            <Image
-              src="/defensores.png"
-              alt="Defensores de la Patria"
-              width={28}
-              height={28}
-              className="hidden sm:block h-7 w-7 object-contain"
-            />
+            
             <span className="hidden sm:inline-flex items-center gap-1.5 text-[10px] font-bold text-emerald-300 bg-emerald-950/50 border border-emerald-500/30 px-3 py-1 rounded-full">
               <ShieldCheck className="w-3.5 h-3.5 text-emerald-400" />
               <span>Confidencial</span>
@@ -49,7 +42,7 @@ export default function EncuestasLayout({ children }: { children: React.ReactNod
         <div className="mt-2 flex flex-wrap items-center justify-center gap-x-4 gap-y-1 text-[9px] font-bold tracking-wider text-purple-300/60 uppercase">
           <span>Fundación Senda Mujer</span>
           <span className="text-pink-500">×</span>
-          <span>Defensores de la Patria</span>
+         
           <span className="text-pink-500">×</span>
           <span>Junta de Acción Comunal</span>
         </div>
