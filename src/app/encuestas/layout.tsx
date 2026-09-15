@@ -42,8 +42,6 @@ export default function EncuestasLayout({ children }: { children: React.ReactNod
         <div className="mt-2 flex flex-wrap items-center justify-center gap-x-4 gap-y-1 text-[9px] font-bold tracking-wider text-purple-300/60 uppercase">
           <span>Fundación Senda Mujer</span>
           <span className="text-pink-500">×</span>
-         
-          <span className="text-pink-500">×</span>
           <span>Junta de Acción Comunal</span>
         </div>
       </header>
