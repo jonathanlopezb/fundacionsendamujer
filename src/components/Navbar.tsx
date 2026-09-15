@@ -131,7 +131,7 @@ export default function Navbar({ onOpenSOS, onOpenIncognito }: NavbarProps) {
         </Link>
 
         {/* Desktop Nav */}
-        <nav className="hidden lg:flex items-center gap-0.5 text-[11px] font-bold text-[#52166F]">
+        <nav className="hidden">
           <Link href="/" className="px-3 py-2 rounded-lg hover:bg-pink-50 hover:text-[#E12880] transition-all">
             Inicio
           </Link>
@@ -196,6 +196,15 @@ export default function Navbar({ onOpenSOS, onOpenIncognito }: NavbarProps) {
           </Link>
         </nav>
 
+        <nav className="hidden lg:flex items-center gap-5 text-[13px] font-bold text-[#544e48]" aria-label="Navegación principal">
+          <Link href="/#necesidades" className="hover:text-[#6E3F58] transition-colors">Necesito ayuda</Link>
+          <Link href="/#programas" className="hover:text-[#6E3F58] transition-colors">Cómo ayudamos</Link>
+          <Link href="/#senda-caribe" className="hover:text-[#6E3F58] transition-colors">Senda Caribe</Link>
+          <Link href="/#impacto" className="hover:text-[#6E3F58] transition-colors">Impacto</Link>
+          <Link href="/#historias" className="hover:text-[#6E3F58] transition-colors">Historias</Link>
+          <Link href="/nosotros" className="hover:text-[#6E3F58] transition-colors">Nosotros</Link>
+        </nav>
+
         {/* Right CTAs */}
         <div className="hidden lg:flex items-center gap-2">
           <button
@@ -207,12 +216,7 @@ export default function Navbar({ onOpenSOS, onOpenIncognito }: NavbarProps) {
             SOS
           </button>
 
-          <Link
-            href="/agendar-cita"
-            className="bg-gradient-to-r from-[#E12880] to-[#52166F] text-white font-bold px-5 py-2.5 rounded-full shadow-md hover:shadow-lg transition-all text-xs"
-          >
-            Agendar Cita
-          </Link>
+          <Link href="/donar" className="bg-[#EEE6DF] text-[#6E3F58] font-bold px-5 py-2.5 rounded-full hover:bg-[#E6D8CE] transition-all text-xs">Donar</Link>
         </div>
 
         {/* Mobile toggle */}
