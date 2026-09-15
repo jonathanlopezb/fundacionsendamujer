@@ -675,7 +675,6 @@ export default function EncuestaComunitariaForm({ barrio, localidad, jornada }: 
         {/* Alianza institucional */}
         <div className="mt-3 flex flex-wrap items-center gap-2 text-[10px] font-bold text-purple-300/50">
           <span className="rounded-full border border-purple-700/40 bg-purple-950/30 px-2.5 py-0.5">Fundación Senda Mujer</span>
-          <span className="rounded-full border border-amber-700/40 bg-amber-950/20 px-2.5 py-0.5 text-amber-300/60">Defensores de la Patria</span>
           <span className="rounded-full border border-emerald-700/40 bg-emerald-950/20 px-2.5 py-0.5 text-emerald-300/60">Junta de Acción Comunal</span>
         </div>
       </div>
