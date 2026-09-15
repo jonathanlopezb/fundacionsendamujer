@@ -88,7 +88,7 @@ export default function CaribeSeguroSidebar({ collapsed, onToggleCollapse }: Sid
           {!collapsed && (
             <div className="animate-fadeIn">
               <span className="font-black text-sm tracking-wider text-transparent bg-clip-text bg-gradient-to-r from-pink-300 via-white to-amber-200 block leading-tight">
-                CARIBE SEGURO
+                SENDA CARIBE
               </span>
               <span className="text-[10px] text-pink-300 font-extrabold uppercase tracking-widest block">
                 MICROSITIO SENDA

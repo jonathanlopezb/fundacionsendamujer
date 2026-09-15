@@ -170,7 +170,7 @@ export default function Navbar({ onOpenSOS, onOpenIncognito }: NavbarProps) {
           </Link>
 
           <Link href="/caribe-seguro" className="px-3 py-2 rounded-lg bg-gradient-to-r from-[#3B0852] to-[#52166F] text-amber-300 font-extrabold transition-all hover:shadow-sm">
-            Caribe Seguro
+            Senda Caribe
           </Link>
 
           <Link href="/triaje-psicologico" className="px-3 py-2 rounded-lg hover:bg-pink-50 text-[#E12880] transition-all">
@@ -238,6 +238,7 @@ export default function Navbar({ onOpenSOS, onOpenIncognito }: NavbarProps) {
           {[
             { href: '/', label: 'Inicio' },
             { href: '/senda-universal', label: 'SENDA Universal (Sistema Operativo)' },
+            { href: '/caribe-seguro', label: 'Senda Caribe (Protección territorial)' },
             { href: '/academia', label: 'SendaAcademia (Plataforma EdTech) ↗' },
             { href: '/portal-beneficiaria', label: 'Portal de Gestión de Usuarias' },
             { href: '/admin', label: 'Portal de Gestión de Profesionales' },

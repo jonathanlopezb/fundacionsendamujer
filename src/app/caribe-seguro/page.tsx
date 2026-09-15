@@ -70,7 +70,7 @@ export default function CaribeSeguroCommandCenterPage() {
             </div>
 
             <h1 className="text-3xl sm:text-5xl font-black tracking-tight text-white leading-tight">
-              Caribe Seguro
+              Senda Caribe
               <span className="block text-transparent bg-clip-text bg-gradient-to-r from-amber-300 via-pink-200 to-pink-400 text-2xl sm:text-3xl font-bold mt-1">
                 De la alerta a la protección. Del resultado a la evidencia.
               </span>

@@ -32,7 +32,7 @@ export default function CaribeSeguroTopbar({ onToggleSidebarMobile }: TopbarProp
   const [searchQuery, setSearchQuery] = useState('');
   const [showNotifications, setShowNotifications] = useState(false);
 
-  const currentLabel = ROUTE_LABELS[pathname] || 'Ecosistema Caribe Seguro';
+  const currentLabel = ROUTE_LABELS[pathname] || 'Ecosistema Senda Caribe';
 
   return (
     <header className="h-16 bg-[#140320]/80 backdrop-blur-xl border-b border-purple-900/40 px-4 sm:px-6 flex items-center justify-between gap-4 sticky top-0 z-30">
@@ -52,7 +52,7 @@ export default function CaribeSeguroTopbar({ onToggleSidebarMobile }: TopbarProp
 
         <div className="hidden sm:flex items-center gap-2">
           <span className="text-[10px] font-black uppercase tracking-wider text-pink-400/80 bg-pink-950/60 px-2.5 py-1 rounded-full border border-pink-500/20">
-            Caribe Seguro
+            Senda Caribe
           </span>
           <span className="text-pink-400/40 text-xs">/</span>
           <span className="text-xs font-black text-white truncate max-w-[200px] xl:max-w-none">
