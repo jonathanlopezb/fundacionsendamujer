@@ -120,10 +120,10 @@ function Field({ label, required, children, hint }: {
 }) {
   return (
     <label className="block">
-      <span className="block text-sm font-semibold text-slate-800 mb-1.5">
+      <span className="block text-sm font-semibold text-slate-800 dark:text-purple-50 mb-1.5">
         {label}{required && <span className="text-rose-400 ml-1">*</span>}
       </span>
-      {hint && <span className="block text-xs text-slate-500 mb-1.5">{hint}</span>}
+      {hint && <span className="block text-xs text-slate-600 dark:text-purple-100 mb-1.5">{hint}</span>}
       {children}
     </label>
   );
@@ -185,8 +185,8 @@ function SectionHeader({ icon: Icon, title, description }: { icon: React.Element
         <Icon className="w-4 h-4" />
         <span className="text-[10px] font-black tracking-widest uppercase">Paso del diagnóstico</span>
       </div>
-      <h2 className="text-2xl font-bold tracking-tight text-slate-900">{title}</h2>
-      <p className="mt-1.5 text-sm text-slate-600 leading-relaxed">{description}</p>
+      <h2 className="text-2xl font-bold tracking-tight text-slate-900 dark:text-white">{title}</h2>
+      <p className="mt-1.5 text-sm text-slate-600 dark:text-purple-100 leading-relaxed">{description}</p>
     </div>
   );
 }
@@ -682,10 +682,10 @@ export default function EncuestaComunitariaForm({ barrio, localidad, jornada }: 
       {/* Alerta de caso urgente */}
       <div className="mb-6 rounded-xl border border-rose-200 bg-rose-50 p-4 flex gap-3">
         <AlertTriangle className="w-5 h-5 text-amber-300 shrink-0 mt-0.5" />
-        <p className="text-sm text-rose-100">
+        <p className="text-sm text-rose-950">
           <strong>¿Hay peligro o necesidad crítica ahora?</strong> No esperes la jornada. Activa
           la ruta de atención inmediata con el equipo de campo o llama al{' '}
-          <a href="tel:123" className="text-amber-300 font-bold">123</a>.
+          <a href="tel:123" className="text-rose-800 font-bold underline">123</a>.
         </p>
       </div>
 
@@ -720,15 +720,15 @@ export default function EncuestaComunitariaForm({ barrio, localidad, jornada }: 
         </aside>
 
         {/* Formulario */}
-        <div className="sticky top-[76px] z-20 mb-5 border-b border-slate-200 bg-slate-50/95 py-3 backdrop-blur">
-          <div className="mb-2 flex items-center justify-between text-xs font-semibold text-slate-600">
+        <div className="sticky top-[92px] z-20 mb-5 border-b border-slate-200 bg-slate-50/95 py-3 backdrop-blur dark:border-purple-700 dark:bg-[#140320]/95">
+          <div className="mb-2 flex items-center justify-between text-xs font-semibold text-slate-600 dark:text-purple-50">
             <span>{STEPS[step].label}</span><span>{step + 1} de {STEPS.length}</span>
           </div>
-          <div className="h-1.5 overflow-hidden rounded-full bg-slate-200">
+          <div className="h-1.5 overflow-hidden rounded-full bg-slate-200 dark:bg-purple-900">
             <div className="h-full rounded-full bg-pink-600 transition-all duration-200" style={{ width: `${((step + 1) / STEPS.length) * 100}%` }} />
           </div>
         </div>
-        <form onSubmit={handleSubmit} className="rounded-2xl border border-slate-200 bg-white p-5 shadow-sm sm:p-8">
+        <form onSubmit={handleSubmit} className="rounded-2xl border border-slate-200 bg-white p-5 shadow-sm sm:p-8 dark:border-purple-700 dark:bg-[#210b35]">
           <div className="min-h-[400px] space-y-5">
 
             {/* ── STEP 0 — Ficha del hogar ─────────────────────────────── */}
@@ -1449,9 +1449,9 @@ export default function EncuestaComunitariaForm({ barrio, localidad, jornada }: 
           )}
 
           {/* Navegación */}
-          <div className="fixed inset-x-0 bottom-0 z-30 flex items-center justify-between gap-3 border-t border-slate-200 bg-white/95 px-4 py-3 shadow-[0_-8px_24px_rgba(15,23,42,0.08)] backdrop-blur">
+          <div className="fixed inset-x-0 bottom-0 z-30 flex items-center justify-between gap-3 border-t border-slate-200 bg-white/95 px-4 py-3 shadow-[0_-8px_24px_rgba(15,23,42,0.08)] backdrop-blur dark:border-purple-700 dark:bg-[#1b0730]/95">
             {step > 0 ? (
-              <button type="button" onClick={back} className="inline-flex min-h-[48px] items-center gap-2 px-3 text-sm font-semibold text-slate-700 hover:text-slate-950 transition-colors">
+              <button type="button" onClick={back} className="inline-flex min-h-[48px] items-center gap-2 px-3 text-sm font-semibold text-slate-700 transition-colors hover:text-slate-950 dark:text-purple-50 dark:hover:text-white">
                 <ArrowLeft className="w-4 h-4" /> Anterior
               </button>
             ) : <span />}
