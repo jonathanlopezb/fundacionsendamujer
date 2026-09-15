@@ -244,7 +244,7 @@ export default function Navbar({ onOpenSOS, onOpenIncognito }: NavbarProps) {
       {mobileMenuOpen && (
         <div className="fixed inset-0 z-[70] lg:hidden" role="dialog" aria-modal="true" aria-label="Menú principal">
           <button type="button" aria-label="Cerrar menú" onClick={() => setMobileMenuOpen(false)} className="absolute inset-0 bg-slate-950/45 backdrop-blur-[2px]" />
-          <aside className="absolute right-0 top-0 flex h-full w-full flex-col overflow-y-auto bg-white px-5 pb-6 pt-5 shadow-2xl animate-mobile-drawer sm:w-[420px]">
+          <aside className="absolute right-0 top-0 flex h-[100dvh] w-full flex-col overflow-y-auto bg-[#fbf8f3] px-5 pb-6 pt-5 shadow-2xl animate-mobile-drawer">
             <div className="mb-5 flex items-center justify-between border-b border-pink-100 pb-4">
               <div><p className="text-[10px] font-black uppercase tracking-[.16em] text-[#E12880]">Fundación Senda Mujer</p><h2 className="mt-1 text-lg font-black text-[#52166F]">Menú principal</h2></div>
               <button type="button" onClick={() => setMobileMenuOpen(false)} aria-label="Cerrar menú" className="grid h-10 w-10 place-items-center rounded-full bg-slate-100 text-[#52166F] transition-colors hover:bg-pink-50 hover:text-[#E12880]"><X className="h-5 w-5" /></button>
