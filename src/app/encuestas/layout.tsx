@@ -18,7 +18,7 @@ export default function EncuestasLayout({ children }: { children: React.ReactNod
             <Image src="/logo.png" alt={foundationName} width={56} height={56} priority className="h-14 w-14 shrink-0 rounded-xl object-contain" />
             <div className="min-w-0">
               <span className={`block text-sm font-extrabold tracking-wide ${darkMode ? 'text-white' : 'text-slate-950'}`}>{foundationName}</span>
-              <span className={`block text-xs font-medium ${darkMode ? 'text-purple-100' : 'text-slate-600'}`}>Diagn\u00f3stico comunitario</span>
+              <span className={`block text-xs font-medium ${darkMode ? 'text-purple-100' : 'text-slate-600'}`}>{'Diagn\u00f3stico comunitario'}</span>
             </div>
           </div>
           <button type="button" onClick={() => setDarkMode((value) => !value)} aria-label={darkMode ? 'Activar modo claro' : 'Activar modo oscuro'} aria-pressed={darkMode} className={`inline-flex min-h-[44px] min-w-[44px] items-center justify-center rounded-xl border transition-colors ${darkMode ? 'border-purple-400 bg-purple-800 text-amber-300 hover:bg-purple-700' : 'border-slate-300 bg-white text-slate-700 hover:bg-slate-100'}`}>

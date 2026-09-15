@@ -1,279 +1,68 @@
 import React from 'react';
 import Link from 'next/link';
-import Image from 'next/image';
+import { ArrowRight, HeartHandshake, MessageCircle, Scale, ShieldCheck, Stethoscope } from 'lucide-react';
 import HeroSection from '@/components/HeroSection';
-import FounderGreeting from '@/components/FounderGreeting';
-import ProgramsGrid from '@/components/ProgramsGrid';
-import ActivityGallery from '@/components/ActivityGallery';
-import CartagenaDirectory from '@/components/CartagenaDirectory';
-import DonationCalculator from '@/components/DonationCalculator';
-import AlliesSection from '@/components/AlliesSection';
-import { ArrowRight, MessageCircle, Scale, ShieldCheck, Stethoscope } from 'lucide-react';
+
+const needs = [
+  { icon: ShieldCheck, title: 'Estoy viviendo violencia', text: 'Orientación, protección y rutas.', href: '/triaje-psicologico' },
+  { icon: MessageCircle, title: 'Necesito hablar con alguien', text: 'Escucha y contención emocional.', href: '/triaje-psicologico' },
+  { icon: Scale, title: 'Necesito orientación jurídica', text: 'Derechos y acompañamiento legal.', href: '/agendar-cita?especialidad=Asesor%C3%ADa%20Jur%C3%ADdica' },
+  { icon: Stethoscope, title: 'Necesito atención en salud', text: 'Orientación médica y social.', href: '/agendar-cita' },
+];
+
+const programs = [
+  ['01', 'Mujer Acompañada', 'Primera escucha y orientación social.'],
+  ['02', 'Violencia Sexual', 'Protección, salud y acompañamiento de caso.'],
+  ['03', 'Contención Psicosocial', 'Salud mental, duelo y redes de apoyo.'],
+  ['04', 'Salud y Derechos', 'Atención médica, social y jurídica.'],
+  ['05', 'Embarazo con Apoyo', 'Acompañamiento durante una etapa decisiva.'],
+  ['06', 'Mujer y Justicia', 'Orientación legal para ejercer derechos.'],
+  ['07', 'Proyecto de Vida', 'Educación, autonomía y oportunidades.'],
+];
+
+const organizationSchema = {
+  '@context': 'https://schema.org',
+  '@type': 'NGO',
+  name: 'Fundación Senda Mujer',
+  url: 'https://fundacionsendamujer.vercel.app/',
+  logo: 'https://fundacionsendamujer.vercel.app/logo.png',
+  description: 'Acompañamiento gratuito, confidencial e integral para mujeres y niñas en Cartagena.',
+  areaServed: ['Cartagena de Indias', 'Bolívar', 'Colombia'],
+  telephone: '+57 301 469 2095',
+};
 
 export default function HomePage() {
-  const organizationSchema = {
-    '@context': 'https://schema.org',
-    '@type': 'NGO',
-    name: 'Fundación Senda Mujer',
-    url: 'https://fundacionsendamujer.vercel.app/',
-    logo: 'https://fundacionsendamujer.vercel.app/logo.png',
-    description: 'Fundación que ofrece acompañamiento integral, orientación en derechos, salud, protección y autonomía para mujeres y niñas en Cartagena, Colombia.',
-    areaServed: ['Cartagena de Indias', 'Bolívar', 'Colombia'],
-    telephone: '+57 301 469 2095',
-    sameAs: ['https://fundacionsendamujer.vercel.app/'],
-    contactPoint: {
-      '@type': 'ContactPoint',
-      telephone: '+57 301 469 2095',
-      contactType: 'customer support',
-      areaServed: 'CO',
-      availableLanguage: 'Spanish',
-    },
-  };
-
-  const SPECIALTIES = [
-    {
-      title: 'Psicología & Salud Mental',
-      desc: 'Contención en crisis, superación del duelo, terapia individual y círculos de apoyo.',
-      image: 'https://images.unsplash.com/photo-1529156069898-49953e39b3ac?auto=format&fit=crop&w=600&q=80',
-    },
-    {
-      title: 'Ginecología & Salud Sexual',
-      desc: 'Citologías, tamizaje de ITS, anticoncepción, ecografías y consulta prenatal.',
-      image: 'https://images.unsplash.com/photo-1576091160399-112ba8d25d1d?auto=format&fit=crop&w=600&q=80',
-    },
-    {
-      title: 'Odontología Preventiva',
-      desc: 'Profilaxis, salud oral materno-infantil y urgencias odontológicas.',
-      image: 'https://images.unsplash.com/photo-1588776814546-1ffcf47267a5?auto=format&fit=crop&w=600&q=80',
-    },
-    {
-      title: 'Medicina General',
-      desc: 'Triage clínico, formulación, control de enfermedades crónicas y remisiones.',
-      image: 'https://images.unsplash.com/photo-1559757175-0eb30cd8c063?auto=format&fit=crop&w=600&q=80',
-    },
-    {
-      title: 'Asesoría Jurídica',
-      desc: 'Alimentos, custodia, medidas de protección contra violencia y titulación predial.',
-      image: 'https://images.unsplash.com/photo-1450133064473-71024230f91b?auto=format&fit=crop&w=600&q=80',
-    },
-  ];
-
   return (
-    <div className="space-y-16 pb-16 font-sans" itemScope itemType="https://schema.org/NGO">
+    <div className="bg-[#FCF9F6] pb-20 font-sans" itemScope itemType="https://schema.org/NGO">
       <script type="application/ld+json" dangerouslySetInnerHTML={{ __html: JSON.stringify(organizationSchema) }} />
-      
-      {/* 1. Hero Section con fotografía humana y mensaje central */}
+
       <HeroSection />
 
-      <section id="necesidades" className="max-w-7xl mx-auto px-6 lg:px-8" aria-labelledby="necesidades-title">
-        <div className="rounded-[2rem] border border-[#eadfd8] bg-[#f7f1eb] p-6 sm:p-10">
-          <div className="flex flex-col lg:flex-row lg:items-end lg:justify-between gap-5 mb-7">
-            <div><p className="text-[11px] font-black uppercase tracking-[.16em] text-senda-pink mb-2">Empieza por aquí</p><h2 id="necesidades-title" className="text-3xl sm:text-4xl font-black text-senda-purple-dark tracking-tight">¿Qué necesitas hoy?</h2></div>
-            <p className="max-w-md text-sm leading-relaxed text-slate-600">No necesitas conocer rutas ni instituciones. Elige la opción que más se parece a tu situación y te guiamos al siguiente paso.</p>
-          </div>
-          <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-4 gap-3">
-            <Link href="/triaje-psicologico" className="group rounded-2xl border border-[#e4d7ce] bg-white p-5 hover:-translate-y-0.5 hover:shadow-lg transition-all"><ShieldCheck className="w-5 h-5 text-senda-pink" /><h3 className="font-black text-sm text-slate-800 mt-6">Estoy viviendo violencia</h3><p className="text-xs text-slate-500 mt-1">Orientación, protección y rutas.</p><ArrowRight className="w-4 h-4 text-senda-pink mt-5 group-hover:translate-x-1 transition-transform" /></Link>
-            <Link href="/triaje-psicologico" className="group rounded-2xl border border-[#e4d7ce] bg-white p-5 hover:-translate-y-0.5 hover:shadow-lg transition-all"><MessageCircle className="w-5 h-5 text-senda-pink" /><h3 className="font-black text-sm text-slate-800 mt-6">Necesito hablar con alguien</h3><p className="text-xs text-slate-500 mt-1">Contención emocional y escucha.</p><ArrowRight className="w-4 h-4 text-senda-pink mt-5 group-hover:translate-x-1 transition-transform" /></Link>
-            <Link href="/agendar-cita?especialidad=Asesor%C3%ADa%20Jur%C3%ADdica" className="group rounded-2xl border border-[#e4d7ce] bg-white p-5 hover:-translate-y-0.5 hover:shadow-lg transition-all"><Scale className="w-5 h-5 text-senda-pink" /><h3 className="font-black text-sm text-slate-800 mt-6">Necesito orientación jurídica</h3><p className="text-xs text-slate-500 mt-1">Derechos y acompañamiento legal.</p><ArrowRight className="w-4 h-4 text-senda-pink mt-5 group-hover:translate-x-1 transition-transform" /></Link>
-            <Link href="/agendar-cita" className="group rounded-2xl border border-[#e4d7ce] bg-white p-5 hover:-translate-y-0.5 hover:shadow-lg transition-all"><Stethoscope className="w-5 h-5 text-senda-pink" /><h3 className="font-black text-sm text-slate-800 mt-6">Necesito atención en salud</h3><p className="text-xs text-slate-500 mt-1">Orientación médica y social.</p><ArrowRight className="w-4 h-4 text-senda-pink mt-5 group-hover:translate-x-1 transition-transform" /></Link>
-          </div>
+      <section id="necesidades" className="mx-auto max-w-7xl px-6 py-14 sm:py-20 lg:px-8" aria-labelledby="needs-title">
+        <div className="flex flex-col justify-between gap-5 lg:flex-row lg:items-end">
+          <div><p className="text-[11px] font-black uppercase tracking-[.16em] text-senda-pink">Empieza por aquí</p><h2 id="needs-title" className="mt-2 text-3xl font-black tracking-tight text-senda-purple-dark sm:text-5xl">¿Qué necesitas hoy?</h2></div>
+          <p className="max-w-md text-sm leading-relaxed text-slate-600">No tienes que conocer las instituciones ni las palabras correctas. Elige una opción y te mostramos el siguiente paso.</p>
+        </div>
+        <div className="mt-8 grid grid-cols-1 gap-3 sm:grid-cols-2 lg:grid-cols-4">
+          {needs.map(({ icon: Icon, title, text, href }) => <Link key={title} href={href} className="group rounded-2xl border border-[#e4d7ce] bg-white p-5 transition-all hover:-translate-y-1 hover:shadow-xl"><Icon className="h-5 w-5 text-senda-pink" /><h3 className="mt-7 text-sm font-black text-slate-800">{title}</h3><p className="mt-1 text-xs text-slate-500">{text}</p><ArrowRight className="mt-5 h-4 w-4 text-senda-pink transition-transform group-hover:translate-x-1" /></Link>)}
         </div>
       </section>
 
-      {/* 1.2. Saludo y Mensaje de Bienvenida de la Fundadora */}
-      <section className="max-w-7xl mx-auto px-6 lg:px-8" aria-labelledby="camino-title">
-        <div className="border-t border-[#e6dcd4] pt-10 sm:pt-14">
-          <div className="flex flex-col lg:flex-row lg:items-end lg:justify-between gap-5 mb-9"><div><p className="text-[11px] font-black uppercase tracking-[.16em] text-senda-pink mb-2">Nuestro modelo de atención</p><h2 id="camino-title" className="text-3xl sm:text-4xl font-black text-senda-purple-dark tracking-tight">Tu camino con Senda</h2></div><p className="max-w-md text-sm leading-relaxed text-slate-600">No tienes que saber qué institución buscar ni cómo explicar todo. Nuestro trabajo es orientarte hacia el siguiente paso.</p></div>
-          <ol className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-4 border-t border-[#e6dcd4]">
-            {[['01', 'Escuchamos', 'Entendemos tu situación con respeto y sin juzgar.'], ['02', 'Orientamos', 'Identificamos necesidades y prioridades contigo.'], ['03', 'Activamos tu ruta', 'Conectamos la atención profesional que necesitas.'], ['04', 'Acompañamos', 'Damos continuidad, seguimiento y autonomía.']].map(([number, title, description], index) => <li key={number} className={`min-h-44 py-6 pr-6 ${index > 0 ? 'lg:pl-6 lg:border-l border-[#e6dcd4]' : ''} ${index > 1 ? 'sm:pt-6' : ''}`}><span className="inline-grid h-8 w-8 place-items-center rounded-full border border-[#d9c8bd] text-[10px] font-black text-senda-pink">{number}</span><h3 className="mt-5 font-black text-slate-800">{title}</h3><p className="mt-2 max-w-[220px] text-xs leading-relaxed text-slate-500">{description}</p></li>)}
-          </ol>
-        </div>
+      <section id="acompanamos" className="border-y border-[#e6dcd4] bg-white" aria-labelledby="path-title">
+        <div className="mx-auto max-w-7xl px-6 py-14 sm:py-20 lg:px-8"><div className="flex flex-col justify-between gap-5 lg:flex-row lg:items-end"><div><p className="text-[11px] font-black uppercase tracking-[.16em] text-senda-pink">Nuestro modelo</p><h2 id="path-title" className="mt-2 text-3xl font-black tracking-tight text-senda-purple-dark sm:text-5xl">Tu camino con Senda</h2></div><p className="max-w-md text-sm leading-relaxed text-slate-600">Un acompañamiento claro, humano y continuo.</p></div><ol className="mt-10 grid grid-cols-1 border-t border-[#e6dcd4] sm:grid-cols-2 lg:grid-cols-4">{[['01', 'Escuchamos', 'Entendemos tu situación sin juzgar.'], ['02', 'Orientamos', 'Identificamos necesidades y prioridades.'], ['03', 'Activamos tu ruta', 'Conectamos la ayuda profesional.'], ['04', 'Acompañamos', 'Damos continuidad y fortalecemos autonomía.']].map(([n, title, desc]) => <li key={n} className="min-h-40 border-b border-[#e6dcd4] py-6 pr-6 last:border-0 sm:odd:pr-8 lg:border-b-0 lg:border-r lg:pl-6 lg:first:pl-0 lg:last:border-0"><span className="inline-grid h-8 w-8 place-items-center rounded-full border border-[#d9c8bd] text-[10px] font-black text-senda-pink">{n}</span><h3 className="mt-5 font-black text-slate-800">{title}</h3><p className="mt-2 max-w-[210px] text-xs leading-relaxed text-slate-500">{desc}</p></li>)}</ol></div>
       </section>
 
-      <FounderGreeting />
+      <section id="senda-caribe" className="mx-auto max-w-7xl px-6 py-14 sm:py-20 lg:px-8" aria-labelledby="caribe-title"><div className="overflow-hidden rounded-[2rem] bg-[#203C3D] p-7 text-white shadow-xl sm:p-12"><div className="grid items-center gap-10 lg:grid-cols-[1fr_.8fr]"><div><p className="text-[11px] font-black uppercase tracking-[.16em] text-[#D9B991]">Senda Caribe</p><h2 id="caribe-title" className="mt-3 max-w-xl text-4xl font-black leading-[1.02] tracking-tight sm:text-6xl">Protección cercana para un Caribe más seguro.</h2><p className="mt-5 max-w-xl text-sm leading-relaxed text-emerald-50/80">Prevención, rutas de atención, acompañamiento profesional y evidencia territorial en un solo ecosistema.</p><Link href="/caribe-seguro" className="mt-7 inline-flex items-center gap-2 rounded-full bg-[#D9B991] px-6 py-3.5 text-xs font-black text-[#203C3D] transition-colors hover:bg-[#EED3AD]">Conocer Senda Caribe <ArrowRight className="h-4 w-4" /></Link></div><div className="rounded-3xl border border-white/20 bg-white/10 p-5 backdrop-blur-sm"><div className="flex items-center gap-3 border-b border-white/15 pb-5"><span className="grid h-10 w-10 place-items-center rounded-full bg-[#D9B991] text-xs font-black text-[#203C3D]">SC</span><div><strong className="block text-sm">Centro de acompañamiento</strong><span className="text-[11px] text-emerald-50/70">Tu ruta, en un solo lugar</span></div></div><div className="space-y-3 pt-5">{[['Encontrar una ruta', '/caribe-seguro/rutas'], ['Mi plan de protección', '/caribe-seguro/proteccion'], ['Red profesional', '/caribe-seguro/red']].map(([label, href]) => <Link key={href} href={href} className="flex items-center justify-between rounded-xl border border-white/15 bg-white/5 px-4 py-3 text-xs font-bold transition-colors hover:bg-white/10"><span>{label}</span><ArrowRight className="h-4 w-4 text-[#D9B991]" /></Link>)}</div></div></div></div></section>
 
-      <section className="max-w-7xl mx-auto px-6 lg:px-8" aria-labelledby="senda-caribe-title">
-        <div className="relative overflow-hidden rounded-[2rem] bg-[#203c3d] px-7 py-10 sm:p-12 text-white shadow-xl">
-          <div className="absolute -right-24 -top-24 w-72 h-72 rounded-full bg-[#d9b991]/20 blur-3xl" />
-          <div className="relative grid grid-cols-1 lg:grid-cols-[1fr_.8fr] gap-8 lg:gap-16 items-center">
-            <div><p className="text-[11px] font-black uppercase tracking-[.16em] text-[#d9b991]">Senda Caribe</p><h2 id="senda-caribe-title" className="mt-3 text-4xl sm:text-5xl font-black tracking-tight leading-[1.02]">Protección cercana para un Caribe más seguro.</h2><p className="mt-5 max-w-xl text-sm sm:text-base leading-relaxed text-emerald-50/80">Prevención, rutas de atención, acompañamiento profesional y evidencia territorial en un solo ecosistema. Una experiencia clara para mujeres, comunidades y redes aliadas.</p><Link href="/caribe-seguro" className="inline-flex items-center gap-2 mt-7 rounded-full bg-[#d9b991] px-6 py-3.5 text-xs font-black text-[#203c3d] hover:bg-[#eed3ad] transition-colors">Conocer Senda Caribe <ArrowRight className="w-4 h-4" /></Link></div>
-            <div className="rounded-3xl border border-white/20 bg-white/10 p-5 sm:p-7 backdrop-blur-sm"><div className="flex items-center gap-3 border-b border-white/15 pb-5"><span className="grid h-10 w-10 place-items-center rounded-full bg-[#d9b991] text-xs font-black text-[#203c3d]">SC</span><div><strong className="block text-sm">Senda Caribe</strong><span className="text-[11px] text-emerald-50/70">Centro de acompañamiento</span></div></div><div className="space-y-3 pt-5">{['Encontrar una ruta', 'Mi plan de protección', 'Red profesional y comunitaria'].map((item) => <Link key={item} href="/caribe-seguro" className="flex items-center justify-between rounded-xl border border-white/15 bg-white/5 px-4 py-3 text-xs font-bold hover:bg-white/10"><span>{item}</span><ArrowRight className="w-4 h-4 text-[#d9b991]" /></Link>)}</div></div>
-          </div>
-        </div>
-      </section>
+      <section id="ruta" className="bg-[#F7F1EB]" aria-labelledby="rights-title"><div className="mx-auto grid max-w-7xl gap-8 px-6 py-14 sm:py-20 lg:grid-cols-[.9fr_1.1fr] lg:items-center lg:px-8"><div><p className="text-[11px] font-black uppercase tracking-[.16em] text-senda-pink">Herramienta de derechos</p><h2 id="rights-title" className="mt-2 text-4xl font-black leading-[1.02] tracking-tight text-senda-purple-dark sm:text-6xl">Conoce tus derechos y encuentra tu ruta.</h2><p className="mt-5 max-w-lg text-sm leading-relaxed text-slate-600">SENDA Universal te orienta con preguntas claras sobre salud, protección, derechos y servicios disponibles.</p><Link href="/senda-universal" className="mt-7 inline-flex items-center gap-2 rounded-full bg-senda-purple px-6 py-3.5 text-xs font-black text-white transition-colors hover:bg-senda-purple-dark">Comenzar orientación <ArrowRight className="h-4 w-4" /></Link></div><div className="rounded-3xl border border-[#e1d5ca] bg-white p-6 shadow-sm sm:p-8"><div className="flex items-center justify-between text-[10px] font-black uppercase tracking-widest text-slate-400"><span>Orientación gratuita</span><span className="text-senda-pink">Paso 1 de 5</span></div><div className="mt-5 h-1.5 overflow-hidden rounded-full bg-[#eee4dc]"><span className="block h-full w-1/5 rounded-full bg-senda-pink" /></div><h3 className="mt-8 text-2xl font-black text-senda-purple-dark">¿Qué necesitas hoy?</h3><div className="mt-5 divide-y divide-[#eee4dc] text-sm text-slate-600"><div className="flex gap-3 py-4"><b className="text-senda-pink">01</b><span>Conozcamos tu situación</span></div><div className="flex gap-3 py-4 text-slate-400"><b>02</b><span>Identifiquemos opciones</span></div></div></div></div></section>
 
-      {/* 1.8. SENDA UNIVERSAL: SISTEMA OPERATIVO DE DERECHOS */}
-      <section className="max-w-7xl mx-auto px-6 lg:px-8 py-4">
-        <div className="bg-gradient-to-br from-slate-900 via-[#3B0852] to-slate-950 text-white rounded-3xl p-8 sm:p-12 shadow-2xl border border-purple-800/30 relative overflow-hidden">
-          <div className="relative z-10 grid grid-cols-1 lg:grid-cols-12 gap-8 items-center">
-            
-            <div className="lg:col-span-8 space-y-4">
-              <div className="flex items-center gap-2 flex-wrap">
-                <span className="bg-gradient-to-r from-purple-600 to-pink-600 text-white font-black text-[11px] px-3.5 py-1 rounded-full uppercase tracking-wider shadow-md">
-                  Sistema Operativo Institucional
-                </span>
-                <span className="bg-white/10 text-pink-200 text-xs font-bold px-3 py-1 rounded-full border border-white/10">
-                  CONPES 4080 · Ley 1257 · Política SSR
-                </span>
-              </div>
+      <section id="programas" className="mx-auto max-w-7xl px-6 py-14 sm:py-20 lg:px-8" aria-labelledby="programs-title"><div className="flex flex-col justify-between gap-5 lg:flex-row lg:items-end"><div><p className="text-[11px] font-black uppercase tracking-[.16em] text-senda-pink">Cómo ayudamos</p><h2 id="programs-title" className="mt-2 text-3xl font-black tracking-tight text-senda-purple-dark sm:text-5xl">Programas para situaciones reales.</h2></div><Link href="/programas" className="inline-flex items-center gap-2 text-xs font-black text-senda-pink">Ver todos los programas <ArrowRight className="h-4 w-4" /></Link></div><div className="mt-8 grid grid-cols-1 gap-3 sm:grid-cols-2 lg:grid-cols-4">{programs.map(([n, title, desc]) => <Link key={n} href={`/programas#programa-${n}`} className="group min-h-44 rounded-2xl border border-[#e4d7ce] bg-white p-5 transition-all hover:-translate-y-1 hover:shadow-lg"><span className="text-[10px] font-black text-senda-pink">{n}</span><h3 className="mt-10 text-lg font-black leading-tight text-senda-purple-dark">{title}</h3><p className="mt-2 text-xs leading-relaxed text-slate-500">{desc}</p><ArrowRight className="mt-4 h-4 w-4 text-senda-pink transition-transform group-hover:translate-x-1" /></Link>)}</div></section>
 
-              <h2 className="text-2xl sm:text-4xl font-black text-white tracking-tight">
-                SENDA Universal: El Sistema Operativo de Derechos de las Mujeres
-              </h2>
+      <section id="impacto" className="bg-[#2D2528] text-white"><div className="mx-auto grid max-w-7xl gap-10 px-6 py-14 sm:py-20 lg:grid-cols-[.8fr_1.2fr] lg:items-center lg:px-8"><div><p className="text-[11px] font-black uppercase tracking-[.16em] text-[#D9B991]">Impacto verificable</p><h2 className="mt-3 text-4xl font-black leading-[1.02] sm:text-6xl">No son cifras.<br /><em className="font-serif font-medium text-[#D9B991]">Son vidas.</em></h2><p className="mt-5 max-w-sm text-sm leading-relaxed text-slate-300">Conoce nuestras historias, jornadas y resultados en territorio.</p><Link href="/galeria" className="mt-6 inline-flex items-center gap-2 text-xs font-black text-[#D9B991]">Ver historias de impacto <ArrowRight className="h-4 w-4" /></Link></div><div className="grid grid-cols-2 gap-5 sm:grid-cols-4">{[['450+', 'Mujeres orientadas'], ['310+', 'Rutas activadas'], ['180+', 'Acciones de apoyo'], ['65', 'Procesos de autonomía']].map(([value, label]) => <div key={label} className="border-t border-white/20 pt-4"><strong className="font-serif text-4xl font-medium sm:text-5xl">{value}</strong><span className="mt-2 block max-w-[120px] text-[10px] font-bold uppercase tracking-wider text-slate-300">{label}</span></div>)}</div></div></section>
 
-              <p className="text-xs sm:text-sm text-purple-100/90 leading-relaxed max-w-3xl">
-                Plataforma tecnológica de descubrimiento de derechos, políticas públicas territoriales y rutas de atención garantizadas en Cartagena y Colombia. Evalúa barreras institucionales, simula gemelos digitales de rutas clínicas y jurídicas, y genera tu diagnóstico en tiempo real.
-              </p>
+      <section id="apoyar" className="mx-auto max-w-7xl px-6 py-14 sm:py-20 lg:px-8"><div className="grid gap-6 rounded-[2rem] bg-[#F3E6DF] p-7 sm:p-12 lg:grid-cols-[1fr_auto] lg:items-center"><div><p className="text-[11px] font-black uppercase tracking-[.16em] text-senda-pink">Haz parte del cambio</p><h2 className="mt-2 max-w-2xl text-3xl font-black tracking-tight text-senda-purple-dark sm:text-5xl">Tu aporte puede convertirse en una acción concreta.</h2><p className="mt-4 max-w-xl text-sm leading-relaxed text-slate-600">Apoya atención, protección, salud y autonomía para mujeres y niñas en Cartagena.</p></div><Link href="/donar" className="inline-flex items-center justify-center gap-2 rounded-full bg-senda-pink px-7 py-4 text-sm font-black text-white shadow-glass-pink transition-all hover:-translate-y-0.5 hover:bg-senda-pink-dark"><HeartHandshake className="h-5 w-5" /> Quiero apoyar</Link></div></section>
 
-              <div className="grid grid-cols-1 sm:grid-cols-3 gap-3 pt-2">
-                <div className="bg-white/5 border border-white/10 rounded-2xl p-3.5 text-center">
-                  <h4 className="font-black text-xs text-white">Motor de Políticas IA</h4>
-                  <p className="text-[10px] text-purple-200/70 mt-0.5">Algoritmo CONPES & Derechos</p>
-                </div>
-                <div className="bg-white/5 border border-white/10 rounded-2xl p-3.5 text-center">
-                  <h4 className="font-black text-xs text-white">Test Diagnóstico</h4>
-                  <p className="text-[10px] text-purple-200/70 mt-0.5">Mapeo de vulnerabilidad guiado</p>
-                </div>
-                <div className="bg-white/5 border border-white/10 rounded-2xl p-3.5 text-center">
-                  <h4 className="font-black text-xs text-white">Gemelo Digital Social</h4>
-                  <p className="text-[10px] text-purple-200/70 mt-0.5">Simulación de tiempos e ID anónima</p>
-                </div>
-              </div>
-            </div>
-
-            <div className="lg:col-span-4 bg-white/5 border border-white/10 rounded-3xl p-6 sm:p-8 flex flex-col justify-center items-center text-center space-y-4 backdrop-blur-sm">
-              <span className="text-xs font-black uppercase tracking-widest text-amber-300">
-                Acceso Total Gratuito
-              </span>
-              <h3 className="font-black text-lg text-white">
-                Ingreso al Sistema Operativo
-              </h3>
-              <p className="text-xs text-purple-200/80">
-                Acceso completo a los 9 módulos interactivos, simuladores y motor de derechos.
-              </p>
-              <Link
-                href="/senda-universal"
-                className="w-full bg-gradient-to-r from-amber-400 via-pink-500 to-purple-600 hover:from-amber-300 hover:to-purple-500 text-slate-950 font-black text-xs py-3.5 rounded-2xl shadow-xl transition-all text-center"
-              >
-                Ingresar al Sistema Operativo →
-              </Link>
-            </div>
-
-          </div>
-        </div>
-      </section>
-
-      {/* 2. Banner de Test Psicológico y Evaluación Rápida */}
-      <section className="max-w-7xl mx-auto px-6 lg:px-8">
-        <div className="bg-gradient-to-r from-senda-purple-dark via-senda-purple to-senda-pink text-white rounded-3xl p-8 sm:p-12 shadow-xl relative overflow-hidden">
-          <div className="relative z-10 grid grid-cols-1 lg:grid-cols-12 gap-8 items-center">
-            <div className="lg:col-span-8 space-y-3">
-              <span className="bg-amber-400 text-senda-purple-dark font-black text-xs px-3 py-1 rounded-full uppercase tracking-wider inline-block">
-                Evaluación Confidencial Gratuita
-              </span>
-              <h2 className="text-2xl sm:text-4xl font-black text-white">
-                ¿Necesitas orientación psicológica, médica o jurídica urgente?
-              </h2>
-              <p className="text-xs sm:text-sm text-pink-100 leading-relaxed max-w-2xl">
-                Realiza nuestro <strong>Test Psicológico y Triaje de Vulnerabilidad (SendaEval)</strong>. El sistema evalúa tu situación de forma anónima y te asigna directamente con la profesional correspondiente en Cartagena.
-              </p>
-            </div>
-
-            <div className="lg:col-span-4 flex flex-col sm:flex-row lg:flex-col gap-3">
-              <Link
-                href="/triaje-psicologico"
-                className="bg-amber-400 hover:bg-amber-300 text-senda-purple-dark font-black text-xs sm:text-sm px-6 py-4 rounded-full text-center shadow-lg transition-transform active:scale-95"
-              >
-                Iniciar Test Psicológico
-              </Link>
-              
-              <Link
-                href="/agendar-cita"
-                className="bg-white/10 hover:bg-white/20 text-white border border-white/30 font-bold text-xs sm:text-sm px-6 py-3.5 rounded-full text-center transition-colors"
-              >
-                Agendar Cita Directa
-              </Link>
-            </div>
-          </div>
-        </div>
-      </section>
-
-      {/* 3. Los 7 Programas con Imágenes Reales y Métricas */}
-      <ProgramsGrid />
-
-      {/* 4. SECCIÓN DESTACADA: 'LO QUE CONSTRUIMOS JUNTAS' (Galería de Actividades) */}
-      <section className="bg-gradient-to-b from-white via-pink-50/30 to-white py-12 border-y border-pink-100">
-        <ActivityGallery />
-      </section>
-
-      {/* 5. Nuestras 5 Especialidades Médicas y de Acompañamiento con Fotografía */}
-      <section className="bg-white py-16">
-        <div className="max-w-7xl mx-auto px-6 lg:px-8 space-y-12">
-          <div className="text-center max-w-2xl mx-auto space-y-3">
-            <span className="inline-block bg-emerald-100 text-emerald-800 font-black text-xs px-4 py-1.5 rounded-full uppercase tracking-wider">
-              Atención Integral en Cartagena
-            </span>
-            <h2 className="text-3xl font-black text-senda-purple-dark tracking-tight">
-              Nuestras 5 Especialidades de Cuidado
-            </h2>
-            <p className="text-sm text-slate-600">
-              Contamos con profesionales graduadas y aliadas en Cartagena para brindarte atención digna, cálida y sin costo.
-            </p>
-          </div>
-
-          <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-5 gap-6">
-            {SPECIALTIES.map((spec, idx) => (
-              <div
-                key={idx}
-                className="bg-white rounded-3xl border border-pink-100 overflow-hidden shadow-sm hover:shadow-xl transition-all duration-300 flex flex-col justify-between group hover:-translate-y-1"
-              >
-                <div className="relative w-full h-40 overflow-hidden bg-slate-900">
-                  <Image
-                    src={spec.image}
-                    alt={spec.title}
-                    fill
-                    className="object-cover group-hover:scale-105 transition-transform duration-500"
-                    sizes="(max-width: 768px) 100vw, 250px"
-                  />
-                  <div className="absolute inset-0 bg-gradient-to-t from-slate-950/70 via-transparent to-transparent" />
-                </div>
-
-                <div className="p-5 space-y-2.5 flex-1 flex flex-col justify-between">
-                  <div>
-                    <h3 className="font-black text-sm text-slate-900 leading-snug group-hover:text-senda-pink transition-colors">
-                      {spec.title}
-                    </h3>
-                    <p className="text-[11px] text-slate-600 leading-relaxed mt-1">
-                      {spec.desc}
-                    </p>
-                  </div>
-
-                  <Link
-                    href={`/agendar-cita?especialidad=${encodeURIComponent(spec.title)}`}
-                    className="text-xs font-black text-senda-pink hover:text-senda-purple transition-colors pt-2 border-t border-pink-50 block text-right"
-                  >
-                    Solicitar cita →
-                  </Link>
-                </div>
-              </div>
-            ))}
-          </div>
-        </div>
-      </section>
-
-      {/* 6. Directorio y Rutas Institucionales de Cartagena */}
-      <section className="bg-pink-50/40 py-16">
-        <CartagenaDirectory />
-      </section>
-
-      {/* 7. Aliados Institucionales y Red de Apoyo */}
-      <AlliesSection />
-
-      {/* 8. Calculadora de Donaciones y Apoyo */}
-      <section className="max-w-7xl mx-auto px-6 lg:px-8 py-8">
-        <DonationCalculator />
-      </section>
-
+      <section id="transparencia" className="mx-auto max-w-7xl px-6 pb-4 lg:px-8"><div className="flex flex-wrap items-center justify-between gap-4 border-t border-[#e6dcd4] pt-7 text-xs"><span className="font-black text-senda-purple-dark">También puedes conocer:</span><div className="flex flex-wrap gap-x-5 gap-y-2 font-bold text-slate-500"><Link href="/nosotros" className="hover:text-senda-pink">Quiénes somos</Link><Link href="/ruta-cartagena" className="hover:text-senda-pink">Rutas en Cartagena</Link><Link href="/caribe-seguro/aliados" className="hover:text-senda-pink">Aliados</Link><Link href="/donar" className="hover:text-senda-pink">Donaciones</Link></div></div></section>
     </div>
   );
 }

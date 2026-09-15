@@ -21,6 +21,12 @@ module.exports = {
           teal: '#10B981',
           bg: '#FDF8FA',
           darkBg: '#1A0923',
+          paper: '#FCF9F6',
+          surface: '#F7F1EB',
+          plum: '#6E3F58',
+          'plum-dark': '#4E2C40',
+          caribe: '#203C3D',
+          sand: '#D9B991',
         },
       },
       fontFamily: {

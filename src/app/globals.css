@@ -14,9 +14,14 @@
 
 body {
   font-family: var(--font-sans);
-  background-color: #FDF8FA;
+  background-color: #FCF9F6;
   color: #2D1537;
   overflow-x: hidden;
+}
+
+::selection {
+  background: #E12880;
+  color: white;
 }
 
 h1, h2, h3, h4, h5, h6 {
@@ -94,6 +99,15 @@ h1, h2, h3, h4, h5, h6 {
   50% {
     box-shadow: 0 0 30px rgba(225, 40, 128, 0.7);
   }
+}
+
+@keyframes mobileDrawerIn {
+  from { transform: translateX(100%); }
+  to { transform: translateX(0); }
+}
+
+.animate-mobile-drawer {
+  animation: mobileDrawerIn 220ms ease-out both;
 }
 
 .animate-pulse-glow {

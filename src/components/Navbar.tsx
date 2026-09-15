@@ -41,6 +41,19 @@ export default function Navbar({ onOpenSOS, onOpenIncognito }: NavbarProps) {
     return () => document.removeEventListener('mousedown', handleClickOutside);
   }, []);
 
+  useEffect(() => {
+    const handleEscape = (e: KeyboardEvent) => {
+      if (e.key === 'Escape') setMobileMenuOpen(false);
+    };
+    window.addEventListener('keydown', handleEscape);
+    return () => window.removeEventListener('keydown', handleEscape);
+  }, []);
+
+  useEffect(() => {
+    document.body.style.overflow = mobileMenuOpen ? 'hidden' : '';
+    return () => { document.body.style.overflow = ''; };
+  }, [mobileMenuOpen]);
+
   return (
     <header className={`sticky top-0 z-50 transition-all duration-300 ${scrolled ? 'shadow-lg' : 'shadow-sm'} bg-white/97 backdrop-blur-md border-b border-pink-100`}>
 
@@ -121,6 +134,9 @@ export default function Navbar({ onOpenSOS, onOpenIncognito }: NavbarProps) {
         <nav className="hidden lg:flex items-center gap-1.5 text-xs font-bold text-[#52166F]">
           <Link href="/" className="px-3 py-2 rounded-lg hover:bg-pink-50 hover:text-[#E12880] transition-all">
             Inicio
+          </Link>
+          <Link href="/#necesidades" className="px-3 py-2 rounded-lg hover:bg-pink-50 hover:text-[#E12880] transition-all">
+            Necesito ayuda
           </Link>
           <Link href="/nosotros" className="px-3 py-2 rounded-lg hover:bg-pink-50 hover:text-[#E12880] transition-all">
             Nosotros
@@ -234,9 +250,17 @@ export default function Navbar({ onOpenSOS, onOpenIncognito }: NavbarProps) {
 
       {/* Mobile Drawer */}
       {mobileMenuOpen && (
-        <div className="lg:hidden bg-white border-t border-pink-100 px-5 py-5 space-y-1 shadow-xl animate-fadeIn">
-          {[
+        <div className="fixed inset-0 z-[70] lg:hidden" role="dialog" aria-modal="true" aria-label="Menú principal">
+          <button type="button" aria-label="Cerrar menú" onClick={() => setMobileMenuOpen(false)} className="absolute inset-0 bg-slate-950/45 backdrop-blur-[2px]" />
+          <aside className="absolute right-0 top-0 flex h-full w-full flex-col overflow-y-auto bg-white px-5 pb-6 pt-5 shadow-2xl animate-mobile-drawer sm:w-[420px]">
+            <div className="mb-5 flex items-center justify-between border-b border-pink-100 pb-4">
+              <div><p className="text-[10px] font-black uppercase tracking-[.16em] text-[#E12880]">Fundación Senda Mujer</p><h2 className="mt-1 text-lg font-black text-[#52166F]">Menú principal</h2></div>
+              <button type="button" onClick={() => setMobileMenuOpen(false)} aria-label="Cerrar menú" className="grid h-10 w-10 place-items-center rounded-full bg-slate-100 text-[#52166F] transition-colors hover:bg-pink-50 hover:text-[#E12880]"><X className="h-5 w-5" /></button>
+            </div>
+            <nav className="flex-1 space-y-1" aria-label="Navegación móvil">
+              {[
             { href: '/', label: 'Inicio' },
+            { href: '/#necesidades', label: 'Necesito ayuda' },
             { href: '/senda-universal', label: 'SENDA Universal (Sistema Operativo)' },
             { href: '/caribe-seguro', label: 'Senda Caribe (Protección territorial)' },
             { href: '/academia', label: 'SendaAcademia (Plataforma EdTech) ↗' },
@@ -246,7 +270,7 @@ export default function Navbar({ onOpenSOS, onOpenIncognito }: NavbarProps) {
             { href: '/triaje-psicologico', label: 'Test Psicológico SENDA EVAL' },
             { href: '/galeria', label: 'Galería de Impacto Social' },
             { href: '/#aliados', label: 'Nuestros Aliados Institucionales' },
-          ].map((item) => (
+              ].map((item) => (
             <Link
               key={item.href}
               href={item.href}
@@ -255,18 +279,18 @@ export default function Navbar({ onOpenSOS, onOpenIncognito }: NavbarProps) {
             >
               {item.label}
             </Link>
-          ))}
+              ))}
 
-          <Link
+              <Link
             href="/donar"
             onClick={() => setMobileMenuOpen(false)}
             className="flex items-center gap-2 px-3 py-2.5 rounded-xl font-extrabold text-sm text-amber-600 hover:bg-amber-50"
           >
             <Heart className="w-4 h-4 fill-amber-500 text-amber-500" />
             <span>Donar</span>
-          </Link>
+              </Link>
 
-          <div className="pt-3 border-t border-pink-100 space-y-2">
+              <div className="mt-4 space-y-2 border-t border-pink-100 pt-4">
             <Link
               href="/agendar-cita"
               onClick={() => setMobileMenuOpen(false)}
@@ -287,8 +311,11 @@ export default function Navbar({ onOpenSOS, onOpenIncognito }: NavbarProps) {
               className="w-full text-center py-3 rounded-full bg-red-600 text-white font-extrabold text-sm shadow-md cursor-pointer"
             >
               ACTIVAR CAMUFLAJE SOS [ESC]
-            </button>
-          </div>
+              </button>
+              </div>
+            </nav>
+            <p className="mt-5 border-t border-slate-100 pt-4 text-center text-[10px] leading-relaxed text-slate-400">Presiona <kbd className="rounded bg-slate-100 px-1.5 py-0.5 font-mono">Esc</kbd> o el botón cerrar para volver al sitio.</p>
+          </aside>
         </div>
       )}
     </header>
