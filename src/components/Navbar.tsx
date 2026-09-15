@@ -55,7 +55,7 @@ export default function Navbar({ onOpenSOS, onOpenIncognito }: NavbarProps) {
   }, [mobileMenuOpen]);
 
   return (
-    <header className={`sticky top-0 z-50 transition-all duration-300 ${scrolled ? 'shadow-lg' : 'shadow-sm'} bg-white/97 backdrop-blur-md border-b border-pink-100`}>
+    <header className={`sticky top-0 z-50 transition-all duration-300 ${scrolled ? 'shadow-md' : ''} bg-[#fbf8f3]/95 backdrop-blur-md border-b border-[#ddd4ca]/80`}>
 
       {/* ── Top Emergency & Portals Bar ── */}
       <div className="bg-[#312826] text-[#f9f2eb] text-xs py-2.5 px-4 sm:px-8">
@@ -119,14 +119,14 @@ export default function Navbar({ onOpenSOS, onOpenIncognito }: NavbarProps) {
       </div>
 
       {/* ── Main Navbar ── */}
-      <div className="max-w-7xl mx-auto px-4 sm:px-8 py-3 flex items-center justify-between gap-4">
+      <div className="max-w-[1180px] mx-auto px-4 sm:px-8 py-3 flex items-center justify-between gap-4">
 
         {/* Logo */}
         <Link href="/" className="flex items-center shrink-0 group">
           <img
             src="/logo.png"
             alt="Fundación Senda Mujer"
-            className="h-9 sm:h-12 w-auto object-contain transition-transform group-hover:scale-[1.02]"
+            className="h-9 sm:h-11 w-auto object-contain transition-transform group-hover:scale-[1.02]"
           />
         </Link>
 
@@ -210,7 +210,7 @@ export default function Navbar({ onOpenSOS, onOpenIncognito }: NavbarProps) {
           <button
             type="button"
             onClick={onOpenSOS}
-            className="bg-red-600 hover:bg-red-700 text-white font-extrabold px-3.5 py-2 rounded-full text-[11px] shadow-md transition-all cursor-pointer animate-pulse-glow"
+            className="bg-[#2a2523] hover:bg-[#4e2c40] text-white font-extrabold px-3.5 py-2 rounded-full text-[11px] shadow-md transition-all cursor-pointer"
             title="Activa modo camuflaje de emergencia [ESC]"
           >
             SOS
