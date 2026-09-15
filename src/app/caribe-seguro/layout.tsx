@@ -17,6 +17,7 @@ export default function CaribeSeguroLayout({
   children: React.ReactNode;
 }) {
   const [sidebarCollapsed, setSidebarCollapsed] = useState(false);
+  const [mobileMenuOpen, setMobileMenuOpen] = useState(false);
 
   return (
     <div className="min-h-screen bg-[#0F0218] text-white flex flex-col font-sans selection:bg-[#E12880] selection:text-white">
@@ -24,19 +25,28 @@ export default function CaribeSeguroLayout({
       <CaribeSeguroSidebar
         collapsed={sidebarCollapsed}
         onToggleCollapse={() => setSidebarCollapsed(!sidebarCollapsed)}
+        mobileOpen={mobileMenuOpen}
       />
+      {mobileMenuOpen && (
+        <button
+          type="button"
+          aria-label="Cerrar menú"
+          onClick={() => setMobileMenuOpen(false)}
+          className="fixed inset-0 z-30 bg-slate-950/50 lg:hidden"
+        />
+      )}
 
       {/* WORKSPACE PRINCIPAL CON MARGEN ADAPTATIVO */}
       <div
         className={`flex-1 flex flex-col transition-all duration-300 ${
-          sidebarCollapsed ? 'pl-20' : 'pl-72'
+          sidebarCollapsed ? 'lg:pl-20' : 'lg:pl-72'
         }`}
       >
         {/* CABECERA SUPERIOR */}
-        <CaribeSeguroTopbar />
+        <CaribeSeguroTopbar onToggleSidebarMobile={() => setMobileMenuOpen(true)} />
 
         {/* CONTENIDO DE CADA PÁGINA DEL MICROSITIO */}
-        <main className="flex-1 bg-gradient-to-b from-[#140320] via-[#1C052B] to-[#0F0218] min-h-[calc(100vh-4rem)]">
+        <main className="flex-1 bg-[#12071b] min-h-[calc(100vh-4rem)]">
           {children}
         </main>
       </div>

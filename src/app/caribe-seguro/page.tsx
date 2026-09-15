@@ -56,71 +56,68 @@ export default function CaribeSeguroCommandCenterPage() {
   ];
 
   return (
-    <div className="p-4 sm:p-8 space-y-8 animate-fadeIn">
+    <div className="mx-auto max-w-7xl space-y-10 p-4 sm:p-8 animate-fadeIn">
       {/* COMMAND CENTER HERO */}
-      <div className="bg-gradient-to-br from-[#1F0433] via-[#3B0852] to-[#52166F] border border-purple-800/50 rounded-3xl p-6 sm:p-8 space-y-6 relative overflow-hidden shadow-2xl">
-        <div className="absolute top-0 right-0 w-96 h-96 bg-[#E12880]/10 rounded-full filter blur-3xl pointer-events-none" />
+      <section className="border-b border-white/10 pb-8">
 
-        <div className="flex flex-wrap items-center justify-between gap-4 relative z-10">
+        <div className="flex flex-wrap items-end justify-between gap-6">
           <div className="space-y-2 max-w-2xl">
-            <div className="flex items-center gap-2">
-              <span className="bg-amber-400 text-[#3B0852] font-black text-[10px] px-3 py-1 rounded-full uppercase tracking-widest flex items-center gap-1 shadow-sm">
-            <Shield className="w-3 h-3" /> CENTRO DE CONTROL — INNOVACIÓN SOCIAL
-              </span>
-            </div>
+            <p className="flex items-center gap-2 text-[11px] font-bold uppercase tracking-widest text-amber-300">
+              <Shield className="w-3.5 h-3.5" /> Caribe Seguro
+            </p>
 
-            <h1 className="text-3xl sm:text-5xl font-black tracking-tight text-white leading-tight">
+            <h1 className="text-3xl sm:text-4xl font-black text-white leading-tight">
               Senda Caribe
-              <span className="block text-transparent bg-clip-text bg-gradient-to-r from-amber-300 via-pink-200 to-pink-400 text-2xl sm:text-3xl font-bold mt-1">
+              <span className="block text-xl sm:text-2xl font-bold text-pink-200 mt-2">
                 De la alerta a la protección. Del resultado a la evidencia.
               </span>
             </h1>
 
-            <p className="text-xs sm:text-sm text-pink-200/90 leading-relaxed">
+            <p className="text-sm text-slate-200 leading-relaxed">
               Plataforma territorial de protección, acompañamiento psicosocial, red de respuesta y medición de resultados longitudinales para mujeres en el Caribe colombiano.
             </p>
           </div>
 
-          <div className="flex flex-wrap gap-3 relative z-10">
+          <div className="flex flex-wrap gap-3">
             <Link
               href="/caribe-seguro/como-funciona"
-              className="bg-gradient-to-r from-[#E12880] to-[#52166F] hover:opacity-95 text-white font-black text-xs px-6 py-3 rounded-full shadow-lg flex items-center gap-2 transition-all cursor-pointer"
+              className="bg-[#E12880] hover:bg-pink-600 text-white font-bold text-sm px-5 py-3 rounded-lg flex items-center gap-2 transition-colors"
             >
-              <Sparkles className="w-4 h-4 text-amber-300" /> Registro Progresivo
+              <Sparkles className="w-4 h-4" /> Conocer el modelo
             </Link>
             <Link
               href="/caribe-seguro/sos"
-              className="bg-rose-600 hover:bg-rose-500 text-white font-black text-xs px-5 py-3 rounded-full shadow-lg flex items-center gap-2 transition-all cursor-pointer"
+              className="border border-rose-400/70 text-rose-100 hover:bg-rose-950/50 font-bold text-sm px-5 py-3 rounded-lg flex items-center gap-2 transition-colors"
             >
-              <Shield className="w-4 h-4 text-amber-300" /> SENDA SOS
+              <Shield className="w-4 h-4" /> Necesito ayuda ahora
             </Link>
           </div>
         </div>
 
         {/* METRICS GRID DINÁMICA */}
-        <div className="grid grid-cols-2 lg:grid-cols-4 gap-4 pt-4 border-t border-purple-800/40 relative z-10">
+        <div className="mt-8 grid grid-cols-2 lg:grid-cols-4 gap-px border border-white/10 bg-white/10">
           {statCards.map((st, i) => {
             const Icon = st.icon;
             return (
-              <div key={i} className="bg-[#140320]/60 backdrop-blur-md border border-purple-800/40 rounded-2xl p-4 space-y-1 hover:border-pink-500/40 transition-all">
+              <div key={i} className="bg-[#12071b] p-4 space-y-2">
                 <div className="flex items-center justify-between text-pink-300">
-                  <span className="text-[11px] font-bold text-slate-300">{st.label}</span>
-                  <div className={`w-8 h-8 rounded-xl bg-gradient-to-br ${st.color} flex items-center justify-center text-white shadow-sm`}>
+                  <span className="text-xs font-medium text-slate-300">{st.label}</span>
+                  <div className={`w-8 h-8 rounded-lg bg-gradient-to-br ${st.color} flex items-center justify-center text-white`}>
                     <Icon className="w-4 h-4" />
                   </div>
                 </div>
                 <p className="text-xl sm:text-2xl font-black text-white">{st.val}</p>
-                <p className="text-[10px] text-pink-300/70 font-semibold">{st.sub}</p>
+                <p className="text-[11px] text-slate-400">{st.sub}</p>
               </div>
             );
           })}
         </div>
-      </div>
+      </section>
 
       {/* WORKSPACE SECCIONES Y PESTAÑAS */}
       <div className="space-y-6">
-        <div className="flex items-center justify-between border-b border-purple-900/40 pb-3">
-          <div className="flex items-center gap-2 overflow-x-auto py-1">
+        <div className="border-b border-white/10">
+          <div className="flex items-center gap-1 overflow-x-auto">
             {[
               { id: 'observatorio', label: '1. Observatorio en Vivo', icon: BarChart3 },
               { id: 'mapa', label: '2. Mapa de Servicios', icon: MapPin },
@@ -134,10 +131,10 @@ export default function CaribeSeguroCommandCenterPage() {
                   key={tab.id}
                   type="button"
                   onClick={() => setActiveTab(tab.id as any)}
-                  className={`flex items-center gap-2 px-5 py-2.5 rounded-full text-xs font-black transition-all cursor-pointer shrink-0 ${
+                  className={`flex items-center gap-2 border-b-2 px-4 py-3 text-xs font-bold transition-colors shrink-0 ${
                     isActive
-                      ? 'bg-gradient-to-r from-[#E12880] to-[#52166F] text-white shadow-lg shadow-pink-950/50 border border-pink-500/40'
-                      : 'bg-purple-950/40 text-pink-200/80 hover:bg-purple-900/40 hover:text-white border border-purple-900/30'
+                      ? 'border-[#E12880] text-white'
+                      : 'border-transparent text-slate-400 hover:text-white'
                   }`}
                 >
                   <Icon className={`w-4 h-4 ${isActive ? 'text-amber-300' : 'text-pink-300'}`} />
@@ -150,29 +147,13 @@ export default function CaribeSeguroCommandCenterPage() {
 
         {/* TAB CONTENIDO */}
         <div className="space-y-6">
-          {activeTab === 'observatorio' && (
-            <div className="bg-[#140320]/80 rounded-3xl border border-purple-900/40 p-6">
-              <ObservatorioPublico showHeader={false} />
-            </div>
-          )}
+          {activeTab === 'observatorio' && <ObservatorioPublico showHeader={false} />}
 
-          {activeTab === 'mapa' && (
-            <div className="bg-[#140320]/80 rounded-3xl border border-purple-900/40 p-6">
-              <MapaCaribeSeguro />
-            </div>
-          )}
+          {activeTab === 'mapa' && <MapaCaribeSeguro />}
 
-          {activeTab === 'certificacion' && (
-            <div className="bg-[#140320]/80 rounded-3xl border border-purple-900/40 p-6">
-              <CertifiedCaribeSeguro />
-            </div>
-          )}
+          {activeTab === 'certificacion' && <CertifiedCaribeSeguro />}
 
-          {activeTab === 'policylab' && (
-            <div className="bg-[#140320]/80 rounded-3xl border border-purple-900/40 p-6">
-              <PolicyLabCaribeSeguro />
-            </div>
-          )}
+          {activeTab === 'policylab' && <PolicyLabCaribeSeguro />}
         </div>
       </div>
     </div>

@@ -20,6 +20,7 @@ import {
 interface SidebarProps {
   collapsed: boolean;
   onToggleCollapse: () => void;
+  mobileOpen: boolean;
 }
 
 const MENU_GROUPS = [
@@ -63,7 +64,7 @@ const MENU_GROUPS = [
   },
 ];
 
-export default function CaribeSeguroSidebar({ collapsed, onToggleCollapse }: SidebarProps) {
+export default function CaribeSeguroSidebar({ collapsed, onToggleCollapse, mobileOpen }: SidebarProps) {
   const pathname = usePathname();
 
   const handleQuickExit = () => {
@@ -73,8 +74,10 @@ export default function CaribeSeguroSidebar({ collapsed, onToggleCollapse }: Sid
 
   return (
     <aside
-      className={`fixed top-0 left-0 bottom-0 z-40 bg-[#0F0218]/95 backdrop-blur-xl border-r border-purple-900/40 text-white flex flex-col justify-between transition-all duration-300 ${
-        collapsed ? 'w-20' : 'w-72'
+      className={`fixed top-0 left-0 bottom-0 z-40 bg-[#0F0218] border-r border-purple-900/40 text-white flex flex-col justify-between transition-all duration-300 ${
+        mobileOpen ? 'w-72' : 'hidden lg:flex'
+      } ${
+        mobileOpen ? '' : collapsed ? 'lg:w-20' : 'lg:w-72'
       }`}
     >
       {/* HEADER SIDEBAR */}
