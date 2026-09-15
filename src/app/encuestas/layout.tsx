@@ -3,10 +3,10 @@ import { ShieldCheck } from 'lucide-react';
 
 export default function EncuestasLayout({ children }: { children: React.ReactNode }) {
   return (
-    <div className="min-h-screen bg-[#0c0118] text-white flex flex-col font-sans selection:bg-[#E12880] selection:text-white">
+    <div className="min-h-screen bg-slate-50 text-slate-900 flex flex-col font-sans selection:bg-pink-100 selection:text-slate-900">
       {/* Barra superior limpia y minimalista exclusiva para el encuestador/a en campo */}
-      <header className="sticky top-0 z-30 border-b border-purple-900/50 bg-[#120225]/95 backdrop-blur px-4 sm:px-8 py-3">
-        <div className="flex items-center justify-between">
+      <header className="sticky top-0 z-30 border-b border-slate-200 bg-white/95 backdrop-blur px-4 sm:px-8 py-3">
+        <div className="mx-auto flex max-w-3xl items-center justify-between">
           <div className="flex items-center gap-3">
             {/* Logo Fundación Senda Mujer */}
             <Image
@@ -40,6 +40,7 @@ export default function EncuestasLayout({ children }: { children: React.ReactNod
 
         {/* Barra de alianza institucional */}
         <div className="mt-2 flex flex-wrap items-center justify-center gap-x-4 gap-y-1 text-[9px] font-bold tracking-wider text-purple-300/60 uppercase">
+          <span>Fundacion Mundo Mujer</span>
           <span>Fundación Senda Mujer</span>
           <span className="text-pink-500">×</span>
           <span>Junta de Acción Comunal</span>
@@ -47,7 +48,7 @@ export default function EncuestasLayout({ children }: { children: React.ReactNod
       </header>
 
       {/* Área del formulario a pantalla completa */}
-      <main className="flex-1 bg-gradient-to-b from-[#140320] via-[#1C052B] to-[#0F0218]">
+      <main className="flex-1">
         {children}
       </main>
     </div>

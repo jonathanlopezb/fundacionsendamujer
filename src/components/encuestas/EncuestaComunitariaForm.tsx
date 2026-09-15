@@ -120,10 +120,10 @@ function Field({ label, required, children, hint }: {
 }) {
   return (
     <label className="block">
-      <span className="block text-sm font-bold text-purple-100 mb-1.5">
+      <span className="block text-sm font-semibold text-slate-800 mb-1.5">
         {label}{required && <span className="text-rose-400 ml-1">*</span>}
       </span>
-      {hint && <span className="block text-xs text-purple-300/70 mb-1.5">{hint}</span>}
+      {hint && <span className="block text-xs text-slate-500 mb-1.5">{hint}</span>}
       {children}
     </label>
   );
@@ -133,7 +133,7 @@ function Input(props: React.InputHTMLAttributes<HTMLInputElement>) {
   return (
     <input
       {...props}
-      className={`w-full bg-purple-950/50 border border-purple-700/60 rounded-xl px-3.5 py-2.5 text-sm text-white placeholder-purple-400/50 focus:outline-none focus:border-pink-500 transition-colors ${props.className ?? ''}`}
+      className={`min-h-[52px] w-full rounded-xl border border-slate-300 bg-white px-3.5 py-3 text-base text-slate-900 placeholder-slate-400 shadow-sm outline-none transition-colors focus:border-pink-600 focus:ring-2 focus:ring-pink-100 ${props.className ?? ''}`}
     />
   );
 }
@@ -142,7 +142,7 @@ function Select(props: React.SelectHTMLAttributes<HTMLSelectElement>) {
   return (
     <select
       {...props}
-      className={`w-full bg-purple-950/50 border border-purple-700/60 rounded-xl px-3.5 py-2.5 text-sm text-white focus:outline-none focus:border-pink-500 transition-colors ${props.className ?? ''}`}
+      className={`min-h-[52px] w-full rounded-xl border border-slate-300 bg-white px-3.5 py-3 text-base text-slate-900 shadow-sm outline-none transition-colors focus:border-pink-600 focus:ring-2 focus:ring-pink-100 ${props.className ?? ''}`}
     />
   );
 }
@@ -152,14 +152,14 @@ function Textarea(props: React.TextareaHTMLAttributes<HTMLTextAreaElement>) {
     <textarea
       rows={3}
       {...props}
-      className={`w-full bg-purple-950/50 border border-purple-700/60 rounded-xl px-3.5 py-2.5 text-sm text-white placeholder-purple-400/50 focus:outline-none focus:border-pink-500 transition-colors resize-none ${props.className ?? ''}`}
+      className={`w-full rounded-xl border border-slate-300 bg-white px-3.5 py-3 text-base text-slate-900 placeholder-slate-400 shadow-sm outline-none transition-colors focus:border-pink-600 focus:ring-2 focus:ring-pink-100 resize-none ${props.className ?? ''}`}
     />
   );
 }
 
 function YesNo({ value, onChange, name }: { value: boolean | null; onChange: (v: boolean) => void; name: string }) {
   return (
-    <div className="flex gap-3">
+    <div className="grid grid-cols-2 gap-3">
       {[true, false].map((v) => (
         <label
           key={String(v)}
@@ -185,8 +185,8 @@ function SectionHeader({ icon: Icon, title, description }: { icon: React.Element
         <Icon className="w-4 h-4" />
         <span className="text-[10px] font-black tracking-widest uppercase">Paso del diagnóstico</span>
       </div>
-      <h2 className="text-2xl font-black text-white">{title}</h2>
-      <p className="mt-1.5 text-sm text-purple-200/70 leading-relaxed">{description}</p>
+      <h2 className="text-2xl font-bold tracking-tight text-slate-900">{title}</h2>
+      <p className="mt-1.5 text-sm text-slate-600 leading-relaxed">{description}</p>
     </div>
   );
 }
@@ -657,19 +657,19 @@ export default function EncuestaComunitariaForm({ barrio, localidad, jornada }: 
   }
 
   return (
-    <div className="p-4 sm:p-8 max-w-5xl mx-auto">
+    <div className="mx-auto max-w-3xl px-4 py-5 pb-28 sm:px-6 sm:py-8">
       {/* Header de la jornada */}
       <div className="mb-6">
-        <span className="inline-flex items-center rounded-full bg-amber-300 text-[#2b0a39] px-3 py-1 text-[11px] font-black tracking-wider">
+        <span className="inline-flex items-center rounded-full bg-amber-100 text-amber-900 px-3 py-1 text-[11px] font-bold tracking-wider">
           DIAGNÓSTICO COMUNITARIO · ENCUESTA DE CAMPO
         </span>
         <h1 className="mt-4 text-3xl sm:text-4xl font-black">
           Caracterización familiar{' '}
           <span className="text-pink-300">· {barrio}</span>
         </h1>
-        <p className="mt-1 text-sm text-purple-300/70">{localidad}</p>
+        <p className="mt-1 text-sm text-slate-500">{localidad}</p>
         {jornada && (
-          <p className="mt-2 text-xs text-purple-200/60 italic">{jornada}</p>
+          <p className="mt-2 text-xs text-slate-500 italic">{jornada}</p>
         )}
 
         {/* Alianza institucional */}
@@ -680,7 +680,7 @@ export default function EncuestaComunitariaForm({ barrio, localidad, jornada }: 
       </div>
 
       {/* Alerta de caso urgente */}
-      <div className="mb-6 rounded-2xl border border-rose-400/30 bg-rose-950/35 p-4 flex gap-3">
+      <div className="mb-6 rounded-xl border border-rose-200 bg-rose-50 p-4 flex gap-3">
         <AlertTriangle className="w-5 h-5 text-amber-300 shrink-0 mt-0.5" />
         <p className="text-sm text-rose-100">
           <strong>¿Hay peligro o necesidad crítica ahora?</strong> No esperes la jornada. Activa
@@ -689,9 +689,9 @@ export default function EncuestaComunitariaForm({ barrio, localidad, jornada }: 
         </p>
       </div>
 
-      <div className="grid lg:grid-cols-[240px_1fr] gap-6">
+      <div>
         {/* Sidebar de pasos */}
-        <aside className="rounded-3xl border border-purple-800/50 bg-[#170525] p-4 h-fit lg:sticky lg:top-6">
+        <aside className="hidden">
           <p className="text-[10px] font-black tracking-widest text-pink-300 mb-3 uppercase">Progreso</p>
           {STEPS.map((s, i) => {
             const Icon = s.icon;
@@ -720,7 +720,15 @@ export default function EncuestaComunitariaForm({ barrio, localidad, jornada }: 
         </aside>
 
         {/* Formulario */}
-        <form onSubmit={handleSubmit} className="rounded-3xl border border-purple-800/50 bg-[#170525] shadow-2xl p-5 sm:p-8">
+        <div className="sticky top-[76px] z-20 mb-5 border-b border-slate-200 bg-slate-50/95 py-3 backdrop-blur">
+          <div className="mb-2 flex items-center justify-between text-xs font-semibold text-slate-600">
+            <span>{STEPS[step].label}</span><span>{step + 1} de {STEPS.length}</span>
+          </div>
+          <div className="h-1.5 overflow-hidden rounded-full bg-slate-200">
+            <div className="h-full rounded-full bg-pink-600 transition-all duration-200" style={{ width: `${((step + 1) / STEPS.length) * 100}%` }} />
+          </div>
+        </div>
+        <form onSubmit={handleSubmit} className="rounded-2xl border border-slate-200 bg-white p-5 shadow-sm sm:p-8">
           <div className="min-h-[400px] space-y-5">
 
             {/* ── STEP 0 — Ficha del hogar ─────────────────────────────── */}
@@ -1441,9 +1449,9 @@ export default function EncuestaComunitariaForm({ barrio, localidad, jornada }: 
           )}
 
           {/* Navegación */}
-          <div className="mt-7 pt-5 border-t border-purple-800/50 flex justify-between items-center gap-3">
+          <div className="fixed inset-x-0 bottom-0 z-30 flex items-center justify-between gap-3 border-t border-slate-200 bg-white/95 px-4 py-3 shadow-[0_-8px_24px_rgba(15,23,42,0.08)] backdrop-blur">
             {step > 0 ? (
-              <button type="button" onClick={back} className="inline-flex items-center gap-2 text-sm font-bold text-purple-200 hover:text-white transition-colors">
+              <button type="button" onClick={back} className="inline-flex min-h-[48px] items-center gap-2 px-3 text-sm font-semibold text-slate-700 hover:text-slate-950 transition-colors">
                 <ArrowLeft className="w-4 h-4" /> Anterior
               </button>
             ) : <span />}
@@ -1452,7 +1460,7 @@ export default function EncuestaComunitariaForm({ barrio, localidad, jornada }: 
               <button
                 type="button"
                 onClick={next}
-                className="inline-flex items-center gap-2 rounded-xl bg-gradient-to-r from-pink-600 to-purple-600 px-6 py-3 text-sm font-black shadow-lg hover:from-pink-500 hover:to-purple-500 transition-all"
+                className="inline-flex min-h-[52px] items-center gap-2 rounded-xl bg-pink-700 px-6 py-3 text-sm font-semibold text-white shadow-sm hover:bg-pink-800 transition-colors"
               >
                 Continuar <ArrowRight className="w-4 h-4" />
               </button>
@@ -1460,7 +1468,7 @@ export default function EncuestaComunitariaForm({ barrio, localidad, jornada }: 
               <button
                 type="submit"
                 disabled={sending || !consent}
-                className="inline-flex items-center gap-2 rounded-xl bg-gradient-to-r from-emerald-500 to-teal-500 px-6 py-3 text-sm font-black text-emerald-950 shadow-lg disabled:opacity-50 disabled:cursor-not-allowed hover:from-emerald-400 hover:to-teal-400 transition-all"
+                className="inline-flex min-h-[52px] items-center gap-2 rounded-xl bg-emerald-600 px-6 py-3 text-sm font-semibold text-white shadow-sm disabled:opacity-50 disabled:cursor-not-allowed hover:bg-emerald-700 transition-colors"
               >
                 <UserCheck className="w-4 h-4" />
                 {sending ? 'Guardando en MongoDB…' : 'Guardar caracterización'}
