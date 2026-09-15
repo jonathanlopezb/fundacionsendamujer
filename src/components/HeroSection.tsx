@@ -30,7 +30,6 @@ export default function HeroSection() {
                 <div className="absolute inset-0 bg-gradient-to-t from-[#281f20]/80 via-transparent to-transparent" />
                 <div className="absolute bottom-0 inset-x-0 p-6 text-white"><span className="text-[10px] font-black uppercase tracking-[.14em] text-[#f0d2a7]">Atención territorial</span><p className="mt-2 max-w-xs text-lg font-bold leading-snug">Personas que acompañan a personas.</p></div>
               </div>
-              <div className="absolute -bottom-4 -left-3 sm:-left-8 max-w-[260px] rounded-2xl border border-[#e7ddd5] bg-white px-5 py-4 shadow-xl"><div className="flex gap-3"><span className="mt-1 h-2.5 w-2.5 shrink-0 rounded-full bg-emerald-500" /><div><p className="text-xs font-black text-slate-800">Atención cercana</p><p className="mt-1 text-[11px] leading-relaxed text-slate-500">Rutas claras y seguimiento profesional cuando lo necesites.</p></div></div></div>
             </div>
           </div>
         </div>

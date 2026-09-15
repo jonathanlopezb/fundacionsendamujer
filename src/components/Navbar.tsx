@@ -131,17 +131,13 @@ export default function Navbar({ onOpenSOS, onOpenIncognito }: NavbarProps) {
         </Link>
 
         {/* Desktop Nav */}
-        <nav className="hidden lg:flex items-center gap-1.5 text-xs font-bold text-[#52166F]">
+        <nav className="hidden lg:flex items-center gap-0.5 text-[11px] font-bold text-[#52166F]">
           <Link href="/" className="px-3 py-2 rounded-lg hover:bg-pink-50 hover:text-[#E12880] transition-all">
             Inicio
           </Link>
           <Link href="/#necesidades" className="px-3 py-2 rounded-lg hover:bg-pink-50 hover:text-[#E12880] transition-all">
             Necesito ayuda
           </Link>
-          <Link href="/nosotros" className="px-3 py-2 rounded-lg hover:bg-pink-50 hover:text-[#E12880] transition-all">
-            Nosotros
-          </Link>
-
           {/* Programas Mega-Dropdown */}
           <div ref={programasRef} className="relative">
             <button
@@ -191,14 +187,6 @@ export default function Navbar({ onOpenSOS, onOpenIncognito }: NavbarProps) {
 
           <Link href="/triaje-psicologico" className="px-3 py-2 rounded-lg hover:bg-pink-50 text-[#E12880] transition-all">
             Test Psicológico
-          </Link>
-
-          <Link href="/galeria" className="px-3 py-2 rounded-lg hover:bg-pink-50 hover:text-[#E12880] transition-all">
-            Galería
-          </Link>
-
-          <Link href="/#aliados" className="px-3 py-2 rounded-lg hover:bg-pink-50 hover:text-[#E12880] transition-all">
-            Aliados
           </Link>
 
           {/* Botón Donar conservando su icono de corazón */}
