@@ -18,7 +18,7 @@ export default function HeroSection() {
         <div className="senda-hero__image-wrap"><div className="senda-hero__image">
           <Image src="https://images.unsplash.com/photo-1573496359142-b8d87734a5a2?auto=format&fit=crop&w=1100&q=85" alt="Acompañamiento humano y profesional de Fundación Senda Mujer" fill priority className="object-cover" sizes="(max-width: 900px) 100vw, 43vw" />
           <div className="senda-hero__image-gradient" />
-          <div className="senda-hero__caption"><span>Fundación Senda Mujer</span><strong>Personas que acompañan a personas.</strong></div>
+          <div className="senda-hero__caption"><span>Directora Fundación Senda Mujer</span><strong>Sorelvis Murillo Arreola</strong><span>Trabajadora Social</span></div>
         </div></div>
       </div>
     </section>
