@@ -90,7 +90,7 @@ export default function ImpactoPage() {
     return (
       <div className="flex items-center justify-center py-32 text-pink-300 gap-3">
         <Loader2 className="w-6 h-6 animate-spin" />
-        <span className="text-sm font-bold">Cargando métricas de impacto desde MongoDB Atlas...</span>
+        <span className="text-sm font-bold">Actualizando resultados del programa...</span>
       </div>
     );
   }
@@ -116,7 +116,7 @@ export default function ImpactoPage() {
           Teoría del Cambio e Indicadores de Impacto
         </h1>
         <p className="text-sm text-pink-200/90 leading-relaxed">
-          Medición rigurosa del valor social: de la inversión inicial al cambio observado en las vidas de las mujeres acompañadas. Cifras consultadas en tiempo real desde MongoDB Atlas.
+          Seguimos los resultados agregados del programa para aprender, fortalecer las rutas y ampliar el cuidado en el territorio.
         </p>
       </div>
 
@@ -159,9 +159,8 @@ export default function ImpactoPage() {
 
       {/* NOTA DE TRANSPARENCIA */}
       <div className="bg-blue-950/40 border border-blue-700/40 rounded-2xl p-4 text-xs text-blue-200 max-w-2xl mx-auto">
-        <span className="font-extrabold text-blue-300 block mb-1">Nota de Transparencia del Observatorio:</span>
-        Todas las cifras mostradas se originan en la base de datos MongoDB Atlas de la Fundación Senda Mujer.
-        Los datos son agregados y anonimizados bajo Ley 1581 de 2012 y CONPES 4080.
+        <span className="font-extrabold text-blue-300 block mb-1">Datos con cuidado y propósito:</span>
+        Las cifras son agregadas y anonimizadas, y se actualizan a partir de la atención del programa. Su lectura territorial aporta al fortalecimiento de autonomía, salud, prevención de violencias y liderazgo de las mujeres, en línea con los objetivos del CONPES 4080.
       </div>
     </div>
   );

@@ -23,7 +23,7 @@ export default function CaribeSeguroLayout({ children }: { children: React.React
         </div>
         <nav className="flex overflow-x-auto border-t border-[#efe6df] px-4 lg:hidden" aria-label="Navegación Caribe Seguro">{navigation.map(item => <Link key={item.href} href={item.href} className="shrink-0 px-4 py-3 text-xs font-bold text-[#625750] hover:text-[#e12880]">{item.label}</Link>)}</nav>
       </header>
-      {children}
+      <main className="min-h-[calc(100vh-72px)] bg-[#12071b]">{children}</main>
       <footer className="bg-[#2d2528] py-10 text-[#eee5df]"><div className="mx-auto flex w-[min(1180px,calc(100%-32px))] flex-wrap items-center justify-between gap-5"><p className="text-sm">Caribe Seguro · Programa territorial de Fundación Senda Mujer.</p><a href="https://www.google.com/search?q=clima+cartagena" className="text-sm font-bold text-[#f0d2a7] hover:text-white">Salida rápida</a></div></footer>
     </div>
   );
