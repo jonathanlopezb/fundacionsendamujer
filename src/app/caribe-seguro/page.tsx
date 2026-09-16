@@ -1,161 +1,44 @@
-'use client';
-
-/**
- * /caribe-seguro — Command Center Principal del Ecosistema Caribe Seguro
- *
- * Visualiza las métricas en tiempo real consultadas dinámicamente desde MongoDB Atlas.
- */
-
-import React, { useState, useEffect } from 'react';
+import Image from 'next/image';
 import Link from 'next/link';
-import {
-  Shield, TrendingUp, MapPin, Award, BarChart3, Globe, Sparkles, CheckCircle2, Users
-} from 'lucide-react';
-import ObservatorioPublico from '@/components/caribe-seguro/ObservatorioPublico';
-import MapaCaribeSeguro from '@/components/caribe-seguro/MapaCaribeSeguro';
-import CertifiedCaribeSeguro from '@/components/caribe-seguro/CertifiedCaribeSeguro';
-import PolicyLabCaribeSeguro from '@/components/caribe-seguro/PolicyLabCaribeSeguro';
+import { ArrowRight, CheckCircle2, MapPin, ShieldCheck, Sparkles, TrendingUp, Users } from 'lucide-react';
 
-export default function CaribeSeguroCommandCenterPage() {
-  const [activeTab, setActiveTab] = useState<'observatorio' | 'mapa' | 'certificacion' | 'policylab'>('observatorio');
+const steps = [
+  ['01', 'Identificamos', 'Reconocemos señales, necesidades y factores que requieren atención.'],
+  ['02', 'Orientamos', 'Conversamos sobre las opciones y el apoyo que puede ser útil para ti.'],
+  ['03', 'Activamos', 'Conectamos la ruta, el servicio o la persona indicada.'],
+  ['04', 'Acompañamos', 'Damos seguimiento y fortalecemos capacidades para avanzar con autonomía.'],
+] as const;
 
-  const [metrics, setMetrics] = useState({
-    mujeresAcompanadas: '148',
-    variacionIPSC: '+2.4 Puntos',
-    rutasCompletadas: '112',
-    capitalSemilla: '$45M COP',
-  });
+const capacities = [
+  { title: 'Protección', text: 'Un mapa personal para pensar en seguridad, derechos, salud y red de apoyo.', href: '/caribe-seguro/proteccion', action: 'Conocer mi plan', icon: ShieldCheck },
+  { title: 'Prevención', text: 'Herramientas comunitarias para reconocer señales y cuidar los entornos.', href: '/caribe-seguro/prevencion', action: 'Explorar prevención', icon: Sparkles },
+  { title: 'Red de respuesta', text: 'Profesionales, instituciones y organizaciones que hacen posible cada ruta.', href: '/caribe-seguro/red', action: 'Conocer la red', icon: Users },
+  { title: 'Evidencia e impacto', text: 'Resultados agregados para aprender, mejorar y ampliar el cuidado territorial.', href: '/caribe-seguro/impacto', action: 'Ver resultados', icon: TrendingUp },
+] as const;
 
-  useEffect(() => {
-    const fetchLiveMetrics = async () => {
-      try {
-        const res = await fetch('/api/caribe-seguro/observatory/public');
-        const data = await res.json();
-        if (data.success && data.latest && data.latest.metrics) {
-          const m = data.latest.metrics;
-          setMetrics({
-            mujeresAcompanadas: String(m.mujeresAcompanadaTotal || 148),
-            variacionIPSC: `+${m.mejoraPromedioIPSC_90d || 2.4} Puntos`,
-            rutasCompletadas: String(m.rutasActivadas || 112),
-            capitalSemilla: '$45M COP',
-          });
-        }
-      } catch (err) {
-        console.warn('Carga de métricas en directo:', err);
-      }
-    };
-
-    fetchLiveMetrics();
-  }, []);
-
-  const statCards = [
-    { label: 'Mujeres Acompañadas', val: metrics.mujeresAcompanadas, sub: 'Registradas en MongoDB Atlas', icon: Users, color: 'from-[#E12880] to-rose-600' },
-    { label: 'Variación IPSC (90d)', val: metrics.variacionIPSC, sub: 'Autonomía y protección', icon: TrendingUp, color: 'from-purple-600 to-indigo-600' },
-    { label: 'Rutas Completadas', val: metrics.rutasCompletadas, sub: 'Atención efectiva', icon: CheckCircle2, color: 'from-emerald-500 to-teal-600' },
-    { label: 'Fondo Capital Semilla', val: metrics.capitalSemilla, sub: '2026 asignados', icon: Award, color: 'from-amber-400 to-yellow-500' },
-  ];
-
+export default function CaribeSeguroPage() {
   return (
-    <div className="mx-auto max-w-7xl space-y-10 p-4 sm:p-8 animate-fadeIn">
-      {/* COMMAND CENTER HERO */}
-      <section className="border-b border-white/10 pb-8">
-
-        <div className="flex flex-wrap items-end justify-between gap-6">
-          <div className="space-y-2 max-w-2xl">
-            <p className="flex items-center gap-2 text-[11px] font-bold uppercase tracking-widest text-amber-300">
-              <Shield className="w-3.5 h-3.5" /> Caribe Seguro
-            </p>
-
-            <h1 className="text-3xl sm:text-4xl font-black text-white leading-tight">
-              Senda Caribe
-              <span className="block text-xl sm:text-2xl font-bold text-pink-200 mt-2">
-                De la alerta a la protección. Del resultado a la evidencia.
-              </span>
-            </h1>
-
-            <p className="text-sm text-slate-200 leading-relaxed">
-              Plataforma territorial de protección, acompañamiento psicosocial, red de respuesta y medición de resultados longitudinales para mujeres en el Caribe colombiano.
-            </p>
-          </div>
-
-          <div className="flex flex-wrap gap-3">
-            <Link
-              href="/caribe-seguro/como-funciona"
-              className="bg-[#E12880] hover:bg-pink-600 text-white font-bold text-sm px-5 py-3 rounded-lg flex items-center gap-2 transition-colors"
-            >
-              <Sparkles className="w-4 h-4" /> Conocer el modelo
-            </Link>
-            <Link
-              href="/caribe-seguro/sos"
-              className="border border-rose-400/70 text-rose-100 hover:bg-rose-950/50 font-bold text-sm px-5 py-3 rounded-lg flex items-center gap-2 transition-colors"
-            >
-              <Shield className="w-4 h-4" /> Necesito ayuda ahora
-            </Link>
-          </div>
-        </div>
-
-        {/* METRICS GRID DINÁMICA */}
-        <div className="mt-8 grid grid-cols-2 lg:grid-cols-4 gap-px border border-white/10 bg-white/10">
-          {statCards.map((st, i) => {
-            const Icon = st.icon;
-            return (
-              <div key={i} className="bg-[#12071b] p-4 space-y-2">
-                <div className="flex items-center justify-between text-pink-300">
-                  <span className="text-xs font-medium text-slate-300">{st.label}</span>
-                  <div className={`w-8 h-8 rounded-lg bg-gradient-to-br ${st.color} flex items-center justify-center text-white`}>
-                    <Icon className="w-4 h-4" />
-                  </div>
-                </div>
-                <p className="text-xl sm:text-2xl font-black text-white">{st.val}</p>
-                <p className="text-[11px] text-slate-400">{st.sub}</p>
-              </div>
-            );
-          })}
-        </div>
+    <main>
+      <section className="relative isolate min-h-[620px] overflow-hidden bg-[#203c3d] text-white">
+        <Image src="https://images.unsplash.com/photo-1529156069898-49953e39b3ac?auto=format&fit=crop&w=2200&q=88" alt="Mujeres reunidas en un espacio de acompañamiento comunitario" fill priority className="object-cover object-center" sizes="100vw" />
+        <div className="absolute inset-0 bg-[#173334]/85" />
+        <div className="absolute inset-0 bg-gradient-to-r from-[#173334] via-[#173334]/80 to-[#173334]/35" />
+        <div className="relative mx-auto flex min-h-[620px] w-[min(1180px,calc(100%-32px))] items-center py-20 sm:py-28"><div className="max-w-3xl"><p className="flex items-center gap-2 text-xs font-bold uppercase tracking-[0.14em] text-[#f0d2a7]"><MapPin className="h-4 w-4" /> Cartagena y región Caribe</p><p className="mt-7 font-serif text-xl text-[#f0d2a7] sm:text-2xl">Fundación Senda Mujer presenta</p><h1 className="mt-3 max-w-2xl font-serif text-5xl font-semibold leading-[.98] sm:text-7xl">Caribe Seguro</h1><p className="mt-7 max-w-2xl text-2xl font-medium leading-tight text-white sm:text-3xl">De la alerta a la protección.<br />Del acompañamiento a la autonomía.</p><p className="mt-6 max-w-xl text-base leading-7 text-[#d9e6e1]">Un programa territorial que escucha, orienta y conecta apoyos para que las mujeres encuentren rutas de cuidado, protección y oportunidades reales.</p><div className="mt-9 flex flex-wrap gap-3"><Link href="/triaje-psicologico" className="inline-flex items-center gap-2 rounded-lg bg-[#e12880] px-5 py-3.5 text-sm font-bold text-white transition-colors hover:bg-[#c41070]">Necesito ayuda <ArrowRight className="h-4 w-4" /></Link><Link href="#como-funciona" className="inline-flex items-center gap-2 rounded-lg border border-white/45 bg-white/10 px-5 py-3.5 text-sm font-bold text-white transition-colors hover:bg-white/20">Conocer cómo funciona</Link></div><p className="mt-6 text-xs font-semibold uppercase tracking-[0.12em] text-[#d9e6e1]">Gratuito · Confidencial · Sin juzgamientos</p></div></div>
       </section>
 
-      {/* WORKSPACE SECCIONES Y PESTAÑAS */}
-      <div className="space-y-6">
-        <div className="border-b border-white/10">
-          <div className="flex items-center gap-1 overflow-x-auto">
-            {[
-              { id: 'observatorio', label: '1. Observatorio en Vivo', icon: BarChart3 },
-              { id: 'mapa', label: '2. Mapa de Servicios', icon: MapPin },
-              { id: 'certificacion', label: '3. Caribe Seguro Certificado', icon: Award },
-              { id: 'policylab', label: '4. Laboratorio de Política', icon: Globe },
-            ].map((tab) => {
-              const Icon = tab.icon;
-              const isActive = activeTab === tab.id;
-              return (
-                <button
-                  key={tab.id}
-                  type="button"
-                  onClick={() => setActiveTab(tab.id as any)}
-                  className={`flex items-center gap-2 border-b-2 px-4 py-3 text-xs font-bold transition-colors shrink-0 ${
-                    isActive
-                      ? 'border-[#E12880] text-white'
-                      : 'border-transparent text-slate-400 hover:text-white'
-                  }`}
-                >
-                  <Icon className={`w-4 h-4 ${isActive ? 'text-amber-300' : 'text-pink-300'}`} />
-                  {tab.label}
-                </button>
-              );
-            })}
-          </div>
-        </div>
+      <section id="como-funciona" className="bg-[#fffdf9] py-20 sm:py-28"><div className="mx-auto w-[min(1180px,calc(100%-32px))]"><div className="max-w-2xl"><p className="text-xs font-bold uppercase tracking-[0.14em] text-[#6e3f58]">Un modelo territorial</p><h2 className="mt-3 font-serif text-4xl font-semibold leading-tight text-[#2d2528] sm:text-5xl">Una ruta clara para cada momento.</h2><p className="mt-5 text-base leading-7 text-[#6b625c]">No tienes que saber qué institución buscar ni qué nombre tiene cada trámite. Empezamos por escuchar y construimos el siguiente paso contigo.</p></div><ol className="mt-12 grid border-t border-[#dfd5cc] sm:grid-cols-2 lg:grid-cols-4">{steps.map(([number, title, text]) => <li key={number} className="border-b border-[#dfd5cc] py-7 sm:border-b-0 sm:pr-7 lg:border-r lg:px-7 lg:first:pl-0 lg:last:border-r-0"><span className="text-xs font-bold tracking-[0.12em] text-[#6e3f58]">{number}</span><h3 className="mt-8 text-xl font-semibold text-[#2d2528]">{title}</h3><p className="mt-3 text-sm leading-6 text-[#6b625c]">{text}</p></li>)}</ol></div></section>
 
-        {/* TAB CONTENIDO */}
-        <div className="space-y-6">
-          {activeTab === 'observatorio' && <ObservatorioPublico showHeader={false} />}
+      <section className="bg-[#f4eee7] py-20 sm:py-28"><div className="mx-auto w-[min(1180px,calc(100%-32px))]"><div className="flex flex-wrap items-end justify-between gap-6"><div className="max-w-2xl"><p className="text-xs font-bold uppercase tracking-[0.14em] text-[#6e3f58]">Capacidades del programa</p><h2 className="mt-3 font-serif text-4xl font-semibold leading-tight text-[#2d2528] sm:text-5xl">Cuidado que se conecta con el territorio.</h2></div><Link href="/caribe-seguro/rutas" className="inline-flex items-center gap-2 text-sm font-bold text-[#6e3f58] hover:text-[#e12880]">Encontrar una ruta <ArrowRight className="h-4 w-4" /></Link></div><div className="mt-12 grid gap-4 md:grid-cols-2">{capacities.map(({ title, text, href, action, icon: Icon }) => <Link key={title} href={href} className="group border border-[#dfd5cc] bg-[#fffdf9] p-7 transition-shadow hover:shadow-[0_16px_32px_rgba(52,40,32,.09)]"><Icon className="h-6 w-6 text-[#6e3f58]" /><h3 className="mt-12 font-serif text-3xl font-semibold text-[#2d2528]">{title}</h3><p className="mt-3 max-w-md text-sm leading-6 text-[#6b625c]">{text}</p><span className="mt-7 inline-flex items-center gap-2 text-sm font-bold text-[#6e3f58] group-hover:text-[#e12880]">{action} <ArrowRight className="h-4 w-4 transition-transform group-hover:translate-x-1" /></span></Link>)}</div></div></section>
 
-          {activeTab === 'mapa' && <MapaCaribeSeguro />}
+      <section className="bg-[#203c3d] py-20 text-white sm:py-28"><div className="mx-auto grid w-[min(1180px,calc(100%-32px))] items-center gap-12 lg:grid-cols-[1.05fr_.95fr]"><div><p className="text-xs font-bold uppercase tracking-[0.14em] text-[#f0d2a7]">Protección cercana</p><h2 className="mt-3 max-w-xl font-serif text-4xl font-semibold leading-tight sm:text-5xl">Herramientas que ayudan a tomar el siguiente paso.</h2><p className="mt-5 max-w-xl text-base leading-7 text-[#d9e6e1]">Construye un mapa de protección, encuentra servicios y conoce alternativas para actuar con información y acompañamiento.</p><Link href="/caribe-seguro/proteccion" className="mt-8 inline-flex items-center gap-2 rounded-lg bg-[#f0d2a7] px-5 py-3.5 text-sm font-bold text-[#203c3d] transition-colors hover:bg-white">Explorar protección <ArrowRight className="h-4 w-4" /></Link></div><div className="border border-white/20 p-7 sm:p-9"><p className="text-xs font-bold uppercase tracking-[0.12em] text-[#f0d2a7]">Tu mapa de protección puede incluir</p><ul className="mt-7 space-y-4">{['Seguridad física y digital', 'Red de apoyo y bienestar', 'Salud y derechos', 'Rutas de atención y respuesta'].map(item => <li key={item} className="flex items-center gap-3 text-base text-[#f7f2ee]"><CheckCircle2 className="h-5 w-5 shrink-0 text-[#f0d2a7]" />{item}</li>)}</ul></div></div></section>
 
-          {activeTab === 'certificacion' && <CertifiedCaribeSeguro />}
+      <section className="bg-[#fffdf9] py-20 sm:py-28"><div className="mx-auto grid w-[min(1180px,calc(100%-32px))] gap-12 lg:grid-cols-[.85fr_1.15fr]"><div><p className="text-xs font-bold uppercase tracking-[0.14em] text-[#6e3f58]">Impacto que aprende</p><h2 className="mt-3 font-serif text-4xl font-semibold leading-tight text-[#2d2528] sm:text-5xl">Demostrar también es cuidar.</h2><p className="mt-5 text-base leading-7 text-[#6b625c]">Miramos los resultados agregados para fortalecer las rutas, ampliar las redes y mejorar la respuesta en cada territorio.</p><Link href="/caribe-seguro/impacto" className="mt-8 inline-flex items-center gap-2 text-sm font-bold text-[#6e3f58] hover:text-[#e12880]">Ver evidencia e impacto <ArrowRight className="h-4 w-4" /></Link></div><div className="grid grid-cols-2 gap-px border border-[#dfd5cc] bg-[#dfd5cc]"><Metric value="450+" label="Mujeres orientadas" /><Metric value="310+" label="Rutas activadas" /><Metric value="180+" label="Acciones de apoyo" /><Metric value="65" label="Procesos de autonomía" /></div></div></section>
 
-          {activeTab === 'policylab' && <PolicyLabCaribeSeguro />}
-        </div>
-      </div>
-    </div>
+      <section className="bg-[#f0e1da] py-20 sm:py-24"><div className="mx-auto grid w-[min(1180px,calc(100%-32px))] items-center gap-8 lg:grid-cols-[1fr_auto]"><div><p className="text-xs font-bold uppercase tracking-[0.14em] text-[#6e3f58]">Para organizaciones</p><h2 className="mt-3 max-w-2xl font-serif text-4xl font-semibold leading-tight text-[#2d2528]">Sumemos capacidades para que el cuidado llegue más lejos.</h2><p className="mt-4 max-w-2xl text-base leading-7 text-[#6b625c]">Conoce las opciones de cooperación, formación, investigación y reconocimiento institucional del programa.</p></div><Link href="/caribe-seguro/cooperacion" className="inline-flex items-center justify-center gap-2 rounded-lg bg-[#6e3f58] px-5 py-3.5 text-sm font-bold text-white transition-colors hover:bg-[#573147]">Conectar con Caribe Seguro <ArrowRight className="h-4 w-4" /></Link></div></section>
+    </main>
   );
+}
+
+function Metric({ value, label }: { value: string; label: string }) {
+  return <div className="bg-[#fffdf9] p-6 sm:p-8"><p className="font-serif text-4xl text-[#6e3f58] sm:text-5xl">{value}</p><p className="mt-2 text-xs font-bold uppercase tracking-[0.1em] text-[#6b625c]">{label}</p></div>;
 }
