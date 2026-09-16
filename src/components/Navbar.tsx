@@ -119,14 +119,14 @@ export default function Navbar({ onOpenSOS, onOpenIncognito }: NavbarProps) {
       </div>
 
       {/* ── Main Navbar ── */}
-      <div className="max-w-[1180px] mx-auto px-4 sm:px-8 py-3 flex items-center justify-between gap-4">
+      <div className="max-w-[1180px] mx-auto px-4 sm:px-8 py-2 flex items-center justify-between gap-4">
 
         {/* Logo */}
-        <Link href="/" className="flex items-center shrink-0 group">
+        <Link href="/" className="flex items-center shrink-0 group h-12 sm:h-14">
           <img
             src="/logo.png"
             alt="Fundación Senda Mujer"
-            className="h-9 sm:h-11 w-auto object-contain transition-transform group-hover:scale-[1.02]"
+            className="h-full w-auto object-contain transition-transform group-hover:scale-[1.02]"
           />
         </Link>
 
