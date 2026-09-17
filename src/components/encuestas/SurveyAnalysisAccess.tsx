@@ -29,7 +29,7 @@ export default function SurveyAnalysisAccess() {
         return;
       }
 
-      window.location.assign('/analisis-encuentas/privado');
+      window.location.assign('/analisis-encuestas/privado');
     } catch {
       setError('No fue posible conectar con el acceso privado.');
     } finally {

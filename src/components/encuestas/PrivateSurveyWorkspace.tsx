@@ -34,7 +34,7 @@ export default function PrivateSurveyWorkspace() {
 
   async function logout() {
     await fetch('/api/survey-analysis/logout', { method: 'POST', credentials: 'same-origin' });
-    window.location.assign('/analisis-encuentas');
+    window.location.assign('/analisis-encuestas');
   }
 
   return <main className="min-h-screen bg-[#f7f7fb] px-4 py-7 text-slate-900 sm:px-6 lg:px-10">

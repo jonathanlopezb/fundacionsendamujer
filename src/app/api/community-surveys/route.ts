@@ -73,7 +73,11 @@ export async function GET(request: Request) {
     // La vista territorial no necesita identidades ni datos de contacto.
     const analysisSurveys = surveys.map(({ householdMembers, contactPhone, landmark, collectorName, collectorCode, manzana, ...survey }) => ({
       ...survey,
-      householdMembers: householdMembers.map(({ age, relationship, documentType }) => ({ age, relationship, documentType })),
+      householdMembers: householdMembers.map((member: { age: number; relationship: string; documentType: string }) => ({
+        age: member.age,
+        relationship: member.relationship,
+        documentType: member.documentType,
+      })),
     }));
 
     return NextResponse.json({ success: true, surveys: analysisSurveys });

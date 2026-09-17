@@ -23,7 +23,7 @@ export default function RootLayout({
     pathname?.startsWith('/academia') ||
     pathname?.startsWith('/caribe-seguro') ||
     pathname?.startsWith('/encuestas') ||
-    pathname?.startsWith('/analisis-encuentas');
+    pathname?.startsWith('/analisis-encuestas');
 
   return (
     <html lang="es" className="scroll-smooth">
