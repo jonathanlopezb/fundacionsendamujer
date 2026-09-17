@@ -29,6 +29,7 @@ interface Survey {
   hasPregnantOrLactating: boolean;
   vaccinesUpToDate: boolean;
   hasChronicDisease: boolean;
+  dentalCarePending: boolean;
   healthcareAccessDifficulty: boolean;
   waterSource: string;
   psychologicalSupportNeeded: boolean;
@@ -38,6 +39,9 @@ interface Survey {
   needsDental: boolean;
   needsPsychology: boolean;
   needsNutrition: boolean;
+  hasSTIHistoryOrSymptoms: boolean;
+  vaginalInfectionSymptoms: boolean;
+  hasSexualViolenceIndicator: boolean;
   hasFamilyProcess: boolean;
   hasVIFVBG: boolean;
   hasMedidaProteccion: boolean;
@@ -74,6 +78,7 @@ const nav: Array<{ id: Tab; label: string; icon: typeof BarChart3 }> = [
 const count = (surveys: Survey[], predicate: (survey: Survey) => boolean) => surveys.filter(predicate).length;
 const pct = (value: number, total: number) => total ? Math.round((value / total) * 100) : 0;
 const hasNeed = (survey: Survey, need: string) => survey.needs?.includes(need) ?? false;
+const needsLegalOrientation = (survey: Survey) => survey.needsLegalCounseling || hasNeed(survey, 'familia') || hasNeed(survey, 'tramites');
 
 export default function AnalisisEncuestasPage() {
   const [surveys, setSurveys] = useState<Survey[]>([]);
@@ -105,16 +110,16 @@ export default function AnalisisEncuestasPage() {
   const barrios = useMemo(() => Array.from(new Set(surveys.map(s => s.barrio).filter(Boolean))).sort(), [surveys]);
   const metrics = useMemo(() => {
     const total = surveys.length;
-    const medical = count(surveys, s => s.needsGeneralMedicine || s.needsGynecology || s.needsPediatrics || s.needsDental || s.needsPsychology || s.needsNutrition || s.hasChronicDisease || s.healthcareAccessDifficulty || hasNeed(s, 'salud'));
-    const legal = count(surveys, s => s.needsLegalCounseling || s.hasFamilyProcess || s.needsCivicRegistration || s.hasDebtOrProcess || s.needsPensionOrSubsidy || hasNeed(s, 'familia') || hasNeed(s, 'tramites'));
-    const protection = count(surveys, s => s.hasVIFVBG || s.hasMedidaProteccion || s.hasUrgentCase || s.priority === 'INMEDIATA' || hasNeed(s, 'violencia'));
+    const medical = count(surveys, s => s.needsGeneralMedicine || s.needsGynecology || s.needsPediatrics || s.needsDental || s.needsPsychology || s.needsNutrition || s.hasChronicDisease || s.dentalCarePending || s.hasSTIHistoryOrSymptoms || s.vaginalInfectionSymptoms || s.healthcareAccessDifficulty || hasNeed(s, 'salud'));
+    const legal = count(surveys, needsLegalOrientation);
+    const protection = count(surveys, s => s.hasVIFVBG || s.hasSexualViolenceIndicator || s.hasMedidaProteccion || s.hasUrgentCase || s.priority === 'INMEDIATA' || hasNeed(s, 'violencia'));
     const social = count(surveys, s => s.hasJobSeeker || s.waterSource !== 'ACUEDUCTO' || !s.hasHousingDocument || hasNeed(s, 'empleo') || hasNeed(s, 'vivienda'));
     return {
       total, people: surveys.reduce((sum, s) => sum + (s.householdSize || 0), 0), minors: surveys.reduce((sum, s) => sum + (s.minorCount || 0), 0),
       medical, legal, protection, social, immediate: count(surveys, s => s.priority === 'INMEDIATA'), priority: count(surveys, s => s.priority === 'PRIORITARIA'),
       noEps: count(surveys, s => !s.allEPSAffiliated), chronic: count(surveys, s => s.hasChronicDisease), access: count(surveys, s => s.healthcareAccessDifficulty),
-      violence: count(surveys, s => s.hasVIFVBG || hasNeed(s, 'violencia')), family: count(surveys, s => s.hasFamilyProcess || hasNeed(s, 'familia')),
-      documentation: count(surveys, s => !s.allDocumentsValid || s.needsCivicRegistration || hasNeed(s, 'documentacion')), employment: count(surveys, s => s.hasJobSeeker || hasNeed(s, 'empleo')),
+      violence: count(surveys, s => s.hasVIFVBG || s.hasSexualViolenceIndicator || hasNeed(s, 'violencia')), family: count(surveys, s => s.hasFamilyProcess || hasNeed(s, 'familia')),
+      documentation: count(surveys, s => !s.allDocumentsValid || s.needsCivicRegistration || hasNeed(s, 'documentacion') || hasNeed(s, 'tramites')), employment: count(surveys, s => s.hasJobSeeker || hasNeed(s, 'empleo')),
       food: count(surveys, s => hasNeed(s, 'subsidios') || s.needsNutrition), water: count(surveys, s => s.waterSource !== 'ACUEDUCTO'),
       overcrowding: count(surveys, s => s.rooms > 0 && (s.householdSize / s.rooms) >= 3), attended: count(surveys, s => s.needsGeneralMedicine || s.needsGynecology || s.needsPediatrics || s.needsDental || s.needsPsychology || s.needsNutrition || s.needsLegalCounseling),
     };
@@ -158,7 +163,7 @@ function Dashboard({ tab, metrics, needs, surveys }: { tab: Tab; metrics: Analyt
   if (tab === 'PANORAMA') return <div className="mt-8 space-y-6"><section className="grid grid-cols-2 gap-3 lg:grid-cols-6">{cards.map(([label, value, note, Icon]) => <MetricCard key={label} label={label} value={value} note={note} icon={Icon} />)}</section><div className="grid gap-6 xl:grid-cols-[1.15fr_.85fr]"><Panel title="¿Qué necesidades encontramos?" subtitle="Hogares con necesidad identificada durante la jornada"><Bars items={needs} total={total} /></Panel><Panel title="Hallazgos clave" subtitle="Lectura basada únicamente en la caracterización registrada"><div className="space-y-4"><Finding number="01" text={`La atención en salud es la necesidad más frecuente: ${metrics.medical} hogares (${pct(metrics.medical, total)}%).`} /><Finding number="02" text={`${metrics.legal} hogares requieren orientación jurídica, cívica o familiar.`} /><Finding number="03" text={`${metrics.protection} hogares presentan una situación que requiere una ruta de protección o acompañamiento.`} /></div></Panel></div><div className="grid gap-6 lg:grid-cols-2"><Panel title="Distribución territorial" subtitle="Participación por territorio, sin exponer ubicaciones de hogares"><Territory surveys={surveys} total={total} /></Panel><Panel title="Próximo paso institucional" subtitle="Acciones sugeridas a partir de los registros"><div className="grid gap-3 sm:grid-cols-2"><Action label="Jornada de salud" value={metrics.medical} /><Action label="Orientación jurídica" value={metrics.legal} /><Action label="Seguimiento de protección" value={metrics.protection} /><Action label="Gestión social" value={metrics.social} /></div></Panel></div></div>;
   if (tab === 'PERSONAS') return <Section title="¿Quiénes viven en el territorio?" subtitle="Composición agregada de personas y hogares"><Stats rows={[["Personas identificadas", metrics.people], ["Niños, niñas y adolescentes", metrics.minors], ["Hogares con personas mayores", count(surveys, s => s.hasElderlyMember || s.elderlyCount > 0)], ["Hogares con discapacidad", count(surveys, s => s.hasDisabledMember)], ["Hogares con NNA no escolarizados", count(surveys, s => !s.allNNASchooled)]]} total={total} /></Section>;
   if (tab === 'SALUD') return <Section title="Salud del territorio" subtitle="Necesidades de atención identificadas durante la jornada"><Stats rows={[["Medicina general", count(surveys, s => s.needsGeneralMedicine)], ["Ginecología", count(surveys, s => s.needsGynecology)], ["Pediatría", count(surveys, s => s.needsPediatrics)], ["Psicología", count(surveys, s => s.needsPsychology || s.psychologicalSupportNeeded)], ["Sin afiliación completa a EPS", metrics.noEps], ["Con enfermedad crónica", metrics.chronic], ["Con barreras de acceso", metrics.access]]} total={total} /></Section>;
-  if (tab === 'DERECHOS') return <Section title="Derechos y protección" subtitle="Necesidades jurídicas y situaciones que requieren acompañamiento"><Stats rows={[["Familia y custodia", metrics.family], ["Orientación jurídica", count(surveys, s => s.needsLegalCounseling)], ["Documentación y trámites", metrics.documentation], ["Violencias y VBG", metrics.violence], ["Medidas de protección", count(surveys, s => s.hasMedidaProteccion)], ["Casos urgentes", metrics.immediate]]} total={total} /></Section>;
+  if (tab === 'DERECHOS') return <Section title="Derechos y protección" subtitle="Necesidades jurídicas y situaciones que requieren acompañamiento"><Stats rows={[["Orientación jurídica, cívica o familiar", metrics.legal], ["Familia y custodia", metrics.family], ["Documentación y trámites", metrics.documentation], ["Violencias y VBG", metrics.violence], ["Medidas de protección", count(surveys, s => s.hasMedidaProteccion)], ["Casos urgentes", metrics.immediate]]} total={total} /></Section>;
   if (tab === 'CONDICIONES') return <Section title="¿Cómo viven los hogares?" subtitle="Principales determinantes sociales identificados"><Stats rows={[["Búsqueda de empleo", metrics.employment], ["Necesidades alimentarias o nutricionales", metrics.food], ["Sin acceso continuo a acueducto", metrics.water], ["Hacinamiento estimado", metrics.overcrowding], ["Sin documento de vivienda", count(surveys, s => !s.hasHousingDocument)], ["Hogares sin subsidios", count(surveys, s => !s.receivesSubsidies)]]} total={total} /></Section>;
   if (tab === 'JORNADA') return <Section title="¿Qué ocurrió durante la jornada?" subtitle="Solicitudes y necesidades de atención registradas"><Stats rows={[["Hogares con atención en salud", metrics.medical], ["Hogares con orientación jurídica", metrics.legal], ["Necesidades de atención identificadas", metrics.attended], ["Rutas de protección requeridas", metrics.protection], ["Registros con prioridad inmediata", metrics.immediate]]} total={total} /></Section>;
   if (tab === 'SEGUIMIENTO') return <Section title="¿Qué requiere acción posterior?" subtitle="Vista agregada para priorizar equipos y rutas; las fichas individuales deben gestionarse en un entorno autenticado."><div className="grid gap-4 md:grid-cols-3"><PriorityCard label="Inmediata" value={metrics.immediate} tone="rose" /><PriorityCard label="Prioritaria" value={metrics.priority} tone="amber" /><PriorityCard label="Preventiva" value={count(surveys, s => s.priority === 'NORMAL')} tone="emerald" /></div></Section>;
