@@ -7,6 +7,7 @@ import { NextResponse } from 'next/server';
 import { connectToDatabase } from '@/lib/mongodb';
 import CommunitySurvey from '@/lib/models/CommunitySurvey';
 import { computeAssignedPrograms } from '@/lib/sendaPrograms';
+import { readSurveyAnalysisSession } from '@/lib/survey-analysis-auth';
 
 const ALLOWED_NEEDS = new Set([
   'salud', 'afiliacion', 'materna', 'vacunacion', 'cronica', 'acceso_salud',
@@ -38,6 +39,15 @@ export async function GET(request: Request) {
   try {
     const { searchParams } = new URL(request.url);
     const barrio = searchParams.get('barrio');
+    const view = searchParams.get('view');
+
+    // Rechaza la vista identificable antes de abrir una consulta a la base de datos.
+    if (view === 'private' && !readSurveyAnalysisSession()) {
+      return NextResponse.json(
+        { success: false, message: 'El acceso a las fichas protegidas no esta autorizado.', surveys: [] },
+        { status: 403 }
+      );
+    }
 
     const db = await connectToDatabase();
     if (db.connection.readyState !== 1) throw new Error('MongoDB no disponible');
@@ -48,7 +58,25 @@ export async function GET(request: Request) {
     }
 
     const surveys = await CommunitySurvey.find(query).sort({ createdAt: -1 }).lean();
-    return NextResponse.json({ success: true, surveys });
+
+    if (view === 'private') {
+      return NextResponse.json({ success: true, surveys });
+    }
+
+    if (view !== 'analysis') {
+      return NextResponse.json(
+        { success: false, message: 'Esta consulta requiere una vista analítica autorizada.', surveys: [] },
+        { status: 403 }
+      );
+    }
+
+    // La vista territorial no necesita identidades ni datos de contacto.
+    const analysisSurveys = surveys.map(({ householdMembers, contactPhone, landmark, collectorName, collectorCode, manzana, ...survey }) => ({
+      ...survey,
+      householdMembers: householdMembers.map(({ age, relationship, documentType }) => ({ age, relationship, documentType })),
+    }));
+
+    return NextResponse.json({ success: true, surveys: analysisSurveys });
   } catch (err) {
     console.error('[community-surveys GET] Error al consultar:', err);
     return NextResponse.json(
@@ -284,6 +312,11 @@ export async function POST(request: Request) {
 
 export async function DELETE(request: Request) {
   try {
+    const adminKey = request.headers.get('x-survey-admin-key');
+    if (!process.env.SURVEY_ADMIN_KEY || adminKey !== process.env.SURVEY_ADMIN_KEY) {
+      return NextResponse.json({ success: false, message: 'Acción no autorizada.' }, { status: 403 });
+    }
+
     const { searchParams } = new URL(request.url);
     const id = searchParams.get('id');
     const surveyCode = searchParams.get('surveyCode');
@@ -320,4 +353,3 @@ export async function DELETE(request: Request) {
     );
   }
 }
-
