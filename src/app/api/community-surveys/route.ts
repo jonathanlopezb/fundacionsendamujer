@@ -316,8 +316,7 @@ export async function POST(request: Request) {
 
 export async function DELETE(request: Request) {
   try {
-    const adminKey = request.headers.get('x-survey-admin-key');
-    if (!process.env.SURVEY_ADMIN_KEY || adminKey !== process.env.SURVEY_ADMIN_KEY) {
+    if (!readSurveyAnalysisSession()) {
       return NextResponse.json({ success: false, message: 'Acción no autorizada.' }, { status: 403 });
     }
 
@@ -355,5 +354,44 @@ export async function DELETE(request: Request) {
       { success: false, message: 'Error al eliminar la ficha del sistema.' },
       { status: 500 }
     );
+  }
+}
+
+export async function PATCH(request: Request) {
+  try {
+    if (!readSurveyAnalysisSession()) {
+      return NextResponse.json({ success: false, message: 'Accion no autorizada.' }, { status: 403 });
+    }
+
+    const body = await request.json();
+    const id = str(body.id, 30);
+    const input = body.updates && typeof body.updates === 'object' ? body.updates as Record<string, unknown> : null;
+    if (!id || !input) {
+      return NextResponse.json({ success: false, message: 'Se requiere una ficha y datos para actualizar.' }, { status: 400 });
+    }
+
+    const householdSize = num(input.householdSize, 1, 50);
+    const members = Array.isArray(input.householdMembers)
+      ? input.householdMembers.filter((member: unknown) => member && typeof member === 'object').map((member: Record<string, unknown>) => ({
+          fullName: str(member.fullName, 120), age: num(member.age, 0, 120), relationship: str(member.relationship, 60),
+          documentType: ALLOWED_DOC_TYPES.has(String(member.documentType)) ? String(member.documentType) : 'CC', documentNumber: str(member.documentNumber, 30),
+        })).filter((member: { fullName: string }) => member.fullName.length > 0)
+      : [];
+    const updates = {
+      barrio: str(input.barrio, 100) || 'SIN_BARRIO', fieldZone: str(input.fieldZone, 80), contactPhone: str(input.contactPhone, 20),
+      householdSize, minorCount: num(input.minorCount, 0, householdSize), householdMembers: members,
+      priority: ['NORMAL', 'PRIORITARIA', 'INMEDIATA'].includes(str(input.priority, 20)) ? str(input.priority, 20) : 'NORMAL',
+      authorizedRecontact: bool(input.authorizedRecontact),
+      needs: Array.isArray(input.needs) ? input.needs.filter((need: unknown) => typeof need === 'string' && ALLOWED_NEEDS.has(need)) : [],
+    };
+
+    const db = await connectToDatabase();
+    if (db.connection.readyState !== 1) throw new Error('MongoDB unavailable');
+    const survey = await CommunitySurvey.findByIdAndUpdate(id, { $set: updates }, { new: true, runValidators: true }).lean();
+    if (!survey) return NextResponse.json({ success: false, message: 'La ficha ya no existe.' }, { status: 404 });
+    return NextResponse.json({ success: true, survey });
+  } catch (err) {
+    console.error('[community-surveys PATCH] Error:', err);
+    return NextResponse.json({ success: false, message: 'No fue posible actualizar la ficha.' }, { status: 500 });
   }
 }
