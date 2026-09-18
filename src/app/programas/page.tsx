@@ -1,24 +1,10 @@
-'use client';
-
-import React from 'react';
+import Link from 'next/link';
+import { ArrowRight, BriefcaseBusiness, Scale } from 'lucide-react';
 import ProgramsGrid from '@/components/ProgramsGrid';
 
 export default function ProgramasPage() {
-  return (
-    <div className="py-10 space-y-12">
-      <div className="text-center max-w-3xl mx-auto px-6 space-y-4">
-        <span className="bg-senda-purple-light text-senda-purple font-extrabold text-xs px-4 py-1.5 rounded-full uppercase tracking-wider">
-          Portafolio de Atención Integral
-        </span>
-        <h1 className="text-4xl sm:text-5xl font-extrabold text-senda-purple-dark">
-          Los 7 Programas Fundamentales
-        </h1>
-        <p className="text-sm text-slate-600">
-          Diseñados para cubrir desde la atención social inicial y contención de crisis, hasta la protección legal, salud dental/médica, embarazo asistido y proyecto de vida.
-        </p>
-      </div>
-
-      <ProgramsGrid />
-    </div>
-  );
+  return <div className="bg-[#fbf8f3]"><section className="overflow-hidden border-b border-[#ddd4ca] bg-[radial-gradient(circle_at_10%_20%,#ead9cb_0,transparent_32%),#fbf8f3] py-16 sm:py-24"><div className="senda-shell grid gap-10 lg:grid-cols-[1.1fr_.9fr] lg:items-end"><div><p className="senda-eyebrow">Programas Senda Mujer</p><h1 className="mt-3 max-w-3xl font-serif text-5xl font-semibold leading-[.95] tracking-tight text-[#26231f] sm:text-7xl">Acompañamos cada decisión. <em className="font-normal text-[#6e3f58]">Fortalecemos cada camino.</em></h1></div><p className="max-w-md text-base leading-7 text-[#6c665f]">Siete programas que conectan escucha, protección, salud, acceso a derechos y autonomía. Cada uno tiene una ruta clara y acompañamiento cercano.</p></div></section>
+    <ProgramsGrid />
+    <section className="senda-section"><div className="senda-shell grid gap-5 lg:grid-cols-2"><Link href="/modelos#cam" className="group rounded-3xl bg-[#203c3d] p-8 text-white transition hover:-translate-y-1"><BriefcaseBusiness className="h-7 w-7 text-[#d9b991]"/><p className="mt-8 text-xs font-bold uppercase tracking-[.15em] text-[#d9b991]">Modelo CAM</p><h2 className="mt-2 font-serif text-3xl font-semibold">Acompañamiento que conecta rutas.</h2><p className="mt-4 max-w-md text-sm leading-6 text-[#d6e7e1]">Un marco de acompañamiento integral para pasar de la escucha a acciones coordinadas.</p><span className="mt-7 inline-flex items-center gap-2 text-sm font-bold text-[#d9b991]">Conocer el modelo <ArrowRight className="h-4 w-4"/></span></Link><Link href="/modelos#themis" className="group rounded-3xl bg-[#f0e1da] p-8 text-[#26231f] transition hover:-translate-y-1"><Scale className="h-7 w-7 text-[#6e3f58]"/><p className="mt-8 text-xs font-bold uppercase tracking-[.15em] text-[#6e3f58]">Modelo THEMIS</p><h2 className="mt-2 font-serif text-3xl font-semibold">Orientación jurídica con enfoque de derechos.</h2><p className="mt-4 max-w-md text-sm leading-6 text-[#6c665f]">Un marco para explicar opciones, facilitar el acceso a la justicia y evitar la revictimización.</p><span className="mt-7 inline-flex items-center gap-2 text-sm font-bold text-[#6e3f58]">Conocer el modelo <ArrowRight className="h-4 w-4"/></span></Link></div></section>
+  </div>;
 }

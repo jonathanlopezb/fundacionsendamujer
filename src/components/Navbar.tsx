@@ -10,13 +10,13 @@ interface NavbarProps {
 }
 
 const PROGRAMAS = [
-  { label: 'Mujer Acompañada', href: '/programas#programa-1' },
-  { label: 'Víctimas Violencia Sexual', href: '/programas#programa-2' },
-  { label: 'Contención Psicosocial', href: '/programas#programa-3' },
-  { label: 'Ruta de Salud & Derechos', href: '/programas#programa-4' },
-  { label: 'Embarazo con Apoyo', href: '/programas#programa-5' },
-  { label: 'Mujer y Justicia', href: '/programas#programa-6' },
-  { label: 'Proyecto de Vida', href: '/programas#programa-7' },
+  { label: 'Mujer Acompañada', href: '/programas/mujer-acompanada' },
+  { label: 'Víctimas Violencia Sexual', href: '/programas/violencia-sexual' },
+  { label: 'Contención Psicosocial', href: '/programas/contencion-psicosocial' },
+  { label: 'Ruta de Salud & Derechos', href: '/programas/salud-y-derechos' },
+  { label: 'Embarazo con Apoyo', href: '/programas/embarazo-con-apoyo' },
+  { label: 'Mujer y Justicia', href: '/programas/mujer-y-justicia' },
+  { label: 'Proyecto de Vida', href: '/programas/proyecto-de-vida-y-autonomia' },
 ];
 
 export default function Navbar({ onOpenSOS, onOpenIncognito }: NavbarProps) {
@@ -199,6 +199,7 @@ export default function Navbar({ onOpenSOS, onOpenIncognito }: NavbarProps) {
         <nav className="hidden lg:flex items-center gap-5 text-[13px] font-bold text-[#544e48]" aria-label="Navegación principal">
           <Link href="/#necesidades" className="hover:text-[#6E3F58] transition-colors">Necesito ayuda</Link>
           <Link href="/#programas" className="hover:text-[#6E3F58] transition-colors">Cómo ayudamos</Link>
+          <Link href="/modelos" className="hover:text-[#6E3F58] transition-colors">Modelos</Link>
           <Link href="/#senda-caribe" className="hover:text-[#6E3F58] transition-colors">Senda Caribe</Link>
           <Link href="/#impacto" className="hover:text-[#6E3F58] transition-colors">Impacto</Link>
           <Link href="/#historias" className="hover:text-[#6E3F58] transition-colors">Historias</Link>
@@ -254,6 +255,7 @@ export default function Navbar({ onOpenSOS, onOpenIncognito }: NavbarProps) {
             { href: '/', label: 'Inicio' },
             { href: '/#necesidades', label: 'Necesito ayuda' },
             { href: '/#programas', label: 'Cómo ayudamos' },
+            { href: '/modelos', label: 'Modelos CAM y THEMIS' },
             { href: '/#senda-caribe', label: 'Senda Caribe' },
             { href: '/#impacto', label: 'Impacto' },
             { href: '/#historias', label: 'Historias' },
