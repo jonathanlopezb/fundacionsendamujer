@@ -134,7 +134,7 @@ export default function CourseCatalog({ user, onOpenAuth }: Props) {
   };
 
   return (
-    <section className="py-16 px-4 sm:px-8 max-w-7xl mx-auto space-y-10">
+    <section id="catalogo" className="py-16 px-4 sm:px-8 max-w-7xl mx-auto space-y-10">
 
       {/* Header Title */}
       <div className="text-center max-w-3xl mx-auto space-y-3">
