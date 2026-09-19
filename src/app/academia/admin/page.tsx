@@ -455,7 +455,7 @@ export default function AcademiaAdminPage() {
                       Docente: <strong className="text-pink-100">{c.instructor}</strong>
                     </p>
                     <p className="text-[11px] text-pink-200/50">
-                      {c.modules?.length || 1} módulos · {c.modules?.flatMap((m: any) => m.lessons).length || 2} lecciones en video
+                      {c.modules?.length || 1} módulos · {c.modules?.reduce((acc: number, m: any) => acc + (m.lessons?.length || 0), 0) || 2} lecciones en video
                     </p>
                   </div>
 

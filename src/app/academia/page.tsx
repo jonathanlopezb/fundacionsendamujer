@@ -521,7 +521,7 @@ function FeaturedCoursesSection({
                 </span>
                 <span className="flex items-center gap-1">
                   <BookOpen className="w-3 h-3 text-pink-400" />
-                  {course.modules.flatMap((m) => m.lessons).length} lecciones
+                  {course.modules?.reduce((acc: number, m: any) => acc + (m.lessons?.length || 0), 0) || 4} lecciones
                 </span>
               </div>
 
