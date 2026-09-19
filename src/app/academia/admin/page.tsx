@@ -156,7 +156,7 @@ export default function AcademiaAdminPage() {
   // Module & Lesson Builder Handlers
   const addModule = () => {
     const newModNumber = courseForm.modules.length + 1;
-    setCourseForm((prev) => ({
+    setCourseForm((prev: any) => ({
       ...prev,
       modules: [
         ...prev.modules,
@@ -180,9 +180,9 @@ export default function AcademiaAdminPage() {
   };
 
   const removeModule = (mIdx: number) => {
-    setCourseForm((prev) => ({
+    setCourseForm((prev: any) => ({
       ...prev,
-      modules: prev.modules.filter((_, idx) => idx !== mIdx),
+      modules: prev.modules.filter((_: any, idx: number) => idx !== mIdx),
     }));
   };
 
@@ -198,26 +198,26 @@ export default function AcademiaAdminPage() {
       isPreview: false,
       resources: [],
     });
-    setCourseForm({ ...courseForm, modules: updatedModules });
+    setCourseForm((prev: any) => ({ ...prev, modules: updatedModules }));
   };
 
   const removeLesson = (mIdx: number, lIdx: number) => {
     const updatedModules = [...courseForm.modules];
-    updatedModules[mIdx].lessons = updatedModules[mIdx].lessons.filter((_, idx) => idx !== lIdx);
-    setCourseForm({ ...courseForm, modules: updatedModules });
+    updatedModules[mIdx].lessons = updatedModules[mIdx].lessons.filter((_: any, idx: number) => idx !== lIdx);
+    setCourseForm((prev: any) => ({ ...prev, modules: updatedModules }));
   };
 
   const updateLessonField = (mIdx: number, lIdx: number, field: string, val: any) => {
     const updatedModules = [...courseForm.modules];
     (updatedModules[mIdx].lessons[lIdx] as any)[field] = val;
-    setCourseForm({ ...courseForm, modules: updatedModules });
+    setCourseForm((prev: any) => ({ ...prev, modules: updatedModules }));
   };
 
   // Integrated Course Exam Question Handlers
   const addCourseExamQuestion = () => {
     const currentQuestions = courseForm.assessment?.questions || [];
     const qNum = currentQuestions.length + 1;
-    setCourseForm((prev) => ({
+    setCourseForm((prev: any) => ({
       ...prev,
       assessment: {
         ...prev.assessment,
@@ -243,11 +243,11 @@ export default function AcademiaAdminPage() {
   };
 
   const removeCourseExamQuestion = (qIdx: number) => {
-    setCourseForm((prev) => ({
+    setCourseForm((prev: any) => ({
       ...prev,
       assessment: {
         ...prev.assessment,
-        questions: (prev.assessment?.questions || []).filter((_, idx) => idx !== qIdx),
+        questions: (prev.assessment?.questions || []).filter((_: any, idx: number) => idx !== qIdx),
       },
     }));
   };
@@ -255,7 +255,7 @@ export default function AcademiaAdminPage() {
   const updateCourseExamQuestion = (qIdx: number, field: string, value: any) => {
     const updatedQuestions = [...(courseForm.assessment?.questions || [])];
     (updatedQuestions[qIdx] as any)[field] = value;
-    setCourseForm((prev) => ({
+    setCourseForm((prev: any) => ({
       ...prev,
       assessment: {
         ...prev.assessment,
@@ -269,12 +269,12 @@ export default function AcademiaAdminPage() {
     const updatedOptions = [...updatedQuestions[qIdx].options];
     if (text !== undefined) updatedOptions[oIdx].text = text;
     if (isCorrect !== undefined) {
-      updatedOptions.forEach((opt, idx) => {
+      updatedOptions.forEach((opt: any, idx: number) => {
         opt.isCorrect = idx === oIdx;
       });
     }
     updatedQuestions[qIdx].options = updatedOptions;
-    setCourseForm((prev) => ({
+    setCourseForm((prev: any) => ({
       ...prev,
       assessment: {
         ...prev.assessment,
@@ -282,6 +282,7 @@ export default function AcademiaAdminPage() {
       },
     }));
   };
+
 
   // Save Course Handler (Saves Course AND Exam in one go)
   const handleSaveCourse = async (e: React.FormEvent) => {
@@ -977,9 +978,9 @@ export default function AcademiaAdminPage() {
                     type="text"
                     value={courseForm.assessment?.title || ''}
                     onChange={(e) =>
-                      setCourseForm((prev) => ({
+                      setCourseForm((prev: any) => ({
                         ...prev,
-                        assessment: { ...prev.assessment, title: e.target.value } as any,
+                        assessment: { ...prev.assessment, title: e.target.value },
                       }))
                     }
                     placeholder="Evaluación Oficial de Certificación"
@@ -997,9 +998,9 @@ export default function AcademiaAdminPage() {
                     max={120}
                     value={courseForm.assessment?.durationMinutes || 20}
                     onChange={(e) =>
-                      setCourseForm((prev) => ({
+                      setCourseForm((prev: any) => ({
                         ...prev,
-                        assessment: { ...prev.assessment, durationMinutes: Number(e.target.value) } as any,
+                        assessment: { ...prev.assessment, durationMinutes: Number(e.target.value) },
                       }))
                     }
                     className="w-full p-2.5 rounded-xl bg-white/[0.06] border border-white/10 text-white focus:outline-none focus:border-pink-400"
@@ -1016,14 +1017,15 @@ export default function AcademiaAdminPage() {
                     max={100}
                     value={courseForm.assessment?.passingScore || 70}
                     onChange={(e) =>
-                      setCourseForm((prev) => ({
+                      setCourseForm((prev: any) => ({
                         ...prev,
-                        assessment: { ...prev.assessment, passingScore: Number(e.target.value) } as any,
+                        assessment: { ...prev.assessment, passingScore: Number(e.target.value) },
                       }))
                     }
                     className="w-full p-2.5 rounded-xl bg-white/[0.06] border border-white/10 text-white focus:outline-none focus:border-pink-400"
                   />
                 </label>
+
               </div>
 
               {/* Questions List */}
