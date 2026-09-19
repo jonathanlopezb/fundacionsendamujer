@@ -33,7 +33,7 @@ import {
   ShieldCheck,
   ChevronRight,
 } from 'lucide-react';
-import { INITIAL_COURSES } from '@/app/api/academia/courses/route';
+import { INITIAL_COURSES } from '@/lib/academiaCoursesData';
 
 export default function AcademiaMainPage() {
   const router = useRouter();

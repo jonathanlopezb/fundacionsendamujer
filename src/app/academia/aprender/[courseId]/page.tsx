@@ -22,7 +22,7 @@ import {
   Send,
   HelpCircle,
 } from 'lucide-react';
-import { INITIAL_COURSES } from '@/app/api/academia/courses/route';
+import { INITIAL_COURSES } from '@/lib/academiaCoursesData';
 import SendaTutorPanel from '@/components/academia/SendaTutorPanel';
 
 export default function CourseLearningPage() {

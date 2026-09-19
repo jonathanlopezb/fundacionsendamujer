@@ -87,10 +87,12 @@ export default function CertificatePage() {
           }}
         >
           {/* Top Floral & Branding Ornament */}
-          <div className="flex flex-col items-center text-center space-y-2">
-            <div className="w-16 h-16 rounded-2xl bg-gradient-to-tr from-[#E12880] to-[#52166F] p-3 flex items-center justify-center text-white shadow-xl">
-              <Award className="w-10 h-10 text-amber-300" />
-            </div>
+          <div className="flex flex-col items-center text-center space-y-3">
+            <img
+              src="/logo.png"
+              alt="Fundación Senda Mujer"
+              className="h-16 w-auto object-contain drop-shadow-md"
+            />
             <div>
               <p className="text-xs font-extrabold uppercase tracking-[0.25em] text-[#52166F]">
                 Fundación Senda Mujer

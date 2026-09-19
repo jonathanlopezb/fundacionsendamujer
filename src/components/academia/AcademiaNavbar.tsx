@@ -50,19 +50,19 @@ export default function AcademiaNavbar({
         
         {/* Brand Logo */}
         <div className="flex items-center gap-6">
-          <Link href="/academia" className="flex items-center gap-2 group">
-            <div className="flex items-center gap-2.5">
-              <div className="w-8 h-8 rounded-xl bg-gradient-to-br from-[#E12880] to-[#7B1FA2] p-1.5 flex items-center justify-center shadow-lg shadow-pink-600/30 group-hover:scale-105 transition-transform">
-                <span className="text-white font-black text-sm">S</span>
-              </div>
-              <div className="flex flex-col">
-                <span className="text-base font-black tracking-tight text-white flex items-center gap-1">
-                  Senda<span className="text-pink-400">Mujer</span>
-                </span>
-                <span className="text-[9px] uppercase tracking-widest text-pink-200/60 font-bold -mt-0.5">
-                  Academia Digital
-                </span>
-              </div>
+          <Link href="/academia" className="flex items-center gap-3 group">
+            <img
+              src="/logo.png"
+              alt="Fundación Senda Mujer"
+              className="h-10 sm:h-12 w-auto object-contain transition-transform duration-300 group-hover:scale-105 drop-shadow-md"
+            />
+            <div className="flex flex-col justify-center">
+              <span className="text-lg sm:text-xl font-black tracking-tight text-white flex items-center gap-1 leading-none">
+                Senda<span className="bg-gradient-to-r from-pink-400 to-amber-300 bg-clip-text text-transparent">Mujer</span>
+              </span>
+              <span className="text-[10px] uppercase tracking-widest text-pink-200/70 font-black mt-1">
+                SendaAcademia
+              </span>
             </div>
           </Link>
 

@@ -122,7 +122,7 @@ export default function Navbar({ onOpenSOS, onOpenIncognito }: NavbarProps) {
       <div className="max-w-[1180px] mx-auto px-4 sm:px-8 py-2 flex items-center justify-between gap-4">
 
         {/* Logo */}
-        <Link href="/" className="flex items-center shrink-0 group h-12 sm:h-14">
+        <Link href="/" className="flex items-center shrink-0 group h-14 sm:h-16">
           <img
             src="/logo.png"
             alt="Fundación Senda Mujer"

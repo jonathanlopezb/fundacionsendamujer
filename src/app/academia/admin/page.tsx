@@ -27,7 +27,7 @@ import {
   AlertTriangle,
   Upload,
 } from 'lucide-react';
-import { INITIAL_COURSES } from '@/app/api/academia/courses/route';
+import { INITIAL_COURSES } from '@/lib/academiaCoursesData';
 
 export default function AcademiaAdminPage() {
   const [activeTab, setActiveTab] = useState<'courses' | 'builder' | 'assessments' | 'students' | 'certificates' | 'live' | 'analytics'>('courses');
@@ -279,9 +279,11 @@ export default function AcademiaAdminPage() {
       {/* Top Admin Header */}
       <header className="sticky top-0 z-40 bg-[#160623]/95 backdrop-blur-md border-b border-white/10 px-4 sm:px-8 py-4 flex flex-col md:flex-row md:items-center justify-between gap-4 shadow-xl">
         <div className="flex items-center gap-4">
-          <div className="w-10 h-10 rounded-2xl bg-gradient-to-tr from-[#E12880] to-[#7B1FA2] p-2 flex items-center justify-center text-white shadow-lg">
-            <LockKeyhole className="w-5 h-5 text-amber-300" />
-          </div>
+          <img
+            src="/logo.png"
+            alt="Fundación Senda Mujer"
+            className="h-11 sm:h-12 w-auto object-contain transition-transform group-hover:scale-105 drop-shadow-md"
+          />
           <div>
             <div className="flex items-center gap-2">
               <span className="text-xs font-black uppercase tracking-widest text-pink-400">

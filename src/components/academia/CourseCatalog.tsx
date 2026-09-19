@@ -3,7 +3,7 @@ import React, { useState, useEffect } from 'react';
 import Link from 'next/link';
 import { useRouter } from 'next/navigation';
 import { BookOpen, Star, Clock, Lock, Play, Award, Sparkles, Filter, CheckCircle2, ChevronRight, Search, Zap } from 'lucide-react';
-import { INITIAL_COURSES } from '@/app/api/academia/courses/route';
+import { INITIAL_COURSES } from '@/lib/academiaCoursesData';
 
 interface Props {
   user: { name: string; email: string } | null;
