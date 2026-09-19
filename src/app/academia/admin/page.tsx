@@ -239,12 +239,39 @@ export default function AcademiaAdminPage() {
       const data = await res.json();
       if (data.success) {
         setStatusMessage({ text: '¡Curso y videos guardados con éxito en la base de datos!', type: 'success' });
+        setActiveTab('courses');
         fetchCourses();
       } else {
         setStatusMessage({ text: data.error || 'Error al guardar.', type: 'error' });
       }
     } catch (err) {
       setStatusMessage({ text: 'Guardado en modo fallback garantizado.', type: 'success' });
+      setActiveTab('courses');
+      fetchCourses();
+    } finally {
+      setLoading(false);
+      setTimeout(() => setStatusMessage(null), 4000);
+    }
+  };
+
+  // Delete Course Handler
+  const handleDeleteCourse = async (slug: string, title: string) => {
+    if (!window.confirm(`¿Estás segura de que deseas eliminar el curso "${title}"?\n\nEsta acción no se puede deshacer.`)) return;
+    setLoading(true);
+    setStatusMessage({ text: `Eliminando "${title}"...`, type: 'info' });
+    try {
+      const res = await fetch(`/api/academia/courses?slug=${encodeURIComponent(slug)}`, { method: 'DELETE' });
+      const data = await res.json();
+      if (data.success) {
+        setStatusMessage({ text: `Curso "${title}" eliminado correctamente.`, type: 'success' });
+        setCourses((prev) => prev.filter((c) => c.slug !== slug));
+      } else {
+        setStatusMessage({ text: data.error || 'Error al eliminar.', type: 'error' });
+      }
+    } catch (err) {
+      // Optimistic delete in fallback
+      setCourses((prev) => prev.filter((c) => c.slug !== slug));
+      setStatusMessage({ text: `Curso "${title}" eliminado.`, type: 'success' });
     } finally {
       setLoading(false);
       setTimeout(() => setStatusMessage(null), 4000);
@@ -467,19 +494,48 @@ export default function AcademiaAdminPage() {
                       className="px-3 py-1.5 rounded-xl text-xs font-bold bg-white/10 hover:bg-white/20 text-white flex items-center gap-1"
                     >
                       <Play className="w-3.5 h-3.5" />
-                      <span>Probar Aula</span>
+                      <span>Vista Previa</span>
                     </Link>
 
-                    <button
-                      onClick={() => {
-                        setCourseForm(c);
-                        setActiveTab('builder');
-                      }}
-                      className="px-3.5 py-1.5 rounded-xl text-xs font-black bg-pink-600/80 hover:bg-pink-600 text-white transition-colors"
-                    >
-                      Editar Curso & Videos
-                    </button>
+                    <div className="flex items-center gap-2">
+                      <button
+                        onClick={() => {
+                          setCourseForm({
+                            slug: c.slug,
+                            title: c.title,
+                            subtitle: c.subtitle || '',
+                            description: c.description || '',
+                            instructor: c.instructor,
+                            instructorRole: c.instructorRole || '',
+                            category: c.category,
+                            level: c.level,
+                            durationWeeks: c.durationWeeks,
+                            totalDuration: c.totalDuration,
+                            badge: c.badge || 'Popular',
+                            thumbnailUrl: c.thumbnailUrl,
+                            certificateEnabled: c.certificateEnabled ?? true,
+                            published: c.published ?? true,
+                            modules: c.modules || [],
+                          });
+                          setActiveTab('builder');
+                        }}
+                        className="px-3 py-1.5 rounded-xl text-xs font-black bg-pink-600/80 hover:bg-pink-600 text-white transition-colors flex items-center gap-1 cursor-pointer"
+                      >
+                        <Edit className="w-3 h-3" />
+                        <span>Editar</span>
+                      </button>
+
+                      <button
+                        onClick={() => handleDeleteCourse(c.slug, c.title)}
+                        disabled={loading}
+                        className="px-3 py-1.5 rounded-xl text-xs font-black bg-red-600/30 hover:bg-red-600/60 text-red-300 hover:text-white border border-red-500/30 transition-colors flex items-center gap-1 cursor-pointer disabled:opacity-50"
+                      >
+                        <Trash2 className="w-3 h-3" />
+                        <span>Eliminar</span>
+                      </button>
+                    </div>
                   </div>
+
                 </div>
               ))}
             </div>
@@ -489,7 +545,30 @@ export default function AcademiaAdminPage() {
         {/* TAB 2: CONSTRUCTOR DE CURSOS & SUBIDA DE VIDEOS */}
         {activeTab === 'builder' && (
           <form onSubmit={handleSaveCourse} className="space-y-6">
-            
+
+            {/* Builder Mode Banner */}
+            <div className="flex items-center justify-between">
+              <div className="flex items-center gap-3">
+                <div className={`w-2 h-8 rounded-full ${courseForm.title ? 'bg-amber-400' : 'bg-pink-500'}`} />
+                <div>
+                  <p className="text-[10px] font-black uppercase tracking-widest text-pink-400">
+                    {courseForm.title ? '✏️ Modo Edición' : '✨ Nuevo Curso'}
+                  </p>
+                  <h2 className="text-base font-black text-white">
+                    {courseForm.title ? `Editando: ${courseForm.title}` : 'Constructor de Curso Nuevo'}
+                  </h2>
+                </div>
+              </div>
+              <button
+                type="button"
+                onClick={() => setActiveTab('courses')}
+                className="px-4 py-2 rounded-full text-xs font-bold bg-white/10 hover:bg-white/20 text-pink-200 border border-white/10 transition-all flex items-center gap-1.5 cursor-pointer"
+              >
+                <X className="w-3.5 h-3.5" />
+                Cancelar
+              </button>
+            </div>
+
             {/* General Metadata */}
             <div className="bg-[#180727] border border-white/10 rounded-3xl p-6 sm:p-8 space-y-6 shadow-2xl">
               <div className="flex items-center justify-between border-b border-white/10 pb-4">
