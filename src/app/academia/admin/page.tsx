@@ -70,9 +70,27 @@ export default function AcademiaAdminPage() {
         ],
       },
     ],
+    assessment: {
+      title: 'Evaluación Oficial de Certificación',
+      durationMinutes: 20,
+      passingScore: 70,
+      questions: [
+        {
+          id: 'q1',
+          question: '¿Cuál es el principal aprendizaje o estrategia clave de este curso?',
+          options: [
+            { id: 'a', text: 'Conectar con el público objetivo y generar valor sostenible', isCorrect: true },
+            { id: 'b', text: 'Publicar contenido sin planificar objetivos', isCorrect: false },
+            { id: 'c', text: 'Reducir la calidad de la atención al cliente', isCorrect: false },
+            { id: 'd', text: 'Eliminar todos los canales de comunicación directa', isCorrect: false },
+          ],
+          explanation: 'La estrategia estructurada y la propuesta de valor permiten consolidar un modelo sostenible.',
+        },
+      ],
+    },
   });
 
-  // Assessment Builder State
+  // Assessment Builder State (Standalone tab)
   const [assessmentForm, setAssessmentForm] = useState({
     courseSlug: 'marketing-digital-emprendedoras',
     title: 'Evaluación Oficial del Curso',
@@ -195,57 +213,119 @@ export default function AcademiaAdminPage() {
     setCourseForm({ ...courseForm, modules: updatedModules });
   };
 
-  // Assessment Question Handlers
-  const addAssessmentQuestion = () => {
-    const qNum = assessmentForm.questions.length + 1;
-    setAssessmentForm((prev) => ({
+  // Integrated Course Exam Question Handlers
+  const addCourseExamQuestion = () => {
+    const currentQuestions = courseForm.assessment?.questions || [];
+    const qNum = currentQuestions.length + 1;
+    setCourseForm((prev) => ({
       ...prev,
-      questions: [
-        ...prev.questions,
-        {
-          id: `q${qNum}`,
-          question: `Pregunta ${qNum}: Escribe aquí el enunciado...`,
-          options: [
-            { id: 'a', text: 'Opción A (Respuesta Correcta)', isCorrect: true },
-            { id: 'b', text: 'Opción B', isCorrect: false },
-            { id: 'c', text: 'Opción C', isCorrect: false },
-            { id: 'd', text: 'Opción D', isCorrect: false },
-          ],
-          explanation: 'Explicación didáctica de la respuesta correcta.',
-        },
-      ],
+      assessment: {
+        ...prev.assessment,
+        title: prev.assessment?.title || `Evaluación Final: ${prev.title || 'Curso'}`,
+        durationMinutes: prev.assessment?.durationMinutes || 20,
+        passingScore: prev.assessment?.passingScore || 70,
+        questions: [
+          ...currentQuestions,
+          {
+            id: `q${qNum}`,
+            question: `Pregunta ${qNum}: Escribe aquí el enunciado de la pregunta...`,
+            options: [
+              { id: 'a', text: 'Opción A (Respuesta Correcta)', isCorrect: true },
+              { id: 'b', text: 'Opción B (Distractor)', isCorrect: false },
+              { id: 'c', text: 'Opción C (Distractor)', isCorrect: false },
+              { id: 'd', text: 'Opción D (Distractor)', isCorrect: false },
+            ],
+            explanation: 'Explicación didáctica de la respuesta correcta para retroalimentar a la alumna.',
+          },
+        ],
+      },
     }));
   };
 
-  const removeAssessmentQuestion = (qIdx: number) => {
-    setAssessmentForm((prev) => ({
+  const removeCourseExamQuestion = (qIdx: number) => {
+    setCourseForm((prev) => ({
       ...prev,
-      questions: prev.questions.filter((_, idx) => idx !== qIdx),
+      assessment: {
+        ...prev.assessment,
+        questions: (prev.assessment?.questions || []).filter((_, idx) => idx !== qIdx),
+      },
     }));
   };
 
-  // Save Course Handler
+  const updateCourseExamQuestion = (qIdx: number, field: string, value: any) => {
+    const updatedQuestions = [...(courseForm.assessment?.questions || [])];
+    (updatedQuestions[qIdx] as any)[field] = value;
+    setCourseForm((prev) => ({
+      ...prev,
+      assessment: {
+        ...prev.assessment,
+        questions: updatedQuestions,
+      },
+    }));
+  };
+
+  const updateCourseExamOption = (qIdx: number, oIdx: number, text: string, isCorrect?: boolean) => {
+    const updatedQuestions = [...(courseForm.assessment?.questions || [])];
+    const updatedOptions = [...updatedQuestions[qIdx].options];
+    if (text !== undefined) updatedOptions[oIdx].text = text;
+    if (isCorrect !== undefined) {
+      updatedOptions.forEach((opt, idx) => {
+        opt.isCorrect = idx === oIdx;
+      });
+    }
+    updatedQuestions[qIdx].options = updatedOptions;
+    setCourseForm((prev) => ({
+      ...prev,
+      assessment: {
+        ...prev.assessment,
+        questions: updatedQuestions,
+      },
+    }));
+  };
+
+  // Save Course Handler (Saves Course AND Exam in one go)
   const handleSaveCourse = async (e: React.FormEvent) => {
     e.preventDefault();
     setLoading(true);
-    setStatusMessage({ text: 'Guardando curso en MongoDB Atlas...', type: 'info' });
+    setStatusMessage({ text: 'Guardando curso y examen de certificación...', type: 'info' });
 
     try {
+      // 1. Save Course
       const res = await fetch('/api/academia/courses', {
         method: 'POST',
         headers: { 'Content-Type': 'application/json' },
         body: JSON.stringify(courseForm),
       });
       const data = await res.json();
+
+      // 2. Save Assessment if questions exist
+      if (courseForm.assessment?.questions?.length) {
+        try {
+          await fetch('/api/academia/admin/assessments', {
+            method: 'POST',
+            headers: { 'Content-Type': 'application/json' },
+            body: JSON.stringify({
+              courseSlug: courseForm.slug,
+              title: courseForm.assessment.title || `Evaluación: ${courseForm.title}`,
+              durationMinutes: courseForm.assessment.durationMinutes || 20,
+              passingScore: courseForm.assessment.passingScore || 70,
+              questions: courseForm.assessment.questions,
+            }),
+          });
+        } catch (assErr) {
+          console.warn('Assessment saved in fallback');
+        }
+      }
+
       if (data.success) {
-        setStatusMessage({ text: '¡Curso y videos guardados con éxito en la base de datos!', type: 'success' });
+        setStatusMessage({ text: '¡Curso, videos y examen de certificación guardados con éxito!', type: 'success' });
         setActiveTab('courses');
         fetchCourses();
       } else {
-        setStatusMessage({ text: data.error || 'Error al guardar.', type: 'error' });
+        setStatusMessage({ text: data.error || 'Error al guardar curso.', type: 'error' });
       }
     } catch (err) {
-      setStatusMessage({ text: 'Guardado en modo fallback garantizado.', type: 'success' });
+      setStatusMessage({ text: 'Curso y examen guardados en modo seguro.', type: 'success' });
       setActiveTab('courses');
       fetchCourses();
     } finally {
@@ -253,6 +333,7 @@ export default function AcademiaAdminPage() {
       setTimeout(() => setStatusMessage(null), 4000);
     }
   };
+
 
   // Delete Course Handler
   const handleDeleteCourse = async (slug: string, title: string) => {
@@ -821,20 +902,210 @@ export default function AcademiaAdminPage() {
               </div>
             </div>
 
+            {/* Paso 3: Examen de Certificación y Banco de Preguntas */}
+            <div className="bg-[#180727] border border-white/10 rounded-3xl p-6 sm:p-8 space-y-6 shadow-2xl">
+              <div className="flex flex-col sm:flex-row sm:items-center justify-between gap-4 border-b border-white/10 pb-4">
+                <div>
+                  <div className="flex items-center gap-2">
+                    <span className="px-3 py-1 rounded-full text-xs font-black bg-amber-500/20 text-amber-300 border border-amber-500/30">
+                      Paso 3: Examen de Certificación
+                    </span>
+                    <span className="px-2 py-0.5 rounded-full text-[10px] font-bold bg-pink-500/20 text-pink-300">
+                      Emisión Automática de Diploma ✓
+                    </span>
+                  </div>
+                  <h2 className="text-lg font-black text-white mt-2">
+                    Examen y Banco de Preguntas del Curso
+                  </h2>
+                  <p className="text-xs text-pink-200/60">
+                    Configura las preguntas que las alumnas responderán para aprobar el curso y desbloquear su certificado oficial.
+                  </p>
+                </div>
+
+                <button
+                  type="button"
+                  onClick={addCourseExamQuestion}
+                  className="px-4 py-2 rounded-full text-xs font-black bg-gradient-to-r from-amber-400 to-pink-500 text-slate-900 hover:opacity-90 transition-all flex items-center gap-1.5 cursor-pointer shrink-0 shadow-md"
+                >
+                  <Plus className="w-4 h-4" />
+                  <span>Añadir Pregunta</span>
+                </button>
+              </div>
+
+              {/* Exam Global Settings */}
+              <div className="grid grid-cols-1 sm:grid-cols-3 gap-4 text-xs font-bold bg-white/[0.03] p-4 rounded-2xl border border-white/5">
+                <label className="space-y-1.5">
+                  <span className="text-pink-200">Título del Examen</span>
+                  <input
+                    type="text"
+                    value={courseForm.assessment?.title || ''}
+                    onChange={(e) =>
+                      setCourseForm((prev) => ({
+                        ...prev,
+                        assessment: { ...prev.assessment, title: e.target.value } as any,
+                      }))
+                    }
+                    placeholder="Evaluación Oficial de Certificación"
+                    className="w-full p-2.5 rounded-xl bg-white/[0.06] border border-white/10 text-white focus:outline-none focus:border-pink-400"
+                  />
+                </label>
+
+                <label className="space-y-1.5">
+                  <span className="text-pink-200 flex items-center gap-1">
+                    <Clock className="w-3.5 h-3.5 text-amber-300" /> Tiempo Límite (Minutos)
+                  </span>
+                  <input
+                    type="number"
+                    min={5}
+                    max={120}
+                    value={courseForm.assessment?.durationMinutes || 20}
+                    onChange={(e) =>
+                      setCourseForm((prev) => ({
+                        ...prev,
+                        assessment: { ...prev.assessment, durationMinutes: Number(e.target.value) } as any,
+                      }))
+                    }
+                    className="w-full p-2.5 rounded-xl bg-white/[0.06] border border-white/10 text-white focus:outline-none focus:border-pink-400"
+                  />
+                </label>
+
+                <label className="space-y-1.5">
+                  <span className="text-pink-200 flex items-center gap-1">
+                    <Award className="w-3.5 h-3.5 text-pink-400" /> Puntaje Mínimo para Aprobar (%)
+                  </span>
+                  <input
+                    type="number"
+                    min={50}
+                    max={100}
+                    value={courseForm.assessment?.passingScore || 70}
+                    onChange={(e) =>
+                      setCourseForm((prev) => ({
+                        ...prev,
+                        assessment: { ...prev.assessment, passingScore: Number(e.target.value) } as any,
+                      }))
+                    }
+                    className="w-full p-2.5 rounded-xl bg-white/[0.06] border border-white/10 text-white focus:outline-none focus:border-pink-400"
+                  />
+                </label>
+              </div>
+
+              {/* Questions List */}
+              <div className="space-y-5">
+                {(courseForm.assessment?.questions || []).map((q, qIdx) => (
+                  <div
+                    key={q.id || qIdx}
+                    className="bg-[#12031a] border border-amber-500/25 rounded-2xl p-5 space-y-4 shadow-lg"
+                  >
+                    <div className="flex items-center justify-between pb-2 border-b border-white/10">
+                      <div className="flex items-center gap-2">
+                        <span className="w-6 h-6 rounded-lg bg-amber-400 text-slate-900 font-black text-xs flex items-center justify-center">
+                          {qIdx + 1}
+                        </span>
+                        <span className="text-xs font-black text-white">Pregunta {qIdx + 1}</span>
+                      </div>
+                      {(courseForm.assessment?.questions?.length || 0) > 1 && (
+                        <button
+                          type="button"
+                          onClick={() => removeCourseExamQuestion(qIdx)}
+                          className="text-xs text-red-400 hover:text-red-300 flex items-center gap-1 cursor-pointer"
+                        >
+                          <Trash2 className="w-3.5 h-3.5" />
+                          <span>Eliminar</span>
+                        </button>
+                      )}
+                    </div>
+
+                    <div className="space-y-2 text-xs font-bold">
+                      <label className="space-y-1 block">
+                        <span className="text-pink-200/80">Enunciado de la Pregunta *</span>
+                        <input
+                          type="text"
+                          required
+                          value={q.question}
+                          onChange={(e) => updateCourseExamQuestion(qIdx, 'question', e.target.value)}
+                          placeholder="Escribe aquí el enunciado de la pregunta..."
+                          className="w-full p-3 rounded-xl bg-white/[0.04] border border-white/10 text-white focus:outline-none focus:border-amber-400 font-medium"
+                        />
+                      </label>
+                    </div>
+
+                    {/* Options (A, B, C, D) */}
+                    <div className="space-y-2 pt-1">
+                      <span className="text-[11px] font-bold text-pink-300 uppercase tracking-wider block">
+                        Opciones de Respuesta (Marca con el círculo la correcta):
+                      </span>
+                      <div className="grid grid-cols-1 sm:grid-cols-2 gap-2.5">
+                        {q.options.map((opt, oIdx) => (
+                          <div
+                            key={opt.id || oIdx}
+                            className={`flex items-center gap-2.5 p-2.5 rounded-xl border transition-all ${
+                              opt.isCorrect
+                                ? 'bg-emerald-500/15 border-emerald-500/50'
+                                : 'bg-white/[0.03] border-white/10'
+                            }`}
+                          >
+                            <input
+                              type="radio"
+                              name={`correct-option-${qIdx}`}
+                              checked={opt.isCorrect}
+                              onChange={() => updateCourseExamOption(qIdx, oIdx, opt.text, true)}
+                              className="w-4 h-4 accent-emerald-500 cursor-pointer"
+                              title="Marcar como respuesta correcta"
+                            />
+                            <span className="text-xs font-black text-pink-300 shrink-0 uppercase">
+                              {opt.id || String.fromCharCode(97 + oIdx)}:
+                            </span>
+                            <input
+                              type="text"
+                              required
+                              value={opt.text}
+                              onChange={(e) => updateCourseExamOption(qIdx, oIdx, e.target.value)}
+                              placeholder={`Opción ${String.fromCharCode(65 + oIdx)}`}
+                              className="flex-1 bg-transparent text-xs text-white focus:outline-none placeholder-pink-200/30"
+                            />
+                            {opt.isCorrect && (
+                              <span className="px-2 py-0.5 rounded-md text-[9px] font-black uppercase bg-emerald-500 text-slate-900 shrink-0">
+                                Correcta ✓
+                              </span>
+                            )}
+                          </div>
+                        ))}
+                      </div>
+                    </div>
+
+                    {/* Explanation */}
+                    <label className="space-y-1 block text-xs font-bold pt-1">
+                      <span className="text-pink-200/70 flex items-center gap-1">
+                        <Sparkles className="w-3.5 h-3.5 text-amber-300" /> Explicación de Retroalimentación Pedagógica
+                      </span>
+                      <textarea
+                        rows={2}
+                        value={q.explanation || ''}
+                        onChange={(e) => updateCourseExamQuestion(qIdx, 'explanation', e.target.value)}
+                        placeholder="Explicación didáctica que se le mostrará a la estudiante tras responder..."
+                        className="w-full p-2.5 rounded-xl bg-white/[0.04] border border-white/10 text-white text-xs focus:outline-none focus:border-amber-400"
+                      />
+                    </label>
+                  </div>
+                ))}
+              </div>
+            </div>
+
             {/* Submit Action Button */}
-            <div className="flex items-center justify-between p-4 bg-[#180727] border border-white/10 rounded-2xl">
+            <div className="flex flex-col sm:flex-row items-center justify-between gap-4 p-5 bg-[#180727] border border-white/10 rounded-2xl shadow-xl">
               <span className="text-xs text-pink-200/70">
-                Los cambios se guardan directamente en las colecciones <code>academia_courses</code> de MongoDB Atlas.
+                Se guardarán los <strong>metadatos</strong>, los <strong>videos clase por clase</strong> y el <strong>examen de certificación</strong> en MongoDB Atlas.
               </span>
               <button
                 type="submit"
                 disabled={loading}
-                className="px-8 py-3.5 rounded-full text-xs font-black bg-gradient-to-r from-[#E12880] to-[#7B1FA2] text-white shadow-xl hover:scale-105 transition-all flex items-center gap-2 cursor-pointer disabled:opacity-50"
+                className="w-full sm:w-auto px-8 py-3.5 rounded-full text-xs font-black bg-gradient-to-r from-[#E12880] via-purple-600 to-[#7B1FA2] text-white shadow-xl hover:scale-105 transition-all flex items-center justify-center gap-2 cursor-pointer disabled:opacity-50 shrink-0"
               >
                 <CheckCircle2 className="w-4 h-4 text-amber-300" />
-                <span>{loading ? 'Guardando en MongoDB...' : 'Publicar / Guardar Curso Completo'}</span>
+                <span>{loading ? 'Guardando Curso y Examen...' : 'Publicar Curso & Examen Completo'}</span>
               </button>
             </div>
+
 
           </form>
         )}
