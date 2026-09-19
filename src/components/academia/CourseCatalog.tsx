@@ -1,177 +1,175 @@
 'use client';
-import React, { useEffect, useState } from 'react';
-import { BookOpen, Star, Clock, Lock, Play, Award, Sparkles, CheckCircle2, ChevronRight, Filter } from 'lucide-react';
-import CoursePlayerModal, { CourseData } from './CoursePlayerModal';
+import React, { useState, useEffect } from 'react';
+import Link from 'next/link';
+import { useRouter } from 'next/navigation';
+import { BookOpen, Star, Clock, Lock, Play, Award, Sparkles, Filter, CheckCircle2, ChevronRight, Search, Zap } from 'lucide-react';
+import { INITIAL_COURSES } from '@/app/api/academia/courses/route';
 
 interface Props {
   user: { name: string; email: string } | null;
   onOpenAuth: () => void;
+  selectedCategoryProp?: string;
+  searchQueryProp?: string;
 }
 
-const COURSES: CourseData[] = [
-  {
-    id: 'course-1',
-    title: 'De la Idea al Negocio: Plan Financiero para Emprendedoras',
-    instructor: 'Dra. Sorelvis Murillo',
-    category: 'Autonomía Financiera',
-    modules: [
-      {
-        title: 'Fundamentos del Emprendimiento Femenino',
-        lessons: [
-          { id: '1-1', title: '1.1 Definición de la Idea de Negocio', duration: '12 min', isPreview: true },
-          { id: '1-2', title: '1.2 Costos Fijos vs. Variables', duration: '18 min' },
-          { id: '1-3', title: '1.3 Elaboración de Presupuesto Inicial', duration: '22 min' },
-        ],
-      },
-      {
-        title: 'Estrategia de Ventas y Canales Digitales',
-        lessons: [
-          { id: '1-4', title: '2.1 Definición de Precio de Venta', duration: '15 min' },
-          { id: '1-5', title: '2.2 Microcréditos y Gestión de Capital', duration: '20 min' },
-        ],
-      },
-    ],
-  },
-  {
-    id: 'course-2',
-    title: 'Ventas en WhatsApp Business & Marketing Digital',
-    instructor: 'Mg. Karen Ramos',
-    category: 'Autonomía Financiera',
-    modules: [
-      {
-        title: 'Configuración de WhatsApp Business',
-        lessons: [
-          { id: '2-1', title: '1.1 Catálogo de Productos Móvil', duration: '14 min', isPreview: true },
-          { id: '2-2', title: '1.2 Mensajes Automatizados de Bienvenida', duration: '16 min' },
-        ],
-      },
-      {
-        title: 'Redes Sociales para Emprendedoras',
-        lessons: [
-          { id: '2-3', title: '2.1 Creación de Contenido en Canva', duration: '25 min' },
-          { id: '2-4', title: '2.2 Estrategia de Publicaciones en Instagram', duration: '20 min' },
-        ],
-      },
-    ],
-  },
-  {
-    id: 'course-3',
-    title: 'Derechos Humanos y Ley 1257 en Colombia',
-    instructor: 'Abg. Carlos Mendoza',
-    category: 'Derechos & Liderazgo',
-    modules: [
-      {
-        title: 'Marco Normativo de la Ley 1257',
-        lessons: [
-          { id: '3-1', title: '1.1 Definición de Tipos de Violencia', duration: '15 min', isPreview: true },
-          { id: '3-2', title: '1.2 Rutas de Atención Institucional en Cartagena', duration: '24 min' },
-        ],
-      },
-      {
-        title: 'Mecanismos de Protección Urgente',
-        lessons: [
-          { id: '3-3', title: '2.1 Redacción de Tutela para Salud y Vida', duration: '28 min' },
-          { id: '3-4', title: '2.2 Medidas de Alejamiento Defensoriales', duration: '20 min' },
-        ],
-      },
-    ],
-  },
-  {
-    id: 'course-4',
-    title: 'Salud Sexual, Reproductiva y Sentencia C-055',
-    instructor: 'Dra. María Patricia Gómez',
-    category: 'Salud & Bienestar',
-    modules: [
-      {
-        title: 'Derechos Reproductivos en Colombia',
-        lessons: [
-          { id: '4-1', title: '1.1 Entendiendo la Sentencia C-055', duration: '18 min', isPreview: true },
-          { id: '4-2', title: '1.2 Métodos Anticonceptivos de Larga Duración', duration: '22 min' },
-        ],
-      },
-      {
-        title: 'Prevención de ITS y Autocuidado',
-        lessons: [
-          { id: '4-3', title: '2.1 Profilaxis de Emergencia', duration: '16 min' },
-          { id: '4-4', title: '2.2 Bienestar Ginecológico Integral', duration: '20 min' },
-        ],
-      },
-    ],
-  },
-  {
-    id: 'course-5',
-    title: 'Computación Básica e Inteligencia Artificial para la Vida',
-    instructor: 'Ing. Alejandro Silva',
-    category: 'Habilidades Digitales',
-    modules: [
-      {
-        title: 'Uso de Herramientas Digitales Diarias',
-        lessons: [
-          { id: '5-1', title: '1.1 Navegación Segura e Email', duration: '15 min', isPreview: true },
-          { id: '5-2', title: '1.2 Introducción a ChatGPT para Emprendimientos', duration: '25 min' },
-        ],
-      },
-    ],
-  },
-];
-
-export default function CourseCatalog({ user, onOpenAuth }: Props) {
-  const [selectedCategory, setSelectedCategory] = useState<string>('Todos');
-  const [selectedCourse, setSelectedCourse] = useState<CourseData | null>(null);
-  const [courses, setCourses] = useState<CourseData[]>(COURSES);
+export default function CourseCatalog({
+  user,
+  onOpenAuth,
+  selectedCategoryProp,
+  searchQueryProp,
+}: Props) {
+  const router = useRouter();
+  const [courses, setCourses] = useState<any[]>(INITIAL_COURSES);
+  const [selectedSortTab, setSelectedSortTab] = useState<'Todos' | 'Populares' | 'Recientes' | 'Más vistos'>('Todos');
+  const [selectedCategory, setSelectedCategory] = useState<string>(selectedCategoryProp || 'Todos');
+  const [selectedLevel, setSelectedLevel] = useState<string>('Todos');
+  const [showFiltersModal, setShowFiltersModal] = useState<boolean>(false);
+  const [localSearch, setLocalSearch] = useState<string>(searchQueryProp || '');
 
   useEffect(() => {
-    fetch('/api/academia/courses').then((response) => response.json()).then((payload) => {
-      if (!payload?.courses?.length) return;
-      const remoteCourses: CourseData[] = payload.courses.map((course: any) => ({
-        ...course,
-        modules: course.modules || [{ title: 'Contenido del curso', lessons: course.lessons || [] }],
-      }));
-      setCourses(remoteCourses);
-    }).catch(() => undefined);
+    if (selectedCategoryProp) {
+      setSelectedCategory(selectedCategoryProp);
+    }
+  }, [selectedCategoryProp]);
+
+  useEffect(() => {
+    if (searchQueryProp !== undefined) {
+      setLocalSearch(searchQueryProp);
+    }
+  }, [searchQueryProp]);
+
+  useEffect(() => {
+    fetch('/api/academia/courses')
+      .then((res) => res.json())
+      .then((data) => {
+        if (data?.courses?.length) {
+          setCourses(data.courses);
+        }
+      })
+      .catch(() => undefined);
   }, []);
 
-  const categories = ['Todos', 'Autonomía Financiera', 'Derechos & Liderazgo', 'Salud & Bienestar', 'Habilidades Digitales'];
+  const categories = [
+    'Todos',
+    'Desarrollo Personal',
+    'Habilidades Digitales',
+    'Emprendimiento',
+    'Liderazgo',
+    'Finanzas',
+    'Arte y Cultura',
+  ];
 
-  const filteredCourses = selectedCategory === 'Todos'
-    ? courses
-    : courses.filter((c) => c.category === selectedCategory);
+  // Filtering & Sorting
+  const filteredCourses = courses.filter((course) => {
+    const matchesCategory =
+      selectedCategory === 'Todos' ||
+      course.category.toLowerCase().includes(selectedCategory.toLowerCase()) ||
+      selectedCategory.toLowerCase().includes(course.category.toLowerCase());
 
-  const handleLaunchCourse = (course: CourseData) => {
+    const matchesLevel =
+      selectedLevel === 'Todos' || course.level === selectedLevel;
+
+    const matchesSearch =
+      !localSearch ||
+      course.title.toLowerCase().includes(localSearch.toLowerCase()) ||
+      course.instructor.toLowerCase().includes(localSearch.toLowerCase()) ||
+      course.category.toLowerCase().includes(localSearch.toLowerCase());
+
+    return matchesCategory && matchesLevel && matchesSearch;
+  });
+
+  const sortedCourses = [...filteredCourses].sort((a, b) => {
+    if (selectedSortTab === 'Populares') return (b.studentsCount || 0) - (a.studentsCount || 0);
+    if (selectedSortTab === 'Más vistos') return (b.reviewsCount || 0) - (a.reviewsCount || 0);
+    if (selectedSortTab === 'Recientes') return (b.slug || '').localeCompare(a.slug || '');
+    return 0;
+  });
+
+  const handleCourseClick = (slug: string) => {
     if (!user) {
       onOpenAuth();
     } else {
-      setSelectedCourse(course);
+      router.push(`/academia/aprender/${slug}`);
     }
   };
 
   return (
-    <section id="catalogo" className="py-16 px-4 sm:px-8 max-w-7xl mx-auto space-y-10">
-
-      {/* Header Title */}
-      <div className="text-center max-w-3xl mx-auto space-y-3">
-        <div className="inline-flex items-center gap-1.5 px-4 py-1.5 rounded-full text-xs font-extrabold uppercase tracking-wider text-amber-300 bg-[#52166F]/80 border border-pink-400/30 shadow-sm">
-          <Sparkles className="w-4 h-4 text-amber-300" />
-          <span>Catálogo Formativo Institucional</span>
+    <section id="cursos" className="py-12 sm:py-16 px-4 sm:px-6 lg:px-8 max-w-7xl mx-auto space-y-8">
+      
+      {/* Header with Title & Search on Tablet/Mobile */}
+      <div className="flex flex-col md:flex-row md:items-end justify-between gap-6 pb-4 border-b border-white/10">
+        <div>
+          <div className="inline-flex items-center gap-1.5 px-3 py-1 rounded-full text-xs font-extrabold uppercase tracking-wider text-pink-300 bg-pink-500/10 border border-pink-500/20 mb-3">
+            <Sparkles className="w-3.5 h-3.5 text-amber-300" />
+            <span>Marketplace Formativo Institucional</span>
+          </div>
+          <h2 className="text-2xl sm:text-4xl font-black text-white tracking-tight">
+            Explorar Todos los Cursos
+          </h2>
+          <p className="text-xs sm:text-sm text-pink-100/70 mt-1 max-w-2xl">
+            Programas con certificación oficial diseñados para el empoderamiento económico, digital y social.
+          </p>
         </div>
-        <h2 className="text-3xl sm:text-5xl font-black text-white tracking-tight">
-          Rutas de Aprendizaje SendaAcademia
-        </h2>
-        <p className="text-sm sm:text-base text-pink-100/80 leading-relaxed">
-          Explora los programas formativos diseñados por la Fundación Senda Mujer para potenciar la autonomía económica, los derechos humanos y la salud en Cartagena.
-        </p>
+
+        {/* Search Bar on Tablet & Mobile */}
+        <div className="flex items-center gap-2 w-full md:w-auto">
+          <div className="relative flex-1 md:w-72">
+            <Search className="absolute left-3.5 top-1/2 -translate-y-1/2 w-4 h-4 text-pink-300/60" />
+            <input
+              type="text"
+              value={localSearch}
+              onChange={(e) => setLocalSearch(e.target.value)}
+              placeholder="Buscar por curso o tema..."
+              className="w-full pl-9 pr-4 py-2 text-xs rounded-full bg-white/[0.06] border border-white/10 text-white placeholder-pink-200/40 focus:outline-none focus:border-pink-400"
+            />
+          </div>
+          <button
+            onClick={() => setShowFiltersModal(!showFiltersModal)}
+            className={`px-3.5 py-2 rounded-full text-xs font-bold flex items-center gap-1.5 transition-all border ${
+              showFiltersModal || selectedLevel !== 'Todos'
+                ? 'bg-pink-600 text-white border-pink-400'
+                : 'bg-white/[0.06] text-pink-200 border-white/10 hover:bg-white/10'
+            }`}
+          >
+            <Filter className="w-3.5 h-3.5" />
+            <span className="hidden sm:inline">Filtros</span>
+          </button>
+        </div>
       </div>
 
-      {/* Category Tabs */}
-      <div className="flex items-center gap-2 overflow-x-auto pb-2 scrollbar-none justify-start sm:justify-center">
+      {/* Sort Tabs matching Tablet view in blueprint */}
+      <div className="flex items-center justify-between gap-4 flex-wrap">
+        <div className="flex items-center gap-2 overflow-x-auto pb-1 scrollbar-none">
+          {(['Todos', 'Populares', 'Recientes', 'Más vistos'] as const).map((tab) => (
+            <button
+              key={tab}
+              onClick={() => setSelectedSortTab(tab)}
+              className={`px-4 py-2 rounded-full text-xs font-bold transition-all whitespace-nowrap cursor-pointer ${
+                selectedSortTab === tab
+                  ? 'bg-white text-[#12031a] shadow-lg font-black'
+                  : 'bg-white/[0.05] text-pink-100/70 hover:text-white hover:bg-white/10 border border-white/5'
+              }`}
+            >
+              {tab}
+            </button>
+          ))}
+        </div>
+
+        <span className="text-xs text-pink-200/60 font-medium">
+          Mostrando <strong className="text-white">{sortedCourses.length}</strong> cursos disponibles
+        </span>
+      </div>
+
+      {/* Category Pills */}
+      <div className="flex items-center gap-2 overflow-x-auto pb-2 scrollbar-none">
         {categories.map((cat) => (
           <button
             key={cat}
             onClick={() => setSelectedCategory(cat)}
-            className={`px-4 py-2.5 rounded-full text-xs font-extrabold whitespace-nowrap transition-all cursor-pointer ${
+            className={`px-3.5 py-1.5 rounded-full text-xs font-bold whitespace-nowrap transition-all cursor-pointer ${
               selectedCategory === cat
-                ? 'bg-gradient-to-r from-[#E12880] to-[#52166F] text-white shadow-lg border border-pink-400/40 scale-[1.02]'
-                : 'bg-[#270538] text-pink-200/80 hover:bg-[#3B0852] hover:text-white border border-pink-500/20'
+                ? 'bg-gradient-to-r from-[#E12880] to-[#7B1FA2] text-white shadow-md border border-pink-400/30'
+                : 'bg-[#1b0a26] text-pink-200/70 hover:bg-white/10 hover:text-white border border-white/10'
             }`}
           >
             {cat}
@@ -179,94 +177,114 @@ export default function CourseCatalog({ user, onOpenAuth }: Props) {
         ))}
       </div>
 
-      {/* Course Grid */}
-      <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-6">
-        {filteredCourses.map((course) => {
-          const totalLessons = course.modules.reduce((acc, m) => acc + m.lessons.length, 0);
+      {/* Course Grid matching Blueprint */}
+      <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-4 gap-6">
+        {sortedCourses.map((course) => {
+          const totalLessons = course.modules?.reduce(
+            (acc: number, m: any) => acc + (m.lessons?.length || 0),
+            0
+          ) || 6;
 
           return (
             <div
-              key={course.id}
-              className="bg-gradient-to-b from-[#270538] to-[#3B0852] border border-pink-500/30 rounded-3xl p-6 flex flex-col justify-between transition-all duration-300 hover:border-pink-400 hover:shadow-2xl hover:-translate-y-1.5 group relative overflow-hidden"
+              key={course.slug || course.id}
+              className="group bg-[#1a0726] border border-white/10 hover:border-pink-400/50 rounded-2xl overflow-hidden flex flex-col justify-between transition-all duration-300 hover:shadow-2xl hover:shadow-pink-900/20 hover:-translate-y-1 relative"
             >
-              <div className="space-y-4">
-                <div className="flex items-center justify-between">
-                  <span className="text-[10px] font-extrabold uppercase tracking-wider px-3 py-1 rounded-full text-pink-200 bg-[#52166F] border border-pink-400/30">
+              {/* Thumbnail Container */}
+              <div className="relative aspect-[16/10] overflow-hidden bg-[#2d0e3e]">
+                <img
+                  src={course.thumbnailUrl || 'https://images.unsplash.com/photo-1573496359142-b8d87734a5a2?auto=format&fit=crop&w=800&q=80'}
+                  alt={course.title}
+                  className="w-full h-full object-cover group-hover:scale-105 transition-transform duration-500"
+                />
+                
+                {/* Badge Tag */}
+                <div className="absolute top-2.5 left-2.5">
+                  <span className={`px-2.5 py-0.5 rounded-md text-[10px] font-black uppercase tracking-wider text-white shadow-md ${
+                    course.badge === 'Popular'
+                      ? 'bg-pink-600'
+                      : course.badge === 'Nuevo'
+                      ? 'bg-violet-600'
+                      : 'bg-amber-500 text-slate-900'
+                  }`}>
+                    {course.badge || 'Popular'}
+                  </span>
+                </div>
+
+                {/* Rating Overlay */}
+                <div className="absolute bottom-2.5 right-2.5 bg-black/70 backdrop-blur-md px-2 py-0.5 rounded-md flex items-center gap-1 text-[11px] font-extrabold text-amber-300 border border-white/10">
+                  <Star className="w-3 h-3 fill-amber-300" />
+                  <span>{course.rating || 4.9}</span>
+                  <span className="text-[10px] text-pink-200/60 font-normal">({(course.reviewsCount || 1200) > 999 ? `${((course.reviewsCount || 1200)/1000).toFixed(1)}k` : course.reviewsCount})</span>
+                </div>
+              </div>
+
+              {/* Course Info */}
+              <div className="p-4 flex-1 flex flex-col justify-between space-y-3">
+                <div className="space-y-1.5">
+                  <span className="text-[10px] font-bold text-pink-300 uppercase tracking-wider">
                     {course.category}
                   </span>
-                  <div className="flex items-center gap-1 text-xs text-amber-300 font-extrabold">
-                    <Star className="w-3.5 h-3.5 fill-amber-300" />
-                    <span>4.9</span>
-                  </div>
+                  <h3 className="text-sm font-black text-white group-hover:text-pink-300 transition-colors line-clamp-2 leading-snug">
+                    {course.title}
+                  </h3>
+                  <p className="text-[11px] text-pink-100/60 line-clamp-2">
+                    {course.subtitle || course.description}
+                  </p>
                 </div>
 
-                <h3 className="text-lg font-extrabold text-white group-hover:text-amber-300 transition-colors leading-snug">
-                  {course.title}
-                </h3>
-
-                <p className="text-xs text-pink-100/70">
-                  Instructora: <strong className="text-amber-300 font-extrabold">{course.instructor}</strong>
-                </p>
-
-                {/* Modules breakdown */}
-                <div className="space-y-2 pt-3 border-t border-pink-500/20">
-                  <div className="flex items-center justify-between text-[11px] font-semibold text-pink-200">
-                    <span className="flex items-center gap-1">
-                      <BookOpen className="w-3.5 h-3.5 text-[#E12880]" /> {course.modules.length} Módulos
-                    </span>
-                    <span className="flex items-center gap-1">
-                      <Clock className="w-3.5 h-3.5 text-amber-300" /> {totalLessons} Lecciones
-                    </span>
-                  </div>
-
-                  <div className="space-y-1.5 pt-1">
-                    {course.modules.flatMap((m) => m.lessons).slice(0, 2).map((les, i) => (
-                      <div key={i} className="flex items-center justify-between text-xs text-pink-100 bg-black/20 p-2.5 rounded-xl border border-white/5">
-                        <span className="truncate pr-2">{les.title}</span>
-                        {!user ? (
-                          <Lock className="w-3.5 h-3.5 text-amber-400 shrink-0" />
-                        ) : (
-                          <Play className="w-3.5 h-3.5 text-emerald-400 shrink-0" />
-                        )}
-                      </div>
-                    ))}
-                  </div>
+                {/* Metadata details */}
+                <div className="pt-2 border-t border-white/5 flex items-center justify-between text-[11px] text-pink-200/70 font-medium">
+                  <span className="flex items-center gap-1">
+                    <Clock className="w-3 h-3 text-amber-300" />
+                    {course.durationWeeks || course.totalDuration || '6 semanas'}
+                  </span>
+                  <span className="flex items-center gap-1">
+                    <BookOpen className="w-3 h-3 text-pink-400" />
+                    {totalLessons} lecciones
+                  </span>
                 </div>
-              </div>
 
-              {/* Action button */}
-              <div className="pt-6">
-                {user ? (
+                {/* Action CTA: Opens Dedicated Route WITHOUT Popups */}
+                <div className="pt-1">
                   <button
-                    onClick={() => handleLaunchCourse(course)}
-                    className="w-full py-3.5 rounded-full text-xs font-extrabold text-white bg-gradient-to-r from-[#E12880] to-[#52166F] border border-pink-400/40 shadow-lg hover:scale-[1.02] transition-all flex items-center justify-center gap-2 cursor-pointer"
+                    onClick={() => handleCourseClick(course.slug)}
+                    className="w-full py-2.5 px-3 rounded-xl text-xs font-extrabold text-white bg-gradient-to-r from-[#E12880] to-[#7B1FA2] hover:from-[#c2185b] hover:to-[#4a148c] shadow-md transition-all flex items-center justify-center gap-1.5 cursor-pointer group-hover:shadow-pink-600/30"
                   >
-                    <Play className="w-4 h-4 text-amber-300" />
-                    <span>Acceder al Aula Virtual</span>
+                    {user ? (
+                      <>
+                        <Play className="w-3.5 h-3.5 fill-current" />
+                        <span>Entrar a la clase</span>
+                      </>
+                    ) : (
+                      <>
+                        <Lock className="w-3.5 h-3.5 text-amber-300" />
+                        <span>Ver curso gratis</span>
+                      </>
+                    )}
                   </button>
-                ) : (
-                  <button
-                    onClick={onOpenAuth}
-                    className="w-full py-3.5 rounded-full text-xs font-extrabold text-amber-300 bg-[#52166F] border border-pink-400/30 hover:bg-[#3B0852] transition-all flex items-center justify-center gap-2 cursor-pointer shadow-sm"
-                  >
-                    <Lock className="w-4 h-4 text-amber-300" />
-                    <span>Iniciar Sesión para Acceder</span>
-                  </button>
-                )}
-              </div>
+                </div>
 
+              </div>
             </div>
           );
         })}
       </div>
 
-      {selectedCourse && user && (
-        <CoursePlayerModal
-          course={selectedCourse}
-          userName={user.name}
-          onClose={() => setSelectedCourse(null)}
-        />
+      {sortedCourses.length === 0 && (
+        <div className="text-center py-16 bg-white/[0.02] border border-white/5 rounded-3xl p-8">
+          <BookOpen className="w-12 h-12 text-pink-400/40 mx-auto mb-3" />
+          <h4 className="text-base font-bold text-white">No encontramos cursos con estos filtros</h4>
+          <p className="text-xs text-pink-200/60 mt-1">Prueba seleccionando otra categoría o limpiando la búsqueda.</p>
+          <button
+            onClick={() => { setSelectedCategory('Todos'); setSelectedLevel('Todos'); setLocalSearch(''); }}
+            className="mt-4 px-4 py-2 rounded-full text-xs font-bold bg-white/10 text-white hover:bg-white/20"
+          >
+            Restablecer filtros
+          </button>
+        </div>
       )}
+
     </section>
   );
 }

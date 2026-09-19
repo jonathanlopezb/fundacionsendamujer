@@ -1,23 +1,54 @@
 'use client';
 import React, { useState, useEffect } from 'react';
+import Link from 'next/link';
+import { useRouter } from 'next/navigation';
 import AcademiaNavbar from '@/components/academia/AcademiaNavbar';
-import LiveClassBanner from '@/components/academia/LiveClassBanner';
-import CharlaDelDia from '@/components/CharlaDelDia';
 import CourseCatalog from '@/components/academia/CourseCatalog';
+import SendaLiveSection from '@/components/academia/SendaLiveSection';
+import CommunitySection from '@/components/academia/CommunitySection';
+import MobileBottomNav from '@/components/academia/MobileBottomNav';
 import AuthModal from '@/components/academia/AuthModal';
 import AcademiaFooter from '@/components/academia/AcademiaFooter';
-import AcademiaDashboard from '@/components/academia/AcademiaDashboard';
-import { ArrowRight, BadgeCheck, BookOpen, BriefcaseBusiness, Check, HeartHandshake, Sparkles, Users } from 'lucide-react';
-import Link from 'next/link';
+import CharlaDelDia from '@/components/CharlaDelDia';
+import {
+  ArrowRight,
+  BookOpen,
+  Sparkles,
+  Users,
+  Radio,
+  Award,
+  HeartHandshake,
+  Search,
+  Star,
+  Clock,
+  Play,
+  CheckCircle2,
+  TrendingUp,
+  Heart,
+  Palette,
+  Laptop,
+  Sprout,
+  Crown,
+  Coins,
+  ShieldCheck,
+  ChevronRight,
+} from 'lucide-react';
+import { INITIAL_COURSES } from '@/app/api/academia/courses/route';
 
-export default function AcademiaPage() {
+export default function AcademiaMainPage() {
+  const router = useRouter();
+  const [activeTab, setActiveTab] = useState('Inicio');
   const [authModalOpen, setAuthModalOpen] = useState(false);
   const [authMode, setAuthMode] = useState<'login' | 'register'>('login');
   const [user, setUser] = useState<{ name: string; email: string } | null>(null);
+  const [searchQuery, setSearchQuery] = useState('');
+  const [selectedCategory, setSelectedCategory] = useState('Todos');
 
   useEffect(() => {
     const saved = localStorage.getItem('senda_academia_user');
-    if (saved) setUser(JSON.parse(saved));
+    if (saved) {
+      setUser(JSON.parse(saved));
+    }
   }, []);
 
   const handleLogin = (name: string, email: string) => {
@@ -37,15 +68,201 @@ export default function AcademiaPage() {
     setAuthModalOpen(true);
   };
 
+  const handleSearch = (q: string) => {
+    setSearchQuery(q);
+    setActiveTab('Cursos');
+  };
+
+  const handleCategoryClick = (cat: string) => {
+    setSelectedCategory(cat);
+    setActiveTab('Cursos');
+  };
+
   return (
-    <div className="min-h-screen overflow-hidden" style={{ background: '#0a0a0f', color: '#f0f0f5' }}>
-      <AcademiaNavbar user={user} onOpenAuth={openAuth} onLogout={handleLogout} />
-      <AcademiaHero user={user} onOpenAuth={() => openAuth('register')} />
-      {user && <AcademiaDashboard user={user} onBrowse={() => document.getElementById('catalogo')?.scrollIntoView({ behavior: 'smooth' })} />}
-      <LiveClassBanner onOpenAuth={() => openAuth('register')} user={user} />
-      <CharlaDelDia />
-      <CourseCatalog user={user} onOpenAuth={() => openAuth('login')} />
+    <div className="min-h-screen bg-[#0c0414] text-slate-100 flex flex-col selection:bg-pink-500 selection:text-white pb-16 md:pb-0">
+      
+      {/* Navbar matching Blueprint */}
+      <AcademiaNavbar
+        user={user}
+        activeTab={activeTab}
+        onSelectTab={setActiveTab}
+        onOpenAuth={openAuth}
+        onLogout={handleLogout}
+        onSearch={handleSearch}
+      />
+
+      {/* Main View Router depending on Active Tab */}
+      <main className="flex-1">
+        
+        {/* TAB 1: INICIO (Default Landing matching Blueprint) */}
+        {activeTab === 'Inicio' && (
+          <>
+            {/* Student Personalized Greeting on Mobile / Active User */}
+            {user && (
+              <section className="bg-gradient-to-r from-[#240833] via-[#1b0626] to-[#12031a] border-b border-white/10 px-4 sm:px-8 py-6 max-w-7xl mx-auto w-full">
+                <div className="flex flex-col md:flex-row md:items-center justify-between gap-4">
+                  <div>
+                    <h2 className="text-xl sm:text-2xl font-black text-white flex items-center gap-2">
+                      <span>¡Hola, {user.name.split(' ')[0]}!</span>
+                      <span className="text-xl">👋</span>
+                    </h2>
+                    <p className="text-xs sm:text-sm text-pink-200/80 mt-0.5">
+                      Tu progreso también es un acto de amor propio y autonomía.
+                    </p>
+                  </div>
+
+                  {/* Progress bar card */}
+                  <div className="bg-white/[0.05] border border-white/10 p-4 rounded-2xl flex flex-col sm:flex-row sm:items-center gap-4 min-w-[280px]">
+                    <div className="flex-1 space-y-1.5">
+                      <div className="flex justify-between text-xs font-bold">
+                        <span className="text-pink-200">Mi progreso</span>
+                        <span className="text-amber-300">3 de 5 lecciones (60%)</span>
+                      </div>
+                      <div className="h-2.5 w-full bg-white/10 rounded-full overflow-hidden">
+                        <div className="h-full bg-gradient-to-r from-[#E12880] to-amber-400 rounded-full w-[60%]" />
+                      </div>
+                    </div>
+                    <Link
+                      href="/academia/aprender/marketing-digital-emprendedoras"
+                      className="px-4 py-2 rounded-xl text-xs font-black bg-gradient-to-r from-[#E12880] to-[#7B1FA2] text-white text-center hover:opacity-90 shadow-md"
+                    >
+                      Continuar clase
+                    </Link>
+                  </div>
+                </div>
+              </section>
+            )}
+
+            {/* Hero Section matching Blueprint Vista Escritorio */}
+            <HeroSection
+              onSearch={handleSearch}
+              onOpenAuth={() => openAuth('register')}
+              user={user}
+            />
+
+            {/* Category Circles matching Blueprint */}
+            <CategoriesSection onSelectCategory={handleCategoryClick} />
+
+            {/* Featured Courses matching Blueprint */}
+            <FeaturedCoursesSection
+              user={user}
+              onOpenAuth={() => openAuth('login')}
+              onViewAll={() => setActiveTab('Cursos')}
+            />
+
+            {/* Live Masterclass Preview Section */}
+            <section className="py-12 px-4 sm:px-8 max-w-7xl mx-auto">
+              <div className="bg-gradient-to-br from-[#270838] to-[#12031a] border border-pink-500/30 rounded-3xl p-6 sm:p-10 flex flex-col lg:flex-row items-center justify-between gap-8 shadow-2xl">
+                <div className="space-y-4 max-w-xl">
+                  <div className="inline-flex items-center gap-2 px-3 py-1 rounded-full text-xs font-black bg-red-600 text-white shadow-lg animate-pulse">
+                    <span className="w-2 h-2 rounded-full bg-white" />
+                    TRANSMISIÓN EN VIVO AHORA
+                  </div>
+                  <h3 className="text-2xl sm:text-3xl font-black text-white">
+                    Marketing Digital en Vivo: Estrategias de Cierre
+                  </h3>
+                  <p className="text-xs sm:text-sm text-pink-100/80 leading-relaxed">
+                    Conéctate a nuestra masterclass interactiva con la instructora Laura Gómez. Resuelve dudas y descarga las plantillas de trabajo.
+                  </p>
+                  <div className="flex flex-wrap items-center gap-4 text-xs text-pink-200/80">
+                    <span className="flex items-center gap-1.5"><Clock className="w-4 h-4 text-amber-300" /> Hoy 5:00 p.m. - 6:30 p.m.</span>
+                    <span className="flex items-center gap-1.5"><Users className="w-4 h-4 text-pink-400" /> +1,240 conectadas</span>
+                  </div>
+                </div>
+
+                <div className="flex flex-col sm:flex-row gap-3 shrink-0 w-full lg:w-auto">
+                  <button
+                    onClick={() => setActiveTab('En vivo')}
+                    className="px-6 py-3.5 rounded-full text-xs font-black bg-gradient-to-r from-[#E12880] to-[#7B1FA2] text-white shadow-xl hover:scale-105 transition-all text-center cursor-pointer"
+                  >
+                    Entrar a la sala en vivo 🔴
+                  </button>
+                  <button
+                    onClick={() => setActiveTab('Cursos')}
+                    className="px-6 py-3.5 rounded-full text-xs font-bold bg-white/10 hover:bg-white/20 text-white border border-white/10 transition-all text-center"
+                  >
+                    Explorar catálogo completo
+                  </button>
+                </div>
+              </div>
+            </section>
+
+            {/* Charla del Día Component */}
+            <CharlaDelDia />
+
+            {/* Community Spotlight Banner */}
+            <section className="py-12 px-4 sm:px-8 max-w-7xl mx-auto">
+              <div className="bg-[#180727] border border-white/10 rounded-3xl p-6 sm:p-10 flex flex-col md:flex-row items-center justify-between gap-6">
+                <div className="space-y-2">
+                  <span className="text-xs font-extrabold uppercase tracking-widest text-pink-400">
+                    Red de Apoyo y Mentoring
+                  </span>
+                  <h3 className="text-2xl font-black text-white">
+                    Más que una plataforma, es una comunidad
+                  </h3>
+                  <p className="text-xs sm:text-sm text-pink-100/70 max-w-lg">
+                    Conoce a otras mujeres de Cartagena y Bolívar, comparte tus logros y recibe mentoría personalizada.
+                  </p>
+                </div>
+                <button
+                  onClick={() => setActiveTab('Comunidad')}
+                  className="px-6 py-3 rounded-full text-xs font-black bg-white text-slate-900 hover:bg-pink-100 transition-all shrink-0 cursor-pointer"
+                >
+                  Unirme a la conversación
+                </button>
+              </div>
+            </section>
+          </>
+        )}
+
+        {/* TAB 2: CURSOS (Full Catalog) */}
+        {activeTab === 'Cursos' && (
+          <CourseCatalog
+            user={user}
+            onOpenAuth={() => openAuth('login')}
+            selectedCategoryProp={selectedCategory}
+            searchQueryProp={searchQuery}
+          />
+        )}
+
+        {/* TAB 3: EN VIVO (SendaLive Room) */}
+        {activeTab === 'En vivo' && (
+          <SendaLiveSection
+            user={user}
+            onOpenAuth={() => openAuth('login')}
+          />
+        )}
+
+        {/* TAB 4: COMUNIDAD */}
+        {activeTab === 'Comunidad' && (
+          <CommunitySection
+            user={user}
+            onOpenAuth={() => openAuth('login')}
+          />
+        )}
+
+        {/* TAB 5: RECURSOS / CERTIFICADOS */}
+        {activeTab === 'Recursos' && (
+          <ResourcesSection
+            user={user}
+            onOpenAuth={() => openAuth('login')}
+          />
+        )}
+
+      </main>
+
+      {/* Footer */}
       <AcademiaFooter />
+
+      {/* Mobile Bottom Navigation matching Blueprint Vista Móvil */}
+      <MobileBottomNav
+        activeTab={activeTab}
+        onSelectTab={setActiveTab}
+        onOpenAuth={() => openAuth('login')}
+        user={user}
+      />
+
+      {/* Auth Modal */}
       {authModalOpen && (
         <AuthModal
           mode={authMode}
@@ -54,56 +271,364 @@ export default function AcademiaPage() {
           onSwitchMode={(m) => setAuthMode(m)}
         />
       )}
+
     </div>
   );
 }
 
-function AcademiaHero({ user, onOpenAuth }: { user: { name: string; email: string } | null; onOpenAuth: () => void }) {
+// ----------------------------------------------------
+// SUB-COMPONENTS FOR INICIO
+// ----------------------------------------------------
+
+function HeroSection({
+  onSearch,
+  onOpenAuth,
+  user,
+}: {
+  onSearch: (q: string) => void;
+  onOpenAuth: () => void;
+  user: any;
+}) {
+  const [localQuery, setLocalQuery] = useState('');
+
+  const handleSubmit = (e: React.FormEvent) => {
+    e.preventDefault();
+    if (localQuery.trim()) {
+      onSearch(localQuery.trim());
+    }
+  };
+
   return (
-    <section className="relative isolate border-b border-white/10 bg-[#120319]">
-      <div className="pointer-events-none absolute -left-24 top-8 h-80 w-80 rounded-full bg-fuchsia-600/20 blur-[110px]" />
-      <div className="pointer-events-none absolute right-0 top-0 h-[28rem] w-[28rem] rounded-full bg-violet-700/20 blur-[120px]" />
-      <div className="mx-auto grid max-w-7xl items-center gap-12 px-4 py-16 sm:px-8 lg:grid-cols-[1.08fr_.92fr] lg:py-24">
-        <div className="relative z-10">
-          <div className="mb-6 inline-flex items-center gap-2 rounded-full border border-fuchsia-300/25 bg-white/[.06] px-3 py-1.5 text-[11px] font-bold uppercase tracking-[.18em] text-fuchsia-200">
-            <Sparkles className="h-3.5 w-3.5 text-amber-300" /> Formación que se convierte en oportunidades
+    <section className="relative overflow-hidden bg-gradient-to-b from-[#160623] via-[#1b072c] to-[#0c0414] border-b border-white/10 py-12 sm:py-20 px-4 sm:px-6 lg:px-8">
+      {/* Background glow accents */}
+      <div className="pointer-events-none absolute -top-24 left-1/4 w-96 h-96 bg-pink-600/20 rounded-full blur-3xl" />
+      <div className="pointer-events-none absolute top-1/2 right-10 w-96 h-96 bg-violet-600/20 rounded-full blur-3xl" />
+
+      <div className="max-w-7xl mx-auto grid grid-cols-1 lg:grid-cols-12 gap-12 items-center relative z-10">
+        
+        {/* Left Column: Heading, Search & Bullet Points (7 cols) */}
+        <div className="lg:col-span-7 space-y-6">
+          
+          <div className="inline-flex items-center gap-2 px-3.5 py-1.5 rounded-full text-xs font-black uppercase tracking-wider text-pink-300 bg-pink-500/10 border border-pink-500/30 shadow-sm">
+            <Sparkles className="w-3.5 h-3.5 text-amber-300" />
+            <span>Aprende hoy, transforma mañana</span>
           </div>
-          <h1 className="max-w-3xl text-4xl font-black leading-[1.04] tracking-[-.04em] text-white sm:text-6xl lg:text-7xl">
-            Aprende. Conecta.<br /><span className="bg-gradient-to-r from-fuchsia-300 via-pink-400 to-amber-300 bg-clip-text text-transparent">Avanza a tu ritmo.</span>
+
+          <h1 className="text-3xl sm:text-5xl lg:text-6xl font-black text-white tracking-tight leading-[1.08]">
+            Tu crecimiento <br />
+            <span className="bg-gradient-to-r from-pink-400 via-fuchsia-300 to-amber-300 bg-clip-text text-transparent">
+              es nuestra misión
+            </span>
           </h1>
-          <p className="mt-6 max-w-xl text-base leading-8 text-fuchsia-100/75 sm:text-lg">
-            SendaAcademia es el campus gratuito de la Fundación Senda Mujer: cursos prácticos, acompañamiento humano y certificaciones para fortalecer tu autonomía.
+
+          <p className="text-sm sm:text-base text-pink-100/80 max-w-xl leading-relaxed">
+            Una plataforma educativa diseñada para potenciar tus habilidades, abrir nuevas oportunidades y construir el futuro que mereces.
           </p>
-          <div className="mt-8 flex flex-col gap-3 sm:flex-row">
-            <button onClick={() => user ? document.getElementById('catalogo')?.scrollIntoView({ behavior: 'smooth' }) : onOpenAuth()} className="inline-flex items-center justify-center gap-2 rounded-full bg-gradient-to-r from-pink-500 to-fuchsia-700 px-6 py-3.5 text-sm font-extrabold text-white shadow-[0_12px_35px_rgba(225,40,128,.3)] transition hover:-translate-y-0.5 hover:shadow-[0_16px_42px_rgba(225,40,128,.42)]">
-              {user ? 'Explorar mis cursos' : 'Crear mi cuenta gratis'} <ArrowRight className="h-4 w-4" />
+
+          {/* Big Search Bar matching Blueprint */}
+          <form onSubmit={handleSubmit} className="flex items-center gap-2 max-w-lg bg-white/[0.08] backdrop-blur-md p-1.5 rounded-full border border-white/20 shadow-xl focus-within:border-pink-400 transition-all">
+            <Search className="w-5 h-5 text-pink-300/70 ml-3 shrink-0" />
+            <input
+              type="text"
+              value={localQuery}
+              onChange={(e) => setLocalQuery(e.target.value)}
+              placeholder="¿Qué curso te gustaría aprender hoy?"
+              className="flex-1 bg-transparent px-2 py-2 text-xs sm:text-sm text-white placeholder-pink-200/50 focus:outline-none"
+            />
+            <button
+              type="submit"
+              className="px-6 py-2.5 rounded-full text-xs font-black bg-gradient-to-r from-[#E12880] to-[#7B1FA2] text-white shadow-md hover:scale-105 transition-transform cursor-pointer"
+            >
+              Buscar
             </button>
-            <Link href="#catalogo" className="inline-flex items-center justify-center gap-2 rounded-full border border-white/15 bg-white/[.05] px-6 py-3.5 text-sm font-bold text-white transition hover:bg-white/[.1]">
-              Ver rutas formativas <BookOpen className="h-4 w-4 text-amber-300" />
-            </Link>
+          </form>
+
+          {/* Quick Value Highlights List */}
+          <div className="pt-4 grid grid-cols-2 sm:grid-cols-3 gap-3 text-xs text-pink-200/80 font-semibold">
+            {[
+              { label: 'Cursos en línea', icon: BookOpen },
+              { label: 'Clases en vivo', icon: Radio },
+              { label: 'Certificados oficiales', icon: Award },
+              { label: 'Comunidad activa', icon: Users },
+              { label: 'Mentorías 1 a 1', icon: HeartHandshake },
+            ].map((item, idx) => {
+              const Icon = item.icon;
+              return (
+                <div key={idx} className="flex items-center gap-2 bg-white/[0.03] p-2 rounded-xl border border-white/5">
+                  <Icon className="w-4 h-4 text-pink-400 shrink-0" />
+                  <span className="truncate">{item.label}</span>
+                </div>
+              );
+            })}
           </div>
-          <div className="mt-8 flex flex-wrap items-center gap-x-6 gap-y-3 text-xs text-fuchsia-100/60">
-            {['100% gratuita', 'A tu ritmo', 'Certificación Senda'].map((item) => <span key={item} className="inline-flex items-center gap-2"><Check className="h-3.5 w-3.5 text-emerald-300" /> {item}</span>)}
+
+        </div>
+
+        {/* Right Column: Hero Graphic + Badge matching Blueprint (5 cols) */}
+        <div className="lg:col-span-5 relative">
+          <div className="relative rounded-3xl overflow-hidden border-2 border-pink-500/30 shadow-2xl bg-gradient-to-br from-[#270838] to-[#12031a]">
+            <img
+              src="https://images.unsplash.com/photo-1573496359142-b8d87734a5a2?auto=format&fit=crop&w=1000&q=80"
+              alt="Estudiante SendaMujer"
+              className="w-full h-80 sm:h-96 object-cover object-top"
+            />
+            <div className="absolute inset-0 bg-gradient-to-t from-[#0c0414] via-transparent to-transparent" />
+
+            {/* +50,000 Floating Badge matching Blueprint */}
+            <div className="absolute bottom-4 left-4 right-4 bg-[#1b072c]/90 backdrop-blur-md border border-pink-500/40 p-4 rounded-2xl shadow-xl flex items-center gap-3">
+              <div className="w-10 h-10 rounded-xl bg-gradient-to-tr from-[#E12880] to-amber-400 flex items-center justify-center font-black text-slate-900 shadow-md shrink-0">
+                +50k
+              </div>
+              <div>
+                <p className="text-sm font-black text-white">+50,000 Mujeres</p>
+                <p className="text-[11px] text-pink-200/70">ya están transformando sus vidas con Senda</p>
+              </div>
+            </div>
           </div>
         </div>
 
-        <div className="relative z-10">
-          <div className="rounded-[2rem] border border-white/15 bg-white/[.07] p-3 shadow-2xl backdrop-blur-xl">
-            <div className="rounded-[1.5rem] border border-fuchsia-300/15 bg-gradient-to-br from-[#3c0b54] via-[#24102f] to-[#120319] p-6 sm:p-8">
-              <div className="flex items-center justify-between"><span className="text-xs font-bold uppercase tracking-[.16em] text-fuchsia-200/70">Tu tablero de progreso</span><BadgeCheck className="h-5 w-5 text-amber-300" /></div>
-              <div className="mt-8 flex items-end justify-between"><div><p className="text-5xl font-black text-white">02</p><p className="mt-1 text-xs text-fuchsia-100/60">cursos disponibles para empezar</p></div><div className="rounded-2xl bg-emerald-400/10 px-3 py-2 text-right"><p className="text-lg font-black text-emerald-300">+24%</p><p className="text-[10px] font-bold uppercase tracking-wider text-emerald-200/60">avance promedio</p></div></div>
-              <div className="mt-7 h-3 overflow-hidden rounded-full bg-white/10"><div className="h-full w-[68%] rounded-full bg-gradient-to-r from-pink-500 to-amber-300" /></div>
-              <div className="mt-7 grid grid-cols-3 gap-3"><MiniMetric icon={<BookOpen />} value="05" label="rutas" /><MiniMetric icon={<Users />} value="420+" label="aprendices" /><MiniMetric icon={<BriefcaseBusiness />} value="100%" label="práctico" /></div>
-              <div className="mt-7 flex items-center gap-3 rounded-2xl border border-white/10 bg-black/20 p-3"><div className="flex -space-x-2">{['M','A','C'].map((letter, i) => <span key={letter} className={`flex h-8 w-8 items-center justify-center rounded-full border-2 border-[#2b1239] text-xs font-black text-white ${i === 0 ? 'bg-pink-500' : i === 1 ? 'bg-violet-500' : 'bg-amber-500'}`}>{letter}</span>)}</div><p className="text-xs leading-5 text-fuchsia-100/70"><strong className="text-white">Tu comunidad ya está aprendiendo.</strong><br />Conecta con mujeres de Cartagena y Bolívar.</p></div>
-            </div>
-          </div>
-          <div className="absolute -bottom-5 -left-5 hidden rounded-2xl border border-amber-300/25 bg-[#281033] px-4 py-3 shadow-xl sm:block"><div className="flex items-center gap-2 text-xs font-bold text-white"><HeartHandshake className="h-4 w-4 text-amber-300" /> Acompañamiento real</div></div>
-        </div>
       </div>
-      <div className="mx-auto grid max-w-7xl grid-cols-2 border-t border-white/10 px-4 sm:grid-cols-4 sm:px-8"><TrustStat value="05" label="rutas de aprendizaje" /><TrustStat value="24+" label="lecciones prácticas" /><TrustStat value="4.9/5" label="satisfacción" /><TrustStat value="0$" label="costo para ti" /></div>
     </section>
   );
 }
 
-function MiniMetric({ icon, value, label }: { icon: React.ReactNode; value: string; label: string }) { return <div className="rounded-2xl border border-white/10 bg-white/[.04] p-3"><div className="mb-2 text-fuchsia-300">{React.cloneElement(icon as React.ReactElement, { className: 'h-4 w-4' })}</div><p className="text-base font-black text-white">{value}</p><p className="text-[10px] text-fuchsia-100/55">{label}</p></div>; }
-function TrustStat({ value, label }: { value: string; label: string }) { return <div className="border-r border-white/10 px-3 py-5 last:border-0 sm:px-6"><p className="text-xl font-black text-white sm:text-2xl">{value}</p><p className="mt-1 text-[10px] font-bold uppercase tracking-wider text-fuchsia-100/50 sm:text-[11px]">{label}</p></div>; }
+function CategoriesSection({
+  onSelectCategory,
+}: {
+  onSelectCategory: (cat: string) => void;
+}) {
+  const categories = [
+    { name: 'Desarrollo Personal', icon: Heart, color: 'from-pink-500 to-rose-600' },
+    { name: 'Habilidades Digitales', icon: Laptop, color: 'from-blue-500 to-indigo-600' },
+    { name: 'Emprendimiento', icon: Sprout, color: 'from-emerald-500 to-teal-600' },
+    { name: 'Liderazgo', icon: Crown, color: 'from-violet-500 to-purple-600' },
+    { name: 'Bienestar', icon: Sparkles, color: 'from-amber-400 to-orange-500' },
+    { name: 'Finanzas', icon: Coins, color: 'from-cyan-500 to-blue-600' },
+    { name: 'Arte y Cultura', icon: Palette, color: 'from-fuchsia-500 to-pink-600' },
+  ];
+
+  return (
+    <section className="py-12 px-4 sm:px-6 lg:px-8 max-w-7xl mx-auto space-y-6">
+      <div className="text-center space-y-2">
+        <h2 className="text-xl sm:text-2xl font-black text-white">
+          Áreas de Formación Integral
+        </h2>
+        <p className="text-xs text-pink-200/70">
+          Elige una categoría y comienza a desarrollar habilidades prácticas hoy mismo.
+        </p>
+      </div>
+
+      <div className="grid grid-cols-2 sm:grid-cols-4 lg:grid-cols-7 gap-3 sm:gap-4">
+        {categories.map((cat) => {
+          const Icon = cat.icon;
+          return (
+            <button
+              key={cat.name}
+              onClick={() => onSelectCategory(cat.name)}
+              className="group bg-[#180727] hover:bg-[#250a3b] border border-white/10 hover:border-pink-400/50 p-4 rounded-2xl flex flex-col items-center justify-center text-center space-y-2.5 transition-all hover:scale-105 hover:shadow-xl cursor-pointer"
+            >
+              <div className={`w-12 h-12 rounded-2xl bg-gradient-to-tr ${cat.color} p-2.5 flex items-center justify-center text-white shadow-lg group-hover:scale-110 transition-transform`}>
+                <Icon className="w-6 h-6" />
+              </div>
+              <span className="text-xs font-bold text-pink-100 group-hover:text-pink-300 transition-colors leading-tight">
+                {cat.name}
+              </span>
+            </button>
+          );
+        })}
+      </div>
+    </section>
+  );
+}
+
+function FeaturedCoursesSection({
+  user,
+  onOpenAuth,
+  onViewAll,
+}: {
+  user: any;
+  onOpenAuth: () => void;
+  onViewAll: () => void;
+}) {
+  const router = useRouter();
+
+  return (
+    <section className="py-12 px-4 sm:px-6 lg:px-8 max-w-7xl mx-auto space-y-8">
+      
+      <div className="flex items-center justify-between">
+        <div>
+          <h2 className="text-2xl sm:text-3xl font-black text-white">
+            Cursos Destacados
+          </h2>
+          <p className="text-xs text-pink-200/70 mt-0.5">
+            Los programas más cursados por nuestras estudiantes
+          </p>
+        </div>
+
+        <button
+          onClick={onViewAll}
+          className="text-xs font-bold text-pink-300 hover:text-white flex items-center gap-1 cursor-pointer"
+        >
+          <span>Ver todos</span>
+          <ChevronRight className="w-4 h-4" />
+        </button>
+      </div>
+
+      <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-4 gap-6">
+        {INITIAL_COURSES.slice(0, 4).map((course) => (
+          <div
+            key={course.slug}
+            className="group bg-[#1a0726] border border-white/10 hover:border-pink-400/50 rounded-2xl overflow-hidden flex flex-col justify-between transition-all duration-300 hover:shadow-2xl hover:-translate-y-1 relative"
+          >
+            <div className="relative aspect-[16/10] overflow-hidden bg-[#2d0e3e]">
+              <img
+                src={course.thumbnailUrl}
+                alt={course.title}
+                className="w-full h-full object-cover group-hover:scale-105 transition-transform duration-500"
+              />
+              <div className="absolute top-2.5 left-2.5">
+                <span className={`px-2.5 py-0.5 rounded-md text-[10px] font-black uppercase tracking-wider text-white shadow-md ${
+                  course.badge === 'Popular'
+                    ? 'bg-pink-600'
+                    : course.badge === 'Nuevo'
+                    ? 'bg-violet-600'
+                    : 'bg-amber-500 text-slate-900'
+                }`}>
+                  {course.badge}
+                </span>
+              </div>
+              <div className="absolute bottom-2.5 right-2.5 bg-black/70 backdrop-blur-md px-2 py-0.5 rounded-md flex items-center gap-1 text-[11px] font-extrabold text-amber-300 border border-white/10">
+                <Star className="w-3 h-3 fill-amber-300" />
+                <span>{course.rating}</span>
+                <span className="text-[10px] text-pink-200/60 font-normal">({(course.reviewsCount / 1000).toFixed(1)}k)</span>
+              </div>
+            </div>
+
+            <div className="p-4 flex-1 flex flex-col justify-between space-y-3">
+              <div className="space-y-1.5">
+                <span className="text-[10px] font-bold text-pink-300 uppercase tracking-wider">
+                  {course.category}
+                </span>
+                <h3 className="text-sm font-black text-white group-hover:text-pink-300 transition-colors line-clamp-2 leading-snug">
+                  {course.title}
+                </h3>
+              </div>
+
+              <div className="pt-2 border-t border-white/5 flex items-center justify-between text-[11px] text-pink-200/70 font-medium">
+                <span className="flex items-center gap-1">
+                  <Clock className="w-3 h-3 text-amber-300" />
+                  {course.durationWeeks}
+                </span>
+                <span className="flex items-center gap-1">
+                  <BookOpen className="w-3 h-3 text-pink-400" />
+                  {course.modules.flatMap((m) => m.lessons).length} lecciones
+                </span>
+              </div>
+
+              <button
+                onClick={() => {
+                  if (!user) {
+                    onOpenAuth();
+                  } else {
+                    router.push(`/academia/aprender/${course.slug}`);
+                  }
+                }}
+                className="w-full py-2 px-3 rounded-xl text-xs font-extrabold text-white bg-gradient-to-r from-[#E12880] to-[#7B1FA2] hover:opacity-90 shadow-md transition-all flex items-center justify-center gap-1.5 cursor-pointer"
+              >
+                <Play className="w-3.5 h-3.5 fill-current" />
+                <span>Entrar al aula virtual</span>
+              </button>
+            </div>
+          </div>
+        ))}
+      </div>
+
+    </section>
+  );
+}
+
+function ResourcesSection({
+  user,
+  onOpenAuth,
+}: {
+  user: any;
+  onOpenAuth: () => void;
+}) {
+  return (
+    <section id="recursos" className="py-12 sm:py-16 px-4 sm:px-6 lg:px-8 max-w-7xl mx-auto space-y-8">
+      <div className="flex flex-col md:flex-row md:items-end justify-between gap-4 pb-4 border-b border-white/10">
+        <div>
+          <div className="inline-flex items-center gap-1.5 px-3 py-1 rounded-full text-xs font-extrabold uppercase tracking-wider text-pink-300 bg-pink-500/10 border border-pink-500/20 mb-3">
+            <Award className="w-3.5 h-3.5 text-amber-300" />
+            <span>Acreditaciones & Logros</span>
+          </div>
+          <h2 className="text-2xl sm:text-4xl font-black text-white tracking-tight">
+            Tus Certificados y Logros
+          </h2>
+          <p className="text-xs sm:text-sm text-pink-100/70 mt-1 max-w-2xl">
+            Descarga tus diplomas oficiales, compártelos en redes profesionales y valida su autenticidad mediante código QR.
+          </p>
+        </div>
+      </div>
+
+      <div className="grid grid-cols-1 md:grid-cols-2 gap-6">
+        <div className="bg-[#1a0726] border border-white/10 rounded-2xl p-6 space-y-4">
+          <div className="flex items-center gap-3">
+            <div className="w-12 h-12 rounded-2xl bg-amber-400/20 border border-amber-400/40 flex items-center justify-center text-amber-300">
+              <Award className="w-6 h-6" />
+            </div>
+            <div>
+              <h3 className="text-base font-black text-white">Marketing Digital para Emprendedoras</h3>
+              <p className="text-xs text-pink-200/70">Acreditación de 32 horas · Código: SENDA-2026-004812</p>
+            </div>
+          </div>
+
+          <p className="text-xs text-pink-100/80 leading-relaxed">
+            Certificado oficial emitido por Fundación Senda Mujer con firma digital de la Dirección Académica.
+          </p>
+
+          <div className="pt-2 flex items-center gap-3">
+            <Link
+              href="/academia/certificados/SENDA-2026-004812"
+              className="px-5 py-2.5 rounded-full text-xs font-black bg-gradient-to-r from-[#E12880] to-[#7B1FA2] text-white shadow-md hover:scale-105 transition-transform"
+            >
+              Ver e Imprimir Diploma
+            </Link>
+            <Link
+              href="/academia/verificar/SENDA-2026-004812"
+              className="px-4 py-2.5 rounded-full text-xs font-bold bg-white/10 hover:bg-white/20 text-pink-200 border border-white/10"
+            >
+              Verificar QR ↗
+            </Link>
+          </div>
+        </div>
+
+        <div className="bg-[#1a0726] border border-white/10 rounded-2xl p-6 space-y-4">
+          <div className="flex items-center gap-3">
+            <div className="w-12 h-12 rounded-2xl bg-pink-500/20 border border-pink-500/40 flex items-center justify-center text-pink-300">
+              <Sparkles className="w-6 h-6" />
+            </div>
+            <div>
+              <h3 className="text-base font-black text-white">Emprendimiento Femenino (En progreso)</h3>
+              <p className="text-xs text-pink-200/70">Avance actual: 60% completado</p>
+            </div>
+          </div>
+
+          <p className="text-xs text-pink-100/80 leading-relaxed">
+            Completa las 2 lecciones restantes y la evaluación para desbloquear tu segundo certificado.
+          </p>
+
+          <div className="pt-2">
+            <Link
+              href="/academia/aprender/emprendimiento-femenino-idea-al-negocio"
+              className="inline-flex items-center gap-1.5 px-5 py-2.5 rounded-full text-xs font-black bg-white/10 hover:bg-white/20 text-white"
+            >
+              <Play className="w-3.5 h-3.5 fill-current" />
+              <span>Continuar lecciones</span>
+            </Link>
+          </div>
+        </div>
+      </div>
+    </section>
+  );
+}

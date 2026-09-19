@@ -1,91 +1,167 @@
 'use client';
 import React, { useState } from 'react';
 import Link from 'next/link';
-import { Search, GraduationCap, Flame, LogOut, User, ChevronDown, Zap, BookOpen, Globe } from 'lucide-react';
+import { Search, Bell, Flame, LogOut, User, ChevronDown, Zap, BookOpen, Radio, Users, Award, ExternalLink } from 'lucide-react';
 
 interface Props {
   user: { name: string; email: string } | null;
+  activeTab?: string;
+  onSelectTab?: (tab: string) => void;
   onOpenAuth: (mode: 'login' | 'register') => void;
   onLogout: () => void;
+  onSearch?: (query: string) => void;
 }
 
-export default function AcademiaNavbar({ user, onOpenAuth, onLogout }: Props) {
+export default function AcademiaNavbar({
+  user,
+  activeTab = 'Inicio',
+  onSelectTab,
+  onOpenAuth,
+  onLogout,
+  onSearch,
+}: Props) {
   const [userMenuOpen, setUserMenuOpen] = useState(false);
+  const [searchQuery, setSearchQuery] = useState('');
+
+  const navTabs = [
+    { id: 'Inicio', label: 'Inicio', href: '/academia' },
+    { id: 'Cursos', label: 'Cursos', href: '/academia#cursos' },
+    { id: 'En vivo', label: 'En vivo', href: '/academia#live', badge: 'LIVE' },
+    { id: 'Comunidad', label: 'Comunidad', href: '/academia#comunidad' },
+    { id: 'Recursos', label: 'Recursos', href: '/academia#recursos' },
+  ];
+
+  const handleTabClick = (tabId: string) => {
+    if (onSelectTab) {
+      onSelectTab(tabId);
+    }
+  };
+
+  const handleSearchSubmit = (e: React.FormEvent) => {
+    e.preventDefault();
+    if (onSearch) {
+      onSearch(searchQuery);
+    }
+  };
 
   return (
-    <nav className="sticky top-0 z-50 bg-[#270538]/95 backdrop-blur-md border-b border-pink-500/20 shadow-xl">
-      <div className="max-w-7xl mx-auto px-3 sm:px-8 py-3 flex items-center justify-between gap-2 sm:gap-4">
+    <header className="sticky top-0 z-50 bg-[#14061f]/95 backdrop-blur-md border-b border-white/10 shadow-2xl transition-all">
+      <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 h-18 flex items-center justify-between gap-4">
         
-        {/* Institutional Logo & SendaAcademia Badge — Fully Responsive */}
-        <div className="flex items-center gap-2 sm:gap-3 shrink-0">
-          <Link href="/" className="flex items-center group shrink-0">
-            <img
-              src="/logo.png"
-              alt="Fundación Senda Mujer"
-              className="h-8 sm:h-10 w-auto object-contain transition-transform group-hover:scale-[1.02]"
+        {/* Brand Logo */}
+        <div className="flex items-center gap-6">
+          <Link href="/academia" className="flex items-center gap-2 group">
+            <div className="flex items-center gap-2.5">
+              <div className="w-8 h-8 rounded-xl bg-gradient-to-br from-[#E12880] to-[#7B1FA2] p-1.5 flex items-center justify-center shadow-lg shadow-pink-600/30 group-hover:scale-105 transition-transform">
+                <span className="text-white font-black text-sm">S</span>
+              </div>
+              <div className="flex flex-col">
+                <span className="text-base font-black tracking-tight text-white flex items-center gap-1">
+                  Senda<span className="text-pink-400">Mujer</span>
+                </span>
+                <span className="text-[9px] uppercase tracking-widest text-pink-200/60 font-bold -mt-0.5">
+                  Academia Digital
+                </span>
+              </div>
+            </div>
+          </Link>
+
+          {/* Navigation Links Desktop */}
+          <nav className="hidden md:flex items-center gap-1 bg-white/[0.04] p-1 rounded-full border border-white/10">
+            {navTabs.map((tab) => {
+              const isActive = activeTab === tab.id;
+              return (
+                <button
+                  key={tab.id}
+                  onClick={() => handleTabClick(tab.id)}
+                  className={`px-4 py-1.5 rounded-full text-xs font-bold transition-all flex items-center gap-1.5 cursor-pointer ${
+                    isActive
+                      ? 'bg-gradient-to-r from-[#E12880] to-[#6A1B9A] text-white shadow-md shadow-pink-500/25'
+                      : 'text-pink-100/70 hover:text-white hover:bg-white/5'
+                  }`}
+                >
+                  <span>{tab.label}</span>
+                  {tab.badge && (
+                    <span className="px-1.5 py-0.2 rounded-full text-[9px] font-black bg-red-500 text-white animate-pulse">
+                      {tab.badge}
+                    </span>
+                  )}
+                </button>
+              );
+            })}
+          </nav>
+        </div>
+
+        {/* Search, Notifications & User Profile */}
+        <div className="flex items-center gap-3">
+          {/* Quick Search */}
+          <form onSubmit={handleSearchSubmit} className="hidden lg:flex relative items-center">
+            <Search className="absolute left-3 w-4 h-4 text-pink-300/60 pointer-events-none" />
+            <input
+              type="text"
+              value={searchQuery}
+              onChange={(e) => setSearchQuery(e.target.value)}
+              placeholder="Buscar curso, lección o tema..."
+              className="w-56 xl:w-64 pl-9 pr-4 py-1.5 rounded-full text-xs bg-white/[0.06] border border-white/10 text-white placeholder-pink-200/40 focus:outline-none focus:border-pink-400 focus:ring-1 focus:ring-pink-400/50 transition-all"
             />
-          </Link>
-          <div className="h-5 w-[1px] bg-pink-500/30 shrink-0" />
-          <Link
-            href="/academia"
-            className="flex items-center gap-1 sm:gap-1.5 bg-gradient-to-r from-[#E12880]/30 to-[#52166F]/50 border border-[#E12880]/40 text-pink-200 text-[10px] sm:text-xs font-extrabold px-2 sm:px-3 py-1 rounded-full shadow-xs shrink-0"
+          </form>
+
+          {/* Notification Bell */}
+          <button
+            aria-label="Notificaciones"
+            onClick={() => alert('Tienes 2 eventos en vivo programados esta semana.')}
+            className="relative p-2 rounded-full text-pink-200/80 hover:text-white hover:bg-white/5 transition-colors cursor-pointer"
           >
-            <GraduationCap className="w-3.5 h-3.5 text-amber-300 shrink-0" />
-            <span>SendaAcademia</span>
-          </Link>
-        </div>
+            <Bell className="w-4 h-4" />
+            <span className="absolute top-1.5 right-1.5 w-2 h-2 rounded-full bg-pink-500 ring-2 ring-[#14061f]" />
+          </button>
 
-        {/* Search — hidden on small mobile screens */}
-        <div className="hidden lg:flex flex-1 max-w-xs relative">
-          <Search className="absolute left-3 top-1/2 -translate-y-1/2 w-4 h-4 text-pink-300/70" />
-          <input
-            type="text"
-            placeholder="Buscar cursos, clases en vivo..."
-            className="w-full pl-9 pr-4 py-2 text-xs rounded-full text-white placeholder-pink-200/50 bg-[#3B0852]/80 border border-pink-500/30 focus:outline-none focus:border-amber-400 transition-all"
-          />
-        </div>
-
-        {/* Right Actions */}
-        <div className="flex items-center gap-2 shrink-0">
-          {/* Live badge — hidden on extra small screens */}
-          <div className="hidden md:flex items-center gap-1.5 px-2.5 py-1 rounded-full text-[10px] font-extrabold bg-red-950/80 border border-red-500/40 text-red-300">
-            <span className="w-1.5 h-1.5 rounded-full bg-red-500 animate-ping inline-block" />
-            CLASES EN VIVO 🔴
-          </div>
-
+          {/* User Auth or Menu */}
           {user ? (
             <div className="relative">
               <button
                 onClick={() => setUserMenuOpen(!userMenuOpen)}
-                className="flex items-center gap-1.5 sm:gap-2 px-2.5 sm:px-3 py-1.5 rounded-full bg-[#52166F]/80 border border-pink-400/30 hover:border-amber-400 transition-all cursor-pointer"
+                className="flex items-center gap-2 p-1 pl-2 pr-3 rounded-full bg-white/[0.07] border border-white/15 hover:border-pink-400/50 transition-all cursor-pointer"
               >
-                <div className="w-6 h-6 rounded-full bg-gradient-to-r from-[#E12880] to-amber-400 flex items-center justify-center text-xs font-extrabold text-white">
+                <div className="w-7 h-7 rounded-full bg-gradient-to-tr from-[#E12880] to-amber-400 flex items-center justify-center text-xs font-black text-white shadow-sm">
                   {user.name[0].toUpperCase()}
                 </div>
-                <span className="text-xs text-white font-bold hidden sm:block max-w-[90px] truncate">{user.name}</span>
-                <Flame className="w-3.5 h-3.5 text-amber-400" />
-                <ChevronDown className="w-3 h-3 text-pink-200" />
+                <span className="text-xs font-bold text-white max-w-[90px] truncate hidden sm:inline-block">
+                  {user.name.split(' ')[0]}
+                </span>
+                <ChevronDown className="w-3.5 h-3.5 text-pink-200/70" />
               </button>
+
               {userMenuOpen && (
-                <div className="absolute right-0 top-full mt-2 w-52 rounded-2xl shadow-2xl overflow-hidden z-50 bg-[#270538] border border-pink-500/30 animate-fadeIn">
-                  <div className="p-3 border-b border-pink-500/20 bg-[#3B0852]/60">
+                <div className="absolute right-0 top-full mt-2 w-56 rounded-2xl shadow-2xl overflow-hidden z-50 bg-[#1d0a2d] border border-pink-500/30 animate-fadeIn">
+                  <div className="p-3.5 border-b border-white/10 bg-white/[0.03]">
                     <p className="text-xs font-extrabold text-white">{user.name}</p>
                     <p className="text-[10px] text-pink-200/70 truncate">{user.email}</p>
                   </div>
-                  {[
-                    { icon: User, label: 'Mi Expediente Educativo' },
-                    { icon: BookOpen, label: 'Mis Cursos Activos' },
-                    { icon: GraduationCap, label: 'Mis Certificados' },
-                  ].map(({ icon: Icon, label }) => (
-                    <button key={label}
-                      className="w-full flex items-center gap-2.5 px-4 py-2.5 text-xs text-pink-100 hover:bg-[#52166F] hover:text-amber-300 transition-colors text-left cursor-pointer"
+                  <div className="p-1.5 space-y-0.5">
+                    <button
+                      onClick={() => { handleTabClick('Cursos'); setUserMenuOpen(false); }}
+                      className="w-full flex items-center gap-2.5 px-3 py-2 text-xs text-pink-100 hover:bg-white/10 hover:text-pink-300 rounded-xl transition-colors text-left"
                     >
-                      <Icon className="w-3.5 h-3.5 text-pink-300" /> {label}
+                      <BookOpen className="w-3.5 h-3.5 text-pink-400" /> Mis Cursos en Progreso
                     </button>
-                  ))}
-                  <div className="border-t border-pink-500/20">
-                    <button onClick={onLogout}
-                      className="w-full flex items-center gap-2.5 px-4 py-2.5 text-xs text-red-300 hover:bg-red-950/50 transition-colors text-left cursor-pointer"
+                    <button
+                      onClick={() => { handleTabClick('Recursos'); setUserMenuOpen(false); }}
+                      className="w-full flex items-center gap-2.5 px-3 py-2 text-xs text-pink-100 hover:bg-white/10 hover:text-amber-300 rounded-xl transition-colors text-left"
+                    >
+                      <Award className="w-3.5 h-3.5 text-amber-400" /> Mis Certificados
+                    </button>
+                    <Link
+                      href="/academia/admin"
+                      className="w-full flex items-center gap-2.5 px-3 py-2 text-xs text-pink-100 hover:bg-white/10 hover:text-pink-300 rounded-xl transition-colors text-left"
+                    >
+                      <User className="w-3.5 h-3.5 text-pink-400" /> Panel Académico / Admin
+                    </Link>
+                  </div>
+                  <div className="p-1.5 border-t border-white/10">
+                    <button
+                      onClick={() => { onLogout(); setUserMenuOpen(false); }}
+                      className="w-full flex items-center gap-2.5 px-3 py-2 text-xs text-red-300 hover:bg-red-950/40 rounded-xl transition-colors text-left"
                     >
                       <LogOut className="w-3.5 h-3.5" /> Cerrar Sesión
                     </button>
@@ -94,35 +170,35 @@ export default function AcademiaNavbar({ user, onOpenAuth, onLogout }: Props) {
               )}
             </div>
           ) : (
-            <>
+            <div className="flex items-center gap-2">
               <button
                 onClick={() => onOpenAuth('login')}
-                className="text-xs font-bold text-pink-100 hover:text-amber-300 px-2 sm:px-3 py-1.5 transition-colors cursor-pointer"
+                className="text-xs font-bold text-pink-100 hover:text-pink-300 px-3 py-1.5 transition-colors cursor-pointer"
               >
                 Ingresar
               </button>
               <button
                 onClick={() => onOpenAuth('register')}
-                className="bg-gradient-to-r from-[#E12880] to-[#52166F] hover:from-[#c81e6f] hover:to-[#3B0852] text-white font-extrabold text-[11px] sm:text-xs px-3 sm:px-4 py-1.5 sm:py-2 rounded-full shadow-md transition-all flex items-center gap-1 cursor-pointer border border-pink-400/30"
+                className="bg-gradient-to-r from-[#E12880] to-[#7B1FA2] hover:from-[#c2185b] hover:to-[#4a148c] text-white font-extrabold text-xs px-4 py-2 rounded-full shadow-lg shadow-pink-600/30 transition-all flex items-center gap-1.5 cursor-pointer border border-pink-300/30 hover:scale-105"
               >
                 <Zap className="w-3.5 h-3.5 text-amber-300" />
-                <span>Unirme Gratis</span>
+                <span>Registrarme Gratis</span>
               </button>
-            </>
+            </div>
           )}
 
-          {/* Link back to Main Foundation Site */}
+          {/* Main Website Link */}
           <Link
             href="/"
-            className="hidden sm:flex items-center gap-1 bg-white/10 hover:bg-white/20 text-pink-200 border border-pink-200/20 text-[11px] font-bold px-2.5 py-1 rounded-full transition-all"
-            title="Volver a la página principal institucional"
+            className="hidden sm:flex items-center gap-1.5 text-[11px] font-bold text-pink-200/70 hover:text-white bg-white/[0.04] hover:bg-white/10 px-3 py-1.5 rounded-full border border-white/10 transition-all"
+            title="Volver a la Fundación"
           >
-            <Globe className="w-3.5 h-3.5 text-amber-300" />
-            <span>Web Principal ↗</span>
+            <span>Web Senda</span>
+            <ExternalLink className="w-3 h-3 text-pink-300" />
           </Link>
         </div>
 
       </div>
-    </nav>
+    </header>
   );
 }
