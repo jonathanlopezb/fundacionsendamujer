@@ -1,7 +1,7 @@
 import { NextRequest, NextResponse } from 'next/server';
 import { connectToDatabase } from '@/lib/mongodb';
 import AcademiaCourse from '@/lib/models/AcademiaCourse';
-import { INITIAL_COURSES } from '../route';
+import { INITIAL_COURSES } from '@/lib/academiaCoursesData';
 
 export async function GET(
   req: NextRequest,
