@@ -298,199 +298,241 @@ function HeroSection({
     }
   };
 
-  return (
-    <section className="relative overflow-hidden bg-gradient-to-b from-[#13051f] via-[#1a072c] to-[#0c0414] border-b border-white/10 pt-10 sm:pt-16 pb-14 sm:pb-20 px-4 sm:px-6 lg:px-8">
-      {/* Soft atmospheric ambient glow */}
-      <div className="pointer-events-none absolute -top-20 left-1/4 w-[500px] h-[500px] bg-pink-600/15 rounded-full blur-[120px]" />
-      <div className="pointer-events-none absolute top-1/3 right-10 w-[450px] h-[450px] bg-purple-600/15 rounded-full blur-[100px]" />
+  const academicTopics = [
+    'Habilidades Digitales',
+    'Emprendimiento Sostenible',
+    'Liderazgo & Comunicación',
+    'Finanzas Prácticas',
+    'Derechos & Ley 1257',
+  ];
 
-      <div className="max-w-7xl mx-auto grid grid-cols-1 lg:grid-cols-12 gap-8 lg:gap-12 items-center relative z-10">
+  return (
+    <section className="relative overflow-hidden bg-[#0e0319] border-b border-white/10 pt-10 sm:pt-14 pb-14 sm:pb-18 px-4 sm:px-6 lg:px-8">
+      {/* Background Academic Grid & Subtle Lighting */}
+      <div
+        className="pointer-events-none absolute inset-0 opacity-[0.07]"
+        style={{
+          backgroundImage: `radial-gradient(#ec4899 1px, transparent 1px), radial-gradient(#8b5cf6 1px, #0e0319 1px)`,
+          backgroundSize: '36px 36px',
+          backgroundPosition: '0 0, 18px 18px',
+        }}
+      />
+      <div className="pointer-events-none absolute top-0 left-1/3 w-[600px] h-[350px] bg-pink-600/10 rounded-full blur-[140px]" />
+      <div className="pointer-events-none absolute bottom-0 right-10 w-[500px] h-[350px] bg-purple-600/10 rounded-full blur-[120px]" />
+
+      <div className="max-w-7xl mx-auto grid grid-cols-1 lg:grid-cols-12 gap-10 lg:gap-12 items-center relative z-10">
         
-        {/* Left Column: Heading, Subtitle, Search Bar & Quick Highlights (7 cols) */}
+        {/* Left Column: Academic Title, Institutional Pitch & Search (7 cols) */}
         <div className="lg:col-span-7 space-y-6 sm:space-y-7">
           
-          <div className="inline-flex items-center gap-2 px-3.5 py-1.5 rounded-full text-xs font-black uppercase tracking-wider text-pink-300 bg-pink-500/10 border border-pink-500/25 shadow-sm">
-            <Sparkles className="w-3.5 h-3.5 text-amber-300 animate-pulse" />
-            <span>Aprende hoy, transforma mañana</span>
+          {/* Institutional Badge */}
+          <div className="inline-flex items-center gap-2.5 px-4 py-1.5 rounded-full text-xs font-black uppercase tracking-wider text-pink-300 bg-pink-500/10 border border-pink-500/25 shadow-sm">
+            <span className="w-2 h-2 rounded-full bg-pink-400 animate-pulse" />
+            <span>Campus Virtual · Fundación Senda Mujer</span>
+            <span className="text-white/30">|</span>
+            <span className="text-amber-300 font-bold">Ciclo Académico 2026</span>
           </div>
 
-          <h1 className="text-3.5xl sm:text-5xl lg:text-6xl font-black text-white tracking-tight leading-[1.08]">
-            Tu crecimiento <br />
-            <span className="bg-gradient-to-r from-pink-400 via-fuchsia-300 to-amber-200 bg-clip-text text-transparent">
-              es nuestra misión
-            </span>
-          </h1>
+          {/* Academic Headline */}
+          <div className="space-y-2">
+            <h1 className="text-3xl sm:text-5xl lg:text-5.5xl font-black text-white tracking-tight leading-[1.12]">
+              Formación Académica, <br />
+              <span className="bg-gradient-to-r from-pink-400 via-fuchsia-300 to-amber-200 bg-clip-text text-transparent">
+                Liderazgo y Certificación Oficial
+              </span>
+            </h1>
+            <p className="text-sm sm:text-base text-pink-100/80 max-w-xl leading-relaxed font-normal pt-1">
+              Plataforma de educación continua para mujeres en el Caribe colombiano. Cursos estructurados por módulos, evaluación por competencias, tutoría pedagógica y diplomas con código de verificación QR.
+            </p>
+          </div>
 
-          <p className="text-sm sm:text-base text-pink-100/85 max-w-xl leading-relaxed font-medium">
-            Capacítate, aprende y haz realidad tus sueños con SendaMujer. Una plataforma educativa diseñada para potenciar tus habilidades, abrir nuevas oportunidades y construir el futuro que mereces.
-          </p>
+          {/* Academic Search Bar */}
+          <div className="space-y-3 max-w-xl">
+            <form onSubmit={handleSubmit} className="flex items-center gap-2 bg-[#180727] p-2 rounded-2xl border-2 border-white/15 focus-within:border-pink-400 shadow-xl transition-all">
+              <Search className="w-5 h-5 text-pink-300/70 ml-2.5 shrink-0" />
+              <input
+                type="text"
+                value={localQuery}
+                onChange={(e) => setLocalQuery(e.target.value)}
+                placeholder="Buscar programa académico, asignatura o módulo..."
+                className="flex-1 bg-transparent px-2 text-xs sm:text-sm text-white placeholder-pink-200/40 font-medium focus:outline-none"
+              />
+              <button
+                type="submit"
+                className="px-6 py-2.5 rounded-xl text-xs sm:text-sm font-black bg-gradient-to-r from-[#E12880] to-[#7B1FA2] text-white shadow-md hover:opacity-90 hover:scale-[1.02] transition-transform cursor-pointer shrink-0"
+              >
+                Explorar Catálogo
+              </button>
+            </form>
 
-          {/* High-Contrast Search Bar Matching Blueprint */}
-          <form onSubmit={handleSubmit} className="flex items-center gap-2 max-w-lg bg-white p-1.5 sm:p-2 rounded-full shadow-2xl border-2 border-pink-400/30 focus-within:border-pink-500 focus-within:ring-4 focus-within:ring-pink-500/20 transition-all">
-            <Search className="w-5 h-5 text-slate-400 ml-3 shrink-0" />
-            <input
-              type="text"
-              value={localQuery}
-              onChange={(e) => setLocalQuery(e.target.value)}
-              placeholder="¿Qué curso te gustaría aprender hoy?"
-              className="flex-1 bg-transparent px-2.5 py-2 text-xs sm:text-sm text-slate-900 placeholder-slate-400 font-medium focus:outline-none"
-            />
-            <button
-              type="submit"
-              className="px-6 sm:px-8 py-2.5 sm:py-3 rounded-full text-xs sm:text-sm font-black bg-gradient-to-r from-[#E12880] to-[#9C27B0] text-white shadow-lg hover:shadow-pink-500/40 hover:scale-[1.02] active:scale-[0.98] transition-all cursor-pointer shrink-0"
-            >
-              Buscar
-            </button>
-          </form>
+            {/* Quick Academic Topic Tags */}
+            <div className="flex flex-wrap items-center gap-1.5 text-[11px] text-pink-200/80">
+              <span className="font-bold text-pink-400/90 mr-1">Rutas frecuentes:</span>
+              {academicTopics.map((topic, i) => (
+                <button
+                  key={i}
+                  type="button"
+                  onClick={() => onSearch(topic)}
+                  className="px-2.5 py-1 rounded-lg bg-white/[0.04] hover:bg-pink-500/20 hover:text-white border border-white/10 transition-all cursor-pointer"
+                >
+                  {topic}
+                </button>
+              ))}
+            </div>
+          </div>
 
-          {/* Value Highlights Matching Blueprint Side Section */}
-          <div className="pt-2 grid grid-cols-2 sm:grid-cols-3 gap-2.5 sm:gap-3 text-[11px] sm:text-xs text-pink-100/90 font-semibold">
-            {[
-              { label: 'Cursos en línea', icon: BookOpen },
-              { label: 'Clases en vivo', icon: Radio },
-              { label: 'Evaluaciones y certificados', icon: Award },
-              { label: 'Comunidad activa', icon: Users },
-              { label: 'Mentorías y acompañamiento', icon: HeartHandshake },
-            ].map((item, idx) => {
-              const Icon = item.icon;
-              return (
-                <div key={idx} className="flex items-center gap-2 bg-white/[0.04] hover:bg-white/[0.08] backdrop-blur-sm p-2 sm:p-2.5 rounded-xl border border-white/10 transition-colors">
-                  <div className="w-6 h-6 rounded-lg bg-pink-500/20 flex items-center justify-center shrink-0">
-                    <Icon className="w-3.5 h-3.5 text-pink-400" />
-                  </div>
-                  <span className="truncate">{item.label}</span>
-                </div>
-              );
-            })}
+          {/* Institutional Academic Pillars */}
+          <div className="pt-2 grid grid-cols-2 sm:grid-cols-4 gap-3 text-xs border-t border-white/10">
+            <div className="space-y-0.5">
+              <p className="text-base font-black text-white flex items-center gap-1">
+                <BookOpen className="w-4 h-4 text-pink-400" />
+                <span>100% Libre</span>
+              </p>
+              <p className="text-[11px] text-pink-200/60 font-medium">Acceso becado y abierto</p>
+            </div>
+
+            <div className="space-y-0.5">
+              <p className="text-base font-black text-white flex items-center gap-1">
+                <Award className="w-4 h-4 text-amber-300" />
+                <span>Validez QR</span>
+              </p>
+              <p className="text-[11px] text-pink-200/60 font-medium">Verificación institucional</p>
+            </div>
+
+            <div className="space-y-0.5">
+              <p className="text-base font-black text-white flex items-center gap-1">
+                <Clock className="w-4 h-4 text-purple-400" />
+                <span>A tu ritmo</span>
+              </p>
+              <p className="text-[11px] text-pink-200/60 font-medium">Disponible las 24 horas</p>
+            </div>
+
+            <div className="space-y-0.5">
+              <p className="text-base font-black text-white flex items-center gap-1">
+                <Sparkles className="w-4 h-4 text-emerald-400" />
+                <span>SendaTutor</span>
+              </p>
+              <p className="text-[11px] text-pink-200/60 font-medium">Asistente pedagógico IA</p>
+            </div>
           </div>
 
         </div>
 
-        {/* Right Column: High-Converting Interactive Marketing Showcase (5 cols) */}
-        <div className="lg:col-span-5 relative mt-6 lg:mt-0">
+        {/* Right Column: Interactive Virtual Campus Dashboard Card (5 cols) */}
+        <div className="lg:col-span-5 relative">
           
-          {/* Background Ambient Glow */}
-          <div className="absolute -inset-2 bg-gradient-to-r from-pink-600 to-purple-600 rounded-3xl opacity-30 blur-2xl animate-pulse" />
-
-          {/* Main Card Container */}
-          <div className="relative bg-[#160624]/90 backdrop-blur-xl border-2 border-pink-500/30 rounded-3xl p-4 sm:p-5 shadow-2xl space-y-4">
+          {/* Dashboard Container with Academic Glassmorphism */}
+          <div className="bg-[#150622]/95 backdrop-blur-xl border border-white/15 rounded-3xl p-5 sm:p-6 shadow-2xl space-y-4 relative overflow-hidden">
             
-            {/* Top Bar: Live Status & Viewers Counter */}
-            <div className="flex items-center justify-between">
-              <div className="inline-flex items-center gap-2 px-3 py-1 rounded-full text-[11px] font-black uppercase tracking-wider bg-red-500/20 text-red-300 border border-red-500/30">
-                <span className="w-2 h-2 rounded-full bg-red-500 animate-ping" />
-                <span className="w-2 h-2 rounded-full bg-red-500 -ml-4" />
-                <span>En Vivo Ahora</span>
-              </div>
-              <div className="flex items-center gap-1.5 text-xs text-pink-200/80 font-bold bg-white/[0.06] px-3 py-1 rounded-full border border-white/10">
-                <Users className="w-3.5 h-3.5 text-pink-400" />
-                <span>+1,240 conectadas</span>
-              </div>
-            </div>
-
-            {/* Interactive Video Preview Box */}
-            <div className="relative rounded-2xl overflow-hidden aspect-[16/10] bg-gradient-to-tr from-[#2d083f] to-[#12031a] border border-white/15 group">
-              <img
-                src="https://images.unsplash.com/photo-1573496359142-b8d87734a5a2?auto=format&fit=crop&w=800&q=80"
-                alt="Clase en Vivo SendaMujer"
-                className="w-full h-full object-cover group-hover:scale-105 transition-transform duration-700 opacity-85"
-              />
-              <div className="absolute inset-0 bg-gradient-to-t from-[#0c0414] via-black/30 to-transparent" />
-
-              {/* Glowing Center Play Button */}
-              <Link
-                href="/academia/aprender/marketing-digital-emprendedoras"
-                className="absolute inset-0 flex items-center justify-center cursor-pointer"
-              >
-                <div className="relative flex items-center justify-center">
-                  <div className="absolute w-16 h-16 rounded-full bg-pink-500/40 animate-ping" />
-                  <div className="w-14 h-14 rounded-full bg-gradient-to-tr from-[#E12880] to-[#7B1FA2] flex items-center justify-center text-white shadow-2xl border-2 border-white/40 group-hover:scale-110 transition-transform">
-                    <Play className="w-6 h-6 fill-white text-white ml-1" />
-                  </div>
+            {/* Top Student Credential Header */}
+            <div className="flex items-center justify-between pb-3 border-b border-white/10">
+              <div className="flex items-center gap-3">
+                <div className="w-10 h-10 rounded-2xl bg-gradient-to-tr from-[#E12880] to-[#7B1FA2] flex items-center justify-center text-white font-black text-sm shadow-md">
+                  🎓
                 </div>
-              </Link>
-
-              {/* Progress Bar & Class Title Overlay */}
-              <div className="absolute bottom-3 left-3 right-3 space-y-1.5 pointer-events-none">
-                <div className="flex items-center justify-between text-[11px] font-bold text-white drop-shadow-md">
-                  <span className="truncate">Clase 1: Estrategia y Marca Personal</span>
-                  <span className="text-amber-300">Gratis</span>
-                </div>
-                <div className="h-1.5 w-full bg-white/20 rounded-full overflow-hidden backdrop-blur-sm">
-                  <div className="h-full bg-gradient-to-r from-[#E12880] to-amber-400 w-2/3 rounded-full" />
-                </div>
-              </div>
-            </div>
-
-            {/* Course Information & Marketing Pitch */}
-            <div className="space-y-3 pt-1">
-              <div className="flex items-start justify-between gap-2">
                 <div>
-                  <span className="text-[10px] font-black uppercase tracking-wider text-pink-400">
-                    Curso Destacado del Mes
-                  </span>
-                  <h3 className="text-sm sm:text-base font-black text-white leading-tight">
-                    Marketing Digital para Emprendedoras
+                  <div className="flex items-center gap-1.5">
+                    <span className="text-[10px] font-black uppercase tracking-widest text-pink-300">
+                      Aula Virtual Activa
+                    </span>
+                    <span className="px-1.5 py-0.2 rounded-full text-[9px] font-bold bg-emerald-500/20 text-emerald-300 border border-emerald-500/30">
+                      En Curso
+                    </span>
+                  </div>
+                  <h3 className="text-sm font-black text-white">
+                    {user ? user.name : 'Estudiante SendaMujer'}
                   </h3>
                 </div>
-                <div className="flex items-center gap-1 bg-amber-400/20 border border-amber-400/30 px-2 py-0.5 rounded-lg text-amber-300 text-xs font-black shrink-0">
-                  <Star className="w-3.5 h-3.5 fill-amber-300" />
-                  <span>4.9</span>
+              </div>
+              
+              <div className="text-right">
+                <span className="text-[10px] text-pink-200/60 font-bold block">Matrícula 2026</span>
+                <span className="text-[11px] font-mono text-amber-300 font-bold">CSM-2026-EST</span>
+              </div>
+            </div>
+
+            {/* Current Enrolled Program Card */}
+            <div className="bg-white/[0.04] border border-white/10 rounded-2xl p-4 space-y-3">
+              <div className="flex items-center justify-between text-[11px]">
+                <span className="px-2.5 py-0.5 rounded-md font-bold uppercase bg-pink-500/20 text-pink-300 border border-pink-500/30">
+                  Diplomado Principal
+                </span>
+                <span className="text-pink-200/70 font-semibold flex items-center gap-1">
+                  <Clock className="w-3 h-3 text-amber-300" />
+                  32 Horas Académicas
+                </span>
+              </div>
+
+              <div>
+                <h4 className="text-sm sm:text-base font-black text-white leading-snug">
+                  Marketing Digital para Emprendedoras
+                </h4>
+                <p className="text-xs text-pink-200/70 mt-0.5">
+                  Docente: <strong className="text-pink-100">Mg. Laura Gómez Rodríguez</strong>
+                </p>
+              </div>
+
+              {/* Curriculum Progress Bar */}
+              <div className="space-y-1.5 pt-1">
+                <div className="flex justify-between text-[11px] font-bold">
+                  <span className="text-pink-200">Módulo 2: Estrategia de Contenidos</span>
+                  <span className="text-amber-300">60% completado</span>
+                </div>
+                <div className="h-2 w-full bg-white/10 rounded-full overflow-hidden">
+                  <div className="h-full bg-gradient-to-r from-[#E12880] via-purple-500 to-amber-400 rounded-full w-[60%]" />
+                </div>
+              </div>
+            </div>
+
+            {/* Academic Features Badges */}
+            <div className="grid grid-cols-2 gap-2 text-xs">
+              <div className="bg-white/[0.02] border border-white/5 p-2.5 rounded-xl flex items-center gap-2">
+                <CheckCircle2 className="w-4 h-4 text-emerald-400 shrink-0" />
+                <div className="min-w-0">
+                  <p className="text-[11px] font-black text-white">4 Módulos en Video</p>
+                  <p className="text-[10px] text-pink-200/60 truncate">7 Clases con material PDF</p>
                 </div>
               </div>
 
-              {/* Real-time Student Testimonial / Social Proof */}
-              <div className="grid grid-cols-2 gap-2 text-xs">
-                <div className="bg-white/[0.04] border border-white/10 p-2.5 rounded-xl space-y-1">
-                  <div className="flex items-center gap-1.5 text-emerald-400 font-black text-[11px]">
-                    <CheckCircle2 className="w-3.5 h-3.5" />
-                    <span>100% Gratuito</span>
-                  </div>
-                  <p className="text-[10px] text-pink-200/70">Financiado por proyectos de impacto social</p>
-                </div>
-
-                <div className="bg-white/[0.04] border border-white/10 p-2.5 rounded-xl space-y-1">
-                  <div className="flex items-center gap-1.5 text-pink-300 font-black text-[11px]">
-                    <Award className="w-3.5 h-3.5 text-amber-300" />
-                    <span>Diploma Oficial</span>
-                  </div>
-                  <p className="text-[10px] text-pink-200/70">Con código QR y firma institucional</p>
+              <div className="bg-white/[0.02] border border-white/5 p-2.5 rounded-xl flex items-center gap-2">
+                <Award className="w-4 h-4 text-amber-300 shrink-0" />
+                <div className="min-w-0">
+                  <p className="text-[11px] font-black text-white">Certificado Digital</p>
+                  <p className="text-[10px] text-pink-200/60 truncate">Emisión automática con QR</p>
                 </div>
               </div>
+            </div>
 
-              {/* Call to Action Button */}
+            {/* Enter Classroom Action Button */}
+            <div className="pt-1">
               <Link
                 href="/academia/aprender/marketing-digital-emprendedoras"
-                className="w-full py-3 px-4 rounded-xl text-xs sm:text-sm font-black text-white bg-gradient-to-r from-[#E12880] via-[#C2185B] to-[#7B1FA2] hover:opacity-95 shadow-lg shadow-pink-600/30 flex items-center justify-center gap-2 transition-all hover:scale-[1.02] active:scale-[0.98] cursor-pointer"
+                className="w-full py-3 px-4 rounded-2xl text-xs sm:text-sm font-black text-white bg-gradient-to-r from-[#E12880] to-[#7B1FA2] hover:opacity-95 shadow-xl shadow-pink-600/25 flex items-center justify-center gap-2 transition-all hover:scale-[1.01] active:scale-[0.99] cursor-pointer text-center"
               >
-                <Sparkles className="w-4 h-4 text-amber-300" />
-                <span>Comenzar a Aprender Ahora — Gratis</span>
-                <ArrowRight className="w-4 h-4 ml-1" />
+                <Play className="w-4 h-4 fill-white text-white" />
+                <span>Ingresar al Aula de Clases Virtual</span>
+                <ChevronRight className="w-4 h-4" />
               </Link>
             </div>
 
-            {/* Bottom Floating Social Proof Badge */}
-            <div className="pt-2 border-t border-white/10 flex items-center justify-between text-[11px] text-pink-200/80">
-              <div className="flex items-center -space-x-2">
-                {['👩🏾', '👩🏼', '👩🏽', '👩🏿'].map((emoji, i) => (
-                  <div
-                    key={i}
-                    className="w-6 h-6 rounded-full bg-[#270838] border-2 border-[#160624] flex items-center justify-center text-xs shadow-md"
-                  >
-                    {emoji}
-                  </div>
-                ))}
-                <span className="pl-3 font-bold text-white text-[11px]">+50k graduadas</span>
-              </div>
-              <span className="text-pink-400 font-bold flex items-center gap-1">
-                <span>98% satisfacción</span>
-                <TrendingUp className="w-3.5 h-3.5 text-emerald-400" />
+            {/* SendaTutor AI Indicator */}
+            <div className="pt-2 border-t border-white/10 flex items-center justify-between text-[11px] text-pink-200/70">
+              <span className="flex items-center gap-1.5">
+                <Sparkles className="w-3.5 h-3.5 text-amber-300" />
+                <span>SendaTutor IA pedagógico disponible</span>
               </span>
+              <span className="text-emerald-400 font-bold">● En línea</span>
             </div>
 
           </div>
 
         </div>
+
+      </div>
+    </section>
+  );
+}
+
 
 
       </div>
