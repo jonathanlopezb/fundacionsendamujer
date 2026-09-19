@@ -3,6 +3,13 @@ import Link from 'next/link';
 import { ArrowLeft, ArrowRight, Check, HeartHandshake } from 'lucide-react';
 import { getProgram, programs } from '@/lib/programs';
 import { notFound } from 'next/navigation';
+import type { Metadata } from 'next';
+
+export async function generateMetadata({ params }: { params: { slug: string } }): Promise<Metadata> {
+  const program = getProgram(params.slug);
+  if (!program) return {};
+  return { title: program.title, description: program.summary, alternates: { canonical: `/programas/${program.slug}` }, openGraph: { title: program.title, description: program.summary, type: 'article' } };
+}
 
 export function generateStaticParams() { return programs.map(({ slug }) => ({ slug })); }
 

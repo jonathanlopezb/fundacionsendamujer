@@ -2,6 +2,7 @@ import React from 'react';
 import { Metadata } from 'next';
 
 export const metadata: Metadata = {
+  robots: { index: false, follow: false, noarchive: true },
   title: 'Sistema de Historia Clínica Electrónica (EHR) | Fundación Senda Mujer',
   description: 'Plataforma Médica y Sistema EHR de Historia Clínica Electrónica de la Fundación Senda Mujer en Cartagena.',
 };

@@ -2,6 +2,9 @@ import Image from 'next/image';
 import Link from 'next/link';
 import { ArrowRight, HeartHandshake, MessageCircle, Scale, ShieldCheck, Stethoscope } from 'lucide-react';
 import HeroSection from '@/components/HeroSection';
+import type { Metadata } from 'next';
+
+export const metadata: Metadata = { alternates: { canonical: '/' } };
 
 const needs = [
   [ShieldCheck, 'Estoy viviendo violencia', 'Orientación, protección y rutas.', '/triaje-psicologico'],
@@ -10,11 +13,9 @@ const needs = [
   [Stethoscope, 'Necesito atención en salud', 'Orientación médica y social.', '/agendar-cita'],
 ] as const;
 const programs = ['Mujer Acompañada', 'Violencia Sexual', 'Contención Psicosocial', 'Salud y Derechos', 'Embarazo con Apoyo', 'Mujer y Justicia', 'Proyecto de Vida'];
-const schema = { '@context': 'https://schema.org', '@type': 'NGO', name: 'Fundación Senda Mujer', url: 'https://fundacionsendamujer.vercel.app/', telephone: '+57 301 469 2095' };
 
 export default function HomePage() {
-  return <main className="prototype-home" itemScope itemType="https://schema.org/NGO">
-    <script type="application/ld+json" dangerouslySetInnerHTML={{ __html: JSON.stringify(schema) }} />
+  return <div className="prototype-home" itemScope itemType="https://schema.org/NGO">
     <HeroSection />
     <section className="senda-help-spotlight" aria-labelledby="help-spotlight-title"><div className="senda-shell"><div className="senda-help-spotlight__test"><p className="senda-eyebrow">¿No sabes por dónde empezar?</p><h2 id="help-spotlight-title">Empieza con el Test Psicológico.</h2><p>Una guía privada para reconocer cómo te sientes y encontrar el siguiente paso de acompañamiento.</p><div><Link href="/triaje-psicologico" className="senda-button senda-button--primary">Hacer el test ahora <ArrowRight/></Link><span>Gratuito · Confidencial · A tu ritmo</span></div></div><div className="senda-help-spotlight__universal"><p className="senda-eyebrow">SENDA Universal</p><h3>Conoce tus derechos. Encuentra tu ruta.</h3><p>Orientación práctica sobre salud, protección y servicios disponibles.</p><Link href="/senda-universal">Explorar SENDA Universal <ArrowRight/></Link></div></div></section>
     <section id="necesidades" className="senda-section"><div className="senda-shell"><SectionHead eyebrow="Empieza por aquí" title="¿Qué necesitas hoy?" text="No tienes que conocer las instituciones ni las palabras correctas. Elige una opción y te mostramos el siguiente paso."/><div className="senda-needs">{needs.map(([Icon, title, text, href]) => <Link key={title} href={href} className="senda-need-card"><Icon/><h3>{title}</h3><p>{text}</p><span className="senda-need-card__action">Elegir esta opción <ArrowRight aria-hidden="true"/></span></Link>)}</div></div></section>
@@ -27,7 +28,7 @@ export default function HomePage() {
     <section id="apoyar" className="senda-section"><div className="senda-shell senda-donate"><div><p className="senda-eyebrow">Haz parte del cambio</p><h2>Tu aporte puede convertirse en una acción concreta.</h2><p>Apoya atención, protección, salud y autonomía para mujeres y niñas en Cartagena.</p></div><Link href="/donar" className="senda-button senda-button--primary"><HeartHandshake/> Quiero apoyar</Link></div></section>
     <section id="aliados" className="senda-allies"><div className="senda-shell"><SectionHead eyebrow="Red que suma" title="Aliados que hacen posible cada ruta." text="Trabajamos de forma articulada para que el acompañamiento llegue a donde más se necesita."/><div className="senda-allies__grid">{[['Instituciones de salud','Atención médica digna y oportuna','IPS y redes de salud'],['Organizaciones sociales','Cuidado comunitario y prevención','Colectivos territoriales'],['Empresas con propósito','Oportunidades para la autonomía','Aliados empresariales']].map(([title,text,type], index) => <article key={title}><span>0{index + 1}</span><div className="senda-allies__mark">{index === 0 ? '✚' : index === 1 ? '◌' : '↗'}</div><h3>{title}</h3><p>{text}</p><small>{type}</small></article>)}</div><Link href="/caribe-seguro/aliados" className="senda-text-link senda-allies__link">Conoce nuestra red de aliados <ArrowRight/></Link></div></section>
     <AlliesSection />
-  </main>;
+  </div>;
 }
 
 function SectionHead({ eyebrow, title, text, link, linkText }: { eyebrow: string; title: string; text?: string; link?: string; linkText?: string }) { return <div className="senda-section-head"><div><p className="senda-eyebrow">{eyebrow}</p><h2>{title}</h2></div>{link ? <Link href={link} className="senda-text-link">{linkText} <ArrowRight/></Link> : <p>{text}</p>}</div>; }

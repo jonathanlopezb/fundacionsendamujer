@@ -1,12 +1,13 @@
 import type { MetadataRoute } from 'next';
 
-const BASE_URL = 'https://fundacionsendamujer.vercel.app';
+const BASE_URL = 'https://fundacionsendamujer.org';
 
 export default function sitemap(): MetadataRoute.Sitemap {
   const routes = [
     '/',
     '/nosotros',
     '/programas',
+    ...['mujer-acompanada','violencia-sexual','contencion-psicosocial','salud-y-derechos','embarazo-con-apoyo','mujer-y-justicia','proyecto-de-vida-y-autonomia'].map((slug) => `/programas/${slug}`),
     '/senda-universal',
     '/triaje-psicologico',
     '/agendar-cita',

@@ -1,5 +1,8 @@
 import Image from 'next/image';
 import Link from 'next/link';
+import type { Metadata } from 'next';
+
+export const metadata: Metadata = { title: 'Quiénes somos', description: 'Conoce Fundación Senda Mujer y nuestro modelo de acompañamiento para mujeres y niñas en Cartagena.', alternates: { canonical: '/nosotros' } };
 import type { ComponentType } from 'react';
 import { ArrowRight, HeartHandshake, Scale, ShieldCheck, Sparkles, Users } from 'lucide-react';
 import { DefensoriaLogo, ProfamiliaLogo, UnicartagenaLogo } from '@/components/AllyLogos';

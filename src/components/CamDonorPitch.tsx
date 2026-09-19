@@ -1,0 +1,22 @@
+import Link from 'next/link';
+import { ArrowRight, Check, HandHeart, HeartHandshake, Leaf, Scale, Scissors, Sprout, Wheat, Fish } from 'lucide-react';
+
+const lines = [
+  { title: 'Confección', text: 'Máquinas, telas y formación para crear y comercializar.', icon: Scissors, color: 'bg-[#b93b72]' },
+  { title: 'Huerta', text: 'Semillas, riego y saberes para cultivar seguridad alimentaria.', icon: Sprout, color: 'bg-[#617e38]' },
+  { title: 'Piscicultura', text: 'Sistemas de agua, alevinos y equipos para producir.', icon: Fish, color: 'bg-[#24679b]' },
+  { title: 'Repostería', text: 'Insumos, utensilios y técnica para productos locales.', icon: Wheat, color: 'bg-[#d34d83]' },
+  { title: 'Artesanías', text: 'Materiales, diseño y canales de comercialización.', icon: HandHeart, color: 'bg-[#aa5c22]' },
+  { title: 'Avicultura', text: 'Infraestructura, alimentación y manejo seguro.', icon: Leaf, color: 'bg-[#b57d16]' },
+];
+
+export default function CamDonorPitch() {
+  return <section className="overflow-hidden bg-[#fffdf9] py-16 sm:py-24" aria-labelledby="cam-donors-title"><div className="senda-shell">
+    <div className="grid gap-10 border-b border-[#ddd4ca] pb-12 lg:grid-cols-[1.1fr_.9fr] lg:items-end"><div><p className="senda-eyebrow">Una oportunidad concreta para donar</p><h2 id="cam-donors-title" className="mt-3 max-w-3xl font-serif text-4xl font-semibold leading-[1.02] tracking-tight text-[#26231f] sm:text-6xl">Tu aporte no entrega solo un insumo. <em className="font-normal text-[#6e3f58]">Activa una oportunidad.</em></h2></div><p className="max-w-md text-sm leading-7 text-[#6c665f]">El Modelo CAM conecta una inversión solidaria con formación, producción, comercialización y autonomía. Así, una donación se convierte en capacidades que pueden permanecer en el tiempo.</p></div>
+
+    <div className="mt-10 grid gap-5 lg:grid-cols-[.8fr_1.2fr]"><aside className="rounded-3xl bg-[#203c3d] p-7 text-white sm:p-9"><p className="text-xs font-bold uppercase tracking-[.15em] text-[#d9b991]">Meta de impacto</p><div className="mt-7 flex items-end gap-3"><strong className="font-serif text-7xl font-semibold leading-none text-[#f5e9de]">60</strong><span className="mb-1 text-sm font-semibold text-[#d6e7e1]">mujeres<br/>acompañadas</span></div><p className="mt-6 text-sm leading-6 text-[#d6e7e1]">Cada mujer elige una línea principal, recibe formación integral y puede rotar por otras áreas para encontrar su mejor camino.</p><ul className="mt-7 space-y-3 border-t border-white/15 pt-6 text-sm text-[#edf4f0]"><li className="flex gap-2"><Check className="h-5 w-5 shrink-0 text-[#d9b991]"/>Formación técnica y financiera</li><li className="flex gap-2"><Check className="h-5 w-5 shrink-0 text-[#d9b991]"/>Herramientas y espacios de trabajo</li><li className="flex gap-2"><Check className="h-5 w-5 shrink-0 text-[#d9b991]"/>Acompañamiento psicosocial y comercial</li></ul></aside>
+      <div className="grid gap-3 sm:grid-cols-2 xl:grid-cols-3">{lines.map(({ title, text, icon: Icon, color }) => <article key={title} className="group min-h-48 rounded-2xl border border-[#ddd4ca] bg-[#f4eee7] p-5 transition hover:-translate-y-1 hover:bg-white hover:shadow-lg"><span className={`grid h-11 w-11 place-items-center rounded-full text-white ${color}`}><Icon className="h-5 w-5"/></span><h3 className="mt-7 font-serif text-xl font-semibold text-[#26231f]">{title}</h3><p className="mt-2 text-xs leading-5 text-[#6c665f]">{text}</p></article>)}</div>
+    </div>
+    <div className="mt-8 flex flex-col gap-6 rounded-3xl bg-[#f0e1da] p-7 sm:p-9 lg:flex-row lg:items-center lg:justify-between"><div className="flex gap-4"><HeartHandshake className="mt-1 h-7 w-7 shrink-0 text-[#6e3f58]"/><div><p className="text-xs font-bold uppercase tracking-[.15em] text-[#6e3f58]">Para personas y empresas aliadas</p><h3 className="mt-1 font-serif text-2xl font-semibold text-[#26231f]">Financia una ruta de autonomía, no una ayuda de un solo día.</h3><p className="mt-2 max-w-2xl text-sm leading-6 text-[#6c665f]">Conoce cómo CAM coordina el acompañamiento y elige el tipo de impacto que quieres hacer posible.</p></div></div><div className="flex shrink-0 flex-wrap gap-3"><Link href="/modelos#cam" className="senda-button senda-button--secondary">Conocer Modelo CAM <ArrowRight/></Link><Link href="/donar" className="senda-button senda-button--primary">Quiero aportar <ArrowRight/></Link></div></div>
+  </div></section>;
+}

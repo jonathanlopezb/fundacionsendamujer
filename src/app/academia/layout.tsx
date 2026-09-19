@@ -2,6 +2,7 @@ import type { Metadata } from 'next';
 import '../globals.css';
 
 export const metadata: Metadata = {
+  alternates: { canonical: '/academia' },
   title: 'SendaAcademia — Plataforma de Formación & Emprendimiento | Fundación Senda Mujer',
   description: 'Plataforma de formación digital de la Fundación Senda Mujer en Cartagena. Cursos certificados en emprendimiento, derechos humanos, salud integral y habilidades digitales.',
 };
