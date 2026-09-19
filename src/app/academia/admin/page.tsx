@@ -36,7 +36,7 @@ export default function AcademiaAdminPage() {
   const [statusMessage, setStatusMessage] = useState<{ text: string; type: 'success' | 'error' | 'info' } | null>(null);
 
   // Builder Course State
-  const [courseForm, setCourseForm] = useState({
+  const [courseForm, setCourseForm] = useState<any>({
     slug: '',
     title: '',
     subtitle: '',
@@ -534,6 +534,24 @@ export default function AcademiaAdminPage() {
                         ],
                       },
                     ],
+                    assessment: {
+                      title: 'Evaluación Oficial de Certificación',
+                      durationMinutes: 20,
+                      passingScore: 70,
+                      questions: [
+                        {
+                          id: 'q1',
+                          question: '¿Cuál es el principal aprendizaje o estrategia clave de este curso?',
+                          options: [
+                            { id: 'a', text: 'Opción A (Respuesta Correcta)', isCorrect: true },
+                            { id: 'b', text: 'Opción B (Distractor)', isCorrect: false },
+                            { id: 'c', text: 'Opción C (Distractor)', isCorrect: false },
+                            { id: 'd', text: 'Opción D (Distractor)', isCorrect: false },
+                          ],
+                          explanation: 'Explicación didáctica de la respuesta correcta.',
+                        },
+                      ],
+                    },
                   });
                   setActiveTab('builder');
                 }}
@@ -597,9 +615,28 @@ export default function AcademiaAdminPage() {
                             certificateEnabled: c.certificateEnabled ?? true,
                             published: c.published ?? true,
                             modules: c.modules || [],
+                            assessment: c.assessment || {
+                              title: `Evaluación Final: ${c.title}`,
+                              durationMinutes: 20,
+                              passingScore: 70,
+                              questions: [
+                                {
+                                  id: 'q1',
+                                  question: '¿Cuál es el principal aprendizaje o estrategia clave de este curso?',
+                                  options: [
+                                    { id: 'a', text: 'Opción A (Respuesta Correcta)', isCorrect: true },
+                                    { id: 'b', text: 'Opción B (Distractor)', isCorrect: false },
+                                    { id: 'c', text: 'Opción C (Distractor)', isCorrect: false },
+                                    { id: 'd', text: 'Opción D (Distractor)', isCorrect: false },
+                                  ],
+                                  explanation: 'Explicación didáctica de la respuesta correcta.',
+                                },
+                              ],
+                            },
                           });
                           setActiveTab('builder');
                         }}
+
                         className="px-3 py-1.5 rounded-xl text-xs font-black bg-pink-600/80 hover:bg-pink-600 text-white transition-colors flex items-center gap-1 cursor-pointer"
                       >
                         <Edit className="w-3 h-3" />
