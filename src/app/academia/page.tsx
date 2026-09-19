@@ -299,63 +299,65 @@ function HeroSection({
   };
 
   return (
-    <section className="relative overflow-hidden bg-gradient-to-b from-[#160623] via-[#1b072c] to-[#0c0414] border-b border-white/10 py-12 sm:py-20 px-4 sm:px-6 lg:px-8">
-      {/* Background glow accents */}
-      <div className="pointer-events-none absolute -top-24 left-1/4 w-96 h-96 bg-pink-600/20 rounded-full blur-3xl" />
-      <div className="pointer-events-none absolute top-1/2 right-10 w-96 h-96 bg-violet-600/20 rounded-full blur-3xl" />
+    <section className="relative overflow-hidden bg-gradient-to-b from-[#13051f] via-[#1a072c] to-[#0c0414] border-b border-white/10 pt-10 sm:pt-16 pb-14 sm:pb-20 px-4 sm:px-6 lg:px-8">
+      {/* Soft atmospheric ambient glow */}
+      <div className="pointer-events-none absolute -top-20 left-1/4 w-[500px] h-[500px] bg-pink-600/15 rounded-full blur-[120px]" />
+      <div className="pointer-events-none absolute top-1/3 right-10 w-[450px] h-[450px] bg-purple-600/15 rounded-full blur-[100px]" />
 
-      <div className="max-w-7xl mx-auto grid grid-cols-1 lg:grid-cols-12 gap-12 items-center relative z-10">
+      <div className="max-w-7xl mx-auto grid grid-cols-1 lg:grid-cols-12 gap-8 lg:gap-12 items-center relative z-10">
         
-        {/* Left Column: Heading, Search & Bullet Points (7 cols) */}
-        <div className="lg:col-span-7 space-y-6">
+        {/* Left Column: Heading, Subtitle, Search Bar & Quick Highlights (7 cols) */}
+        <div className="lg:col-span-7 space-y-6 sm:space-y-7">
           
-          <div className="inline-flex items-center gap-2 px-3.5 py-1.5 rounded-full text-xs font-black uppercase tracking-wider text-pink-300 bg-pink-500/10 border border-pink-500/30 shadow-sm">
-            <Sparkles className="w-3.5 h-3.5 text-amber-300" />
+          <div className="inline-flex items-center gap-2 px-3.5 py-1.5 rounded-full text-xs font-black uppercase tracking-wider text-pink-300 bg-pink-500/10 border border-pink-500/25 shadow-sm">
+            <Sparkles className="w-3.5 h-3.5 text-amber-300 animate-pulse" />
             <span>Aprende hoy, transforma mañana</span>
           </div>
 
-          <h1 className="text-3xl sm:text-5xl lg:text-6xl font-black text-white tracking-tight leading-[1.08]">
+          <h1 className="text-3.5xl sm:text-5xl lg:text-6xl font-black text-white tracking-tight leading-[1.08]">
             Tu crecimiento <br />
-            <span className="bg-gradient-to-r from-pink-400 via-fuchsia-300 to-amber-300 bg-clip-text text-transparent">
+            <span className="bg-gradient-to-r from-pink-400 via-fuchsia-300 to-amber-200 bg-clip-text text-transparent">
               es nuestra misión
             </span>
           </h1>
 
-          <p className="text-sm sm:text-base text-pink-100/80 max-w-xl leading-relaxed">
-            Una plataforma educativa diseñada para potenciar tus habilidades, abrir nuevas oportunidades y construir el futuro que mereces.
+          <p className="text-sm sm:text-base text-pink-100/85 max-w-xl leading-relaxed font-medium">
+            Capacítate, aprende y haz realidad tus sueños con SendaMujer. Una plataforma educativa diseñada para potenciar tus habilidades, abrir nuevas oportunidades y construir el futuro que mereces.
           </p>
 
-          {/* Big Search Bar matching Blueprint */}
-          <form onSubmit={handleSubmit} className="flex items-center gap-2 max-w-lg bg-white/[0.08] backdrop-blur-md p-1.5 rounded-full border border-white/20 shadow-xl focus-within:border-pink-400 transition-all">
-            <Search className="w-5 h-5 text-pink-300/70 ml-3 shrink-0" />
+          {/* High-Contrast Search Bar Matching Blueprint */}
+          <form onSubmit={handleSubmit} className="flex items-center gap-2 max-w-lg bg-white p-1.5 sm:p-2 rounded-full shadow-2xl border-2 border-pink-400/30 focus-within:border-pink-500 focus-within:ring-4 focus-within:ring-pink-500/20 transition-all">
+            <Search className="w-5 h-5 text-slate-400 ml-3 shrink-0" />
             <input
               type="text"
               value={localQuery}
               onChange={(e) => setLocalQuery(e.target.value)}
               placeholder="¿Qué curso te gustaría aprender hoy?"
-              className="flex-1 bg-transparent px-2 py-2 text-xs sm:text-sm text-white placeholder-pink-200/50 focus:outline-none"
+              className="flex-1 bg-transparent px-2.5 py-2 text-xs sm:text-sm text-slate-900 placeholder-slate-400 font-medium focus:outline-none"
             />
             <button
               type="submit"
-              className="px-6 py-2.5 rounded-full text-xs font-black bg-gradient-to-r from-[#E12880] to-[#7B1FA2] text-white shadow-md hover:scale-105 transition-transform cursor-pointer"
+              className="px-6 sm:px-8 py-2.5 sm:py-3 rounded-full text-xs sm:text-sm font-black bg-gradient-to-r from-[#E12880] to-[#9C27B0] text-white shadow-lg hover:shadow-pink-500/40 hover:scale-[1.02] active:scale-[0.98] transition-all cursor-pointer shrink-0"
             >
               Buscar
             </button>
           </form>
 
-          {/* Quick Value Highlights List */}
-          <div className="pt-4 grid grid-cols-2 sm:grid-cols-3 gap-3 text-xs text-pink-200/80 font-semibold">
+          {/* Value Highlights Matching Blueprint Side Section */}
+          <div className="pt-2 grid grid-cols-2 sm:grid-cols-3 gap-2.5 sm:gap-3 text-[11px] sm:text-xs text-pink-100/90 font-semibold">
             {[
               { label: 'Cursos en línea', icon: BookOpen },
               { label: 'Clases en vivo', icon: Radio },
-              { label: 'Certificados oficiales', icon: Award },
+              { label: 'Evaluaciones y certificados', icon: Award },
               { label: 'Comunidad activa', icon: Users },
-              { label: 'Mentorías 1 a 1', icon: HeartHandshake },
+              { label: 'Mentorías y acompañamiento', icon: HeartHandshake },
             ].map((item, idx) => {
               const Icon = item.icon;
               return (
-                <div key={idx} className="flex items-center gap-2 bg-white/[0.03] p-2 rounded-xl border border-white/5">
-                  <Icon className="w-4 h-4 text-pink-400 shrink-0" />
+                <div key={idx} className="flex items-center gap-2 bg-white/[0.04] hover:bg-white/[0.08] backdrop-blur-sm p-2 sm:p-2.5 rounded-xl border border-white/10 transition-colors">
+                  <div className="w-6 h-6 rounded-lg bg-pink-500/20 flex items-center justify-center shrink-0">
+                    <Icon className="w-3.5 h-3.5 text-pink-400" />
+                  </div>
                   <span className="truncate">{item.label}</span>
                 </div>
               );
@@ -364,24 +366,34 @@ function HeroSection({
 
         </div>
 
-        {/* Right Column: Hero Graphic + Badge matching Blueprint (5 cols) */}
-        <div className="lg:col-span-5 relative">
-          <div className="relative rounded-3xl overflow-hidden border-2 border-pink-500/30 shadow-2xl bg-gradient-to-br from-[#270838] to-[#12031a]">
+        {/* Right Column: Hero Graphic + +50,000 Floating Badge matching Blueprint (5 cols) */}
+        <div className="lg:col-span-5 relative mt-4 lg:mt-0">
+          <div className="relative rounded-3xl overflow-hidden border-2 border-pink-500/30 shadow-2xl bg-gradient-to-br from-[#270838] to-[#12031a] group">
             <img
               src="https://images.unsplash.com/photo-1573496359142-b8d87734a5a2?auto=format&fit=crop&w=1000&q=80"
               alt="Estudiante SendaMujer"
-              className="w-full h-80 sm:h-96 object-cover object-top"
+              className="w-full h-80 sm:h-[420px] object-cover object-top group-hover:scale-105 transition-transform duration-700"
             />
-            <div className="absolute inset-0 bg-gradient-to-t from-[#0c0414] via-transparent to-transparent" />
+            
+            {/* Subtle Gradient Overlays */}
+            <div className="absolute inset-0 bg-gradient-to-t from-[#0c0414] via-[#0c0414]/20 to-transparent" />
+            <div className="absolute inset-0 bg-gradient-to-r from-pink-600/10 to-transparent" />
 
-            {/* +50,000 Floating Badge matching Blueprint */}
-            <div className="absolute bottom-4 left-4 right-4 bg-[#1b072c]/90 backdrop-blur-md border border-pink-500/40 p-4 rounded-2xl shadow-xl flex items-center gap-3">
-              <div className="w-10 h-10 rounded-xl bg-gradient-to-tr from-[#E12880] to-amber-400 flex items-center justify-center font-black text-slate-900 shadow-md shrink-0">
-                +50k
+            {/* +50,000 Floating Badge Matching Blueprint */}
+            <div className="absolute bottom-5 left-5 right-5 bg-[#12041d]/90 backdrop-blur-xl border border-white/20 p-3.5 sm:p-4 rounded-2xl shadow-2xl flex items-center gap-3.5 transform transition-all duration-300 hover:border-pink-400/60">
+              <div className="w-11 h-11 rounded-full bg-gradient-to-tr from-[#E12880] to-[#7B1FA2] flex items-center justify-center text-white shadow-lg shrink-0 border border-white/20">
+                <Play className="w-4 h-4 fill-white text-white ml-0.5" />
               </div>
-              <div>
-                <p className="text-sm font-black text-white">+50,000 Mujeres</p>
-                <p className="text-[11px] text-pink-200/70">ya están transformando sus vidas con Senda</p>
+              <div className="flex-1 min-w-0">
+                <div className="flex items-center gap-2">
+                  <p className="text-base sm:text-lg font-black text-white tracking-tight leading-none">+50,000</p>
+                  <span className="px-2 py-0.5 rounded-full text-[9px] font-black uppercase bg-emerald-500/20 text-emerald-300 border border-emerald-500/30">
+                    Comunidad
+                  </span>
+                </div>
+                <p className="text-[11px] sm:text-xs text-pink-200/80 font-medium mt-0.5 truncate">
+                  Mujeres ya están transformando sus vidas
+                </p>
               </div>
             </div>
           </div>
@@ -398,23 +410,23 @@ function CategoriesSection({
   onSelectCategory: (cat: string) => void;
 }) {
   const categories = [
-    { name: 'Desarrollo Personal', icon: Heart, color: 'from-pink-500 to-rose-600' },
-    { name: 'Habilidades Digitales', icon: Laptop, color: 'from-blue-500 to-indigo-600' },
-    { name: 'Emprendimiento', icon: Sprout, color: 'from-emerald-500 to-teal-600' },
-    { name: 'Liderazgo', icon: Crown, color: 'from-violet-500 to-purple-600' },
-    { name: 'Bienestar', icon: Sparkles, color: 'from-amber-400 to-orange-500' },
-    { name: 'Finanzas', icon: Coins, color: 'from-cyan-500 to-blue-600' },
-    { name: 'Arte y Cultura', icon: Palette, color: 'from-fuchsia-500 to-pink-600' },
+    { name: 'Desarrollo Personal', icon: Heart, bgClass: 'bg-rose-500/20 text-rose-400 border-rose-500/30 group-hover:bg-rose-500 group-hover:text-white' },
+    { name: 'Habilidades Digitales', icon: Laptop, bgClass: 'bg-blue-500/20 text-blue-400 border-blue-500/30 group-hover:bg-blue-500 group-hover:text-white' },
+    { name: 'Emprendimiento', icon: Sprout, bgClass: 'bg-emerald-500/20 text-emerald-400 border-emerald-500/30 group-hover:bg-emerald-500 group-hover:text-white' },
+    { name: 'Liderazgo', icon: Crown, bgClass: 'bg-purple-500/20 text-purple-400 border-purple-500/30 group-hover:bg-purple-500 group-hover:text-white' },
+    { name: 'Bienestar', icon: Sparkles, bgClass: 'bg-amber-500/20 text-amber-400 border-amber-500/30 group-hover:bg-amber-500 group-hover:text-white' },
+    { name: 'Finanzas', icon: Coins, bgClass: 'bg-cyan-500/20 text-cyan-400 border-cyan-500/30 group-hover:bg-cyan-500 group-hover:text-white' },
+    { name: 'Arte y Cultura', icon: Palette, bgClass: 'bg-pink-500/20 text-pink-400 border-pink-500/30 group-hover:bg-pink-500 group-hover:text-white' },
   ];
 
   return (
-    <section className="py-12 px-4 sm:px-6 lg:px-8 max-w-7xl mx-auto space-y-6">
+    <section className="py-10 sm:py-14 px-4 sm:px-6 lg:px-8 max-w-7xl mx-auto space-y-6">
       <div className="text-center space-y-2">
-        <h2 className="text-xl sm:text-2xl font-black text-white">
+        <h2 className="text-2xl sm:text-3xl font-black text-white tracking-tight">
           Áreas de Formación Integral
         </h2>
-        <p className="text-xs text-pink-200/70">
-          Elige una categoría y comienza a desarrollar habilidades prácticas hoy mismo.
+        <p className="text-xs sm:text-sm text-pink-200/70 max-w-xl mx-auto">
+          Explora nuestras 7 rutas de aprendizaje diseñadas para impulsar tu independencia económica y bienestar.
         </p>
       </div>
 
@@ -425,10 +437,10 @@ function CategoriesSection({
             <button
               key={cat.name}
               onClick={() => onSelectCategory(cat.name)}
-              className="group bg-[#180727] hover:bg-[#250a3b] border border-white/10 hover:border-pink-400/50 p-4 rounded-2xl flex flex-col items-center justify-center text-center space-y-2.5 transition-all hover:scale-105 hover:shadow-xl cursor-pointer"
+              className="group bg-[#180727]/90 hover:bg-[#280b3d] border border-white/10 hover:border-pink-400/60 p-4 rounded-2xl flex flex-col items-center justify-center text-center space-y-3 transition-all duration-300 hover:scale-[1.04] hover:shadow-xl hover:shadow-pink-900/20 cursor-pointer"
             >
-              <div className={`w-12 h-12 rounded-2xl bg-gradient-to-tr ${cat.color} p-2.5 flex items-center justify-center text-white shadow-lg group-hover:scale-110 transition-transform`}>
-                <Icon className="w-6 h-6" />
+              <div className={`w-12 h-12 rounded-full border flex items-center justify-center transition-all duration-300 shadow-md ${cat.bgClass}`}>
+                <Icon className="w-5 h-5" />
               </div>
               <span className="text-xs font-bold text-pink-100 group-hover:text-pink-300 transition-colors leading-tight">
                 {cat.name}
@@ -440,6 +452,7 @@ function CategoriesSection({
     </section>
   );
 }
+
 
 function FeaturedCoursesSection({
   user,
