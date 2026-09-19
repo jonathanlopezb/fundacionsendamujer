@@ -284,8 +284,38 @@ export default function AcademiaAdminPage() {
   };
 
 
+  // Standalone Assessment Builder Handlers (Tab 3)
+  const addAssessmentQuestion = () => {
+    const qNum = (assessmentForm.questions?.length || 0) + 1;
+    setAssessmentForm((prev: any) => ({
+      ...prev,
+      questions: [
+        ...(prev.questions || []),
+        {
+          id: `q${qNum}`,
+          question: `Pregunta ${qNum}: Escribe aquí el enunciado...`,
+          options: [
+            { id: 'a', text: 'Opción A (Respuesta Correcta)', isCorrect: true },
+            { id: 'b', text: 'Opción B', isCorrect: false },
+            { id: 'c', text: 'Opción C', isCorrect: false },
+            { id: 'd', text: 'Opción D', isCorrect: false },
+          ],
+          explanation: 'Explicación didáctica de la respuesta correcta.',
+        },
+      ],
+    }));
+  };
+
+  const removeAssessmentQuestion = (qIdx: number) => {
+    setAssessmentForm((prev: any) => ({
+      ...prev,
+      questions: (prev.questions || []).filter((_: any, idx: number) => idx !== qIdx),
+    }));
+  };
+
   // Save Course Handler (Saves Course AND Exam in one go)
   const handleSaveCourse = async (e: React.FormEvent) => {
+
     e.preventDefault();
     setLoading(true);
     setStatusMessage({ text: 'Guardando curso y examen de certificación...', type: 'info' });
