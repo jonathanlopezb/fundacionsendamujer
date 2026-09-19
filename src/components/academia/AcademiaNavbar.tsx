@@ -92,9 +92,9 @@ export default function AcademiaNavbar({
           </nav>
         </div>
 
-        {/* Search, Notifications & User Profile */}
-        <div className="flex items-center gap-3">
-          {/* Quick Search */}
+          {/* Search, Notifications & User Profile */}
+        <div className="flex items-center gap-2 sm:gap-3">
+          {/* Quick Search Desktop */}
           <form onSubmit={handleSearchSubmit} className="hidden lg:flex relative items-center">
             <Search className="absolute left-3 w-4 h-4 text-pink-300/60 pointer-events-none" />
             <input
@@ -105,6 +105,18 @@ export default function AcademiaNavbar({
               className="w-56 xl:w-64 pl-9 pr-4 py-1.5 rounded-full text-xs bg-white/[0.06] border border-white/10 text-white placeholder-pink-200/40 focus:outline-none focus:border-pink-400 focus:ring-1 focus:ring-pink-400/50 transition-all"
             />
           </form>
+
+          {/* Mobile Search Toggle Button */}
+          <button
+            aria-label="Buscar en la academia"
+            onClick={() => {
+              const query = prompt('¿Qué curso o tema deseas buscar?');
+              if (query && onSearch) onSearch(query);
+            }}
+            className="lg:hidden p-2 rounded-full text-pink-200/80 hover:text-white hover:bg-white/5 transition-colors cursor-pointer"
+          >
+            <Search className="w-4 h-4" />
+          </button>
 
           {/* Notification Bell */}
           <button
@@ -121,15 +133,15 @@ export default function AcademiaNavbar({
             <div className="relative">
               <button
                 onClick={() => setUserMenuOpen(!userMenuOpen)}
-                className="flex items-center gap-2 p-1 pl-2 pr-3 rounded-full bg-white/[0.07] border border-white/15 hover:border-pink-400/50 transition-all cursor-pointer"
+                className="flex items-center gap-1.5 sm:gap-2 p-1 pl-1.5 sm:pl-2 pr-2.5 sm:pr-3 rounded-full bg-white/[0.07] border border-white/15 hover:border-pink-400/50 transition-all cursor-pointer"
               >
-                <div className="w-7 h-7 rounded-full bg-gradient-to-tr from-[#E12880] to-amber-400 flex items-center justify-center text-xs font-black text-white shadow-sm">
+                <div className="w-7 h-7 rounded-full bg-gradient-to-tr from-[#E12880] to-amber-400 flex items-center justify-center text-xs font-black text-white shadow-sm shrink-0">
                   {user.name[0].toUpperCase()}
                 </div>
-                <span className="text-xs font-bold text-white max-w-[90px] truncate hidden sm:inline-block">
+                <span className="text-xs font-bold text-white max-w-[80px] sm:max-w-[100px] truncate hidden xs:inline-block">
                   {user.name.split(' ')[0]}
                 </span>
-                <ChevronDown className="w-3.5 h-3.5 text-pink-200/70" />
+                <ChevronDown className="w-3.5 h-3.5 text-pink-200/70 shrink-0" />
               </button>
 
               {userMenuOpen && (
@@ -170,19 +182,20 @@ export default function AcademiaNavbar({
               )}
             </div>
           ) : (
-            <div className="flex items-center gap-2">
+            <div className="flex items-center gap-1.5 sm:gap-2">
               <button
                 onClick={() => onOpenAuth('login')}
-                className="text-xs font-bold text-pink-100 hover:text-pink-300 px-3 py-1.5 transition-colors cursor-pointer"
+                className="text-xs font-bold text-pink-100 hover:text-pink-300 px-2 sm:px-3 py-1.5 transition-colors cursor-pointer"
               >
                 Ingresar
               </button>
               <button
                 onClick={() => onOpenAuth('register')}
-                className="bg-gradient-to-r from-[#E12880] to-[#7B1FA2] hover:from-[#c2185b] hover:to-[#4a148c] text-white font-extrabold text-xs px-4 py-2 rounded-full shadow-lg shadow-pink-600/30 transition-all flex items-center gap-1.5 cursor-pointer border border-pink-300/30 hover:scale-105"
+                className="bg-gradient-to-r from-[#E12880] to-[#7B1FA2] hover:from-[#c2185b] hover:to-[#4a148c] text-white font-extrabold text-xs px-3 sm:px-4 py-2 rounded-full shadow-lg shadow-pink-600/30 transition-all flex items-center gap-1.5 cursor-pointer border border-pink-300/30 hover:scale-105 shrink-0"
               >
                 <Zap className="w-3.5 h-3.5 text-amber-300" />
-                <span>Registrarme Gratis</span>
+                <span className="hidden sm:inline">Registrarme Gratis</span>
+                <span className="sm:hidden">Registro</span>
               </button>
             </div>
           )}
@@ -190,13 +203,14 @@ export default function AcademiaNavbar({
           {/* Main Website Link */}
           <Link
             href="/"
-            className="hidden sm:flex items-center gap-1.5 text-[11px] font-bold text-pink-200/70 hover:text-white bg-white/[0.04] hover:bg-white/10 px-3 py-1.5 rounded-full border border-white/10 transition-all"
+            className="hidden md:flex items-center gap-1.5 text-[11px] font-bold text-pink-200/70 hover:text-white bg-white/[0.04] hover:bg-white/10 px-3 py-1.5 rounded-full border border-white/10 transition-all"
             title="Volver a la Fundación"
           >
             <span>Web Senda</span>
             <ExternalLink className="w-3 h-3 text-pink-300" />
           </Link>
         </div>
+
 
       </div>
     </header>

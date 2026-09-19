@@ -79,7 +79,7 @@ export default function AcademiaMainPage() {
   };
 
   return (
-    <div className="min-h-screen bg-[#0c0414] text-slate-100 flex flex-col selection:bg-pink-500 selection:text-white pb-16 md:pb-0">
+    <div className="min-h-screen bg-[#0c0414] text-slate-100 flex flex-col selection:bg-pink-500 selection:text-white pb-24 md:pb-0">
       
       {/* Navbar matching Blueprint */}
       <AcademiaNavbar
