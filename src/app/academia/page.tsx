@@ -366,38 +366,132 @@ function HeroSection({
 
         </div>
 
-        {/* Right Column: Hero Graphic + +50,000 Floating Badge matching Blueprint (5 cols) */}
-        <div className="lg:col-span-5 relative mt-4 lg:mt-0">
-          <div className="relative rounded-3xl overflow-hidden border-2 border-pink-500/30 shadow-2xl bg-gradient-to-br from-[#270838] to-[#12031a] group">
-            <img
-              src="https://images.unsplash.com/photo-1573496359142-b8d87734a5a2?auto=format&fit=crop&w=1000&q=80"
-              alt="Estudiante SendaMujer"
-              className="w-full h-80 sm:h-[420px] object-cover object-top group-hover:scale-105 transition-transform duration-700"
-            />
-            
-            {/* Subtle Gradient Overlays */}
-            <div className="absolute inset-0 bg-gradient-to-t from-[#0c0414] via-[#0c0414]/20 to-transparent" />
-            <div className="absolute inset-0 bg-gradient-to-r from-pink-600/10 to-transparent" />
+        {/* Right Column: High-Converting Interactive Marketing Showcase (5 cols) */}
+        <div className="lg:col-span-5 relative mt-6 lg:mt-0">
+          
+          {/* Background Ambient Glow */}
+          <div className="absolute -inset-2 bg-gradient-to-r from-pink-600 to-purple-600 rounded-3xl opacity-30 blur-2xl animate-pulse" />
 
-            {/* +50,000 Floating Badge Matching Blueprint */}
-            <div className="absolute bottom-5 left-5 right-5 bg-[#12041d]/90 backdrop-blur-xl border border-white/20 p-3.5 sm:p-4 rounded-2xl shadow-2xl flex items-center gap-3.5 transform transition-all duration-300 hover:border-pink-400/60">
-              <div className="w-11 h-11 rounded-full bg-gradient-to-tr from-[#E12880] to-[#7B1FA2] flex items-center justify-center text-white shadow-lg shrink-0 border border-white/20">
-                <Play className="w-4 h-4 fill-white text-white ml-0.5" />
+          {/* Main Card Container */}
+          <div className="relative bg-[#160624]/90 backdrop-blur-xl border-2 border-pink-500/30 rounded-3xl p-4 sm:p-5 shadow-2xl space-y-4">
+            
+            {/* Top Bar: Live Status & Viewers Counter */}
+            <div className="flex items-center justify-between">
+              <div className="inline-flex items-center gap-2 px-3 py-1 rounded-full text-[11px] font-black uppercase tracking-wider bg-red-500/20 text-red-300 border border-red-500/30">
+                <span className="w-2 h-2 rounded-full bg-red-500 animate-ping" />
+                <span className="w-2 h-2 rounded-full bg-red-500 -ml-4" />
+                <span>En Vivo Ahora</span>
               </div>
-              <div className="flex-1 min-w-0">
-                <div className="flex items-center gap-2">
-                  <p className="text-base sm:text-lg font-black text-white tracking-tight leading-none">+50,000</p>
-                  <span className="px-2 py-0.5 rounded-full text-[9px] font-black uppercase bg-emerald-500/20 text-emerald-300 border border-emerald-500/30">
-                    Comunidad
-                  </span>
-                </div>
-                <p className="text-[11px] sm:text-xs text-pink-200/80 font-medium mt-0.5 truncate">
-                  Mujeres ya están transformando sus vidas
-                </p>
+              <div className="flex items-center gap-1.5 text-xs text-pink-200/80 font-bold bg-white/[0.06] px-3 py-1 rounded-full border border-white/10">
+                <Users className="w-3.5 h-3.5 text-pink-400" />
+                <span>+1,240 conectadas</span>
               </div>
             </div>
+
+            {/* Interactive Video Preview Box */}
+            <div className="relative rounded-2xl overflow-hidden aspect-[16/10] bg-gradient-to-tr from-[#2d083f] to-[#12031a] border border-white/15 group">
+              <img
+                src="https://images.unsplash.com/photo-1573496359142-b8d87734a5a2?auto=format&fit=crop&w=800&q=80"
+                alt="Clase en Vivo SendaMujer"
+                className="w-full h-full object-cover group-hover:scale-105 transition-transform duration-700 opacity-85"
+              />
+              <div className="absolute inset-0 bg-gradient-to-t from-[#0c0414] via-black/30 to-transparent" />
+
+              {/* Glowing Center Play Button */}
+              <Link
+                href="/academia/aprender/marketing-digital-emprendedoras"
+                className="absolute inset-0 flex items-center justify-center cursor-pointer"
+              >
+                <div className="relative flex items-center justify-center">
+                  <div className="absolute w-16 h-16 rounded-full bg-pink-500/40 animate-ping" />
+                  <div className="w-14 h-14 rounded-full bg-gradient-to-tr from-[#E12880] to-[#7B1FA2] flex items-center justify-center text-white shadow-2xl border-2 border-white/40 group-hover:scale-110 transition-transform">
+                    <Play className="w-6 h-6 fill-white text-white ml-1" />
+                  </div>
+                </div>
+              </Link>
+
+              {/* Progress Bar & Class Title Overlay */}
+              <div className="absolute bottom-3 left-3 right-3 space-y-1.5 pointer-events-none">
+                <div className="flex items-center justify-between text-[11px] font-bold text-white drop-shadow-md">
+                  <span className="truncate">Clase 1: Estrategia y Marca Personal</span>
+                  <span className="text-amber-300">Gratis</span>
+                </div>
+                <div className="h-1.5 w-full bg-white/20 rounded-full overflow-hidden backdrop-blur-sm">
+                  <div className="h-full bg-gradient-to-r from-[#E12880] to-amber-400 w-2/3 rounded-full" />
+                </div>
+              </div>
+            </div>
+
+            {/* Course Information & Marketing Pitch */}
+            <div className="space-y-3 pt-1">
+              <div className="flex items-start justify-between gap-2">
+                <div>
+                  <span className="text-[10px] font-black uppercase tracking-wider text-pink-400">
+                    Curso Destacado del Mes
+                  </span>
+                  <h3 className="text-sm sm:text-base font-black text-white leading-tight">
+                    Marketing Digital para Emprendedoras
+                  </h3>
+                </div>
+                <div className="flex items-center gap-1 bg-amber-400/20 border border-amber-400/30 px-2 py-0.5 rounded-lg text-amber-300 text-xs font-black shrink-0">
+                  <Star className="w-3.5 h-3.5 fill-amber-300" />
+                  <span>4.9</span>
+                </div>
+              </div>
+
+              {/* Real-time Student Testimonial / Social Proof */}
+              <div className="grid grid-cols-2 gap-2 text-xs">
+                <div className="bg-white/[0.04] border border-white/10 p-2.5 rounded-xl space-y-1">
+                  <div className="flex items-center gap-1.5 text-emerald-400 font-black text-[11px]">
+                    <CheckCircle2 className="w-3.5 h-3.5" />
+                    <span>100% Gratuito</span>
+                  </div>
+                  <p className="text-[10px] text-pink-200/70">Financiado por proyectos de impacto social</p>
+                </div>
+
+                <div className="bg-white/[0.04] border border-white/10 p-2.5 rounded-xl space-y-1">
+                  <div className="flex items-center gap-1.5 text-pink-300 font-black text-[11px]">
+                    <Award className="w-3.5 h-3.5 text-amber-300" />
+                    <span>Diploma Oficial</span>
+                  </div>
+                  <p className="text-[10px] text-pink-200/70">Con código QR y firma institucional</p>
+                </div>
+              </div>
+
+              {/* Call to Action Button */}
+              <Link
+                href="/academia/aprender/marketing-digital-emprendedoras"
+                className="w-full py-3 px-4 rounded-xl text-xs sm:text-sm font-black text-white bg-gradient-to-r from-[#E12880] via-[#C2185B] to-[#7B1FA2] hover:opacity-95 shadow-lg shadow-pink-600/30 flex items-center justify-center gap-2 transition-all hover:scale-[1.02] active:scale-[0.98] cursor-pointer"
+              >
+                <Sparkles className="w-4 h-4 text-amber-300" />
+                <span>Comenzar a Aprender Ahora — Gratis</span>
+                <ArrowRight className="w-4 h-4 ml-1" />
+              </Link>
+            </div>
+
+            {/* Bottom Floating Social Proof Badge */}
+            <div className="pt-2 border-t border-white/10 flex items-center justify-between text-[11px] text-pink-200/80">
+              <div className="flex items-center -space-x-2">
+                {['👩🏾', '👩🏼', '👩🏽', '👩🏿'].map((emoji, i) => (
+                  <div
+                    key={i}
+                    className="w-6 h-6 rounded-full bg-[#270838] border-2 border-[#160624] flex items-center justify-center text-xs shadow-md"
+                  >
+                    {emoji}
+                  </div>
+                ))}
+                <span className="pl-3 font-bold text-white text-[11px]">+50k graduadas</span>
+              </div>
+              <span className="text-pink-400 font-bold flex items-center gap-1">
+                <span>98% satisfacción</span>
+                <TrendingUp className="w-3.5 h-3.5 text-emerald-400" />
+              </span>
+            </div>
+
           </div>
+
         </div>
+
 
       </div>
     </section>
