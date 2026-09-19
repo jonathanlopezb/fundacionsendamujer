@@ -533,14 +533,8 @@ function HeroSection({
   );
 }
 
-
-
-      </div>
-    </section>
-  );
-}
-
 function CategoriesSection({
+
   onSelectCategory,
 }: {
   onSelectCategory: (cat: string) => void;

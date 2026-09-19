@@ -50,21 +50,14 @@ export default function AcademiaNavbar({
         
         {/* Brand Logo */}
         <div className="flex items-center gap-6">
-          <Link href="/academia" className="flex items-center gap-3 group">
+          <Link href="/academia" className="flex items-center gap-2.5 group">
             <img
               src="/logo.png"
               alt="Fundación Senda Mujer"
               className="h-10 sm:h-12 w-auto object-contain transition-transform duration-300 group-hover:scale-105 drop-shadow-md"
             />
-            <div className="flex flex-col justify-center">
-              <span className="text-lg sm:text-xl font-black tracking-tight text-white flex items-center gap-1 leading-none">
-                Senda<span className="bg-gradient-to-r from-pink-400 to-amber-300 bg-clip-text text-transparent">Mujer</span>
-              </span>
-              <span className="text-[10px] uppercase tracking-widest text-pink-200/70 font-black mt-1">
-                SendaAcademia
-              </span>
-            </div>
           </Link>
+
 
           {/* Navigation Links Desktop */}
           <nav className="hidden md:flex items-center gap-1 bg-white/[0.04] p-1 rounded-full border border-white/10">
