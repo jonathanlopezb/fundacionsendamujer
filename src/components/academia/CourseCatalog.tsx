@@ -1,5 +1,5 @@
 'use client';
-import React, { useState } from 'react';
+import React, { useEffect, useState } from 'react';
 import { BookOpen, Star, Clock, Lock, Play, Award, Sparkles, CheckCircle2, ChevronRight, Filter } from 'lucide-react';
 import CoursePlayerModal, { CourseData } from './CoursePlayerModal';
 
@@ -118,12 +118,24 @@ const COURSES: CourseData[] = [
 export default function CourseCatalog({ user, onOpenAuth }: Props) {
   const [selectedCategory, setSelectedCategory] = useState<string>('Todos');
   const [selectedCourse, setSelectedCourse] = useState<CourseData | null>(null);
+  const [courses, setCourses] = useState<CourseData[]>(COURSES);
+
+  useEffect(() => {
+    fetch('/api/academia/courses').then((response) => response.json()).then((payload) => {
+      if (!payload?.courses?.length) return;
+      const remoteCourses: CourseData[] = payload.courses.map((course: any) => ({
+        ...course,
+        modules: course.modules || [{ title: 'Contenido del curso', lessons: course.lessons || [] }],
+      }));
+      setCourses(remoteCourses);
+    }).catch(() => undefined);
+  }, []);
 
   const categories = ['Todos', 'Autonomía Financiera', 'Derechos & Liderazgo', 'Salud & Bienestar', 'Habilidades Digitales'];
 
   const filteredCourses = selectedCategory === 'Todos'
-    ? COURSES
-    : COURSES.filter((c) => c.category === selectedCategory);
+    ? courses
+    : courses.filter((c) => c.category === selectedCategory);
 
   const handleLaunchCourse = (course: CourseData) => {
     if (!user) {

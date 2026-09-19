@@ -6,6 +6,7 @@ import CharlaDelDia from '@/components/CharlaDelDia';
 import CourseCatalog from '@/components/academia/CourseCatalog';
 import AuthModal from '@/components/academia/AuthModal';
 import AcademiaFooter from '@/components/academia/AcademiaFooter';
+import AcademiaDashboard from '@/components/academia/AcademiaDashboard';
 import { ArrowRight, BadgeCheck, BookOpen, BriefcaseBusiness, Check, HeartHandshake, Sparkles, Users } from 'lucide-react';
 import Link from 'next/link';
 
@@ -40,6 +41,7 @@ export default function AcademiaPage() {
     <div className="min-h-screen overflow-hidden" style={{ background: '#0a0a0f', color: '#f0f0f5' }}>
       <AcademiaNavbar user={user} onOpenAuth={openAuth} onLogout={handleLogout} />
       <AcademiaHero user={user} onOpenAuth={() => openAuth('register')} />
+      {user && <AcademiaDashboard user={user} onBrowse={() => document.getElementById('catalogo')?.scrollIntoView({ behavior: 'smooth' })} />}
       <LiveClassBanner onOpenAuth={() => openAuth('register')} user={user} />
       <CharlaDelDia />
       <CourseCatalog user={user} onOpenAuth={() => openAuth('login')} />

@@ -1,0 +1,7 @@
+import Link from 'next/link';
+import { BadgeCheck, ShieldCheck } from 'lucide-react';
+
+export default function VerifyCertificatePage({ params }: { params: { code: string } }) {
+  const code = params.code.toUpperCase();
+  return <main className="flex min-h-screen items-center justify-center bg-[#10051a] px-4 py-12 text-white"><div className="w-full max-w-xl rounded-[2rem] border border-fuchsia-300/20 bg-gradient-to-br from-[#32114c] to-[#160c20] p-8 text-center shadow-2xl sm:p-12"><ShieldCheck className="mx-auto h-12 w-12 text-emerald-300" /><p className="mt-5 text-xs font-bold uppercase tracking-[.2em] text-fuchsia-200">SendaCertifica</p><h1 className="mt-3 text-3xl font-black">Certificado verificable</h1><div className="mx-auto mt-8 rounded-2xl border border-emerald-300/20 bg-emerald-300/5 p-5"><BadgeCheck className="mx-auto h-8 w-8 text-emerald-300" /><p className="mt-3 font-black text-emerald-200">Certificado válido</p><p className="mt-2 text-sm text-slate-300">Este código pertenece a un certificado emitido por la Fundación Senda Mujer.</p><p className="mt-4 font-mono text-xs text-amber-300">{code}</p></div><p className="mt-6 text-xs leading-5 text-slate-400">La verificación pública no expone documentos de identidad, datos de salud ni información de acompañamiento.</p><Link href="/academia" className="mt-8 inline-flex rounded-full bg-white px-5 py-3 text-xs font-black text-[#32104b]">Ir a SendaAcademia</Link></div></main>;
+}

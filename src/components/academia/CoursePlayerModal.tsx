@@ -2,6 +2,9 @@
 import React, { useState } from 'react';
 import { X, Play, CheckCircle2, Lock, FileText, Award, ChevronRight, HelpCircle, Download, Sparkles, Volume2, Maximize2 } from 'lucide-react';
 import CertificateModal from './CertificateModal';
+import { resolveAcademiaVideo } from '@/lib/academiaMedia';
+import AssessmentPanel from './AssessmentPanel';
+import SendaTutorPanel from './SendaTutorPanel';
 
 export interface Lesson {
   id: string;
@@ -9,6 +12,7 @@ export interface Lesson {
   duration: string;
   videoUrl?: string;
   isPreview?: boolean;
+  transcript?: string;
 }
 
 export interface CourseModule {
@@ -22,6 +26,10 @@ export interface CourseData {
   instructor: string;
   category: string;
   modules: CourseModule[];
+  description?: string;
+  level?: string;
+  thumbnailUrl?: string;
+  learningOutcomes?: string[];
 }
 
 interface Props {
@@ -34,7 +42,8 @@ export default function CoursePlayerModal({ course, userName, onClose }: Props) 
   const [activeLesson, setActiveLesson] = useState<Lesson>(course.modules[0]?.lessons[0] || { id: '1', title: 'Introducción', duration: '10 min' });
   const [completedLessons, setCompletedLessons] = useState<string[]>([course.modules[0]?.lessons[0]?.id || '1']);
   const [showCertificate, setShowCertificate] = useState(false);
-  const [activeTab, setActiveTab] = useState<'lessons' | 'resources' | 'quiz'>('lessons');
+  const [activeTab, setActiveTab] = useState<'lessons' | 'resources' | 'quiz' | 'transcript' | 'notes' | 'tutor'>('lessons');
+  const [note, setNote] = useState('');
   const [quizScore, setQuizScore] = useState<number | null>(null);
 
   const totalLessons = course.modules.reduce((acc, m) => acc + m.lessons.length, 0);
@@ -94,9 +103,19 @@ export default function CoursePlayerModal({ course, userName, onClose }: Props) 
 
           {/* Video Player Section */}
           <div className="lg:col-span-8 flex flex-col bg-black/90 relative overflow-y-auto">
-            {/* Simulated Video Frame */}
-            <div className="relative w-full aspect-video bg-gradient-to-br from-[#3B0852] via-slate-950 to-[#180325] flex flex-col items-center justify-center p-6 text-center shadow-inner group border-b border-pink-500/20">
-              
+            {/* External/Blob video delivery */}
+            <div className="relative w-full aspect-video bg-black shadow-inner group border-b border-pink-500/20">
+              <video key={activeLesson.id} className="h-full w-full object-cover" controls playsInline preload="metadata" poster="/logo.png">
+                <source src={resolveAcademiaVideo(activeLesson.videoUrl)} type="video/mp4" />
+                Tu navegador no puede reproducir este vídeo.
+              </video>
+              <div className="pointer-events-none absolute left-3 top-3 rounded-full bg-black/60 px-3 py-1 text-[10px] font-bold uppercase tracking-wider text-white">Senda Video HD · Aula Virtual</div>
+              {/* Fallback metadata remains visible without relying on a provider UI. */}
+              <div className="pointer-events-none absolute bottom-3 left-3 right-3 flex items-end justify-between text-xs text-white drop-shadow-lg">
+                <div><p className="font-extrabold">{activeLesson.title}</p><p className="text-[10px] text-pink-100/80">{activeLesson.duration} · {course.instructor}</p></div>
+                <span className="rounded bg-black/60 px-2 py-1 text-[10px]">HD</span>
+              </div>
+              {/*
               <div className="relative z-10 space-y-4 max-w-md">
                 <div className="w-16 h-16 sm:w-20 sm:h-20 rounded-full mx-auto flex items-center justify-center shadow-2xl transition-transform group-hover:scale-105 cursor-pointer bg-gradient-to-r from-[#E12880] to-[#52166F] border-2 border-amber-300">
                   <Play className="w-8 h-8 text-white ml-1" />
@@ -112,8 +131,7 @@ export default function CoursePlayerModal({ course, userName, onClose }: Props) 
                     Duración: {activeLesson.duration} • Instructora: {course.instructor}
                   </p>
                 </div>
-              </div>
-
+              </div> */}
               {/* Fake Video Player Controls */}
               <div className="absolute bottom-0 inset-x-0 p-3 bg-gradient-to-t from-black/90 to-transparent flex items-center justify-between text-xs text-pink-100">
                 <div className="flex items-center gap-3">
@@ -169,6 +187,9 @@ export default function CoursePlayerModal({ course, userName, onClose }: Props) 
                 >
                   Evaluación / Quiz
                 </button>
+                <button onClick={() => setActiveTab('transcript')} className={`pb-2 transition-colors border-b-2 ${activeTab === 'transcript' ? 'border-amber-400 text-amber-300' : 'border-transparent text-pink-200/70'}`}>Transcripción</button>
+                <button onClick={() => setActiveTab('notes')} className={`pb-2 transition-colors border-b-2 ${activeTab === 'notes' ? 'border-amber-400 text-amber-300' : 'border-transparent text-pink-200/70'}`}>Mis notas</button>
+                <button onClick={() => setActiveTab('tutor')} className={`pb-2 transition-colors border-b-2 ${activeTab === 'tutor' ? 'border-amber-400 text-amber-300' : 'border-transparent text-pink-200/70'}`}>SendaTutor</button>
               </div>
 
               {/* Tab Content */}
@@ -193,30 +214,10 @@ export default function CoursePlayerModal({ course, userName, onClose }: Props) 
                 </div>
               )}
 
-              {activeTab === 'quiz' && (
-                <div className="space-y-3 pt-2 animate-fadeIn">
-                  <p className="text-xs text-pink-200">Demuestra tus conocimientos para desbloquear el certificado:</p>
-                  <div className="p-4 rounded-2xl bg-[#270538] border border-pink-500/30 space-y-3">
-                    <p className="text-xs font-bold text-white">Pregunta 1: ¿Cuál es el primer paso según el protocolo SENDA?</p>
-                    <div className="space-y-2 text-xs text-pink-100">
-                      {['A. Identificar la situación de vulnerabilidad y la red de apoyo', 'B. Ignorar el proceso y continuar', 'C. Esperar 30 días sin acción'].map((opt, i) => (
-                        <button
-                          key={i}
-                          onClick={() => setQuizScore(100)}
-                          className="w-full text-left p-3 rounded-xl border border-pink-500/20 hover:border-amber-400 hover:bg-[#52166F] transition-all cursor-pointer"
-                        >
-                          {opt}
-                        </button>
-                      ))}
-                    </div>
-                    {quizScore !== null && (
-                      <div className="p-3 rounded-xl bg-emerald-950/80 border border-emerald-500/40 text-emerald-300 text-xs font-bold">
-                        ¡Respuesta Correcta! Calificación: {quizScore}/100. Has aprobado la evaluación.
-                      </div>
-                    )}
-                  </div>
-                </div>
-              )}
+              {activeTab === 'quiz' && <AssessmentPanel courseSlug={course.id} onScore={setQuizScore} />}
+              {activeTab === 'transcript' && <div className="rounded-2xl border border-pink-500/20 bg-[#270538] p-4 text-xs leading-6 text-pink-100">{activeLesson.transcript || 'La transcripción de esta lección estará disponible cuando el vídeo sea procesado. Puedes añadirla desde SendaAcademia Admin.'}</div>}
+              {activeTab === 'notes' && <div className="space-y-3"><textarea value={note} onChange={(event) => setNote(event.target.value)} placeholder="Escribe una nota privada sobre esta lección…" className="min-h-32 w-full rounded-2xl border border-pink-500/20 bg-[#270538] p-4 text-xs text-white outline-none focus:border-amber-300" /><button className="rounded-full bg-amber-400 px-4 py-2 text-xs font-black text-[#32104b]">Guardar nota</button></div>}
+              {activeTab === 'tutor' && <SendaTutorPanel courseTitle={course.title} />}
             </div>
           </div>
 
