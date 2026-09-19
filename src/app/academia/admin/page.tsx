@@ -346,15 +346,16 @@ export default function AcademiaAdminPage() {
       const data = await res.json();
       if (data.success) {
         setStatusMessage({ text: `Curso "${title}" eliminado correctamente.`, type: 'success' });
-        setCourses((prev) => prev.filter((c) => c.slug !== slug));
+        setCourses((prev: any) => prev.filter((c: any) => c.slug !== slug));
       } else {
         setStatusMessage({ text: data.error || 'Error al eliminar.', type: 'error' });
       }
     } catch (err) {
       // Optimistic delete in fallback
-      setCourses((prev) => prev.filter((c) => c.slug !== slug));
+      setCourses((prev: any) => prev.filter((c: any) => c.slug !== slug));
       setStatusMessage({ text: `Curso "${title}" eliminado.`, type: 'success' });
     } finally {
+
       setLoading(false);
       setTimeout(() => setStatusMessage(null), 4000);
     }
@@ -817,7 +818,7 @@ export default function AcademiaAdminPage() {
 
               {/* Modules List */}
               <div className="space-y-6">
-                {courseForm.modules.map((mod, mIdx) => (
+                {(courseForm.modules || []).map((mod: any, mIdx: number) => (
                   <div
                     key={mIdx}
                     className="bg-[#12031a] border border-pink-500/20 rounded-2xl p-5 space-y-4 shadow-lg"
@@ -864,11 +865,12 @@ export default function AcademiaAdminPage() {
 
                     {/* Lessons list inside module */}
                     <div className="space-y-3 pl-2 sm:pl-4 border-l-2 border-pink-500/30">
-                      {mod.lessons.map((les, lIdx) => (
+                      {(mod.lessons || []).map((les: any, lIdx: number) => (
                         <div
                           key={les.id || lIdx}
                           className="bg-[#1c072b] border border-white/10 rounded-xl p-4 space-y-3"
                         >
+
                           <div className="flex items-center justify-between">
                             <span className="text-xs font-black text-pink-300 flex items-center gap-1.5">
                               <Play className="w-3.5 h-3.5 text-amber-300 fill-current" />
@@ -1030,7 +1032,7 @@ export default function AcademiaAdminPage() {
 
               {/* Questions List */}
               <div className="space-y-5">
-                {(courseForm.assessment?.questions || []).map((q, qIdx) => (
+                {(courseForm.assessment?.questions || []).map((q: any, qIdx: number) => (
                   <div
                     key={q.id || qIdx}
                     className="bg-[#12031a] border border-amber-500/25 rounded-2xl p-5 space-y-4 shadow-lg"
@@ -1074,7 +1076,7 @@ export default function AcademiaAdminPage() {
                         Opciones de Respuesta (Marca con el círculo la correcta):
                       </span>
                       <div className="grid grid-cols-1 sm:grid-cols-2 gap-2.5">
-                        {q.options.map((opt, oIdx) => (
+                        {(q.options || []).map((opt: any, oIdx: number) => (
                           <div
                             key={opt.id || oIdx}
                             className={`flex items-center gap-2.5 p-2.5 rounded-xl border transition-all ${
@@ -1083,6 +1085,7 @@ export default function AcademiaAdminPage() {
                                 : 'bg-white/[0.03] border-white/10'
                             }`}
                           >
+
                             <input
                               type="radio"
                               name={`correct-option-${qIdx}`}
@@ -1212,7 +1215,7 @@ export default function AcademiaAdminPage() {
 
               {/* Questions List */}
               <div className="space-y-4 pt-4 border-t border-white/10">
-                {assessmentForm.questions.map((q, qIdx) => (
+                {(assessmentForm.questions || []).map((q: any, qIdx: number) => (
                   <div
                     key={q.id || qIdx}
                     className="bg-[#12031a] border border-pink-500/20 rounded-2xl p-5 space-y-4 shadow-lg"
@@ -1221,7 +1224,7 @@ export default function AcademiaAdminPage() {
                       <span className="text-xs font-black text-amber-300">
                         Pregunta #{qIdx + 1}
                       </span>
-                      {assessmentForm.questions.length > 1 && (
+                      {(assessmentForm.questions?.length || 0) > 1 && (
                         <button
                           type="button"
                           onClick={() => removeAssessmentQuestion(qIdx)}
@@ -1250,7 +1253,7 @@ export default function AcademiaAdminPage() {
 
                     {/* Options list */}
                     <div className="grid grid-cols-1 sm:grid-cols-2 gap-3 pt-2">
-                      {q.options.map((opt, optIdx) => (
+                      {(q.options || []).map((opt: any, optIdx: number) => (
                         <div
                           key={opt.id}
                           className={`p-3 rounded-xl border flex items-center gap-2 text-xs ${
@@ -1265,7 +1268,7 @@ export default function AcademiaAdminPage() {
                             checked={opt.isCorrect}
                             onChange={() => {
                               const updated = [...assessmentForm.questions];
-                              updated[qIdx].options = updated[qIdx].options.map((o, idx) => ({
+                              updated[qIdx].options = updated[qIdx].options.map((o: any, idx: number) => ({
                                 ...o,
                                 isCorrect: idx === optIdx,
                               }));
@@ -1346,7 +1349,7 @@ export default function AcademiaAdminPage() {
                   </tr>
                 </thead>
                 <tbody className="divide-y divide-white/5">
-                  {students.map((st, i) => (
+                  {(students || []).map((st: any, i: number) => (
                     <tr key={i} className="hover:bg-white/[0.02] transition-colors">
                       <td className="py-3.5 px-3">
                         <p className="font-bold text-white">{st.name}</p>
@@ -1407,11 +1410,12 @@ export default function AcademiaAdminPage() {
             </div>
 
             <div className="grid grid-cols-1 md:grid-cols-3 gap-4">
-              {certificates.map((cert) => (
+              {(certificates || []).map((cert: any, cIdx: number) => (
                 <div
-                  key={cert.code}
+                  key={cert.code || cIdx}
                   className="bg-[#12031a] border border-white/10 rounded-2xl p-5 space-y-3 shadow-lg flex flex-col justify-between"
                 >
+
                   <div className="space-y-2">
                     <div className="flex items-center justify-between">
                       <span className="font-mono font-black text-amber-300 text-xs">{cert.code}</span>
