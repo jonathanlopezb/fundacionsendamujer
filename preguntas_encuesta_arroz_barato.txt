@@ -1,0 +1,334 @@
+================================================================================
+FUNDACIÓN SENDA MUJER
+DIAGNÓSTICO COMUNITARIO · ENCUESTA DE CAMPO (CARACTERIZACIÓN FAMILIAR)
+Barrio: Arroz Barato — Localidad 3 (Industrial y de la Bahía) — Cartagena de Indias
+URL: https://fundacionsendamujer.org/encuestas/arroz-barato
+================================================================================
+
+--------------------------------------------------------------------------------
+PASO 0: FICHA DE IDENTIFICACIÓN DEL HOGAR
+--------------------------------------------------------------------------------
+0.1. Nombre del encuestador/a [Obligatorio]
+0.2. Código de encuestadora (Ej. E-07)
+0.3. Manzana / dirección aproximada (Ej. Mz 14 casa 3)
+0.4. Sector o zona de barrido (Ej. Zona norte)
+0.5. Teléfono de contacto del hogar (Solo si el hogar lo autoriza)
+0.6. Punto de referencia o descripción de la vivienda (Ej. Casa azul, frente a la cancha)
+0.7. ¿El hogar acepta participar voluntariamente? [Obligatorio]
+     [ ] Sí
+     [ ] No (Si responde No, finaliza la encuesta sin registrar datos)
+
+--------------------------------------------------------------------------------
+SECCIÓN A: DATOS GENERALES Y COMPOSICIÓN DEL HOGAR
+--------------------------------------------------------------------------------
+A.1. Registro de miembros del hogar (por cada integrante):
+     - Nombre completo [Obligatorio]
+     - Edad (Años)
+     - Parentesco / relación con la persona referente del hogar (Ej. Cónyuge, hijo/a, nieto/a, hermana)
+     - Tipo de documento:
+       [ ] Registro Civil (RC)
+       [ ] Tarjeta de Identidad (TI)
+       [ ] Cédula de Ciudadanía (CC)
+       [ ] Cédula de Extranjería (CE)
+       [ ] Pasaporte (PA)
+       [ ] Sin Documento (SIN_DOC)
+       [ ] Otro (OTRO)
+     - Número de documento (Solo si el miembro lo autoriza)
+
+A.2. Total de personas que viven en el hogar [Obligatorio]
+A.3. ¿Cuántas personas son menores de 18 años? [Obligatorio]
+A.4. Número de habitaciones en la vivienda [Obligatorio]
+
+A.5. ¿Todos los miembros tienen documento de identidad vigente? [Obligatorio]
+     [ ] Sí
+     [ ] No
+     --> Si No: ¿Quién no tiene documento y por qué? (Activa Mesa de Identidad)
+
+A.6. ¿Todos los Niños, Niñas y Adolescentes (NNA) del hogar están escolarizados?
+     [ ] Sí
+     [ ] No
+     --> Si No: ¿Quién no está escolarizado y por qué?
+
+A.7. ¿Hay alguna persona con discapacidad en el hogar?
+     [ ] Sí
+     [ ] No
+     --> Si Sí: ¿Quién? ¿Tipo de discapacidad?
+
+A.8. ¿Hay adultos mayores (65+ años) en el hogar?
+     [ ] Sí
+     [ ] No
+     --> Si Sí: ¿Cuántos adultos mayores?
+
+A.9. Observaciones sobre hacinamiento u otras condiciones de la vivienda
+
+--------------------------------------------------------------------------------
+SECCIÓN B: SALUD GENERAL Y NIÑEZ
+--------------------------------------------------------------------------------
+B.1. ¿Todos los miembros del hogar están afiliados a EPS? [Obligatorio]
+     [ ] Sí
+     [ ] No
+     --> Si Sí: ¿Régimen?
+         [ ] Subsidiado
+         [ ] Contributivo
+         [ ] Mixto (ambos regímenes)
+     --> Si No: ¿Por qué no están afiliados? (Activa Mesa de Tutela y Salud)
+
+B.2. ¿Hay mujer embarazada o en periodo de lactancia?
+     [ ] Sí
+     [ ] No
+     --> Si Sí: ¿Ha tenido controles prenatales? ¿Cuántos?
+
+B.3. ¿Niños con esquema de vacunación al día? [Obligatorio]
+     [ ] Sí
+     [ ] No
+
+B.4. ¿Tiene carné de vacunación?
+     [ ] Sí
+     [ ] No
+
+B.5. ¿Alguna persona tiene enfermedad crónica diagnosticada? (Hipertensión, diabetes, respiratoria, etc.)
+     [ ] Sí
+     [ ] No
+     --> Si Sí: ¿Quién? ¿Cuál enfermedad? ¿Lleva control médico?
+
+B.6. ¿Algún menor con episodios frecuentes de EDA (Enfermedad Diarreica Aguda), parásitos o infecciones de piel en el último año?
+     [ ] Sí
+     [ ] No
+     --> Si Sí: ¿Quién? ¿Frecuencia? ¿Recibió tratamiento?
+
+B.7. ¿Alguien requiere atención odontológica pendiente?
+     [ ] Sí
+     [ ] No
+
+B.8. ¿Han tenido dificultad para conseguir citas, medicamentos o remisiones?
+     [ ] Sí
+     [ ] No
+     --> Si Sí: ¿Cuál fue la dificultad? (Activa Mesa de Tutela y Salud)
+
+B.9. Principal fuente de agua para consumo del hogar [Obligatorio]
+     [ ] Acueducto
+     [ ] Pila pública
+     [ ] Carrotanque
+     [ ] Pozo
+     [ ] Otra fuente
+
+B.10. ¿Alguna persona del hogar considera que necesita apoyo emocional o psicológico?
+      [ ] Sí
+      [ ] No
+      --> Si Sí: ¿Quién requiere el apoyo? (Selección de integrante registrado o especificación)
+
+B.11. ¿Alguna mujer del hogar cuida permanentemente a otra persona (adulto mayor, discapacidad, niños) y siente sobrecarga o agotamiento emocional por las labores de cuidado?
+      [ ] Sí
+      [ ] No
+
+--------------------------------------------------------------------------------
+SECCIÓN B.1: SOLICITUD DE CITAS MÉDICAS POR ESPECIALIDAD & SALUD DE LA MUJER
+--------------------------------------------------------------------------------
+--- ATENCIÓN EN GINECOLOGÍA & SALUD DE LA MUJER ---
+B.1.1. ¿Alguna mujer del hogar requiere cita / valoración con Ginecología?
+       [ ] Sí
+       [ ] No
+       --> Si Sí: ¿Qué síntomas presenta o cuál es el motivo / intención de la consulta?
+
+B.1.2. ¿Cuándo se realizó la última citología cérvico-uterina?
+       [ ] Hace menos de 1 año
+       [ ] Entre 1 y 3 años
+       [ ] Hace más de 3 años
+       [ ] Nunca se ha realizado una citología
+       [ ] No aplica en el hogar
+
+B.1.3. Método de planificación familiar actual:
+       [ ] Ninguno (sin método)
+       [ ] Pastillas anticonceptivas
+       [ ] Inyección mensual o trimestral
+       [ ] Implante subdérmico (Jadelle / Implanon)
+       [ ] DIU (Dispositivo intrauterino / T de cobre)
+       [ ] Preservativo / Condón
+       [ ] Pomeroy / Ligadura / Vasectomía
+       [ ] Otro método tradicional o natural
+
+B.1.4. ¿Desea asesoría médica para iniciar o cambiar método anticonceptivo?
+       [ ] Sí
+       [ ] No
+
+B.1.5. ¿Requiere o tiene pendiente mamografía o ecografía mamaria?
+       [ ] Sí
+       [ ] No
+
+B.1.6. ¿Ha recibido capacitación o sabe realizarse el autoexamen de mama?
+       [ ] Sí
+       [ ] No
+
+--- CITAS REQUERIDAS EN OTRAS ESPECIALIDADES ---
+B.1.7. ¿Requiere cita con Medicina General?
+       [ ] Sí
+       [ ] No
+       --> Si Sí: ¿Qué síntomas presenta o cuál es el motivo de consulta con el médico general?
+
+B.1.8. ¿Requiere cita con Pediatría para los niños/as del hogar?
+       [ ] Sí
+       [ ] No
+       --> Si Sí: ¿Quién consulta? ¿Qué síntomas presenta o qué control requiere el menor?
+
+B.1.9. ¿Requiere atención con Odontología?
+       [ ] Sí
+       [ ] No
+       --> Si Sí: Motivo de la atención odontológica (dolor, revisión, calzas, limpieza, etc.)
+
+B.1.10. ¿Requiere cita con Psicología / Apoyo Emocional?
+        [ ] Sí
+        [ ] No
+        --> Si Sí: Motivo o intención de consulta psicológica (espacio confidencial)
+
+B.1.11. ¿Requiere consulta con Nutrición?
+        [ ] Sí
+        [ ] No
+        --> Si Sí: Motivo de valoración nutricional (bajo peso infantil, sobrepeso, dieta especial)
+
+--- SERVICIOS DE SALUD A PRIORIZAR EL DÍA DEL EVENTO (Selección múltiple) ---
+[ ] Consulta de Ginecología y Citología
+[ ] Consulta de Medicina General
+[ ] Consulta de Pediatría y Nutrición infantil
+[ ] Atención Odontológica
+[ ] Consulta de Psicología y Apoyo Emocional
+[ ] Afiliación a EPS o SISBÉN
+[ ] Embarazo, lactancia o controles prenatales
+[ ] Vacunación pendiente PAI
+[ ] Enfermedad crónica (HTA / Diabetes)
+[ ] Citas, medicamentos o remisiones pendientes
+[ ] Toma o resultado de citología cérvico-uterina
+[ ] Asesoría / métodos de planificación familiar
+
+--------------------------------------------------------------------------------
+SECCIÓN C: SITUACIÓN JURÍDICA Y FAMILIAR
+--------------------------------------------------------------------------------
+C.1. ¿Hay proceso pendiente de alimentos, custodia o régimen de visitas?
+     [ ] Sí
+     [ ] No
+     --> Si Sí: Detalla brevemente el estado del proceso (Activa Mesa de Familia)
+
+C.2. ¿Alguna persona del hogar ha sido víctima de violencia intrafamiliar o de género?
+     [ ] Sí
+     [ ] No
+     --> Si Sí: ¿Se puso la denuncia?
+         [ ] Sí
+         [ ] No
+     --> Si Sí: Estado del proceso (Activa Mesa de Protección y protocolo de ruta inmediata)
+
+C.3. ¿Cuenta o ha contado con medida de protección formal? (Orden de alejamiento, desalojo del agresor o protección policial)
+     [ ] Sí
+     [ ] No
+
+C.4. ¿Conoce las rutas de denuncia y sus derechos ante VBG (Violencia Basada en Género)? (Línea 155, Comisarías, Fiscalía CAVIF)
+     [ ] Sí
+     [ ] No
+
+C.5. Tipo de tenencia de la vivienda:
+     [ ] Propia
+     [ ] Arrendada
+     [ ] De un familiar
+     [ ] Otra
+
+C.6. ¿Cuenta con documento de propiedad o posesión de la vivienda?
+     [ ] Sí
+     [ ] No
+
+C.7. ¿Tiene alguna deuda, embargo o proceso judicial en curso?
+     [ ] Sí
+     [ ] No
+     --> Si Sí: Describe brevemente (Activa Mesa de Tutela y Trámites)
+
+C.8. ¿Necesita orientación sobre trámite pensional, subsidio o proceso ante entidad pública?
+     [ ] Sí
+     [ ] No
+     --> Si Sí: ¿Qué trámite o subsidio? (Activa Mesa de Tutela)
+
+--- CITAS PARA LA JORNADA CÍVICO-JURÍDICA ---
+C.9. ¿El hogar solicita cita de Asesoría Jurídica presencial en la Jornada?
+     [ ] Sí
+     [ ] No
+     --> Si Sí: Describe el caso o consulta jurídica a tratar en la mesa legal
+
+C.10. ¿Requiere atención en la Mesa Cívica de Registraduría / Identificación?
+      [ ] Sí
+      [ ] No
+      --> Si Sí: Nombres de las personas y tipo de documento que necesitan gestionar
+
+C.11. ¿Existe algún caso urgente que NO puede esperar al día del evento?
+      [ ] Sí
+      [ ] No
+      --> Si Sí: Descripción mínima del tipo de urgencia (Notificar al coordinador hoy)
+
+--- NECESIDADES JURÍDICAS Y DE PROTECCIÓN A PRIORIZAR (Selección múltiple) ---
+[ ] Escolarización o riesgo de deserción
+[ ] Documentos de identidad
+[ ] Alimentos, custodia o asuntos de familia
+[ ] Orientación ante violencia familiar o de género
+[ ] Vivienda, servicios o estratificación
+[ ] Pensión, tutela u otro trámite público
+[ ] Subsidios y oferta institucional
+[ ] Empleo, formación o emprendimiento
+
+--------------------------------------------------------------------------------
+SECCIÓN D: SITUACIÓN ECONÓMICA Y SOCIAL
+--------------------------------------------------------------------------------
+D.1. Principal fuente de ingreso del hogar (Ej. Ventas informales, empleo doméstico, rebusque, empleo formal)
+D.2. ¿El hogar recibe algún subsidio o programa del Estado? (Familias en Acción, Renta Ciudadana, Devolución IVA, Colombia Mayor, etc.)
+     [ ] Sí
+     [ ] No
+     --> Si Sí: ¿Cuáles subsidios recibe?
+
+D.3. ¿Hay alguien en el hogar buscando empleo activamente?
+     [ ] Sí
+     [ ] No
+     --> Si Sí: ¿Qué dificultad ha encontrado? (Activa Mesa de Empleo)
+
+D.4. ¿Hay algún joven que egresó del bachillerato en los últimos 2 años?
+     [ ] Sí
+     [ ] No
+     --> Si Sí: ¿Está estudiando o trabajando actualmente? ¿Qué dificultad?
+
+D.5. ¿Alguna mujer del hogar desea formarse para emprender o trabajar? (Confección textil, gastronomía, habilidades digitales, negocios)
+     [ ] Sí
+     [ ] No
+
+D.6. ¿El hogar cuenta con smartphone con WhatsApp e internet?
+     [ ] Sí
+     [ ] No
+
+--------------------------------------------------------------------------------
+SECCIÓN E: PERCEPCIÓN DE RIESGO (Diligenciado por el/la encuestador/a)
+--------------------------------------------------------------------------------
+E.1. Nivel de riesgo o vulnerabilidad del hogar (percepción del encuestador) [Obligatorio]:
+     [ ] BAJO
+     [ ] MEDIO
+     [ ] ALTO
+
+E.2. ¿Hay indicios de riesgo que el hogar no verbalizó pero el encuestador observó? (Señales de violencia, condición crítica no declarada, etc.)
+E.3. ¿El hogar autoriza ser contactado antes del evento si hay necesidad prioritaria?
+     [ ] Sí
+     [ ] No
+
+E.4. Observaciones generales del encuestador (Condiciones de vivienda, actitud, contexto)
+E.5. ¿Se debe activar una ruta institucional INMEDIATA?
+     [ ] Sí
+     [ ] No
+     --> Si Sí: Tipo de ruta a activar:
+         [ ] Comisaría de Familia
+         [ ] Fiscalía General de la Nación
+         [ ] ICBF (riesgo sobre menor)
+         [ ] IPS/EPS aliada (emergencia médica)
+         [ ] Defensoría del Pueblo
+
+--------------------------------------------------------------------------------
+PASO FINAL: CONSENTIMIENTO INFORMADO Y AUTORIZACIÓN
+--------------------------------------------------------------------------------
+F.1. Autorización de Tratamiento de Datos Personales (Ley 1581 de 2012 / Decreto 1377 de 2013):
+     "Yo, en representación del hogar visitado, autorizo a la Fundación Senda Mujer para recopilar,
+     almacenar, usar y transmitir los datos personales consignados en esta ficha de caracterización..."
+     [ ] El hogar acepta y comprende la autorización [Obligatorio para guardar]
+
+F.2. Autorización de uso de imagen para menores de edad (Ley 1098/2006, art. 47):
+     (Aplica si hay menores de 18 años en el hogar)
+     [ ] Autoriza registro fotográfico o audiovisual con fines exclusivos de documentación del proyecto.
+================================================================================
