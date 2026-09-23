@@ -54,7 +54,7 @@ export default function AcademiaNavbar({
             <img
               src="/logo.png"
               alt="Fundación Senda Mujer"
-              className="h-10 sm:h-12 w-auto object-contain transition-transform duration-300 group-hover:scale-105 drop-shadow-md"
+              className="h-12 sm:h-15 w-auto object-contain transition-transform duration-300 group-hover:scale-105 drop-shadow-md py-0.5"
             />
           </Link>
 
