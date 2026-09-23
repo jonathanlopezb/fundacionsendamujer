@@ -11,11 +11,9 @@ export const metadata: Metadata = {
   applicationName: 'Fundación Senda Mujer',
   alternates: { canonical: '/', languages: { 'es-CO': '/' } },
   robots: { index: true, follow: true, googleBot: { index: true, follow: true, 'max-image-preview': 'large', 'max-snippet': -1, 'max-video-preview': -1 } },
-  openGraph: { type: 'website', locale: 'es_CO', url: siteUrl, siteName: 'Fundación Senda Mujer', title: 'Fundación Senda Mujer | Mujeres, derechos y acompañamiento en Cartagena', description: 'Acompañamiento integral para mujeres y niñas en Cartagena.', images: [{ url: "https://asejur.vercel.app/logoluriscon.png", width: 1200, height: 630, alt: 'Fundación Senda Mujer' }] },
-  twitter: { card: 'summary_large_image', title: 'Fundación Senda Mujer', description: 'Acompañamiento integral para mujeres y niñas en Cartagena.', images: ['/logo.png'] },
-  icons: { icon: '/public/logo.png', apple: '/logo.png' },
-  images: [
-
+  openGraph: { type: 'website', locale: 'es_CO', url: siteUrl, siteName: 'Fundación Senda Mujer', title: 'Fundación Senda Mujer | Mujeres, derechos y acompañamiento en Cartagena', description: 'Acompañamiento integral para mujeres y niñas en Cartagena. Acompañamos · Protegemos · Transformamos.', images: [{ url: `${siteUrl}/logo.png`, width: 1200, height: 630, alt: 'Fundación Senda Mujer — Acompañamos, Protegemos, Transformamos' }] },
+  twitter: { card: 'summary_large_image', title: 'Fundación Senda Mujer', description: 'Acompañamiento integral para mujeres y niñas en Cartagena. Acompañamos · Protegemos · Transformamos.', images: [`${siteUrl}/logo.png`] },
+  icons: { icon: '/logo.png', apple: '/logo.png' },
 };
 
 export const viewport: Viewport = { themeColor: '#52166F', width: 'device-width', initialScale: 1 };
