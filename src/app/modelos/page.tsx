@@ -1,316 +1,391 @@
 import type { Metadata } from 'next';
 import Link from 'next/link';
-import { ArrowRight, ChevronRight, Scale, BriefcaseBusiness, CheckCircle2, Scissors, Sprout, Fish, CakeSlice, Palette, Bird } from 'lucide-react';
+import Image from 'next/image';
+import { 
+  ArrowRight, 
+  ChevronRight, 
+  Scale, 
+  BriefcaseBusiness, 
+  Scissors, 
+  Sprout, 
+  Fish, 
+  CakeSlice, 
+  Palette, 
+  Bird, 
+  BookOpen, 
+  Users, 
+  ShoppingBag,
+  FileText,
+  ShieldCheck,
+  Lock,
+  Network,
+  Plus
+} from 'lucide-react';
 
 export const metadata: Metadata = {
-  title: 'Modelos de Acompañamiento | CAM & THEMIS',
+  title: 'Modelos de Acompañamiento | CAM y THEMIS',
   description:
-    'Conoce los modelos CAM (Capacitación, Acompañamiento, Mercadeo) y THEMIS (orientación jurídica con enfoque de género) de la Fundación Senda Mujer.',
+    'Dos modelos, una ruta de acompañamiento: CAM (Capacitación, Acompañamiento y Mercadeo) y THEMIS (orientación jurídica con enfoque de género y derechos).',
   openGraph: {
-    title: 'Modelos de Acompañamiento CAM & THEMIS | Fundación Senda Mujer',
+    title: 'Modelos de Acompañamiento | Fundación Senda Mujer',
     description:
-      'Transformamos las necesidades de cada mujer en rutas de orientación, fortalecimiento y acceso a oportunidades.',
+      'Transformamos las necesidades de cada mujer en rutas de orientación, fortalecimiento y acceso a oportunidades en Cartagena.',
     url: 'https://fundacionsendamujer.org/modelos',
+    images: [{ url: 'https://fundacionsendamujer.org/logo.png', width: 1200, height: 630, alt: 'Fundación Senda Mujer' }],
   },
 };
 
-/* ─── DATA ──────────────────────────────────────────────────────────────── */
-
 const CAM_PASOS = [
-  { n: '01', title: 'Escuchamos', desc: 'Conocemos los recursos, intereses y capacidades de cada mujer.' },
-  { n: '02', title: 'Identificamos', desc: 'Definimos prioridades y oportunidades en conjunto.' },
-  { n: '03', title: 'Acompañamos', desc: 'Brindamos acompañamiento y orientación continua.' },
-  { n: '04', title: 'Hacemos seguimiento', desc: 'Evaluamos avances y definimos nuevas metas.' },
+  { n: '01', title: 'Escuchamos', desc: 'Conocemos tus necesidades, intereses y capacidades.' },
+  { n: '02', title: 'Identificamos', desc: 'Definimos prioridades y oportunidades.' },
+  { n: '03', title: 'Acompañamos', desc: 'Activamos redes y brindamos orientación continua.' },
+  { n: '04', title: 'Hacemos seguimiento', desc: 'Evaluamos avances y nuevos retos.' },
 ];
 
-const LINEAS: { nombre: string; slug: string; bg: string; icon: React.ElementType; tagline: string }[] = [
-  { nombre: 'Confección y modistería', slug: 'confeccion', bg: 'from-pink-600 to-rose-500', icon: Scissors, tagline: 'Diseño y talento' },
-  { nombre: 'Huertas', slug: 'huerta', bg: 'from-emerald-600 to-green-500', icon: Sprout, tagline: 'Sembramos vida' },
-  { nombre: 'Piscicultura', slug: 'piscicultura', bg: 'from-sky-600 to-blue-500', icon: Fish, tagline: 'Agua y futuro' },
-  { nombre: 'Repostería', slug: 'reposteria', bg: 'from-amber-500 to-orange-400', icon: CakeSlice, tagline: 'Creatividad que endulza' },
-  { nombre: 'Artesanías', slug: 'artesanias', bg: 'from-violet-600 to-purple-500', icon: Palette, tagline: 'Tradición y valor' },
-  { nombre: 'Avicultura', slug: 'avicultura', bg: 'from-yellow-500 to-lime-400', icon: Bird, tagline: 'Nutrición y bienestar' },
+const LINEAS_PRODUCTIVAS = [
+  {
+    nombre: 'Confección y modistería',
+    img: 'https://images.unsplash.com/photo-1558769132-cb1aea458c5e?auto=format&fit=crop&w=800&q=80',
+    icon: Scissors,
+    color: '#B72D78',
+  },
+  {
+    nombre: 'Huertas',
+    img: 'https://images.unsplash.com/photo-1592417817098-8f3d6eb22509?auto=format&fit=crop&w=800&q=80',
+    icon: Sprout,
+    color: '#657C3A',
+  },
+  {
+    nombre: 'Piscicultura',
+    img: 'https://images.unsplash.com/photo-1544551763-46a013bb70d5?auto=format&fit=crop&w=800&q=80',
+    icon: Fish,
+    color: '#2D7AB7',
+  },
+  {
+    nombre: 'Repostería',
+    img: 'https://images.unsplash.com/photo-1578985545062-69928b1d9587?auto=format&fit=crop&w=800&q=80',
+    icon: CakeSlice,
+    color: '#C47E1A',
+  },
+  {
+    nombre: 'Artesanías',
+    img: 'https://images.unsplash.com/photo-1513519245088-0e12902e5a38?auto=format&fit=crop&w=800&q=80',
+    icon: Palette,
+    color: '#7B3AC4',
+  },
+  {
+    nombre: 'Avicultura',
+    img: 'https://images.unsplash.com/photo-1548550023-2bdb3c5beed7?auto=format&fit=crop&w=800&q=80',
+    icon: Bird,
+    color: '#C4A41A',
+  },
 ];
 
-const MERCADO_PASOS = [
-  { label: 'Aprendemos', emoji: '📚', color: 'bg-[#451D42]' },
-  { label: 'Producimos', emoji: '⚙️', color: 'bg-[#B72D78]' },
-  { label: 'Presentamos', emoji: '🎯', color: 'bg-[#657C3A]' },
-  { label: 'Comercializamos', emoji: '🛒', color: 'bg-[#C47E1A]' },
+const RUTA_MERCADO = [
+  {
+    titulo: 'Aprendemos',
+    img: 'https://images.unsplash.com/photo-1522202176988-66273c2fd55f?auto=format&fit=crop&w=600&q=80',
+    icon: BookOpen,
+  },
+  {
+    titulo: 'Producimos',
+    img: 'https://images.unsplash.com/photo-1581091226825-a6a2a5aee158?auto=format&fit=crop&w=600&q=80',
+    icon: Scissors,
+  },
+  {
+    titulo: 'Presentamos',
+    img: 'https://images.unsplash.com/photo-1534452203293-494d7ddbf7e0?auto=format&fit=crop&w=600&q=80',
+    icon: ShoppingBag,
+  },
+  {
+    titulo: 'Comercializamos',
+    img: 'https://images.unsplash.com/photo-1556742049-0a67c5576a88?auto=format&fit=crop&w=600&q=80',
+    icon: Users,
+  },
 ];
 
 const THEMIS_PRINCIPIOS = [
-  { n: '01', title: 'Información clara', desc: 'Información jurídica comprensible, sin tecnicismos que excluyan.' },
-  { n: '02', title: 'Decisiones informadas', desc: 'Las opciones se explican sin presiones para que la mujer decida libremente.' },
-  { n: '03', title: 'Confidencialidad', desc: 'Procesos sin revictimización y con plena protección de la privacidad.' },
-  { n: '04', title: 'Articulación con rutas', desc: 'Conexión con las rutas competentes para el acceso efectivo a la justicia.' },
+  { n: '01', title: 'Información jurídica comprensible', icon: FileText },
+  { n: '02', title: 'Decisiones libres e informadas', icon: ShieldCheck },
+  { n: '03', title: 'Confidencialidad y no revictimización', icon: Lock },
+  { n: '04', title: 'Articulación con rutas competentes', icon: Network },
 ];
-
-const CAM_PILARES = [
-  {
-    key: 'Capacitación',
-    tagline: 'Aprender también es abrir nuevas posibilidades',
-    desc: 'Formación técnica, empresarial y en habilidades blandas para que cada mujer domine su línea productiva y encuentre su camino.',
-    bg: 'from-[#B72D78] to-[#8a1f57]',
-    num: '01',
-  },
-  {
-    key: 'Acompañamiento',
-    tagline: 'Juntas en cada paso del proceso',
-    desc: 'Cada proceso necesita orientación y continuidad. Acompañamos de forma integral: técnica, psicosocial y organizativa.',
-    bg: 'from-[#451D42] to-[#2d1230]',
-    num: '02',
-  },
-  {
-    key: 'Mercadeo',
-    tagline: 'Una capacidad se fortalece cuando encuentra mercado',
-    desc: 'Estrategias de comercialización, canales de venta, marca y conexión con compradores para que el trabajo de cada mujer tenga valor real.',
-    bg: 'from-[#657C3A] to-[#4a5a29]',
-    num: '03',
-  },
-];
-
-/* ─── COMPONENTE ────────────────────────────────────────────────────────── */
 
 export default function ModelosPage() {
   return (
-    <div className="bg-[#F7F0E8] text-[#2E2630]">
+    <div className="bg-[#FAF7F2] text-[#2E2630] font-sans antialiased selection:bg-[#B72D78]/20">
+      
+      {/* ── 1. HERO ── */}
+      <section className="relative overflow-hidden bg-[#FAF7F2] pt-8 pb-16 lg:pt-14 lg:pb-24">
+        <div className="senda-shell">
+          <div className="grid items-center gap-12 lg:grid-cols-12">
+            
+            {/* Texto Hero */}
+            <div className="lg:col-span-6 space-y-6">
+              <div className="inline-flex items-center gap-2">
+                <span className="text-[11px] font-bold uppercase tracking-[0.2em] text-[#B72D78]">
+                  CÓMO ACOMPAÑAMOS
+                </span>
+                <span className="h-px w-8 bg-[#B72D78]/40" />
+              </div>
+              
+              <h1 className="font-serif text-4xl font-semibold leading-[1.08] tracking-tight text-[#2E2630] sm:text-5xl lg:text-6xl">
+                Dos modelos.<br />
+                <span className="text-[#451D42]">Una ruta de acompañamiento.</span>
+              </h1>
+              
+              <p className="max-w-xl text-base leading-relaxed text-[#6B5D68] sm:text-lg">
+                En Fundación Senda Mujer transformamos las necesidades de cada mujer en rutas de orientación, fortalecimiento y acceso a oportunidades.
+              </p>
+              
+              <div className="flex flex-wrap items-center gap-4 pt-2">
+                <a
+                  href="#cam"
+                  className="inline-flex items-center gap-2 rounded-full bg-[#451D42] px-6 py-3.5 text-sm font-semibold text-white shadow-sm transition hover:bg-[#B72D78] hover:shadow"
+                >
+                  Conocer CAM <ArrowRight className="h-4 w-4" />
+                </a>
+                <a
+                  href="#themis"
+                  className="inline-flex items-center gap-2 rounded-full border border-[#451D42]/30 bg-transparent px-6 py-3.5 text-sm font-semibold text-[#451D42] transition hover:bg-[#451D42]/5"
+                >
+                  Conocer THEMIS <ArrowRight className="h-4 w-4" />
+                </a>
+              </div>
+            </div>
 
-      {/* ══════════════════════════════════════════════════════════
-          1. HERO
-      ══════════════════════════════════════════════════════════ */}
-      <section className="relative overflow-hidden">
-        <div className="senda-shell grid min-h-[90vh] items-center gap-8 py-16 lg:grid-cols-2 lg:py-0">
+            {/* Imagen Hero */}
+            <div className="lg:col-span-6 relative">
+              <div className="relative aspect-[4/3] sm:aspect-[16/11] w-full overflow-hidden rounded-3xl shadow-xl">
+                <Image
+                  src="https://images.unsplash.com/photo-1573497019940-1c28c88b4f3e?auto=format&fit=crop&w=1200&q=85"
+                  alt="Mujeres en acompañamiento en Fundación Senda Mujer"
+                  fill
+                  priority
+                  className="object-cover object-top"
+                  sizes="(max-width: 1024px) 100vw, 50vw"
+                />
+              </div>
+            </div>
+            
+          </div>
+        </div>
+      </section>
 
-          {/* Left copy */}
-          <div className="relative z-10 py-16 lg:py-28">
-            <p className="text-xs font-bold uppercase tracking-[.18em] text-[#B72D78]">
-              Cómo acompañamos
-            </p>
-            <h1 className="mt-4 font-serif text-5xl font-semibold leading-[1.05] text-[#2E2630] sm:text-6xl lg:text-[4.5rem]">
-              Dos modelos.{' '}
-              <span className="text-[#451D42]">Una ruta de acompañamiento.</span>
-            </h1>
-            <p className="mt-6 max-w-lg text-base leading-8 text-[#5a4f58]">
-              En Fundación Senda Mujer transformamos las necesidades de cada mujer
-              en rutas de orientación, fortalecimiento y acceso a oportunidades.
-            </p>
-            <div className="mt-8 flex flex-wrap gap-3">
+      {/* ── 2. SELECTOR DE MODELOS ── */}
+      <section className="border-y border-[#E8E0D7] bg-[#FAF7F2] py-8 lg:py-10">
+        <div className="senda-shell">
+          <div className="grid gap-6 lg:grid-cols-12 lg:items-center">
+            
+            <div className="lg:col-span-4">
+              <h2 className="font-serif text-2xl font-bold text-[#2E2630]">Nuestros modelos</h2>
+              <p className="mt-1 text-sm text-[#6B5D68]">Dos caminos, un mismo propósito: tu bienestar y autonomía.</p>
+            </div>
+
+            <div className="lg:col-span-8 grid gap-4 sm:grid-cols-2">
               <a
                 href="#cam"
-                className="inline-flex items-center gap-2 rounded-full bg-[#451D42] px-6 py-3 text-sm font-semibold text-white shadow-md transition hover:bg-[#B72D78] hover:shadow-lg"
+                className="group flex items-center justify-between rounded-2xl border border-[#E8E0D7] bg-[#F4EDE4] p-4 transition hover:border-[#B72D78]/50 hover:bg-white hover:shadow-sm"
               >
-                Conocer CAM <ChevronRight className="h-4 w-4" />
+                <div className="flex items-center gap-3.5">
+                  <div className="flex h-11 w-11 flex-shrink-0 items-center justify-center rounded-xl bg-[#B72D78] text-white">
+                    <BriefcaseBusiness className="h-5 w-5" />
+                  </div>
+                  <div>
+                    <h3 className="text-base font-bold text-[#2E2630] group-hover:text-[#B72D78]">CAM</h3>
+                    <p className="text-xs text-[#6B5D68]">Capacitación · Acompañamiento · Mercadeo</p>
+                  </div>
+                </div>
+                <ArrowRight className="h-4 w-4 text-[#B72D78] transition group-hover:translate-x-1" />
               </a>
+
               <a
                 href="#themis"
-                className="inline-flex items-center gap-2 rounded-full border-2 border-[#451D42] px-6 py-3 text-sm font-semibold text-[#451D42] transition hover:bg-[#451D42] hover:text-white"
+                className="group flex items-center justify-between rounded-2xl border border-[#E8E0D7] bg-[#451D42] p-4 text-white transition hover:bg-[#341332] hover:shadow-sm"
               >
-                Conocer THEMIS <ChevronRight className="h-4 w-4" />
+                <div className="flex items-center gap-3.5">
+                  <div className="flex h-11 w-11 flex-shrink-0 items-center justify-center rounded-xl bg-white/15 text-white">
+                    <Scale className="h-5 w-5" />
+                  </div>
+                  <div>
+                    <h3 className="text-base font-bold text-white">THEMIS</h3>
+                    <p className="text-xs text-white/70">Acompañamiento jurídico</p>
+                  </div>
+                </div>
+                <ArrowRight className="h-4 w-4 text-white/80 transition group-hover:translate-x-1" />
               </a>
             </div>
-          </div>
 
-          {/* Right — editorial visual */}
-          <div className="relative hidden lg:flex lg:h-full lg:items-stretch">
-            <div className="relative w-full overflow-hidden rounded-bl-[4rem] bg-gradient-to-br from-[#451D42] via-[#6e2a5f] to-[#B72D78]">
-              {/* Pattern overlay */}
-              <div className="absolute inset-0 opacity-10"
-                style={{ backgroundImage: 'radial-gradient(circle at 2px 2px, white 1px, transparent 0)', backgroundSize: '32px 32px' }} />
-              {/* Center badge */}
-              <div className="flex h-full min-h-[90vh] flex-col items-center justify-center gap-8 px-12 text-center">
-                <div className="rounded-3xl border border-white/20 bg-white/10 p-8 backdrop-blur-sm">
-                  <p className="font-serif text-4xl font-bold text-white">
-                    "Mujeres que transforman comunidades"
-                  </p>
-                  <div className="mt-6 flex items-center justify-center gap-3">
-                    <div className="h-px flex-1 bg-white/30" />
-                    <p className="text-xs font-semibold uppercase tracking-wider text-white/60">Fundación Senda Mujer</p>
-                    <div className="h-px flex-1 bg-white/30" />
-                  </div>
-                </div>
-                <div className="grid w-full grid-cols-2 gap-3">
-                  {['Acompañamos', 'Protegemos', 'Formamos', 'Transformamos'].map((word) => (
-                    <div key={word} className="rounded-xl border border-white/15 bg-white/10 px-4 py-3 text-sm font-semibold text-white/90">
-                      {word}
-                    </div>
-                  ))}
-                </div>
-              </div>
-            </div>
-          </div>
-        </div>
-
-        {/* Leaf decoration right */}
-        <div className="pointer-events-none absolute -right-12 bottom-0 top-0 hidden w-8 items-center justify-center lg:flex">
-          <div className="h-full w-full bg-gradient-to-b from-transparent via-[#B72D78]/10 to-transparent" />
-        </div>
-      </section>
-
-      {/* ══════════════════════════════════════════════════════════
-          2. SELECTOR MODELOS
-      ══════════════════════════════════════════════════════════ */}
-      <section className="border-b border-[#ddd4ca] bg-white py-10">
-        <div className="senda-shell">
-          <p className="mb-2 text-center text-xs font-bold uppercase tracking-widest text-[#B72D78]">Nuestros modelos</p>
-          <p className="mb-8 text-center text-sm text-[#5a4f58]">Dos caminos, un mismo propósito: tu bienestar y autonomía.</p>
-          <div className="grid gap-4 sm:grid-cols-2">
-            <a href="#cam" className="group flex items-center gap-4 rounded-2xl border-2 border-[#451D42]/15 bg-[#F7F0E8] p-5 transition hover:border-[#B72D78] hover:bg-white hover:shadow-md">
-              <div className="flex h-12 w-12 flex-shrink-0 items-center justify-center rounded-2xl bg-[#451D42]">
-                <BriefcaseBusiness className="h-6 w-6 text-white" />
-              </div>
-              <div className="flex-1">
-                <p className="text-[10px] font-bold uppercase tracking-wider text-[#B72D78]">Modelo CAM</p>
-                <p className="font-semibold text-[#2E2630]">Capacitación · Acompañamiento · Mercadeo</p>
-              </div>
-              <ArrowRight className="h-5 w-5 flex-shrink-0 text-[#451D42] transition group-hover:translate-x-1" />
-            </a>
-            <a href="#themis" className="group flex items-center gap-4 rounded-2xl border-2 border-[#451D42]/15 bg-[#F7F0E8] p-5 transition hover:border-[#B72D78] hover:bg-white hover:shadow-md">
-              <div className="flex h-12 w-12 flex-shrink-0 items-center justify-center rounded-2xl bg-[#203c3d]">
-                <Scale className="h-6 w-6 text-[#d9b991]" />
-              </div>
-              <div className="flex-1">
-                <p className="text-[10px] font-bold uppercase tracking-wider text-[#B72D78]">Modelo THEMIS</p>
-                <p className="font-semibold text-[#2E2630]">Acompañamiento jurídico con enfoque de género</p>
-              </div>
-              <ArrowRight className="h-5 w-5 flex-shrink-0 text-[#451D42] transition group-hover:translate-x-1" />
-            </a>
           </div>
         </div>
       </section>
 
-      {/* ══════════════════════════════════════════════════════════
-          3. MODELO CAM — HEADER + TRES PILARES EDITORIALES
-      ══════════════════════════════════════════════════════════ */}
-      <section id="cam" className="scroll-mt-20 py-20 sm:py-28">
+      {/* ── 3. MODELO CAM: TRES PILARES ── */}
+      <section id="cam" className="scroll-mt-16 py-16 lg:py-24">
         <div className="senda-shell">
-          <div className="grid gap-8 lg:grid-cols-[1fr_auto] lg:items-end">
+          
+          <div className="flex flex-col md:flex-row md:items-end justify-between gap-6 pb-12">
             <div>
-              <p className="text-xs font-bold uppercase tracking-widest text-[#B72D78]">Modelo CAM</p>
-              <h2 className="mt-3 font-serif text-4xl font-semibold text-[#2E2630] sm:text-5xl">
+              <span className="text-[11px] font-bold uppercase tracking-[0.2em] text-[#B72D78]">
+                MODELO CAM
+              </span>
+              <h2 className="mt-2 font-serif text-3xl font-bold text-[#2E2630] sm:text-4xl">
                 Capacitación · Acompañamiento · Mercadeo
               </h2>
-              <p className="mt-4 max-w-xl text-base leading-7 text-[#5a4f58]">
-                Un modelo que fortalece conocimientos, acompaña procesos y conecta
-                capacidades con oportunidades reales de mercado.
+              <p className="mt-2 max-w-2xl text-base text-[#6B5D68]">
+                Un modelo que fortalece conocimientos, acompaña procesos y conecta capacidades con oportunidades.
               </p>
+            </div>
+            <div className="text-right hidden sm:block">
+              <span className="font-serif italic text-xl text-[#8E2866] block">
+                Mujeres que transforman comunidades ♡
+              </span>
             </div>
           </div>
 
-          {/* Tres pilares — editorial layout */}
-          <div className="mt-16 grid gap-8 lg:grid-cols-3">
-            {CAM_PILARES.map((pilar) => (
-              <div key={pilar.key} className="group">
-                {/* Visual block */}
-                <div className={`relative flex h-48 items-end overflow-hidden rounded-2xl bg-gradient-to-br ${pilar.bg} p-6`}>
-                  <div className="absolute right-4 top-4 text-6xl font-black text-white/10">{pilar.num}</div>
+          <div className="grid gap-6 md:grid-cols-3">
+            
+            {/* 01 Capacitación */}
+            <div className="overflow-hidden rounded-3xl border border-[#E8E0D7] bg-white shadow-sm transition hover:shadow-md">
+              <div className="relative aspect-[4/3] w-full">
+                <Image
+                  src="https://images.unsplash.com/photo-1528740561666-dc2479dc08ab?auto=format&fit=crop&w=800&q=80"
+                  alt="Capacitación en Senda Mujer"
+                  fill
+                  className="object-cover"
+                  sizes="(max-width: 768px) 100vw, 33vw"
+                />
+              </div>
+              <div className="p-6">
+                <div className="flex items-center gap-3">
+                  <div className="flex h-10 w-10 items-center justify-center rounded-full bg-[#B72D78] text-white">
+                    <BookOpen className="h-5 w-5" />
+                  </div>
                   <div>
-                    <p className="text-lg font-black text-white">{pilar.key}</p>
-                    <p className="mt-0.5 text-xs text-white/70">{pilar.tagline}</p>
+                    <h3 className="font-serif text-lg font-bold text-[#2E2630]">Capacitación</h3>
+                    <p className="text-xs text-[#6B5D68]">Aprender para crecer.</p>
                   </div>
                 </div>
-                {/* Text below */}
-                <div className="mt-4 px-1">
-                  <p className="text-sm leading-7 text-[#5a4f58]">{pilar.desc}</p>
-                  <div className="mt-3 h-px w-12 rounded-full bg-[#B72D78] transition-all duration-300 group-hover:w-24" />
+              </div>
+            </div>
+
+            {/* 02 Acompañamiento */}
+            <div className="overflow-hidden rounded-3xl border border-[#E8E0D7] bg-white shadow-sm transition hover:shadow-md">
+              <div className="relative aspect-[4/3] w-full">
+                <Image
+                  src="https://images.unsplash.com/photo-1573497019418-b400bb3ab074?auto=format&fit=crop&w=800&q=80"
+                  alt="Acompañamiento en Senda Mujer"
+                  fill
+                  className="object-cover"
+                  sizes="(max-width: 768px) 100vw, 33vw"
+                />
+              </div>
+              <div className="p-6">
+                <div className="flex items-center gap-3">
+                  <div className="flex h-10 w-10 items-center justify-center rounded-full bg-[#657C3A] text-white">
+                    <Users className="h-5 w-5" />
+                  </div>
+                  <div>
+                    <h3 className="font-serif text-lg font-bold text-[#2E2630]">Acompañamiento</h3>
+                    <p className="text-xs text-[#6B5D68]">Juntas en cada paso.</p>
+                  </div>
                 </div>
               </div>
-            ))}
+            </div>
+
+            {/* 03 Mercadeo */}
+            <div className="overflow-hidden rounded-3xl border border-[#E8E0D7] bg-white shadow-sm transition hover:shadow-md">
+              <div className="relative aspect-[4/3] w-full">
+                <Image
+                  src="https://images.unsplash.com/photo-1556740758-90de374c12ad?auto=format&fit=crop&w=800&q=80"
+                  alt="Mercadeo y oportunidades en Senda Mujer"
+                  fill
+                  className="object-cover"
+                  sizes="(max-width: 768px) 100vw, 33vw"
+                />
+              </div>
+              <div className="p-6">
+                <div className="flex items-center gap-3">
+                  <div className="flex h-10 w-10 items-center justify-center rounded-full bg-[#9E2A68] text-white">
+                    <ShoppingBag className="h-5 w-5" />
+                  </div>
+                  <div>
+                    <h3 className="font-serif text-lg font-bold text-[#2E2630]">Mercadeo</h3>
+                    <p className="text-xs text-[#6B5D68]">Del producto a la oportunidad.</p>
+                  </div>
+                </div>
+              </div>
+            </div>
+
           </div>
+
         </div>
       </section>
 
-      {/* ══════════════════════════════════════════════════════════
-          4. CÓMO FUNCIONA CAM — TIMELINE
-      ══════════════════════════════════════════════════════════ */}
-      <section className="bg-[#451D42] py-20 sm:py-24">
+      {/* ── 4. ¿CÓMO FUNCIONA CAM? ── */}
+      <section className="border-y border-[#E8E0D7] bg-[#F5EFE7] py-16 lg:py-20">
         <div className="senda-shell">
-          <p className="text-xs font-bold uppercase tracking-widest text-[#B72D78]">Proceso CAM</p>
-          <h2 className="mt-3 font-serif text-3xl font-semibold text-white sm:text-4xl">¿Cómo funciona CAM?</h2>
-          <p className="mt-1 text-sm text-white/50">Un proceso cercano, humano y estructurado.</p>
-
-          {/* Desktop */}
-          <div className="mt-12 hidden lg:grid lg:grid-cols-4 lg:gap-6">
-            {CAM_PASOS.map((paso, i) => (
-              <div key={paso.n} className="relative">
-                {i < CAM_PASOS.length - 1 && (
-                  <div className="absolute left-12 right-0 top-5 h-px bg-white/15" />
-                )}
-                <div className="mb-5 inline-flex h-10 w-10 items-center justify-center rounded-full border border-white/25 bg-[#451D42] text-xs font-black text-white">
-                  {paso.n}
-                </div>
-                <h3 className="font-bold text-white">{paso.title}</h3>
-                <p className="mt-2 text-sm leading-6 text-white/55">{paso.desc}</p>
-              </div>
-            ))}
+          <div>
+            <h2 className="font-serif text-3xl font-bold text-[#2E2630]">¿Cómo funciona CAM?</h2>
+            <p className="mt-1 text-sm text-[#6B5D68]">Un proceso cercano, humano y estructurado.</p>
           </div>
 
-          {/* Mobile */}
-          <div className="mt-8 space-y-0 lg:hidden">
-            {CAM_PASOS.map((paso, i) => (
-              <div key={paso.n} className="flex gap-4">
-                <div className="flex flex-col items-center">
-                  <div className="flex h-9 w-9 flex-shrink-0 items-center justify-center rounded-full border border-white/25 text-xs font-black text-white">
+          <div className="mt-12 grid gap-6 sm:grid-cols-2 lg:grid-cols-4">
+            {CAM_PASOS.map((paso, idx) => (
+              <div key={paso.n} className="relative">
+                <div className="flex items-center gap-3">
+                  <div className="flex h-10 w-10 items-center justify-center rounded-full bg-[#B72D78] font-bold text-white shadow-sm">
                     {paso.n}
                   </div>
-                  {i < CAM_PASOS.length - 1 && <div className="my-1 h-8 w-px bg-white/15" />}
+                  {idx < CAM_PASOS.length - 1 && (
+                    <div className="hidden h-px flex-1 bg-[#B72D78]/30 lg:block" />
+                  )}
                 </div>
-                <div className="pb-4 pt-1">
-                  <p className="font-bold text-white">{paso.title}</p>
-                  <p className="mt-0.5 text-sm text-white/55">{paso.desc}</p>
-                </div>
+                <h3 className="mt-4 text-base font-bold text-[#2E2630]">{paso.title}</h3>
+                <p className="mt-1 text-sm leading-relaxed text-[#6B5D68]">{paso.desc}</p>
               </div>
             ))}
           </div>
         </div>
       </section>
 
-      {/* ══════════════════════════════════════════════════════════
-          5. LÍNEAS PRODUCTIVAS — GALERÍA EDITORIAL
-      ══════════════════════════════════════════════════════════ */}
-      <section className="py-20 sm:py-28">
+      {/* ── 5. LÍNEAS PRODUCTIVAS (FOTOS REALES) ── */}
+      <section className="py-16 lg:py-24">
         <div className="senda-shell">
-          <p className="text-xs font-bold uppercase tracking-widest text-[#B72D78]">Líneas productivas</p>
-          <h2 className="mt-3 font-serif text-3xl font-semibold text-[#2E2630] sm:text-4xl">
-            Capacidades que se convierten en oportunidades
-          </h2>
-          <p className="mt-3 max-w-xl text-sm leading-7 text-[#5a4f58]">
-            Seis líneas de formación, producción y comercialización para que cada
-            mujer encuentre su camino hacia la autonomía económica.
-          </p>
+          <div>
+            <h2 className="font-serif text-3xl font-bold text-[#2E2630]">Líneas productivas</h2>
+            <p className="mt-1 text-sm text-[#6B5D68]">Capacidades que se convierten en oportunidades.</p>
+          </div>
 
-          <div className="mt-10 grid grid-cols-2 gap-3 sm:gap-4 lg:grid-cols-3">
-            {LINEAS.map((linea) => {
+          <div className="mt-10 grid gap-6 sm:grid-cols-2 lg:grid-cols-3">
+            {LINEAS_PRODUCTIVAS.map((linea) => {
               const Icon = linea.icon;
               return (
                 <div
-                  key={linea.slug}
-                  className="group relative aspect-square overflow-hidden rounded-2xl"
+                  key={linea.nombre}
+                  className="group relative overflow-hidden rounded-3xl border border-[#E8E0D7] bg-white shadow-sm transition hover:shadow-lg"
                 >
-                  {/* Gradient background */}
-                  <div className={`absolute inset-0 bg-gradient-to-br ${linea.bg}`} />
-                  {/* Pattern overlay */}
-                  <div
-                    className="absolute inset-0 opacity-10"
-                    style={{ backgroundImage: 'radial-gradient(circle at 2px 2px, white 1px, transparent 0)', backgroundSize: '24px 24px' }}
-                  />
-                  {/* Icon large bg */}
-                  <div className="absolute right-4 top-4 opacity-20 transition-transform duration-500 group-hover:scale-125">
-                    <Icon className="h-20 w-20 text-white" />
+                  <div className="relative aspect-[16/10] w-full overflow-hidden">
+                    <Image
+                      src={linea.img}
+                      alt={linea.nombre}
+                      fill
+                      className="object-cover transition duration-500 group-hover:scale-105"
+                      sizes="(max-width: 640px) 100vw, (max-width: 1024px) 50vw, 33vw"
+                    />
+                    <div className="absolute inset-0 bg-gradient-to-t from-black/60 via-transparent to-transparent opacity-80" />
                   </div>
-                  {/* Content */}
-                  <div className="absolute inset-0 flex flex-col justify-end p-5">
-                    <div className="flex items-center gap-2">
-                      <div className="flex h-8 w-8 items-center justify-center rounded-xl bg-white/20">
-                        <Icon className="h-4 w-4 text-white" />
-                      </div>
+                  
+                  <div className="absolute bottom-4 left-4 right-4 flex items-center gap-3">
+                    <div
+                      className="flex h-10 w-10 flex-shrink-0 items-center justify-center rounded-xl text-white shadow"
+                      style={{ backgroundColor: linea.color }}
+                    >
+                      <Icon className="h-5 w-5" />
                     </div>
-                    <p className="mt-2 text-base font-bold leading-tight text-white">{linea.nombre}</p>
-                    <p className="mt-0.5 text-xs text-white/70">{linea.tagline}</p>
-                    {/* Hover reveal */}
-                    <div className="mt-2 translate-y-2 opacity-0 transition-all duration-300 group-hover:translate-y-0 group-hover:opacity-100">
-                      <p className="text-[10px] text-white/70">Formación · Producción · Comercialización →</p>
-                    </div>
+                    <span className="font-medium text-white drop-shadow-md text-sm sm:text-base">
+                      {linea.nombre}
+                    </span>
                   </div>
                 </div>
               );
@@ -319,175 +394,180 @@ export default function ModelosPage() {
         </div>
       </section>
 
-      {/* ══════════════════════════════════════════════════════════
-          6. DEL APRENDIZAJE AL MERCADO
-      ══════════════════════════════════════════════════════════ */}
-      <section className="border-t border-[#ddd4ca] bg-[#F7F0E8] py-20 sm:py-24">
+      {/* ── 6. DEL APRENDIZAJE AL MERCADO ── */}
+      <section className="border-y border-[#E8E0D7] bg-[#F5EFE7] py-16 lg:py-20">
         <div className="senda-shell">
-          <div className="mx-auto max-w-2xl text-center">
-            <p className="text-xs font-bold uppercase tracking-widest text-[#B72D78]">Ruta productiva</p>
-            <h2 className="mt-3 font-serif text-3xl font-semibold text-[#2E2630] sm:text-4xl">Del aprendizaje al mercado</h2>
-            <p className="mt-3 text-sm leading-7 text-[#5a4f58]">
-              Una ruta que transforma conocimiento en capacidad y capacidad en oportunidades reales.
+          <div>
+            <h2 className="font-serif text-3xl font-bold text-[#2E2630]">Del aprendizaje al mercado</h2>
+            <p className="mt-1 text-sm text-[#6B5D68]">
+              Una ruta que transforma conocimiento en capacidad y capacidad en oportunidades.
             </p>
           </div>
-          <div className="mt-12 grid gap-6 sm:grid-cols-2 lg:grid-cols-4">
-            {MERCADO_PASOS.map((paso, i) => (
-              <div key={paso.label} className="relative flex flex-col items-center text-center">
-                {i < MERCADO_PASOS.length - 1 && (
-                  <div className="absolute left-[calc(50%+2.5rem)] top-7 hidden h-px w-[calc(100%-5rem)] border-t-2 border-dashed border-[#B72D78]/30 lg:block" />
-                )}
-                <div className={`flex h-14 w-14 items-center justify-center rounded-full ${paso.color} text-2xl shadow-md`}>
-                  {paso.emoji}
-                </div>
-                <p className="mt-3 text-xs font-black uppercase tracking-wider text-[#451D42]">
-                  {String(i + 1).padStart(2, '0')}
-                </p>
-                <p className="mt-1 font-semibold text-[#2E2630]">{paso.label}</p>
-              </div>
-            ))}
-          </div>
-        </div>
-      </section>
 
-      {/* ══════════════════════════════════════════════════════════
-          7. MODELO THEMIS
-      ══════════════════════════════════════════════════════════ */}
-      <section id="themis" className="scroll-mt-20 bg-white py-20 sm:py-28">
-        <div className="senda-shell grid gap-12 lg:grid-cols-2 lg:items-start">
-
-          {/* Left — visual */}
-          <div className="order-2 lg:order-1">
-            <div className="relative overflow-hidden rounded-3xl bg-gradient-to-br from-[#203c3d] to-[#0f2425] p-10">
-              <div
-                className="absolute inset-0 opacity-5"
-                style={{ backgroundImage: 'radial-gradient(circle at 2px 2px, white 1px, transparent 0)', backgroundSize: '28px 28px' }}
-              />
-              <Scale className="relative h-16 w-16 text-[#d9b991]" />
-              <p className="relative mt-6 font-serif text-3xl font-semibold text-white">
-                Orientación jurídica con enfoque de género y derechos.
-              </p>
-              <p className="relative mt-4 text-sm leading-7 text-white/60">
-                Para que cada mujer pueda consultar sus derechos, tomar decisiones
-                libres e informadas y acceder a rutas de protección y justicia.
-              </p>
-              <div className="relative mt-8 grid grid-cols-2 gap-3">
-                {['Confidencialidad', 'No revictimización', 'Enfoque de género', 'Articulación de rutas'].map((tag) => (
-                  <div key={tag} className="rounded-xl border border-white/10 bg-white/5 px-3 py-2 text-xs font-medium text-white/80">
-                    {tag}
+          <div className="mt-10 grid gap-4 grid-cols-2 lg:grid-cols-4">
+            {RUTA_MERCADO.map((item, idx) => {
+              const Icon = item.icon;
+              return (
+                <div key={item.titulo} className="flex flex-col items-center">
+                  <div className="relative aspect-[4/3] w-full overflow-hidden rounded-2xl border border-[#E8E0D7] shadow-sm">
+                    <Image
+                      src={item.img}
+                      alt={item.titulo}
+                      fill
+                      className="object-cover"
+                      sizes="(max-width: 768px) 50vw, 25vw"
+                    />
                   </div>
-                ))}
-              </div>
-            </div>
-          </div>
-
-          {/* Right — principios */}
-          <div className="order-1 lg:order-2">
-            <p className="text-xs font-bold uppercase tracking-widest text-[#B72D78]">Modelo THEMIS</p>
-            <h2 className="mt-3 font-serif text-4xl font-semibold leading-[1.1] text-[#2E2630] sm:text-5xl">
-              Acompañamiento jurídico con enfoque de género y derechos.
-            </h2>
-            <p className="mt-4 text-base leading-7 text-[#5a4f58]">
-              THEMIS guía la orientación jurídica para que la información sea clara,
-              las opciones se expliquen sin presiones y el acceso a la justicia
-              no produzca nuevas formas de daño.
-            </p>
-            <div className="mt-8 space-y-3">
-              {THEMIS_PRINCIPIOS.map((p) => (
-                <div key={p.n} className="flex gap-4 rounded-2xl border border-[#ddd4ca] bg-[#F7F0E8] p-4 transition hover:border-[#B72D78]/30 hover:shadow-sm">
-                  <span className="mt-0.5 text-xs font-black text-[#ddd4ca]">{p.n}</span>
-                  <div>
-                    <p className="font-semibold text-[#2E2630]">{p.title}</p>
-                    <p className="mt-0.5 text-sm text-[#5a4f58]">{p.desc}</p>
+                  <div className="mt-3 flex items-center gap-2">
+                    <div className="flex h-7 w-7 items-center justify-center rounded-full bg-[#451D42] text-white">
+                      <Icon className="h-3.5 w-3.5" />
+                    </div>
+                    <span className="text-xs sm:text-sm font-semibold text-[#2E2630]">{item.titulo}</span>
+                    {idx < RUTA_MERCADO.length - 1 && (
+                      <span className="text-[#B72D78] font-bold text-xs hidden lg:inline ml-2">→</span>
+                    )}
                   </div>
                 </div>
-              ))}
-            </div>
+              );
+            })}
           </div>
         </div>
       </section>
 
-      {/* ══════════════════════════════════════════════════════════
-          8. DOS MODELOS QUE SE COMPLEMENTAN
-      ══════════════════════════════════════════════════════════ */}
-      <section className="border-t border-[#ddd4ca] bg-[#F7F0E8] py-20 sm:py-24">
+      {/* ── 7. MODELO THEMIS ── */}
+      <section id="themis" className="scroll-mt-16 py-16 lg:py-24">
         <div className="senda-shell">
-          <div className="mx-auto max-w-2xl text-center">
-            <p className="text-xs font-bold uppercase tracking-widest text-[#B72D78]">Visión integral</p>
-            <h2 className="mt-3 font-serif text-3xl font-semibold text-[#2E2630] sm:text-4xl">Dos modelos que se complementan</h2>
-            <p className="mt-4 text-sm leading-7 text-[#5a4f58]">
-              Algunas necesidades requieren fortalecer capacidades. Otras requieren orientación para ejercer
-              derechos. En Senda Mujer, ambos caminos pueden formar parte de un acompañamiento integral.
-            </p>
-          </div>
-          <div className="mt-10 grid gap-6 sm:grid-cols-2">
-            <div className="rounded-3xl bg-[#451D42] p-8 text-white">
-              <div className="mb-4 inline-flex h-10 w-10 items-center justify-center rounded-xl bg-[#B72D78]">
-                <BriefcaseBusiness className="h-5 w-5 text-white" />
-              </div>
-              <p className="text-[10px] font-bold uppercase tracking-wider text-[#B72D78]">CAM</p>
-              <h3 className="mt-2 font-serif text-xl font-semibold">Fortalecimiento de capacidades</h3>
-              <ul className="mt-4 space-y-2">
-                {['Capacitación técnica y práctica', 'Acompañamiento al proceso', 'Mercadeo y comercialización', 'Autonomía económica'].map((item) => (
-                  <li key={item} className="flex items-center gap-2 text-sm text-white/80">
-                    <CheckCircle2 className="h-4 w-4 flex-shrink-0 text-[#B72D78]" /> {item}
-                  </li>
-                ))}
-              </ul>
+          <div className="grid gap-12 lg:grid-cols-12 lg:items-center">
+            
+            {/* Columna Izquierda: Título y descripción */}
+            <div className="lg:col-span-5 space-y-4">
+              <span className="text-[11px] font-bold uppercase tracking-[0.2em] text-[#B72D78]">
+                MODELO THEMIS
+              </span>
+              <h2 className="font-serif text-3xl font-bold leading-tight text-[#2E2630] sm:text-4xl">
+                Acompañamiento jurídico con enfoque de género y derechos.
+              </h2>
+              <p className="text-sm leading-relaxed text-[#6B5D68]">
+                Brindamos orientación jurídica, acompañamiento integral y acceso a rutas de atención, para que cada mujer conozca sus derechos y pueda tomar decisiones libres e informadas.
+              </p>
             </div>
-            <div className="rounded-3xl bg-[#203c3d] p-8 text-white">
-              <div className="mb-4 inline-flex h-10 w-10 items-center justify-center rounded-xl bg-[#d9b991]/20">
-                <Scale className="h-5 w-5 text-[#d9b991]" />
+
+            {/* Columna Centro: Foto Asesoría */}
+            <div className="lg:col-span-4 relative">
+              <div className="relative aspect-[4/3] sm:aspect-[4/3] w-full overflow-hidden rounded-3xl shadow-md border border-[#E8E0D7]">
+                <Image
+                  src="https://images.unsplash.com/photo-1573497491208-6b1acb260507?auto=format&fit=crop&w=1000&q=80"
+                  alt="Asesoría jurídica THEMIS en Fundación Senda Mujer"
+                  fill
+                  className="object-cover"
+                  sizes="(max-width: 1024px) 100vw, 35vw"
+                />
               </div>
-              <p className="text-[10px] font-bold uppercase tracking-wider text-[#d9b991]">THEMIS</p>
-              <h3 className="mt-2 font-serif text-xl font-semibold">Orientación para ejercer derechos</h3>
-              <ul className="mt-4 space-y-2">
-                {['Orientación jurídica accesible', 'Decisiones libres e informadas', 'Confidencialidad y no revictimización', 'Articulación con rutas y redes'].map((item) => (
-                  <li key={item} className="flex items-center gap-2 text-sm text-white/80">
-                    <CheckCircle2 className="h-4 w-4 flex-shrink-0 text-[#d9b991]" /> {item}
-                  </li>
-                ))}
-              </ul>
             </div>
+
+            {/* Columna Derecha: 4 Principios */}
+            <div className="lg:col-span-3 space-y-4">
+              {THEMIS_PRINCIPIOS.map((p) => {
+                const Icon = p.icon;
+                return (
+                  <div key={p.n} className="flex items-start gap-3 rounded-2xl border border-[#E8E0D7] bg-white p-3.5 shadow-sm">
+                    <div className="flex h-8 w-8 flex-shrink-0 items-center justify-center rounded-lg bg-[#451D42]/10 text-[#451D42]">
+                      <Icon className="h-4 w-4" />
+                    </div>
+                    <div>
+                      <span className="text-[10px] font-bold text-[#B72D78] uppercase">{p.n}</span>
+                      <p className="text-xs font-semibold leading-tight text-[#2E2630]">{p.title}</p>
+                    </div>
+                  </div>
+                );
+              })}
+            </div>
+
           </div>
         </div>
       </section>
 
-      {/* ══════════════════════════════════════════════════════════
-          9. CTA FINAL
-      ══════════════════════════════════════════════════════════ */}
-      <section className="bg-white py-20 sm:py-28">
+      {/* ── 8. DOS MODELOS QUE SE COMPLEMENTAN ── */}
+      <section className="border-t border-[#E8E0D7] bg-[#F5EFE7] py-16 lg:py-20">
         <div className="senda-shell">
-          <div className="mx-auto max-w-xl text-center">
-            <p className="text-xs font-bold uppercase tracking-widest text-[#B72D78]">Estamos para acompañarte</p>
-            <h2 className="mt-3 font-serif text-3xl font-semibold text-[#2E2630] sm:text-4xl">
-              ¿Cuál es tu siguiente paso?
-            </h2>
-            <p className="mt-3 text-sm leading-7 text-[#5a4f58]">
-              Elige el camino que más se adapta a lo que necesitas hoy.
-            </p>
+          <div className="grid gap-8 lg:grid-cols-12 lg:items-center">
+            
+            <div className="lg:col-span-4 space-y-3">
+              <h2 className="font-serif text-2xl font-bold text-[#2E2630] sm:text-3xl">
+                Dos modelos que se complementan
+              </h2>
+              <p className="text-sm leading-relaxed text-[#6B5D68]">
+                Algunas necesidades requieren fortalecer capacidades. Otras requieren orientación para ejercer derechos. En Senda Mujer, ambos caminos pueden formar parte de un acompañamiento integral.
+              </p>
+            </div>
+
+            <div className="lg:col-span-8 flex flex-col md:flex-row items-center gap-4">
+              
+              {/* Card CAM */}
+              <div className="w-full rounded-3xl border border-[#E8E0D7] bg-[#FCEBF4] p-6 text-[#2E2630]">
+                <div className="flex items-center gap-2 text-[#B72D78]">
+                  <BriefcaseBusiness className="h-5 w-5" />
+                  <span className="font-bold text-sm">CAM</span>
+                </div>
+                <ul className="mt-4 space-y-2 text-xs text-[#523F4C]">
+                  <li className="flex items-center gap-2"><span>•</span> Capacitación</li>
+                  <li className="flex items-center gap-2"><span>•</span> Acompañamiento</li>
+                  <li className="flex items-center gap-2"><span>•</span> Mercadeo</li>
+                  <li className="font-semibold text-[#B72D78] pt-1">Fortalecimiento de capacidades</li>
+                </ul>
+              </div>
+
+              {/* Plus separator */}
+              <div className="flex h-10 w-10 flex-shrink-0 items-center justify-center rounded-full bg-[#451D42] text-white">
+                <Plus className="h-5 w-5" />
+              </div>
+
+              {/* Card THEMIS */}
+              <div className="w-full rounded-3xl border border-[#E8E0D7] bg-[#EFEAF2] p-6 text-[#2E2630]">
+                <div className="flex items-center gap-2 text-[#451D42]">
+                  <Scale className="h-5 w-5" />
+                  <span className="font-bold text-sm">THEMIS</span>
+                </div>
+                <ul className="mt-4 space-y-2 text-xs text-[#443842]">
+                  <li className="flex items-center gap-2"><span>•</span> Orientación jurídica</li>
+                  <li className="flex items-center gap-2"><span>•</span> Información</li>
+                  <li className="flex items-center gap-2"><span>•</span> Decisiones informadas</li>
+                  <li className="font-semibold text-[#451D42] pt-1">Acceso a rutas</li>
+                </ul>
+              </div>
+
+            </div>
+
           </div>
-          <div className="mt-10 grid gap-4 sm:grid-cols-3">
-            {[
-              { href: '/ayuda', emoji: '🙋‍♀️', label: 'Necesito orientación', sub: 'Accede a nuestros servicios de acompañamiento', accent: '#B72D78' },
-              { href: '/programas', emoji: '📋', label: 'Quiero conocer los programas', sub: 'Explora nuestra oferta de formación y apoyo', accent: '#451D42' },
-              { href: '/contacto', emoji: '💚', label: 'Quiero apoyar a Senda Mujer', sub: 'Súmate a nuestra misión de transformación', accent: '#657C3A' },
-            ].map((cta) => (
-              <Link
-                key={cta.href}
-                href={cta.href}
-                className="group flex flex-col items-center gap-3 rounded-2xl border-2 border-[#ddd4ca] bg-[#F7F0E8] p-6 text-center transition hover:border-transparent hover:bg-white hover:shadow-lg"
-              >
-                <div className="flex h-14 w-14 items-center justify-center rounded-full bg-[#F7F0E8] text-2xl shadow-sm transition group-hover:scale-110">
-                  {cta.emoji}
-                </div>
-                <p className="font-semibold text-[#2E2630]">{cta.label}</p>
-                <p className="text-xs text-[#5a4f58]">{cta.sub}</p>
-                <div className="flex items-center gap-1 text-xs font-semibold" style={{ color: cta.accent }}>
-                  Ir <ArrowRight className="h-3 w-3 transition group-hover:translate-x-1" />
-                </div>
-              </Link>
-            ))}
+        </div>
+      </section>
+
+      {/* ── 9. CTA FINAL: ¿CUÁL ES TU SIGUIENTE PASO? ── */}
+      <section className="bg-[#451D42] py-16 lg:py-20 text-white relative overflow-hidden">
+        <div className="senda-shell text-center relative z-10">
+          <h2 className="font-serif text-3xl font-bold sm:text-4xl">¿Cuál es tu siguiente paso?</h2>
+          
+          <div className="mt-8 flex flex-wrap justify-center gap-4">
+            <Link
+              href="/ayuda"
+              className="inline-flex items-center gap-2 rounded-full bg-[#B72D78] px-6 py-3.5 text-sm font-semibold text-white shadow transition hover:bg-[#9c2364]"
+            >
+              🙋‍♀️ Necesito orientación
+            </Link>
+            
+            <Link
+              href="/programas"
+              className="inline-flex items-center gap-2 rounded-full border border-white/30 bg-white/10 px-6 py-3.5 text-sm font-semibold text-white transition hover:bg-white/20"
+            >
+              📋 Quiero conocer los programas
+            </Link>
+
+            <Link
+              href="/donar"
+              className="inline-flex items-center gap-2 rounded-full bg-[#657C3A] px-6 py-3.5 text-sm font-semibold text-white shadow transition hover:bg-[#52652e]"
+            >
+              💚 Quiero apoyar a Senda Mujer
+            </Link>
           </div>
         </div>
       </section>
