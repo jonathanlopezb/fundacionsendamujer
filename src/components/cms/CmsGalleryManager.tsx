@@ -73,10 +73,12 @@ export default function CmsGalleryManager() {
     setUploading(true);
     setError('');
     try {
+      const formData = new FormData();
+      formData.append('file', file);
+
       const res = await fetch(`/api/cms/upload?filename=${encodeURIComponent(file.name)}`, {
         method: 'POST',
-        headers: { 'Content-Type': file.type },
-        body: file,
+        body: formData,
       });
       const data = await res.json();
       if (!res.ok || data.error) throw new Error(data.error || 'Error al subir imagen');

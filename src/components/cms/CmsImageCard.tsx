@@ -37,10 +37,12 @@ export default function CmsImageCard({ item, onSaveSuccess }: CmsImageCardProps)
     setMessage(null);
 
     try {
+      const formData = new FormData();
+      formData.append('file', file);
+
       const res = await fetch(`/api/cms/upload?filename=${encodeURIComponent(file.name)}`, {
         method: 'POST',
-        headers: { 'Content-Type': file.type },
-        body: file,
+        body: formData,
       });
 
       const data = await res.json();
@@ -49,8 +51,29 @@ export default function CmsImageCard({ item, onSaveSuccess }: CmsImageCardProps)
         throw new Error(data.error || 'Error al subir la imagen.');
       }
 
-      setImageUrl(data.url);
-      setMessage({ type: 'success', text: '¡Imagen cargada en Blob con éxito! Recuerda guardar los cambios.' });
+      const uploadedUrl = data.url;
+      setImageUrl(uploadedUrl);
+
+      // Guardar automáticamente la nueva URL en MongoDB
+      const saveRes = await fetch('/api/cms/images', {
+        method: 'PUT',
+        headers: { 'Content-Type': 'application/json' },
+        body: JSON.stringify({
+          sectionKey: item.sectionKey,
+          imageUrl: uploadedUrl,
+          altText,
+          caption,
+          page: item.page,
+          title: item.title,
+        }),
+      });
+
+      if (saveRes.ok) {
+        setMessage({ type: 'success', text: '¡Imagen subida a Blob y guardada en MongoDB con éxito!' });
+        if (onSaveSuccess) onSaveSuccess();
+      } else {
+        setMessage({ type: 'success', text: '¡Imagen cargada en Blob! Haz clic en Guardar Cambios para confirmar.' });
+      }
     } catch (err: any) {
       setMessage({ type: 'error', text: err.message || 'Error al conectar con el almacenamiento Blob.' });
     } finally {
