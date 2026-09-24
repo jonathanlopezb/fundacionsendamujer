@@ -403,13 +403,26 @@ export default function CmsDashboard({ currentUser, onLogout }: CmsDashboardProp
                   )}
                   <div>
                     <h4 className="font-bold text-sm">
-                      {blobDiag.connected ? 'Conexión Exitosa con Vercel Blob' : 'Error de Conexión con Blob'}
+                      {blobDiag.connected ? 'Conexión Exitosa con Vercel Blob' : 'Vercel Blob en Modo Fallback'}
                     </h4>
                     <p className="mt-1 text-xs opacity-90">{blobDiag.message}</p>
-                    {blobDiag.connected && (
+                    {blobDiag.connected ? (
                       <p className="mt-1 font-mono text-[11px] text-emerald-300">
                         Archivos actualmente en la tienda: <strong>{blobDiag.blobCount}</strong>
                       </p>
+                    ) : (
+                      <div className="mt-3 p-3 bg-purple-950/60 rounded-xl border border-purple-800/40 text-[11px] text-purple-200 space-y-1">
+                        <strong className="text-pink-300 block font-bold">💡 ¿Cómo conectar la tienda al proyecto en Vercel?</strong>
+                        <ol className="list-decimal pl-4 space-y-0.5">
+                          <li>Entra a tu cuenta en <strong>Vercel &gt; Storage</strong>.</li>
+                          <li>Haz clic en tu tienda <strong>fundacionsendamujer-blob</strong>.</li>
+                          <li>Haz clic en la pestaña <strong>&ldquo;Projects&rdquo;</strong> o <strong>&ldquo;Connect Project&rdquo;</strong>.</li>
+                          <li>Selecciona el proyecto <strong>fundacionsendamujer</strong> para que Vercel inyecte el token directamente en producción.</li>
+                        </ol>
+                        <p className="text-[10px] text-purple-300/80 pt-1">
+                          Nota: Mientras tanto, la subida de imágenes sigue funcionando automáticamente guardando de forma segura en MongoDB.
+                        </p>
+                      </div>
                     )}
                   </div>
                 </div>

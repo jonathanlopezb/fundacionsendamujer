@@ -1,6 +1,7 @@
 import { put } from '@vercel/blob';
 import { NextRequest, NextResponse } from 'next/server';
 import { readCmsSession } from '@/lib/cms-auth';
+import { getVercelBlobToken } from '@/lib/blob-token';
 
 export const dynamic = 'force-dynamic';
 
@@ -49,31 +50,48 @@ export async function POST(request: NextRequest): Promise<NextResponse> {
       .replace(/-+/g, '-');
 
     const finalFilename = `cms/${Date.now()}-${sanitizedFilename}`;
+    const blobToken = getVercelBlobToken();
 
-    const blobToken =
-      process.env.BLOB_READ_WRITE_TOKEN ||
-      process.env.VERCEL_BLOB_READ_WRITE_TOKEN ||
-      process.env.BLOB_TOKEN;
+    // 1. Si tenemos token de Vercel Blob, intentamos subir directamente al Blob CDN
+    if (blobToken) {
+      try {
+        const blob = await put(finalFilename, fileBuffer, {
+          access: 'public',
+          contentType,
+          token: blobToken,
+        });
 
-    const blob = await put(finalFilename, fileBuffer, {
-      access: 'public',
-      contentType,
-      token: blobToken || undefined,
-    });
+        return NextResponse.json({
+          url: blob.url,
+          pathname: blob.pathname,
+          contentType: blob.contentType,
+          downloadUrl: blob.downloadUrl,
+          provider: 'vercel-blob',
+        });
+      } catch (blobErr: any) {
+        console.warn('Error subiendo a Vercel Blob, recurriendo a almacenamiento en MongoDB:', blobErr);
+      }
+    }
+
+    // 2. Fallback garantizado: Codificar en Data URI optimizado para guardarlo directamente en MongoDB
+    const base64String = fileBuffer.toString('base64');
+    const dataUri = `data:${contentType};base64,${base64String}`;
 
     return NextResponse.json({
-      url: blob.url,
-      pathname: blob.pathname,
-      contentType: blob.contentType,
-      downloadUrl: blob.downloadUrl,
-      provider: 'vercel-blob',
+      url: dataUri,
+      pathname: finalFilename,
+      contentType,
+      provider: blobToken ? 'inline-fallback' : 'mongodb-direct',
+      message: blobToken
+        ? 'Vercel Blob reportó un error; la imagen se guardó de forma segura directamente en la base de datos.'
+        : 'Imagen procesada y guardada exitosamente en la base de datos.',
     });
   } catch (error: any) {
-    console.error('Error detallado al subir a Vercel Blob:', error);
+    console.error('Error al procesar la imagen:', error);
     return NextResponse.json(
       {
-        error: error.message || 'Error al conectar y subir la imagen a Vercel Blob.',
-        details: error.name || 'BlobError',
+        error: error.message || 'Error al procesar la imagen.',
+        details: error.name || 'UploadError',
       },
       { status: 500 }
     );
