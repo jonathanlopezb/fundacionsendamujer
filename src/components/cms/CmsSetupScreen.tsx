@@ -66,7 +66,16 @@ export default function CmsSetupScreen({ onSuccess }: CmsSetupScreenProps) {
   };
 
   return (
-    <div className="min-h-screen bg-gradient-to-br from-slate-950 via-[#1f062e] to-slate-950 text-white flex items-center justify-center p-4 sm:p-6">
+    <div className="min-h-screen bg-gradient-to-br from-slate-950 via-[#1f062e] to-slate-950 text-white flex flex-col items-center justify-center p-4 sm:p-6 relative">
+      <div className="absolute top-5 left-5">
+        <a
+          href="/"
+          className="px-3.5 py-1.5 rounded-xl bg-purple-950/60 hover:bg-purple-900/80 border border-purple-700/60 text-purple-200 text-xs font-bold flex items-center gap-1.5 transition-colors shadow"
+        >
+          ← Regresar al sitio
+        </a>
+      </div>
+
       <div className="w-full max-w-xl">
         {/* Banner de Bienvenida y Seguridad */}
         <div className="text-center mb-6">

@@ -1,6 +1,6 @@
 'use client';
 
-import React, { useState } from 'react';
+import React, { useState, useEffect } from 'react';
 import Image from 'next/image';
 
 interface ActivityItem {
@@ -79,12 +79,54 @@ const ACTIVITIES: ActivityItem[] = [
 
 export default function ActivityGallery() {
   const [filter, setFilter] = useState('Todas');
+  const [items, setItems] = useState<ActivityItem[]>(ACTIVITIES);
+  const [categories, setCategories] = useState<string[]>([
+    'Todas',
+    'Salud & Ginecología',
+    'Maternidad con Apoyo',
+    'Capacitación & Emprendimiento',
+    'Derechos & Protección',
+  ]);
 
-  const categories = ['Todas', 'Salud & Ginecología', 'Maternidad con Apoyo', 'Capacitación & Emprendimiento', 'Derechos & Protección'];
+  useEffect(() => {
+    async function loadDynamicGallery() {
+      try {
+        const [itemsRes, catsRes] = await Promise.all([
+          fetch('/api/cms/gallery/items'),
+          fetch('/api/cms/gallery/categories'),
+        ]);
+        const itemsData = await itemsRes.json();
+        const catsData = await catsRes.json();
+
+        if (itemsData.items && itemsData.items.length > 0) {
+          setItems(
+            itemsData.items.map((it: any) => ({
+              id: it.id || it._id,
+              category: it.category,
+              title: it.title,
+              date: it.date || 'Reciente',
+              location: it.location || 'Cartagena D.T. y C.',
+              image: it.imageUrl || it.image,
+              desc: it.description || it.desc,
+              participants: it.participants || 'Comunidad atendida',
+            }))
+          );
+        }
+
+        if (catsData.categories && catsData.categories.length > 0) {
+          const names = catsData.categories.map((c: any) => c.name);
+          setCategories(['Todas', ...names]);
+        }
+      } catch (err) {
+        console.warn('Usando datos de galería predeterminados:', err);
+      }
+    }
+    loadDynamicGallery();
+  }, []);
 
   const filteredItems = filter === 'Todas'
-    ? ACTIVITIES
-    : ACTIVITIES.filter((item) => item.category === filter);
+    ? items
+    : items.filter((item) => item.category === filter);
 
   return (
     <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 py-12 space-y-12">

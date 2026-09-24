@@ -1,12 +1,16 @@
 'use client';
 
 import React, { useState, useEffect } from 'react';
+import Link from 'next/link';
 import {
   Sparkles, Shield, Image as ImageIcon, Users, LogOut,
-  ExternalLink, CheckCircle2, Layers, Search, RefreshCw, FileText, Check
+  ArrowLeft, CheckCircle2, Layers, Search, HeartHandshake,
+  FolderTree, ExternalLink
 } from 'lucide-react';
 import CmsImageCard from './CmsImageCard';
 import CmsUserManager from './CmsUserManager';
+import CmsGalleryManager from './CmsGalleryManager';
+import CmsAlliesManager from './CmsAlliesManager';
 import { CmsImageItem, CMS_DEFAULT_SECTIONS } from '@/lib/cms-defaults';
 
 interface CmsDashboardProps {
@@ -17,7 +21,7 @@ interface CmsDashboardProps {
 const PAGE_TABS = ['Todas', 'Inicio', 'Nosotros', 'Programas', 'Donaciones', 'Galería', 'Caribe Seguro', 'Aliados'] as const;
 
 export default function CmsDashboard({ currentUser, onLogout }: CmsDashboardProps) {
-  const [activeTab, setActiveTab] = useState<'images' | 'users' | 'seo'>('images');
+  const [activeTab, setActiveTab] = useState<'images' | 'gallery' | 'allies' | 'users' | 'seo'>('images');
   const [selectedPage, setSelectedPage] = useState<string>('Todas');
   const [searchQuery, setSearchQuery] = useState('');
   const [sections, setSections] = useState<CmsImageItem[]>(CMS_DEFAULT_SECTIONS);
@@ -54,68 +58,106 @@ export default function CmsDashboard({ currentUser, onLogout }: CmsDashboardProp
   });
 
   return (
-    <div className="min-h-screen bg-gradient-to-br from-slate-950 via-[#180426] to-slate-950 text-white">
-      {/* Barra de Navegación Superior */}
-      <header className="sticky top-0 z-40 bg-[#1b052c]/90 backdrop-blur-xl border-b border-purple-800/60 shadow-lg">
+    <div className="min-h-screen bg-gradient-to-br from-slate-950 via-[#180426] to-slate-950 text-white font-sans antialiased">
+      {/* ── Topbar de Control Exclusiva del CMS ───────────────────────────── */}
+      <header className="sticky top-0 z-40 bg-[#1b052c]/95 backdrop-blur-xl border-b border-purple-800/60 shadow-xl">
         <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 py-3.5 flex flex-col sm:flex-row sm:items-center justify-between gap-4">
+          {/* Logo & Info de Usuario */}
           <div className="flex items-center gap-3">
-            <div className="w-9 h-9 rounded-2xl bg-gradient-to-tr from-pink-600 to-purple-600 flex items-center justify-center text-white shadow-md shadow-pink-600/30">
-              <Shield className="w-5 h-5" />
-            </div>
-            <div>
-              <div className="flex items-center gap-2">
-                <span className="text-base font-black text-white">Fundación Senda Mujer</span>
-                <span className="px-2 py-0.5 rounded-full bg-pink-500/20 border border-pink-500/40 text-pink-300 text-[10px] font-bold">
-                  CMS v1.0
-                </span>
+            <Link
+              href="/"
+              className="px-3 py-1.5 rounded-xl bg-pink-600/20 hover:bg-pink-600/30 border border-pink-500/40 text-pink-300 text-xs font-bold flex items-center gap-1.5 transition-colors shadow-inner"
+              title="Volver a la página pública"
+            >
+              <ArrowLeft className="w-3.5 h-3.5" /> Regresar al sitio
+            </Link>
+
+            <div className="h-6 w-px bg-purple-800/60 hidden sm:block" />
+
+            <div className="flex items-center gap-2.5">
+              <div className="w-8 h-8 rounded-xl bg-gradient-to-tr from-pink-600 to-purple-600 flex items-center justify-center text-white shadow-md shadow-pink-600/30">
+                <Shield className="w-4 h-4" />
               </div>
-              <p className="text-[11px] text-purple-300/70">
-                Gestión Multimedia & Metadatos SEO · {currentUser?.fullName} ({currentUser?.role === 'SUPER_ADMIN' ? 'Super Admin' : 'Admin'})
-              </p>
+              <div>
+                <div className="flex items-center gap-2">
+                  <span className="text-sm font-black text-white">Panel CMS</span>
+                  <span className="px-2 py-0.5 rounded-full bg-pink-500/20 border border-pink-500/40 text-pink-300 text-[10px] font-bold">
+                    Fundación Senda Mujer
+                  </span>
+                </div>
+                <p className="text-[11px] text-purple-300/70">
+                  {currentUser?.fullName} · <strong className="text-pink-300">{currentUser?.role === 'SUPER_ADMIN' ? 'Super Administrador' : 'Administrador'}</strong>
+                </p>
+              </div>
             </div>
           </div>
 
+          {/* Acciones de Sesión */}
           <div className="flex items-center gap-2">
             <a
               href="/"
               target="_blank"
               rel="noreferrer"
-              className="px-3 py-1.5 rounded-xl bg-purple-950/50 hover:bg-purple-900/60 border border-purple-700/60 text-purple-200 text-xs font-bold flex items-center gap-1.5 transition-colors"
+              className="px-3 py-1.5 rounded-xl bg-purple-950/60 hover:bg-purple-900/80 border border-purple-700/60 text-purple-200 text-xs font-bold flex items-center gap-1.5 transition-colors"
             >
-              <ExternalLink className="w-3.5 h-3.5" /> Ver Sitio Web
+              <ExternalLink className="w-3.5 h-3.5" /> Ver en Vivo
             </a>
             <button
               type="button"
               onClick={onLogout}
               className="px-3 py-1.5 rounded-xl bg-rose-500/15 hover:bg-rose-500/25 border border-rose-500/30 text-rose-300 text-xs font-bold flex items-center gap-1.5 transition-colors"
             >
-              <LogOut className="w-3.5 h-3.5" /> Salir
+              <LogOut className="w-3.5 h-3.5" /> Cerrar Sesión
             </button>
           </div>
         </div>
       </header>
 
-      {/* Contenido Principal */}
+      {/* ── Contenedor de Módulos ─────────────────────────────────────────── */}
       <main className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 py-6 sm:py-8 space-y-6">
-        {/* Pestañas Principales */}
-        <div className="flex items-center gap-2 border-b border-purple-800/60 pb-3">
+        {/* Pestañas de Navegación del CMS */}
+        <div className="flex items-center gap-2 border-b border-purple-800/60 pb-3 overflow-x-auto scrollbar-none">
           <button
             type="button"
             onClick={() => setActiveTab('images')}
-            className={`px-4 py-2 rounded-2xl text-xs font-bold flex items-center gap-2 transition-all ${
+            className={`px-4 py-2 rounded-2xl text-xs font-bold flex items-center gap-2 transition-all whitespace-nowrap ${
               activeTab === 'images'
                 ? 'bg-pink-700 text-white shadow-lg shadow-pink-700/30'
                 : 'text-purple-300 hover:text-white hover:bg-purple-900/40'
             }`}
           >
-            <ImageIcon className="w-4 h-4" /> Gestor de Imágenes ({sections.length})
+            <ImageIcon className="w-4 h-4" /> Imágenes por Sección ({sections.length})
+          </button>
+
+          <button
+            type="button"
+            onClick={() => setActiveTab('gallery')}
+            className={`px-4 py-2 rounded-2xl text-xs font-bold flex items-center gap-2 transition-all whitespace-nowrap ${
+              activeTab === 'gallery'
+                ? 'bg-pink-700 text-white shadow-lg shadow-pink-700/30'
+                : 'text-purple-300 hover:text-white hover:bg-purple-900/40'
+            }`}
+          >
+            <FolderTree className="w-4 h-4" /> Galería & Categorías
+          </button>
+
+          <button
+            type="button"
+            onClick={() => setActiveTab('allies')}
+            className={`px-4 py-2 rounded-2xl text-xs font-bold flex items-center gap-2 transition-all whitespace-nowrap ${
+              activeTab === 'allies'
+                ? 'bg-pink-700 text-white shadow-lg shadow-pink-700/30'
+                : 'text-purple-300 hover:text-white hover:bg-purple-900/40'
+            }`}
+          >
+            <HeartHandshake className="w-4 h-4" /> Red de Aliados
           </button>
 
           {currentUser?.role === 'SUPER_ADMIN' && (
             <button
               type="button"
               onClick={() => setActiveTab('users')}
-              className={`px-4 py-2 rounded-2xl text-xs font-bold flex items-center gap-2 transition-all ${
+              className={`px-4 py-2 rounded-2xl text-xs font-bold flex items-center gap-2 transition-all whitespace-nowrap ${
                 activeTab === 'users'
                   ? 'bg-pink-700 text-white shadow-lg shadow-pink-700/30'
                   : 'text-purple-300 hover:text-white hover:bg-purple-900/40'
@@ -128,22 +170,21 @@ export default function CmsDashboard({ currentUser, onLogout }: CmsDashboardProp
           <button
             type="button"
             onClick={() => setActiveTab('seo')}
-            className={`px-4 py-2 rounded-2xl text-xs font-bold flex items-center gap-2 transition-all ${
+            className={`px-4 py-2 rounded-2xl text-xs font-bold flex items-center gap-2 transition-all whitespace-nowrap ${
               activeTab === 'seo'
                 ? 'bg-pink-700 text-white shadow-lg shadow-pink-700/30'
                 : 'text-purple-300 hover:text-white hover:bg-purple-900/40'
             }`}
           >
-            <Sparkles className="w-4 h-4" /> Guía de Optimización SEO
+            <Sparkles className="w-4 h-4" /> Guía SEO
           </button>
         </div>
 
-        {/* ── PESTAÑA: IMÁGENES ───────────────────────────────────────────── */}
+        {/* ── MÓDULO 1: IMÁGENES POR SECCIÓN ──────────────────────────────── */}
         {activeTab === 'images' && (
           <div className="space-y-6">
             {/* Filtros por Página y Buscador */}
             <div className="flex flex-col md:flex-row items-stretch md:items-center justify-between gap-3 bg-[#240a38]/80 border border-purple-800/60 rounded-3xl p-4">
-              {/* Tabs de Páginas */}
               <div className="flex items-center gap-1.5 overflow-x-auto pb-1 md:pb-0 scrollbar-none">
                 {PAGE_TABS.map((page) => (
                   <button
@@ -161,7 +202,6 @@ export default function CmsDashboard({ currentUser, onLogout }: CmsDashboardProp
                 ))}
               </div>
 
-              {/* Buscador */}
               <div className="relative w-full md:w-72 shrink-0">
                 <Search className="absolute left-3 top-2.5 w-3.5 h-3.5 text-purple-400" />
                 <input
@@ -196,12 +236,18 @@ export default function CmsDashboard({ currentUser, onLogout }: CmsDashboardProp
           </div>
         )}
 
-        {/* ── PESTAÑA: USUARIOS ───────────────────────────────────────────── */}
+        {/* ── MÓDULO 2: GALERÍA & CATEGORÍAS ─────────────────────────────── */}
+        {activeTab === 'gallery' && <CmsGalleryManager />}
+
+        {/* ── MÓDULO 3: RED DE ALIADOS ────────────────────────────────────── */}
+        {activeTab === 'allies' && <CmsAlliesManager />}
+
+        {/* ── MÓDULO 4: USUARIOS DEL SISTEMA ──────────────────────────────── */}
         {activeTab === 'users' && currentUser?.role === 'SUPER_ADMIN' && (
           <CmsUserManager currentUser={currentUser} />
         )}
 
-        {/* ── PESTAÑA: GUÍA SEO ───────────────────────────────────────────── */}
+        {/* ── MÓDULO 5: GUÍA SEO ──────────────────────────────────────────── */}
         {activeTab === 'seo' && (
           <div className="bg-[#240a38]/80 border border-purple-800/60 rounded-3xl p-6 sm:p-8 space-y-6">
             <div className="flex items-center gap-3 pb-4 border-b border-purple-800/40">
@@ -209,9 +255,9 @@ export default function CmsDashboard({ currentUser, onLogout }: CmsDashboardProp
                 <Sparkles className="w-5 h-5" />
               </div>
               <div>
-                <h2 className="text-xl font-black text-white">Mejores Prácticas SEO para Imágenes</h2>
+                <h2 className="text-xl font-black text-white">Mejores Prácticas SEO para Imágenes y Contenidos</h2>
                 <p className="text-xs text-purple-300/70">
-                  Aumenta la visibilidad de Fundación Senda Mujer en Google y asegura máxima accesibilidad
+                  Optimización de visibilidad en motores de búsqueda para Fundación Senda Mujer
                 </p>
               </div>
             </div>

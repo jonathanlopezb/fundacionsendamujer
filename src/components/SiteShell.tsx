@@ -10,7 +10,7 @@ import SendaBotChat from '@/components/SendaBotChat';
 export default function SiteShell({ children }: { children: React.ReactNode }) {
   const [isOverlayOpen, setIsOverlayOpen] = useState(false);
   const pathname = usePathname();
-  const isStandaloneMicrosite = pathname?.startsWith('/admin') || pathname?.startsWith('/portal-beneficiaria') || pathname?.startsWith('/academia') || pathname?.startsWith('/caribe-seguro') || pathname?.startsWith('/encuestas') || pathname?.startsWith('/analisis-encuestas');
+  const isStandaloneMicrosite = pathname?.startsWith('/admin') || pathname?.startsWith('/cms') || pathname?.startsWith('/portal-beneficiaria') || pathname?.startsWith('/academia') || pathname?.startsWith('/caribe-seguro') || pathname?.startsWith('/encuestas') || pathname?.startsWith('/analisis-encuestas');
 
   return <>
     <CamouflageOverlay isOpen={isOverlayOpen} onClose={() => setIsOverlayOpen(false)} />

@@ -1,3 +1,6 @@
+'use client';
+
+import React, { useState, useEffect } from 'react';
 import Image from 'next/image';
 import { ShieldCheck } from 'lucide-react';
 
@@ -16,13 +19,38 @@ export default function SendaAlliesLogos({
   eyebrow = 'Alianzas que protegen',
   title = 'Juntas hacemos que cada ruta llegue más lejos.',
   intro = 'Una red institucional comprometida con el cuidado, los derechos y la autonomía de las mujeres.',
-  allies = DEFAULT_ALLIES,
+  allies: initialAllies,
 }: {
   eyebrow?: string;
   title?: string;
   intro?: string;
   allies?: AllyItem[];
 }) {
+  const [alliesList, setAlliesList] = useState<AllyItem[]>(initialAllies || DEFAULT_ALLIES);
+
+  useEffect(() => {
+    async function loadDynamicAllies() {
+      try {
+        const res = await fetch('/api/cms/allies');
+        const data = await res.json();
+        if (data.allies && data.allies.length > 0) {
+          const featured = data.allies.filter((a: any) => a.isFeaturedInHome !== false);
+          if (featured.length > 0) {
+            setAlliesList(
+              featured.map((a: any) => ({
+                src: a.logoUrl || a.src,
+                name: a.name,
+              }))
+            );
+          }
+        }
+      } catch (err) {
+        console.warn('Usando lista de aliados predeterminada:', err);
+      }
+    }
+    loadDynamicAllies();
+  }, []);
+
   return (
     <section className="senda-allies senda-allies--logos" aria-labelledby="allies-title">
       <div className="senda-shell">
@@ -30,14 +58,14 @@ export default function SendaAlliesLogos({
         <h2 id="allies-title">{title}</h2>
         <p className="senda-allies__intro">{intro}</p>
         <div className="senda-logo-row">
-          {allies.map(({ src, name }) => (
+          {alliesList.map(({ src, name }) => (
             <div className="senda-logo-card" key={name}>
-              <Image
+              <img
                 src={src}
                 alt={`Logo de ${name}`}
                 width={180}
                 height={120}
-                className="senda-logo-card__image"
+                className="senda-logo-card__image object-contain max-h-[70px] w-auto mx-auto"
               />
             </div>
           ))}
