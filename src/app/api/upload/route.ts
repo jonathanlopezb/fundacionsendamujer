@@ -1,36 +1,64 @@
 import { put } from '@vercel/blob';
-import { NextResponse } from 'next/server';
+import { NextRequest, NextResponse } from 'next/server';
 
-export async function POST(request: Request): Promise<NextResponse> {
+export const dynamic = 'force-dynamic';
+
+export async function POST(request: NextRequest): Promise<NextResponse> {
   const { searchParams } = new URL(request.url);
-  const filename = searchParams.get('filename');
-
-  if (!filename) {
-    return NextResponse.json({ error: 'Filename es requerido' }, { status: 400 });
-  }
+  const rawFilename = searchParams.get('filename') || 'archivo-upload.jpg';
 
   try {
-    if (!request.body) {
-      return NextResponse.json({ error: 'El archivo está vacío' }, { status: 400 });
+    let fileBuffer: Buffer | null = null;
+    let filename = rawFilename;
+    let contentType = 'image/jpeg';
+
+    const reqContentType = request.headers.get('content-type') || '';
+
+    if (reqContentType.includes('multipart/form-data')) {
+      const formData = await request.formData();
+      const file = formData.get('file') as File | null;
+      if (!file) {
+        return NextResponse.json({ error: 'No se encontró archivo en el formulario' }, { status: 400 });
+      }
+      filename = file.name || filename;
+      contentType = file.type || contentType;
+      const arrayBuffer = await file.arrayBuffer();
+      fileBuffer = Buffer.from(arrayBuffer);
+    } else {
+      const arrayBuffer = await request.arrayBuffer();
+      if (!arrayBuffer || arrayBuffer.byteLength === 0) {
+        return NextResponse.json({ error: 'El archivo está vacío' }, { status: 400 });
+      }
+      fileBuffer = Buffer.from(arrayBuffer);
+      contentType = reqContentType || contentType;
     }
 
-    if (!process.env.BLOB_READ_WRITE_TOKEN) {
-      // Mock upload fallback response if Vercel Blob token is not configured yet
-      return NextResponse.json({
-        url: `https://blob.vercel-storage.com/mock-upload-${Date.now()}-${filename}`,
-        pathname: filename,
-        contentType: 'application/octet-stream',
-        isMock: true,
-      });
-    }
+    const sanitizedFilename = filename
+      .toLowerCase()
+      .replace(/[^a-z0-9.-]/g, '-')
+      .replace(/-+/g, '-');
 
-    const blob = await put(filename, request.body, {
+    const finalFilename = `uploads/${Date.now()}-${sanitizedFilename}`;
+
+    const blobToken =
+      process.env.BLOB_READ_WRITE_TOKEN ||
+      process.env.VERCEL_BLOB_READ_WRITE_TOKEN ||
+      process.env.BLOB_TOKEN;
+
+    const blob = await put(finalFilename, fileBuffer, {
       access: 'public',
+      contentType,
+      token: blobToken || undefined,
     });
 
-    return NextResponse.json(blob);
+    return NextResponse.json({
+      url: blob.url,
+      pathname: blob.pathname,
+      contentType: blob.contentType,
+      downloadUrl: blob.downloadUrl,
+    });
   } catch (error: any) {
     console.error('Blob upload error:', error);
-    return NextResponse.json({ error: error.message || 'Error al subir archivo' }, { status: 500 });
+    return NextResponse.json({ error: error.message || 'Error al subir archivo a Blob' }, { status: 500 });
   }
 }
