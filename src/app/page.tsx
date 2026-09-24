@@ -4,6 +4,7 @@ import { ArrowRight, HeartHandshake, MessageCircle, Scale, ShieldCheck, Stethosc
 import HeroSection from '@/components/HeroSection';
 import SendaAlliesLogos from '@/components/SendaAlliesLogos';
 import { getCmsImageMap } from '@/lib/cms-service';
+import { getCmsStats } from '@/lib/cms-stats-service';
 import type { Metadata } from 'next';
 
 export const metadata: Metadata = { alternates: { canonical: '/' } };
@@ -17,7 +18,10 @@ const needs = [
 const programs = ['Mujer Acompañada', 'Violencia Sexual', 'Contención Psicosocial', 'Salud y Derechos', 'Embarazo con Apoyo', 'Mujer y Justicia', 'Proyecto de Vida'];
 
 export default async function HomePage() {
-  const images = await getCmsImageMap();
+  const [images, stats] = await Promise.all([
+    getCmsImageMap(),
+    getCmsStats(),
+  ]);
 
   return <div className="prototype-home" itemScope itemType="https://schema.org/NGO">
     <HeroSection />
@@ -48,7 +52,7 @@ export default async function HomePage() {
         title="Volver a imaginar un proyecto de vida"
       />
     </div></div></section>
-    <section id="impacto" className="senda-impact"><div className="senda-shell"><div><p className="senda-eyebrow">Impacto verificable</p><h2>No son cifras.<br/><em>Son vidas.</em></h2><p>Conoce nuestras historias, jornadas y resultados en territorio.</p><Link href="/galeria" className="senda-text-link">Ver historias de impacto <ArrowRight/></Link></div><dl>{[['0+','Mujeres orientadas'],['0+','Rutas activadas'],['0+','Acciones de apoyo'],['0','Procesos de autonomía']].map(([value,label]) => <div key={label}><dt>{value}</dt><dd>{label}</dd></div>)}</dl></div></section>
+    <section id="impacto" className="senda-impact"><div className="senda-shell"><div><p className="senda-eyebrow">{stats.site_impact_eyebrow || "Impacto verificable"}</p><h2>{stats.site_impact_title.includes('\n') ? stats.site_impact_title.split('\n').map((line, idx) => <span key={idx}>{line}<br/></span>) : stats.site_impact_title}</h2><p>{stats.site_impact_subtitle}</p><Link href="/galeria" className="senda-text-link">Ver historias de impacto <ArrowRight/></Link></div><dl>{[[stats.site_mujeres_orientadas,'Mujeres orientadas'],[stats.site_rutas_activadas,'Rutas activadas'],[stats.site_acciones_apoyo,'Acciones de apoyo'],[stats.site_procesos_autonomia,'Procesos de autonomía']].map(([value,label]) => <div key={label}><dt>{value}</dt><dd>{label}</dd></div>)}</dl></div></section>
     <section id="apoyar" className="senda-section"><div className="senda-shell senda-donate"><div><p className="senda-eyebrow">Haz parte del cambio</p><h2>Tu aporte puede convertirse en una acción concreta.</h2><p>Apoya atención, protección, salud y autonomía para mujeres y niñas en Cartagena.</p></div><Link href="/donar" className="senda-button senda-button--primary"><HeartHandshake/> Quiero apoyar</Link></div></section>
     <section id="aliados" className="senda-allies"><div className="senda-shell"><SectionHead eyebrow="Red que suma" title="Aliados que hacen posible cada ruta." text="Trabajamos de forma articulada para que el acompañamiento llegue a donde más se necesita."/><div className="senda-allies__grid">{[['Instituciones de salud','Atención médica digna y oportuna','IPS y redes de salud'],['Organizaciones sociales','Cuidado comunitario y prevención','Colectivos territoriales'],['Empresas con propósito','Oportunidades para la autonomía','Aliados empresariales']].map(([title,text,type], index) => <article key={title}><span>0{index + 1}</span><div className="senda-allies__mark">{index === 0 ? '✚' : index === 1 ? '◌' : '↗'}</div><h3>{title}</h3><p>{text}</p><small>{type}</small></article>)}</div><Link href="/caribe-seguro/aliados" className="senda-text-link senda-allies__link">Conoce nuestra red de aliados <ArrowRight/></Link></div></section>
     <SendaAlliesLogos />

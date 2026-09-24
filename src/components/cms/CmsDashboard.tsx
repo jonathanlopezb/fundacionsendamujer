@@ -5,12 +5,14 @@ import Link from 'next/link';
 import {
   Sparkles, Shield, Image as ImageIcon, Users, LogOut,
   ArrowLeft, CheckCircle2, Layers, Search, HeartHandshake,
-  FolderTree, ExternalLink, Database, RefreshCw, AlertTriangle
+  FolderTree, ExternalLink, Database, RefreshCw, AlertTriangle,
+  TrendingUp
 } from 'lucide-react';
 import CmsImageCard from './CmsImageCard';
 import CmsUserManager from './CmsUserManager';
 import CmsGalleryManager from './CmsGalleryManager';
 import CmsAlliesManager from './CmsAlliesManager';
+import CmsStatsManager from './CmsStatsManager';
 import { CmsImageItem, CMS_DEFAULT_SECTIONS } from '@/lib/cms-defaults';
 
 interface CmsDashboardProps {
@@ -21,7 +23,7 @@ interface CmsDashboardProps {
 const PAGE_TABS = ['Todas', 'Inicio', 'Nosotros', 'Programas', 'Donaciones', 'Galería', 'Caribe Seguro', 'Aliados'] as const;
 
 export default function CmsDashboard({ currentUser, onLogout }: CmsDashboardProps) {
-  const [activeTab, setActiveTab] = useState<'images' | 'gallery' | 'allies' | 'users' | 'seo' | 'diagnostico'>('images');
+  const [activeTab, setActiveTab] = useState<'images' | 'stats' | 'gallery' | 'allies' | 'users' | 'seo' | 'diagnostico'>('images');
   const [selectedPage, setSelectedPage] = useState<string>('Todas');
   const [searchQuery, setSearchQuery] = useState('');
   const [sections, setSections] = useState<CmsImageItem[]>(CMS_DEFAULT_SECTIONS);
@@ -148,6 +150,18 @@ export default function CmsDashboard({ currentUser, onLogout }: CmsDashboardProp
 
           <button
             type="button"
+            onClick={() => setActiveTab('stats')}
+            className={`px-4 py-2 rounded-2xl text-xs font-bold flex items-center gap-2 transition-all whitespace-nowrap ${
+              activeTab === 'stats'
+                ? 'bg-pink-700 text-white shadow-lg shadow-pink-700/30'
+                : 'text-purple-300 hover:text-white hover:bg-purple-900/40'
+            }`}
+          >
+            <TrendingUp className="w-4 h-4" /> Cifras e Impacto
+          </button>
+
+          <button
+            type="button"
             onClick={() => setActiveTab('gallery')}
             className={`px-4 py-2 rounded-2xl text-xs font-bold flex items-center gap-2 transition-all whitespace-nowrap ${
               activeTab === 'gallery'
@@ -267,6 +281,9 @@ export default function CmsDashboard({ currentUser, onLogout }: CmsDashboardProp
             )}
           </div>
         )}
+
+        {/* ── MÓDULO: CIFRAS E IMPACTO ────────────────────────────────────── */}
+        {activeTab === 'stats' && <CmsStatsManager />}
 
         {/* ── MÓDULO 2: GALERÍA & CATEGORÍAS ─────────────────────────────── */}
         {activeTab === 'gallery' && <CmsGalleryManager />}
