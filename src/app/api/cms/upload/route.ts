@@ -8,7 +8,7 @@ export async function POST(request: NextRequest): Promise<NextResponse> {
   const session = readCmsSession();
   if (!session || !['SUPER_ADMIN', 'ADMIN', 'EDITOR'].includes(session.role)) {
     return NextResponse.json(
-      { error: 'Acceso no autorizado para subir archivos al almacenamiento Blob.' },
+      { error: 'Acceso no autorizado. Inicia sesión en el CMS para subir archivos.' },
       { status: 403 }
     );
   }
@@ -53,43 +53,28 @@ export async function POST(request: NextRequest): Promise<NextResponse> {
     const blobToken =
       process.env.BLOB_READ_WRITE_TOKEN ||
       process.env.VERCEL_BLOB_READ_WRITE_TOKEN ||
-      process.env.BLOB_TOKEN ||
-      process.env.NEXT_PUBLIC_BLOB_READ_WRITE_TOKEN;
+      process.env.BLOB_TOKEN;
 
-    // 1. Intentar subir directamente a Vercel Blob
-    try {
-      const blob = await put(finalFilename, fileBuffer, {
-        access: 'public',
-        contentType,
-        token: blobToken || undefined,
-      });
+    const blob = await put(finalFilename, fileBuffer, {
+      access: 'public',
+      contentType,
+      token: blobToken || undefined,
+    });
 
-      return NextResponse.json({
-        url: blob.url,
-        pathname: blob.pathname,
-        contentType: blob.contentType,
-        downloadUrl: blob.downloadUrl,
-        provider: 'vercel-blob',
-      });
-    } catch (blobErr: any) {
-      console.warn('⚠️ Subida a Vercel Blob falló o token no configurado:', blobErr?.message);
-
-      // 2. Fallback real: Retornar el archivo del usuario codificado en Base64
-      // De esta forma siempre se almacena y visualiza la foto REAL que el usuario subió.
-      const base64Url = `data:${contentType};base64,${fileBuffer.toString('base64')}`;
-
-      return NextResponse.json({
-        url: base64Url,
-        pathname: finalFilename,
-        contentType,
-        provider: 'base64-fallback',
-        warning: 'BLOB_READ_WRITE_TOKEN no configurado en Vercel. Se guardó la imagen real en base de datos.',
-      });
-    }
+    return NextResponse.json({
+      url: blob.url,
+      pathname: blob.pathname,
+      contentType: blob.contentType,
+      downloadUrl: blob.downloadUrl,
+      provider: 'vercel-blob',
+    });
   } catch (error: any) {
-    console.error('Error al procesar subida de imagen:', error);
+    console.error('Error detallado al subir a Vercel Blob:', error);
     return NextResponse.json(
-      { error: error.message || 'Error al procesar la imagen' },
+      {
+        error: error.message || 'Error al conectar y subir la imagen a Vercel Blob.',
+        details: error.name || 'BlobError',
+      },
       { status: 500 }
     );
   }

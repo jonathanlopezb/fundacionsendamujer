@@ -5,7 +5,7 @@ import Link from 'next/link';
 import {
   Sparkles, Shield, Image as ImageIcon, Users, LogOut,
   ArrowLeft, CheckCircle2, Layers, Search, HeartHandshake,
-  FolderTree, ExternalLink
+  FolderTree, ExternalLink, Database, RefreshCw, AlertTriangle
 } from 'lucide-react';
 import CmsImageCard from './CmsImageCard';
 import CmsUserManager from './CmsUserManager';
@@ -21,11 +21,15 @@ interface CmsDashboardProps {
 const PAGE_TABS = ['Todas', 'Inicio', 'Nosotros', 'Programas', 'Donaciones', 'Galería', 'Caribe Seguro', 'Aliados'] as const;
 
 export default function CmsDashboard({ currentUser, onLogout }: CmsDashboardProps) {
-  const [activeTab, setActiveTab] = useState<'images' | 'gallery' | 'allies' | 'users' | 'seo'>('images');
+  const [activeTab, setActiveTab] = useState<'images' | 'gallery' | 'allies' | 'users' | 'seo' | 'diagnostico'>('images');
   const [selectedPage, setSelectedPage] = useState<string>('Todas');
   const [searchQuery, setSearchQuery] = useState('');
   const [sections, setSections] = useState<CmsImageItem[]>(CMS_DEFAULT_SECTIONS);
   const [loading, setLoading] = useState(true);
+
+  // Diagnóstico Blob
+  const [blobDiag, setBlobDiag] = useState<any>(null);
+  const [diagLoading, setDiagLoading] = useState(false);
 
   // Cargar imágenes guardadas
   const loadImages = async () => {
@@ -40,6 +44,19 @@ export default function CmsDashboard({ currentUser, onLogout }: CmsDashboardProp
       console.warn('Usando catálogo local:', err);
     } finally {
       setLoading(false);
+    }
+  };
+
+  const runBlobDiagnostic = async () => {
+    try {
+      setDiagLoading(true);
+      const res = await fetch('/api/cms/test-blob');
+      const data = await res.json();
+      setBlobDiag(data);
+    } catch (err: any) {
+      setBlobDiag({ connected: false, message: err.message || 'Error de conexión' });
+    } finally {
+      setDiagLoading(false);
     }
   };
 
@@ -178,6 +195,21 @@ export default function CmsDashboard({ currentUser, onLogout }: CmsDashboardProp
           >
             <Sparkles className="w-4 h-4" /> Guía SEO
           </button>
+
+          <button
+            type="button"
+            onClick={() => {
+              setActiveTab('diagnostico');
+              runBlobDiagnostic();
+            }}
+            className={`px-4 py-2 rounded-2xl text-xs font-bold flex items-center gap-2 transition-all whitespace-nowrap ${
+              activeTab === 'diagnostico'
+                ? 'bg-pink-700 text-white shadow-lg shadow-pink-700/30'
+                : 'text-purple-300 hover:text-white hover:bg-purple-900/40'
+            }`}
+          >
+            <Database className="w-4 h-4" /> Diagnóstico Blob
+          </button>
         </div>
 
         {/* ── MÓDULO 1: IMÁGENES POR SECCIÓN ──────────────────────────────── */}
@@ -303,6 +335,92 @@ export default function CmsDashboard({ currentUser, onLogout }: CmsDashboardProp
                 </p>
               </div>
             </div>
+          </div>
+        )}
+
+        {/* ── MÓDULO 6: DIAGNÓSTICO VERCEL BLOB ───────────────────────────── */}
+        {activeTab === 'diagnostico' && (
+          <div className="bg-[#240a38]/80 border border-purple-800/60 rounded-3xl p-6 sm:p-8 space-y-6">
+            <div className="flex flex-col sm:flex-row sm:items-center justify-between gap-4 pb-4 border-b border-purple-800/40">
+              <div className="flex items-center gap-3">
+                <div className="w-10 h-10 rounded-2xl bg-pink-500/20 border border-pink-500/40 flex items-center justify-center text-pink-300">
+                  <Database className="w-5 h-5" />
+                </div>
+                <div>
+                  <h2 className="text-xl font-black text-white">Diagnóstico de Vercel Blob Storage</h2>
+                  <p className="text-xs text-purple-300/70">
+                    Comprueba la conexión con tu tienda <strong className="text-pink-300">fundacionsendamujer-blob</strong>
+                  </p>
+                </div>
+              </div>
+
+              <button
+                type="button"
+                onClick={runBlobDiagnostic}
+                disabled={diagLoading}
+                className="px-4 py-2 rounded-xl bg-pink-700 hover:bg-pink-600 text-white font-bold text-xs shadow flex items-center gap-1.5"
+              >
+                <RefreshCw className={`w-3.5 h-3.5 ${diagLoading ? 'animate-spin' : ''}`} />
+                {diagLoading ? 'Verificando…' : 'Volver a Probar'}
+              </button>
+            </div>
+
+            {diagLoading ? (
+              <div className="py-12 text-center text-purple-300 text-xs">
+                <div className="w-6 h-6 border-2 border-pink-500 border-t-transparent rounded-full animate-spin mx-auto mb-2" />
+                Consultando el SDK de Vercel Blob…
+              </div>
+            ) : blobDiag ? (
+              <div className="space-y-4">
+                <div
+                  className={`p-4 rounded-2xl border text-xs flex items-start gap-3 ${
+                    blobDiag.connected
+                      ? 'bg-emerald-500/15 border-emerald-500/30 text-emerald-200'
+                      : 'bg-rose-500/15 border-rose-500/30 text-rose-200'
+                  }`}
+                >
+                  {blobDiag.connected ? (
+                    <CheckCircle2 className="w-5 h-5 shrink-0 text-emerald-400 mt-0.5" />
+                  ) : (
+                    <AlertTriangle className="w-5 h-5 shrink-0 text-rose-400 mt-0.5" />
+                  )}
+                  <div>
+                    <h4 className="font-bold text-sm">
+                      {blobDiag.connected ? 'Conexión Exitosa con Vercel Blob' : 'Error de Conexión con Blob'}
+                    </h4>
+                    <p className="mt-1 text-xs opacity-90">{blobDiag.message}</p>
+                    {blobDiag.connected && (
+                      <p className="mt-1 font-mono text-[11px] text-emerald-300">
+                        Archivos actualmente en la tienda: <strong>{blobDiag.blobCount}</strong>
+                      </p>
+                    )}
+                  </div>
+                </div>
+
+                {blobDiag.blobs && blobDiag.blobs.length > 0 && (
+                  <div className="bg-[#180426] border border-purple-800/60 rounded-2xl p-4 space-y-2">
+                    <h4 className="font-bold text-white text-xs uppercase tracking-wider">
+                      Últimos archivos subidos a Vercel Blob:
+                    </h4>
+                    <div className="divide-y divide-purple-800/40 text-xs">
+                      {blobDiag.blobs.map((b: any, idx: number) => (
+                        <div key={idx} className="py-2 flex items-center justify-between gap-3">
+                          <span className="font-mono text-pink-300 truncate max-w-sm">{b.pathname}</span>
+                          <a
+                            href={b.url}
+                            target="_blank"
+                            rel="noreferrer"
+                            className="text-purple-300 hover:text-white text-[11px] flex items-center gap-1"
+                          >
+                            <ExternalLink className="w-3 h-3" /> Ver archivo
+                          </a>
+                        </div>
+                      ))}
+                    </div>
+                  </div>
+                )}
+              </div>
+            ) : null}
           </div>
         )}
       </main>
