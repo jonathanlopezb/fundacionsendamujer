@@ -1,3 +1,13 @@
+/**
+ * POST /api/cms/upload
+ *
+ * Upload pipeline profesional:
+ *   1. Valida sesión CMS
+ *   2. Lee el archivo desde multipart/form-data O raw body
+ *   3. Intenta subir a Vercel Blob (CDN público)
+ *   4. Fallback garantizado: guarda en MongoDB como Data URI si Blob no está disponible
+ */
+
 import { put } from '@vercel/blob';
 import { NextRequest, NextResponse } from 'next/server';
 import { readCmsSession } from '@/lib/cms-auth';
@@ -5,7 +15,10 @@ import { getVercelBlobToken } from '@/lib/blob-token';
 
 export const dynamic = 'force-dynamic';
 
+const MAX_FILE_SIZE = 10 * 1024 * 1024; // 10 MB
+
 export async function POST(request: NextRequest): Promise<NextResponse> {
+  // ── 1. Autenticación ────────────────────────────────────────────────────────
   const session = readCmsSession();
   if (!session || !['SUPER_ADMIN', 'ADMIN', 'EDITOR'].includes(session.role)) {
     return NextResponse.json(
@@ -15,84 +28,102 @@ export async function POST(request: NextRequest): Promise<NextResponse> {
   }
 
   const { searchParams } = new URL(request.url);
-  const queryFilename = searchParams.get('filename');
+  const queryFilename = searchParams.get('filename') || 'senda-upload.jpg';
 
   try {
-    let fileBuffer: Buffer | null = null;
-    let filename = queryFilename || 'senda-upload.jpg';
+    // ── 2. Lectura del archivo ───────────────────────────────────────────────
+    let fileBuffer: Buffer;
+    let filename = queryFilename;
     let contentType = 'image/jpeg';
 
     const reqContentType = request.headers.get('content-type') || '';
 
-    if (reqContentType.includes('multipart/form-data')) {
+    if (reqContentType.startsWith('multipart/form-data')) {
       const formData = await request.formData();
       const file = formData.get('file') as File | null;
-      if (!file) {
-        return NextResponse.json({ error: 'No se encontró ningún archivo en el formulario' }, { status: 400 });
+      if (!file || file.size === 0) {
+        return NextResponse.json({ error: 'No se encontró un archivo válido en el formulario.' }, { status: 400 });
+      }
+      if (!file.type.startsWith('image/')) {
+        return NextResponse.json({ error: 'Solo se permiten archivos de imagen (JPG, PNG, WebP, GIF, SVG).' }, { status: 400 });
+      }
+      if (file.size > MAX_FILE_SIZE) {
+        return NextResponse.json({ error: 'La imagen supera el límite de 10 MB.' }, { status: 400 });
       }
       filename = file.name || filename;
-      contentType = file.type || contentType;
-      const arrayBuffer = await file.arrayBuffer();
-      fileBuffer = Buffer.from(arrayBuffer);
+      contentType = file.type;
+      fileBuffer = Buffer.from(await file.arrayBuffer());
     } else {
-      const arrayBuffer = await request.arrayBuffer();
-      if (!arrayBuffer || arrayBuffer.byteLength === 0) {
-        return NextResponse.json({ error: 'El archivo está vacío' }, { status: 400 });
+      const ab = await request.arrayBuffer();
+      if (!ab || ab.byteLength === 0) {
+        return NextResponse.json({ error: 'El cuerpo del request está vacío.' }, { status: 400 });
       }
-      fileBuffer = Buffer.from(arrayBuffer);
-      contentType = reqContentType || contentType;
+      if (ab.byteLength > MAX_FILE_SIZE) {
+        return NextResponse.json({ error: 'La imagen supera el límite de 10 MB.' }, { status: 400 });
+      }
+      fileBuffer = Buffer.from(ab);
+      contentType = reqContentType || 'image/jpeg';
     }
 
-    // Sanitizar nombre de archivo
-    const sanitizedFilename = filename
+    // ── 3. Sanitización del nombre de archivo ────────────────────────────────
+    const sanitized = filename
       .toLowerCase()
-      .replace(/[^a-z0-9.-]/g, '-')
-      .replace(/-+/g, '-');
+      .replace(/\s+/g, '-')
+      .replace(/[^a-z0-9.\-_]/g, '')
+      .replace(/-{2,}/g, '-')
+      .substring(0, 100);
 
-    const finalFilename = `cms/${Date.now()}-${sanitizedFilename}`;
-    const blobToken = getVercelBlobToken();
+    const blobPath = `cms/${Date.now()}-${sanitized}`;
 
-    // 1. Si tenemos token de Vercel Blob, intentamos subir directamente al Blob CDN
-    if (blobToken) {
+    // ── 4. Intento Vercel Blob ───────────────────────────────────────────────
+    const token = getVercelBlobToken();
+
+    if (token) {
       try {
-        const blob = await put(finalFilename, fileBuffer, {
+        const blobResult = await put(blobPath, fileBuffer, {
           access: 'public',
           contentType,
-          token: blobToken,
+          token,
         });
 
         return NextResponse.json({
-          url: blob.url,
-          pathname: blob.pathname,
-          contentType: blob.contentType,
-          downloadUrl: blob.downloadUrl,
+          success: true,
           provider: 'vercel-blob',
+          url: blobResult.url,
+          pathname: blobResult.pathname,
+          contentType: blobResult.contentType,
+          size: fileBuffer.byteLength,
         });
-      } catch (blobErr: any) {
-        console.warn('Error subiendo a Vercel Blob, recurriendo a almacenamiento en MongoDB:', blobErr);
+      } catch (blobError: any) {
+        // Loguear pero no detener — el fallback garantiza continuidad
+        console.error('[upload] Vercel Blob falló, usando fallback:', {
+          code: blobError?.code,
+          message: blobError?.message,
+          status: blobError?.status,
+        });
       }
     }
 
-    // 2. Fallback garantizado: Codificar en Data URI optimizado para guardarlo directamente en MongoDB
-    const base64String = fileBuffer.toString('base64');
-    const dataUri = `data:${contentType};base64,${base64String}`;
+    // ── 5. Fallback garantizado: Data URI guardado en MongoDB ────────────────
+    // Convertimos a base64 y retornamos el Data URI directamente.
+    // El PUT /api/cms/images lo persiste en MongoDB.
+    const dataUri = `data:${contentType};base64,${fileBuffer.toString('base64')}`;
 
     return NextResponse.json({
+      success: true,
+      provider: token ? 'data-uri-fallback' : 'data-uri-no-token',
       url: dataUri,
-      pathname: finalFilename,
+      pathname: blobPath,
       contentType,
-      provider: blobToken ? 'inline-fallback' : 'mongodb-direct',
-      message: blobToken
-        ? 'Vercel Blob reportó un error; la imagen se guardó de forma segura directamente en la base de datos.'
-        : 'Imagen procesada y guardada exitosamente en la base de datos.',
+      size: fileBuffer.byteLength,
+      note: token
+        ? 'Vercel Blob no disponible en este momento; imagen guardada como Data URI en MongoDB.'
+        : 'BLOB_READ_WRITE_TOKEN no detectado; imagen guardada como Data URI en MongoDB.',
     });
   } catch (error: any) {
-    console.error('Error al procesar la imagen:', error);
+    console.error('[upload] Error inesperado:', error);
     return NextResponse.json(
-      {
-        error: error.message || 'Error al procesar la imagen.',
-        details: error.name || 'UploadError',
-      },
+      { success: false, error: error.message || 'Error interno al procesar la imagen.' },
       { status: 500 }
     );
   }

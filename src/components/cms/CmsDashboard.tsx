@@ -401,27 +401,51 @@ export default function CmsDashboard({ currentUser, onLogout }: CmsDashboardProp
                   ) : (
                     <AlertTriangle className="w-5 h-5 shrink-0 text-rose-400 mt-0.5" />
                   )}
-                  <div>
+                  <div className="flex-1">
                     <h4 className="font-bold text-sm">
-                      {blobDiag.connected ? 'Conexión Exitosa con Vercel Blob' : 'Vercel Blob en Modo Fallback'}
+                      {blobDiag.connected ? '✅ Conexión exitosa con Vercel Blob' : '⚠️ Token no detectado en Runtime'}
                     </h4>
-                    <p className="mt-1 text-xs opacity-90">{blobDiag.message}</p>
+                    <p className="mt-1 text-xs opacity-90 leading-relaxed">{blobDiag.message}</p>
+
                     {blobDiag.connected ? (
-                      <p className="mt-1 font-mono text-[11px] text-emerald-300">
-                        Archivos actualmente en la tienda: <strong>{blobDiag.blobCount}</strong>
-                      </p>
+                      <div className="mt-2 space-y-0.5 font-mono text-[11px] text-emerald-300">
+                        <p>Archivos en la tienda: <strong>{blobDiag.blobCount}</strong></p>
+                        {blobDiag.tokenMasked && <p>Token: <strong>{blobDiag.tokenMasked}</strong></p>}
+                      </div>
                     ) : (
-                      <div className="mt-3 p-3 bg-purple-950/60 rounded-xl border border-purple-800/40 text-[11px] text-purple-200 space-y-1">
-                        <strong className="text-pink-300 block font-bold">💡 ¿Cómo conectar la tienda al proyecto en Vercel?</strong>
-                        <ol className="list-decimal pl-4 space-y-0.5">
-                          <li>Entra a tu cuenta en <strong>Vercel &gt; Storage</strong>.</li>
-                          <li>Haz clic en tu tienda <strong>fundacionsendamujer-blob</strong>.</li>
-                          <li>Haz clic en la pestaña <strong>&ldquo;Projects&rdquo;</strong> o <strong>&ldquo;Connect Project&rdquo;</strong>.</li>
-                          <li>Selecciona el proyecto <strong>fundacionsendamujer</strong> para que Vercel inyecte el token directamente en producción.</li>
-                        </ol>
-                        <p className="text-[10px] text-purple-300/80 pt-1">
-                          Nota: Mientras tanto, la subida de imágenes sigue funcionando automáticamente guardando de forma segura en MongoDB.
-                        </p>
+                      <div className="mt-3 space-y-3">
+                        {/* Variables detectadas */}
+                        {blobDiag.envKeysDetected && blobDiag.envKeysDetected.length > 0 && (
+                          <div className="bg-purple-950/60 rounded-xl border border-purple-800/40 p-3">
+                            <strong className="text-purple-300 block text-[10px] uppercase tracking-wider mb-1.5">
+                              Variables BLOB detectadas en este runtime:
+                            </strong>
+                            <div className="flex flex-wrap gap-1.5">
+                              {blobDiag.envKeysDetected.map((k: string) => (
+                                <code key={k} className="px-1.5 py-0.5 bg-pink-900/50 text-pink-300 rounded text-[10px] font-mono border border-pink-800/40">
+                                  {k}
+                                </code>
+                              ))}
+                            </div>
+                          </div>
+                        )}
+
+                        {/* Pasos para solucionar */}
+                        <div className="bg-amber-950/40 rounded-xl border border-amber-700/40 p-3 text-[11px] text-amber-200 space-y-1">
+                          <strong className="text-amber-300 block font-bold">
+                            🔧 Pasos para activar Vercel Blob en producción:
+                          </strong>
+                          <ol className="list-decimal pl-4 space-y-0.5 leading-relaxed">
+                            <li>Ve a <strong>vercel.com → Storage → fundacionsendamujer-blob</strong></li>
+                            <li>Pestaña <strong>"Projects"</strong> → <strong>"Connect Project"</strong></li>
+                            <li>Selecciona el proyecto <strong>fundacionsendamujer</strong></li>
+                            <li>Vercel inyectará <code className="text-amber-300">BLOB_READ_WRITE_TOKEN</code> en el runtime</li>
+                            <li>Haz un nuevo despliegue <em>(git push o Redeploy en Vercel)</em></li>
+                          </ol>
+                          <p className="text-[10px] text-amber-200/70 pt-1 border-t border-amber-700/40 mt-2">
+                            💾 Mientras tanto, las imágenes se guardan como Data URI en MongoDB y se muestran correctamente en el sitio.
+                          </p>
+                        </div>
                       </div>
                     )}
                   </div>
