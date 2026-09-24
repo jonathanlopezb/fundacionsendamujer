@@ -6,7 +6,7 @@ import {
   Globe, Shield, BarChart3, ExternalLink, Sparkles, DollarSign,
   HeartHandshake, Users, ArrowRight
 } from 'lucide-react';
-import { CmsStatsData, DEFAULT_CMS_STATS } from '@/lib/cms-stats-service';
+import { CmsStatsData, DEFAULT_CMS_STATS } from '@/lib/cms-stats-types';
 
 export default function CmsStatsManager() {
   const [formData, setFormData] = useState<CmsStatsData>(DEFAULT_CMS_STATS);
