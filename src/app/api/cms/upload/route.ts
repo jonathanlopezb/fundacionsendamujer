@@ -50,33 +50,46 @@ export async function POST(request: NextRequest): Promise<NextResponse> {
 
     const finalFilename = `cms/${Date.now()}-${sanitizedFilename}`;
 
-    // Si no está configurado el token de Vercel Blob en local, retornar fallback
-    if (!process.env.BLOB_READ_WRITE_TOKEN) {
-      console.warn('⚠️ BLOB_READ_WRITE_TOKEN no detectado en variables de entorno. Retornando URL simulada.');
+    const blobToken =
+      process.env.BLOB_READ_WRITE_TOKEN ||
+      process.env.VERCEL_BLOB_READ_WRITE_TOKEN ||
+      process.env.BLOB_TOKEN ||
+      process.env.NEXT_PUBLIC_BLOB_READ_WRITE_TOKEN;
+
+    // 1. Intentar subir directamente a Vercel Blob
+    try {
+      const blob = await put(finalFilename, fileBuffer, {
+        access: 'public',
+        contentType,
+        token: blobToken || undefined,
+      });
+
       return NextResponse.json({
-        url: `https://images.unsplash.com/photo-1573496359142-b8d87734a5a2?auto=format&fit=crop&w=1200&q=85&upload=${Date.now()}`,
+        url: blob.url,
+        pathname: blob.pathname,
+        contentType: blob.contentType,
+        downloadUrl: blob.downloadUrl,
+        provider: 'vercel-blob',
+      });
+    } catch (blobErr: any) {
+      console.warn('⚠️ Subida a Vercel Blob falló o token no configurado:', blobErr?.message);
+
+      // 2. Fallback real: Retornar el archivo del usuario codificado en Base64
+      // De esta forma siempre se almacena y visualiza la foto REAL que el usuario subió.
+      const base64Url = `data:${contentType};base64,${fileBuffer.toString('base64')}`;
+
+      return NextResponse.json({
+        url: base64Url,
         pathname: finalFilename,
         contentType,
-        isMock: true,
-        message: 'Modo local sin token BLOB_READ_WRITE_TOKEN. Configure BLOB_READ_WRITE_TOKEN en Vercel para almacenamiento permanente.',
+        provider: 'base64-fallback',
+        warning: 'BLOB_READ_WRITE_TOKEN no configurado en Vercel. Se guardó la imagen real en base de datos.',
       });
     }
-
-    const blob = await put(finalFilename, fileBuffer, {
-      access: 'public',
-      contentType,
-    });
-
-    return NextResponse.json({
-      url: blob.url,
-      pathname: blob.pathname,
-      contentType: blob.contentType,
-      downloadUrl: blob.downloadUrl,
-    });
   } catch (error: any) {
-    console.error('Error al subir imagen a Blob:', error);
+    console.error('Error al procesar subida de imagen:', error);
     return NextResponse.json(
-      { error: error.message || 'Error al subir la imagen al almacenamiento Blob' },
+      { error: error.message || 'Error al procesar la imagen' },
       { status: 500 }
     );
   }
