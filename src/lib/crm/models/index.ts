@@ -960,6 +960,82 @@ const CrmAuditLogSchema = new Schema<ICrmAuditLog>(
 );
 
 // ==========================================
+// 17. PAYROLL & NOMINA (Programación y Liquidación)
+// ==========================================
+export interface ICrmPayrollItem {
+  employeeName: string;
+  employeeDocument: string;
+  role: string;
+  contractType: string;
+  baseSalary: number;
+  transportAllowance: number;
+  bonuses: number;
+  deductions: number;
+  netToPay: number;
+  bankName?: string;
+  bankAccount?: string;
+  status: 'PENDING' | 'PAID';
+}
+
+export interface ICrmPayroll extends Document {
+  payrollNumber: string;
+  periodName: string;
+  periodType: 'FIRST_FORTNIGHT' | 'SECOND_FORTNIGHT' | 'MONTHLY' | 'SPECIAL';
+  scheduledPaymentDate: Date;
+  paidAt?: Date;
+  totalGross: number;
+  totalDeductions: number;
+  totalNet: number;
+  status: 'DRAFT' | 'SCHEDULED' | 'PAID' | 'CANCELLED';
+  items: ICrmPayrollItem[];
+  notes?: string;
+  responsibleUserId: string;
+  createdAt: Date;
+  updatedAt: Date;
+}
+
+const CrmPayrollSchema = new Schema<ICrmPayroll>(
+  {
+    payrollNumber: { type: String, required: true, unique: true },
+    periodName: { type: String, required: true },
+    periodType: {
+      type: String,
+      enum: ['FIRST_FORTNIGHT', 'SECOND_FORTNIGHT', 'MONTHLY', 'SPECIAL'],
+      default: 'MONTHLY',
+    },
+    scheduledPaymentDate: { type: Date, required: true },
+    paidAt: { type: Date },
+    totalGross: { type: Number, required: true },
+    totalDeductions: { type: Number, default: 0 },
+    totalNet: { type: Number, required: true },
+    status: {
+      type: String,
+      enum: ['DRAFT', 'SCHEDULED', 'PAID', 'CANCELLED'],
+      default: 'SCHEDULED',
+    },
+    items: [
+      {
+        employeeName: { type: String, required: true },
+        employeeDocument: { type: String, required: true },
+        role: { type: String, required: true },
+        contractType: { type: String, default: 'Prestación de Servicios' },
+        baseSalary: { type: Number, required: true },
+        transportAllowance: { type: Number, default: 0 },
+        bonuses: { type: Number, default: 0 },
+        deductions: { type: Number, default: 0 },
+        netToPay: { type: Number, required: true },
+        bankName: { type: String },
+        bankAccount: { type: String },
+        status: { type: String, enum: ['PENDING', 'PAID'], default: 'PENDING' },
+      },
+    ],
+    notes: { type: String },
+    responsibleUserId: { type: String, required: true },
+  },
+  { timestamps: true }
+);
+
+// ==========================================
 // EXPORTING MONGOOSE MODELS
 // ==========================================
 export const CrmCounter = (mongoose.models.CrmCounter as Model<ICrmCounter>) || mongoose.model<ICrmCounter>('CrmCounter', CrmCounterSchema);
@@ -986,6 +1062,7 @@ export const CrmAccountPayable = (mongoose.models.CrmAccountPayable as Model<ICr
 export const CrmPayment = (mongoose.models.CrmPayment as Model<ICrmPayment>) || mongoose.model<ICrmPayment>('CrmPayment', CrmPaymentSchema);
 export const CrmProvider = (mongoose.models.CrmProvider as Model<ICrmProvider>) || mongoose.model<ICrmProvider>('CrmProvider', CrmProviderSchema);
 export const CrmServiceContract = (mongoose.models.CrmServiceContract as Model<ICrmServiceContract>) || mongoose.model<ICrmServiceContract>('CrmServiceContract', CrmServiceContractSchema);
+export const CrmPayroll = (mongoose.models.CrmPayroll as Model<ICrmPayroll>) || mongoose.model<ICrmPayroll>('CrmPayroll', CrmPayrollSchema);
 export const CrmAsset = (mongoose.models.CrmAsset as Model<ICrmAsset>) || mongoose.model<ICrmAsset>('CrmAsset', CrmAssetSchema);
 export const CrmAidDelivery = (mongoose.models.CrmAidDelivery as Model<ICrmAidDelivery>) || mongoose.model<ICrmAidDelivery>('CrmAidDelivery', CrmAidDeliverySchema);
 export const CrmTask = (mongoose.models.CrmTask as Model<ICrmTask>) || mongoose.model<ICrmTask>('CrmTask', CrmTaskSchema);

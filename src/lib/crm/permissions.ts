@@ -93,6 +93,8 @@ export type Permission =
   | 'cases.notes_write'
   | 'cases.close'
   | 'cases.reopen'
+  | 'appointments.read'
+  | 'appointments.write'
   | 'programs.read'
   | 'programs.write'
   | 'operations.read'
@@ -109,6 +111,10 @@ export type Permission =
   | 'finance.approve_basic'
   | 'finance.approve_high'
   | 'finance.export'
+  | 'payroll.read'
+  | 'payroll.write'
+  | 'providers.read'
+  | 'providers.write'
   | 'assets.read'
   | 'assets.write'
   | 'reports.read'
@@ -121,10 +127,16 @@ export const ROLE_PERMISSIONS: Record<CrmRole, Permission[]> = {
     'audit.read',
     'config.manage',
     'people.read',
+    'appointments.read',
+    'appointments.write',
     'programs.read',
     'operations.read',
     'reports.read',
     'tasks.manage',
+    'payroll.read',
+    'payroll.write',
+    'providers.read',
+    'providers.write',
   ],
   DIRECTORA: [
     'users.manage',
@@ -138,6 +150,8 @@ export const ROLE_PERMISSIONS: Record<CrmRole, Permission[]> = {
     'cases.notes_read',
     'cases.close',
     'cases.reopen',
+    'appointments.read',
+    'appointments.write',
     'programs.read',
     'programs.write',
     'operations.read',
@@ -154,6 +168,10 @@ export const ROLE_PERMISSIONS: Record<CrmRole, Permission[]> = {
     'finance.approve_basic',
     'finance.approve_high',
     'finance.export',
+    'payroll.read',
+    'payroll.write',
+    'providers.read',
+    'providers.write',
     'assets.read',
     'assets.write',
     'reports.read',
@@ -165,6 +183,8 @@ export const ROLE_PERMISSIONS: Record<CrmRole, Permission[]> = {
     'people.write',
     'cases.read',
     'cases.write',
+    'appointments.read',
+    'appointments.write',
     'programs.read',
     'programs.write',
     'operations.read',
@@ -176,6 +196,10 @@ export const ROLE_PERMISSIONS: Record<CrmRole, Permission[]> = {
     'finance.read',
     'finance.write',
     'finance.approve_basic',
+    'payroll.read',
+    'payroll.write',
+    'providers.read',
+    'providers.write',
     'assets.read',
     'assets.write',
     'reports.read',
@@ -190,6 +214,8 @@ export const ROLE_PERMISSIONS: Record<CrmRole, Permission[]> = {
     'cases.notes_read',
     'cases.notes_write',
     'cases.close',
+    'appointments.read',
+    'appointments.write',
     'programs.read',
     'operations.read',
     'assets.read',
@@ -203,6 +229,8 @@ export const ROLE_PERMISSIONS: Record<CrmRole, Permission[]> = {
     'cases.notes_read',
     'cases.notes_write',
     'cases.close',
+    'appointments.read',
+    'appointments.write',
     'programs.read',
     'operations.read',
     'reports.read',
@@ -215,6 +243,8 @@ export const ROLE_PERMISSIONS: Record<CrmRole, Permission[]> = {
     'cases.notes_read',
     'cases.notes_write',
     'cases.close',
+    'appointments.read',
+    'appointments.write',
     'programs.read',
     'operations.read',
     'reports.read',
@@ -224,6 +254,7 @@ export const ROLE_PERMISSIONS: Record<CrmRole, Permission[]> = {
     'people.read',
     'people.write',
     'cases.read',
+    'appointments.read',
     'programs.read',
     'programs.write',
     'operations.read',
@@ -252,6 +283,10 @@ export const ROLE_PERMISSIONS: Record<CrmRole, Permission[]> = {
     'finance.approve_basic',
     'finance.approve_high',
     'finance.export',
+    'payroll.read',
+    'payroll.write',
+    'providers.read',
+    'providers.write',
     'assets.read',
     'assets.write',
     'donations.read',
@@ -279,6 +314,8 @@ export function canAccessModule(role: CrmRole, moduleName: string): boolean {
   switch (moduleName) {
     case 'dashboard':
       return true;
+    case 'citas':
+      return hasPermission(role, 'appointments.read') || hasPermission(role, 'people.read') || role === 'SUPER_ADMIN' || role === 'DIRECTORA';
     case 'personas':
       return hasPermission(role, 'people.read');
     case 'hogares':
@@ -298,7 +335,7 @@ export function canAccessModule(role: CrmRole, moduleName: string): boolean {
     case 'subvenciones':
       return hasPermission(role, 'grants.read');
     case 'finanzas':
-      return hasPermission(role, 'finance.read');
+    case 'nominas':
     case 'proveedores':
       return hasPermission(role, 'finance.read');
     case 'activos':

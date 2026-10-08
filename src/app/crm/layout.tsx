@@ -30,6 +30,10 @@ import {
   Shield,
   Bell,
   Search,
+  CreditCard,
+  Building2,
+  Wifi,
+  WifiOff,
 } from 'lucide-react';
 
 interface NavItem {
@@ -41,20 +45,23 @@ interface NavItem {
 }
 
 const NAV_ITEMS: NavItem[] = [
-  { label: 'Panel General',         href: '/crm',               icon: LayoutDashboard, module: 'dashboard',      group: 'Principal' },
-  { label: 'Personas',              href: '/crm/personas',      icon: Users,           module: 'personas',       group: 'Atención Social' },
-  { label: 'Hogares',               href: '/crm/hogares',       icon: Home,            module: 'hogares',        group: 'Atención Social' },
-  { label: 'Casos y Expedientes',   href: '/crm/casos',         icon: FileHeart,       module: 'casos',          group: 'Atención Social' },
-  { label: 'Programas',             href: '/crm/programas',     icon: Layers,          module: 'programas',      group: 'Programas' },
-  { label: 'Operaciones y Eventos', href: '/crm/operaciones',   icon: CalendarDays,    module: 'operaciones',    group: 'Programas' },
-  { label: 'Voluntariado',          href: '/crm/voluntarios',   icon: UserCheck,       module: 'voluntarios',    group: 'Programas' },
-  { label: 'Donantes y Fondos',     href: '/crm/donantes',      icon: HeartHandshake,  module: 'donantes',       group: 'Finanzas' },
-  { label: 'Finanzas y Gastos',     href: '/crm/finanzas',      icon: DollarSign,      module: 'finanzas',       group: 'Finanzas' },
-  { label: 'Subvenciones',          href: '/crm/subvenciones',  icon: Award,           module: 'subvenciones',   group: 'Finanzas' },
-  { label: 'Activos y Ayudas',      href: '/crm/activos',       icon: Package,         module: 'activos',        group: 'Operativo' },
-  { label: 'Tareas y Alertas',      href: '/crm/tareas',        icon: CheckSquare,     module: 'tareas',         group: 'Operativo' },
-  { label: 'Impacto Social',        href: '/crm/impacto',       icon: BarChart3,       module: 'impacto',        group: 'Análisis' },
-  { label: 'Configuración',         href: '/crm/configuracion', icon: Settings,        module: 'configuracion',  group: 'Análisis' },
+  { label: 'Panel General',          href: '/crm',               icon: LayoutDashboard, module: 'dashboard',      group: 'Principal' },
+  { label: 'Personas',               href: '/crm/personas',      icon: Users,           module: 'personas',       group: 'Atención Social' },
+  { label: 'Hogares',                href: '/crm/hogares',       icon: Home,            module: 'hogares',        group: 'Atención Social' },
+  { label: 'Casos y Expedientes',    href: '/crm/casos',         icon: FileHeart,       module: 'casos',          group: 'Atención Social' },
+  { label: 'Citas & Solicitudes',    href: '/crm/citas',         icon: CalendarDays,    module: 'citas',          group: 'Atención Social' },
+  { label: 'Programas',              href: '/crm/programas',     icon: Layers,          module: 'programas',      group: 'Programas' },
+  { label: 'Operaciones y Eventos',  href: '/crm/operaciones',   icon: CalendarDays,    module: 'operaciones',    group: 'Programas' },
+  { label: 'Voluntariado',           href: '/crm/voluntarios',   icon: UserCheck,       module: 'voluntarios',    group: 'Programas' },
+  { label: 'Donantes y Fondos',      href: '/crm/donantes',      icon: HeartHandshake,  module: 'donantes',       group: 'Finanzas' },
+  { label: 'Finanzas y Gastos',      href: '/crm/finanzas',      icon: DollarSign,      module: 'finanzas',       group: 'Finanzas' },
+  { label: 'Subvenciones',           href: '/crm/subvenciones',  icon: Award,           module: 'subvenciones',   group: 'Finanzas' },
+  { label: 'Nómina y Salarios',      href: '/crm/nominas',       icon: CreditCard,      module: 'nominas',        group: 'Finanzas' },
+  { label: 'Proveedores & Pagos',    href: '/crm/proveedores',   icon: Building2,       module: 'proveedores',    group: 'Finanzas' },
+  { label: 'Activos y Ayudas',       href: '/crm/activos',       icon: Package,         module: 'activos',        group: 'Operativo' },
+  { label: 'Tareas y Alertas',       href: '/crm/tareas',        icon: CheckSquare,     module: 'tareas',         group: 'Operativo' },
+  { label: 'Impacto Social',         href: '/crm/impacto',       icon: BarChart3,       module: 'impacto',        group: 'Análisis' },
+  { label: 'Configuración',          href: '/crm/configuracion', icon: Settings,        module: 'configuracion',  group: 'Análisis' },
 ];
 
 const GROUP_ORDER = ['Principal', 'Atención Social', 'Programas', 'Finanzas', 'Operativo', 'Análisis'];
@@ -73,11 +80,15 @@ const ROLE_MAP: Record<string, { label: string; color: string; dot: string }> = 
   CONSULTA:          { label: 'Solo Consulta',        color: 'text-slate-300 bg-slate-800/50 border-slate-700/50',    dot: 'bg-slate-400' },
 };
 
+/* ------------------------------------------------------------------ */
+/* Navigation                                                           */
+/* ------------------------------------------------------------------ */
 function CrmNavigation() {
   const pathname = usePathname();
   const router = useRouter();
   const { user, loading, isFirstRun, logout, canAccess } = useCrmAuth();
   const [mobileOpen, setMobileOpen] = useState(false);
+  const [pendingCitas, setPendingCitas] = useState(0);
 
   // Salida rápida ESC
   useEffect(() => {
@@ -90,18 +101,33 @@ function CrmNavigation() {
     return () => window.removeEventListener('keydown', handleKeyDown);
   }, []);
 
+  // Fetch pending appointments badge
+  useEffect(() => {
+    if (!user) return;
+    const fetchPending = async () => {
+      try {
+        const res = await fetch('/api/crm/appointments?status=NUEVA&limit=1');
+        if (res.ok) {
+          const data = await res.json();
+          setPendingCitas(data.total ?? 0);
+        }
+      } catch { /* silent */ }
+    };
+    fetchPending();
+    const interval = setInterval(fetchPending, 60_000);
+    return () => clearInterval(interval);
+  }, [user]);
+
   const isAuthRoute = pathname === '/crm/login' || pathname === '/crm/setup';
   if (isAuthRoute) return null;
 
-  // Loading screen — evita redirect prematuro
   if (loading) {
     return (
       <div className="fixed inset-0 bg-[#0b0f1a] flex items-center justify-center z-50">
         <div className="flex flex-col items-center gap-5">
           <div className="relative">
-            <div className="w-14 h-14 rounded-2xl bg-gradient-to-tr from-rose-500 to-amber-400 flex items-center justify-center font-black text-white text-xl shadow-2xl shadow-rose-500/40">
-              SM
-            </div>
+            {/* eslint-disable-next-line @next/next/no-img-element */}
+            <img src="/logo.png" alt="Senda Mujer" className="h-14 w-auto object-contain" />
             <div className="absolute -bottom-1 -right-1 w-4 h-4 bg-emerald-400 rounded-full border-2 border-[#0b0f1a] animate-pulse" />
           </div>
           <div className="text-center">
@@ -122,7 +148,6 @@ function CrmNavigation() {
   const roleInfo = ROLE_MAP[user.role] || { label: user.role, color: 'text-slate-300 bg-slate-800/50 border-slate-700', dot: 'bg-slate-400' };
   const initials = user.name.split(' ').map((n: string) => n[0]).join('').slice(0, 2).toUpperCase();
 
-  // Agrupar ítems accesibles
   const accessibleItems = NAV_ITEMS.filter(i => canAccess(i.module));
   const groupedItems = GROUP_ORDER.reduce((acc: Record<string, NavItem[]>, g) => {
     const items = accessibleItems.filter(i => i.group === g);
@@ -132,16 +157,12 @@ function CrmNavigation() {
 
   const SidebarContent = () => (
     <div className="flex flex-col h-full">
-      {/* Logo + Emergency Exit */}
+      {/* Logo */}
       <div className="px-5 py-4 border-b border-slate-800/80 flex items-center justify-between flex-shrink-0">
         <Link href="/crm" className="flex items-center gap-3 group" onClick={() => setMobileOpen(false)}>
-          <div className="w-9 h-9 rounded-xl bg-gradient-to-tr from-rose-500 to-amber-400 flex items-center justify-center font-black text-white text-sm shadow-lg shadow-rose-500/25 group-hover:scale-105 transition-transform">
-            SM
-          </div>
-          <div>
-            <div className="text-[13px] font-bold text-white leading-tight">CRM Senda Mujer</div>
-            <div className="text-[10px] text-slate-500 leading-tight">Sistema Operativo Social</div>
-          </div>
+          {/* eslint-disable-next-line @next/next/no-img-element */}
+          <img src="/logo.png" alt="Senda Mujer" className="h-8 w-auto object-contain group-hover:opacity-90 transition-opacity" />
+          <span className="text-sm font-bold text-white tracking-wide">CRM</span>
         </Link>
         <button
           onClick={() => (window.location.href = 'https://www.google.com')}
@@ -182,6 +203,7 @@ function CrmNavigation() {
                 const isActive = item.href === '/crm'
                   ? pathname === '/crm'
                   : pathname.startsWith(item.href);
+                const isCitas = item.module === 'citas';
                 return (
                   <Link
                     key={item.href}
@@ -195,7 +217,12 @@ function CrmNavigation() {
                   >
                     <Icon className={`w-4 h-4 flex-shrink-0 transition-colors ${isActive ? 'text-rose-400' : 'text-slate-500 group-hover:text-slate-300'}`} />
                     <span className="flex-1 truncate">{item.label}</span>
-                    {isActive && <ChevronRight className="w-3.5 h-3.5 text-rose-400/70 flex-shrink-0" />}
+                    {isCitas && pendingCitas > 0 && (
+                      <span className="flex-shrink-0 min-w-[18px] h-[18px] px-1 bg-rose-500 text-white text-[10px] font-bold rounded-full flex items-center justify-center">
+                        {pendingCitas > 99 ? '99+' : pendingCitas}
+                      </span>
+                    )}
+                    {isActive && !isCitas && <ChevronRight className="w-3.5 h-3.5 text-rose-400/70 flex-shrink-0" />}
                   </Link>
                 );
               })}
@@ -204,7 +231,7 @@ function CrmNavigation() {
         ))}
       </nav>
 
-      {/* Footer: Logout + Shield */}
+      {/* Footer */}
       <div className="px-4 py-3 border-t border-slate-800/80 flex-shrink-0 space-y-2">
         <div className="flex items-center gap-2 px-2 py-1.5 bg-slate-900/60 rounded-lg border border-slate-800/60">
           <Shield className="w-3.5 h-3.5 text-emerald-500" />
@@ -226,8 +253,9 @@ function CrmNavigation() {
       {/* Mobile Top Bar */}
       <div className="lg:hidden fixed top-0 left-0 right-0 z-50 flex items-center justify-between bg-[#0b0f1a] border-b border-slate-800 px-4 py-3">
         <Link href="/crm" className="flex items-center gap-2.5">
-          <div className="w-8 h-8 rounded-lg bg-gradient-to-tr from-rose-500 to-amber-400 flex items-center justify-center font-black text-white text-xs">SM</div>
-          <span className="text-sm font-bold text-white">Senda CRM</span>
+          {/* eslint-disable-next-line @next/next/no-img-element */}
+          <img src="/logo.png" alt="Senda Mujer" className="h-7 w-auto object-contain" />
+          <span className="text-sm font-bold text-white">CRM</span>
         </Link>
         <div className="flex items-center gap-2">
           <button
@@ -267,11 +295,43 @@ function CrmNavigation() {
   );
 }
 
-/* Top bar shown on dashboard pages (search + notifications) */
+/* ------------------------------------------------------------------ */
+/* Top Bar                                                              */
+/* ------------------------------------------------------------------ */
 function CrmTopBar() {
   const pathname = usePathname();
+  const { user } = useCrmAuth();
+  const [pendingCitas, setPendingCitas] = useState(0);
+  const [online, setOnline] = useState(true);
+
   const isAuthRoute = pathname === '/crm/login' || pathname === '/crm/setup';
   if (isAuthRoute) return null;
+
+  // eslint-disable-next-line react-hooks/rules-of-hooks
+  useEffect(() => {
+    if (!user) return;
+    const fetchPending = async () => {
+      try {
+        const res = await fetch('/api/crm/appointments?status=NUEVA&limit=1');
+        if (res.ok) {
+          const data = await res.json();
+          setPendingCitas(data.total ?? 0);
+        }
+      } catch { /* silent */ }
+    };
+    fetchPending();
+    const interval = setInterval(fetchPending, 60_000);
+    const onOnline = () => setOnline(true);
+    const onOffline = () => setOnline(false);
+    window.addEventListener('online', onOnline);
+    window.addEventListener('offline', onOffline);
+    return () => {
+      clearInterval(interval);
+      window.removeEventListener('online', onOnline);
+      window.removeEventListener('offline', onOffline);
+    };
+  // eslint-disable-next-line react-hooks/exhaustive-deps
+  }, [user]);
 
   const now = new Date();
   const dateStr = now.toLocaleDateString('es-CO', { weekday: 'long', day: 'numeric', month: 'long', year: 'numeric' });
@@ -288,31 +348,104 @@ function CrmTopBar() {
             className="pl-8 pr-4 py-2 bg-slate-800/60 border border-slate-700/50 rounded-lg text-xs text-slate-300 placeholder-slate-500 focus:outline-none focus:border-rose-500/50 w-52 transition-all"
           />
         </div>
-        <button className="relative p-2 rounded-lg bg-slate-800/60 border border-slate-700/50 text-slate-400 hover:text-white hover:border-slate-600 transition-all">
+        <Link
+          href="/crm/citas"
+          className="relative p-2 rounded-lg bg-slate-800/60 border border-slate-700/50 text-slate-400 hover:text-white hover:border-slate-600 transition-all"
+          title={pendingCitas > 0 ? `${pendingCitas} cita(s) nueva(s)` : 'Citas'}
+        >
           <Bell className="w-4 h-4" />
+          {pendingCitas > 0 && (
+            <span className="absolute -top-1 -right-1 min-w-[16px] h-4 px-0.5 bg-rose-500 text-white text-[9px] font-bold rounded-full flex items-center justify-center">
+              {pendingCitas > 99 ? '99+' : pendingCitas}
+            </span>
+          )}
+        </Link>
+        <div className="flex items-center gap-1.5 px-2 py-1.5 rounded-lg bg-slate-800/60 border border-slate-700/50">
+          {online
+            ? <Wifi className="w-3.5 h-3.5 text-emerald-400" />
+            : <WifiOff className="w-3.5 h-3.5 text-red-400" />}
+          <span className={`text-[10px] font-medium ${online ? 'text-emerald-400' : 'text-red-400'}`}>
+            {online ? 'En línea' : 'Sin conexión'}
+          </span>
+        </div>
+      </div>
+    </div>
+  );
+}
+
+/* ------------------------------------------------------------------ */
+/* Bottom Status Bar (desktop only)                                     */
+/* ------------------------------------------------------------------ */
+function CrmBottomBar() {
+  const pathname = usePathname();
+  const { user } = useCrmAuth();
+  const [time, setTime] = useState('');
+
+  const isAuthRoute = pathname === '/crm/login' || pathname === '/crm/setup';
+  if (isAuthRoute || !user) return null;
+
+  // eslint-disable-next-line react-hooks/rules-of-hooks
+  useEffect(() => {
+    const tick = () =>
+      setTime(new Date().toLocaleTimeString('es-CO', { hour: '2-digit', minute: '2-digit', second: '2-digit' }));
+    tick();
+    const t = setInterval(tick, 1000);
+    return () => clearInterval(t);
+  }, []);
+
+  const roleInfo = ROLE_MAP[user.role] || { label: user.role, color: 'text-slate-300 bg-slate-800/50 border-slate-700', dot: 'bg-slate-400' };
+
+  return (
+    <div className="hidden lg:flex fixed bottom-0 left-60 right-0 z-20 items-center justify-between px-6 py-1.5 bg-[#080c14] border-t border-slate-800/80 text-[11px]">
+      {/* Left: user + role */}
+      <div className="flex items-center gap-3">
+        <div className="flex items-center gap-1.5">
+          <span className="w-1.5 h-1.5 rounded-full bg-emerald-400 animate-pulse" />
+          <span className="text-slate-400 font-medium">{user.name}</span>
+        </div>
+        <span className={`inline-flex items-center gap-1 px-1.5 py-0.5 rounded text-[10px] font-semibold border ${roleInfo.color}`}>
+          {roleInfo.label}
+        </span>
+      </div>
+
+      {/* Center: Habeas Data */}
+      <div className="flex items-center gap-1.5 text-emerald-500/70">
+        <Shield className="w-3 h-3" />
+        <span className="text-[10px]">Habeas Data · Ley 1581/2012 activo</span>
+      </div>
+
+      {/* Right: time + ESC */}
+      <div className="flex items-center gap-3">
+        <span className="text-slate-500 tabular-nums">{time}</span>
+        <button
+          onClick={() => (window.location.href = 'https://www.google.com')}
+          className="flex items-center gap-1 px-2 py-0.5 text-[10px] font-bold text-red-400/80 bg-red-950/30 border border-red-900/40 rounded hover:bg-red-900/50 transition-all"
+        >
+          <ShieldAlert className="w-3 h-3" />
+          Salida ESC
         </button>
       </div>
     </div>
   );
 }
 
+/* ------------------------------------------------------------------ */
+/* Root Layout                                                          */
+/* ------------------------------------------------------------------ */
 export default function CrmLayout({ children }: { children: React.ReactNode }) {
-  const isAuthRoute = typeof window !== 'undefined'
-    ? window.location.pathname === '/crm/login' || window.location.pathname === '/crm/setup'
-    : false;
-
   return (
     <CrmAuthProvider>
       <div className="min-h-screen bg-[#0d1117] text-slate-100 antialiased">
         <CrmNavigation />
         <div className="lg:pl-60 flex flex-col min-h-screen">
           <CrmTopBar />
-          <main className="flex-1 pt-14 lg:pt-0">
+          <main className="flex-1 pt-14 lg:pt-0 pb-0 lg:pb-8">
             <div className="p-4 md:p-6 lg:p-8 max-w-[1400px] mx-auto">
               {children}
             </div>
           </main>
         </div>
+        <CrmBottomBar />
       </div>
     </CrmAuthProvider>
   );
