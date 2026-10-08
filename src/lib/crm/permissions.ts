@@ -115,6 +115,9 @@ export type Permission =
   | 'payroll.write'
   | 'providers.read'
   | 'providers.write'
+  | 'certificates.read'
+  | 'certificates.write'
+  | 'certificates.export'
   | 'assets.read'
   | 'assets.write'
   | 'reports.read'
@@ -127,16 +130,44 @@ export const ROLE_PERMISSIONS: Record<CrmRole, Permission[]> = {
     'audit.read',
     'config.manage',
     'people.read',
+    'people.write',
+    'people.export',
+    'cases.read',
+    'cases.write',
+    'cases.notes_read',
+    'cases.notes_write',
+    'cases.close',
+    'cases.reopen',
     'appointments.read',
     'appointments.write',
     'programs.read',
+    'programs.write',
     'operations.read',
-    'reports.read',
-    'tasks.manage',
+    'operations.write',
+    'donations.read',
+    'donations.write',
+    'donations.export',
+    'grants.read',
+    'grants.write',
+    'volunteers.read',
+    'volunteers.write',
+    'finance.read',
+    'finance.write',
+    'finance.approve_basic',
+    'finance.approve_high',
+    'finance.export',
     'payroll.read',
     'payroll.write',
     'providers.read',
     'providers.write',
+    'certificates.read',
+    'certificates.write',
+    'certificates.export',
+    'assets.read',
+    'assets.write',
+    'reports.read',
+    'reports.export',
+    'tasks.manage',
   ],
   DIRECTORA: [
     'users.manage',
@@ -338,6 +369,8 @@ export function canAccessModule(role: CrmRole, moduleName: string): boolean {
     case 'nominas':
     case 'proveedores':
       return hasPermission(role, 'finance.read');
+    case 'certificados':
+      return hasPermission(role, 'certificates.read') || hasPermission(role, 'donations.read') || role === 'SUPER_ADMIN' || role === 'DIRECTORA';
     case 'activos':
       return hasPermission(role, 'assets.read');
     case 'tareas':
@@ -351,3 +384,4 @@ export function canAccessModule(role: CrmRole, moduleName: string): boolean {
       return false;
   }
 }
+

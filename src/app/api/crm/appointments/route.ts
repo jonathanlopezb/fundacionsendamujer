@@ -12,19 +12,20 @@ import {
 export async function GET(req: NextRequest) {
   const auth = await requireCrmAuth(req);
   if (auth.errorResponse) return auth.errorResponse;
-  const { user } = auth;
 
   try {
     await connectToDatabase();
     const { searchParams } = new URL(req.url);
-    const search    = searchParams.get('q') || '';
-    const specialty = searchParams.get('specialty') || '';
-    const status    = searchParams.get('status') || '';
+    const search    = searchParams.get('q') ?? '';
+    const specialty = searchParams.get('specialty') ?? '';
+    const status    = searchParams.get('status') ?? '';
+    const modality  = searchParams.get('modality') ?? '';
     const limit     = Math.min(200, parseInt(searchParams.get('limit') ?? '100'));
 
     // eslint-disable-next-line @typescript-eslint/no-explicit-any
     const filter: Record<string, any> = {};
     if (specialty) filter.specialty = specialty;
+    if (modality)  filter.modality  = { $regex: modality, $options: 'i' };
     if (status) {
       filter.$or = [{ reviewStatus: status }, { status }];
     }
@@ -46,7 +47,7 @@ export async function GET(req: NextRequest) {
 
     const total = await Appointment.countDocuments(filter);
 
-    // Count by reviewStatus
+    // Live counts by reviewStatus
     const allForCounts = await Appointment.find({}).select('reviewStatus status').lean();
     const counts = {
       NUEVA:      allForCounts.filter((a) => (a as { reviewStatus?: string }).reviewStatus === 'NUEVA').length,
@@ -72,13 +73,12 @@ export async function POST(req: NextRequest) {
     const body = await req.json();
     const { action, appointmentId } = body;
 
+    // ── CREATE ────────────────────────────────────────────────────────
     if (action === 'CREATE') {
       const { fullName, phone, email, specialty, preferredDate, preferredTime, location, modality, notes } = body;
-
       if (!fullName || !phone || !specialty) {
         return NextResponse.json({ error: 'Faltan campos requeridos' }, { status: 400 });
       }
-
       const newAppointment = await Appointment.create({
         fullName,
         patientName: fullName,
@@ -90,25 +90,22 @@ export async function POST(req: NextRequest) {
         location: location || 'Sede Fundación Senda Mujer',
         modality: modality || 'Presencial',
         notes,
-        requestSource: 'CRM_ADMINISTRATIVO',
+        requestSource: 'ADMINISTRATIVA',
         reviewStatus: 'CONFIRMADA',
         status: 'CONFIRMADA',
       });
-
       await CrmAuditLog.create({
-        userId: user.userId,
-        userName: user.name,
-        userRole: user.role,
-        action: 'APPOINTMENT_CREATED_CRM',
-        entity: 'Appointment',
+        userId: user.userId, userName: user.name, userRole: user.role,
+        action: 'APPOINTMENT_CREATED_CRM', entity: 'Appointment',
         entityId: newAppointment._id.toString(),
         details: { fullName, specialty, phone },
       });
-
       return NextResponse.json({ success: true, appointment: newAppointment });
     }
 
+    // ── STATUS UPDATE (confirm / cancel / attend) ─────────────────────
     if (action === 'STATUS_UPDATE') {
+      if (!appointmentId) return NextResponse.json({ error: 'appointmentId requerido' }, { status: 400 });
       const { newStatus, note } = body;
       const updated = await Appointment.findByIdAndUpdate(
         appointmentId,
@@ -116,32 +113,104 @@ export async function POST(req: NextRequest) {
           $set: {
             reviewStatus: newStatus,
             ...(note && { notes: note }),
-            updatedAt: new Date(),
           },
         },
         { new: true }
       );
-
+      if (!updated) return NextResponse.json({ error: 'Cita no encontrada' }, { status: 404 });
       await CrmAuditLog.create({
-        userId: user.userId,
-        userName: user.name,
-        userRole: user.role,
-        action: 'APPOINTMENT_STATUS_UPDATED',
-        entity: 'Appointment',
-        entityId: appointmentId,
-        details: { newStatus },
+        userId: user.userId, userName: user.name, userRole: user.role,
+        action: 'APPOINTMENT_STATUS_UPDATED', entity: 'Appointment',
+        entityId: appointmentId, details: { newStatus },
       });
-
       return NextResponse.json({ success: true, appointment: updated });
     }
 
+    // ── RESCHEDULE (reprogramar fecha/hora/modalidad/lugar) ───────────
+    if (action === 'RESCHEDULE') {
+      if (!appointmentId) return NextResponse.json({ error: 'appointmentId requerido' }, { status: 400 });
+      const { preferredDate, preferredTime, modality, location, notes } = body;
+      if (!preferredDate || !preferredTime) {
+        return NextResponse.json({ error: 'Fecha y hora son requeridas para reprogramar' }, { status: 400 });
+      }
+      const updated = await Appointment.findByIdAndUpdate(
+        appointmentId,
+        {
+          $set: {
+            preferredDate,
+            preferredTime,
+            ...(modality  && { modality }),
+            ...(location  && { location }),
+            ...(notes     && { notes }),
+            reviewStatus: 'CONFIRMADA',
+          },
+        },
+        { new: true }
+      );
+      if (!updated) return NextResponse.json({ error: 'Cita no encontrada' }, { status: 404 });
+      await CrmAuditLog.create({
+        userId: user.userId, userName: user.name, userRole: user.role,
+        action: 'APPOINTMENT_RESCHEDULED', entity: 'Appointment',
+        entityId: appointmentId,
+        details: { preferredDate, preferredTime, modality, location },
+      });
+      return NextResponse.json({ success: true, appointment: updated });
+    }
+
+    // ── EDIT (editar datos básicos: modalidad, lugar, notas) ──────────
+    if (action === 'EDIT') {
+      if (!appointmentId) return NextResponse.json({ error: 'appointmentId requerido' }, { status: 400 });
+      const { modality, location, notes, preferredDate, preferredTime, specialty } = body;
+      const updated = await Appointment.findByIdAndUpdate(
+        appointmentId,
+        {
+          $set: {
+            ...(modality     !== undefined && { modality }),
+            ...(location     !== undefined && { location }),
+            ...(notes        !== undefined && { notes }),
+            ...(preferredDate !== undefined && { preferredDate }),
+            ...(preferredTime !== undefined && { preferredTime }),
+            ...(specialty    !== undefined && { specialty }),
+          },
+        },
+        { new: true }
+      );
+      if (!updated) return NextResponse.json({ error: 'Cita no encontrada' }, { status: 404 });
+      await CrmAuditLog.create({
+        userId: user.userId, userName: user.name, userRole: user.role,
+        action: 'APPOINTMENT_EDITED', entity: 'Appointment',
+        entityId: appointmentId,
+        details: { modality, location, preferredDate, preferredTime },
+      });
+      return NextResponse.json({ success: true, appointment: updated });
+    }
+
+    // ── DELETE (solo si reviewStatus === 'CANCELADA') ─────────────────
+    if (action === 'DELETE') {
+      if (!appointmentId) return NextResponse.json({ error: 'appointmentId requerido' }, { status: 400 });
+      const appt = await Appointment.findById(appointmentId);
+      if (!appt) return NextResponse.json({ error: 'Cita no encontrada' }, { status: 404 });
+      if (appt.reviewStatus !== 'CANCELADA') {
+        return NextResponse.json(
+          { error: 'Solo se pueden eliminar citas con estado CANCELADA' },
+          { status: 403 }
+        );
+      }
+      await Appointment.findByIdAndDelete(appointmentId);
+      await CrmAuditLog.create({
+        userId: user.userId, userName: user.name, userRole: user.role,
+        action: 'APPOINTMENT_DELETED', entity: 'Appointment',
+        entityId: appointmentId,
+        details: { fullName: appt.fullName },
+      });
+      return NextResponse.json({ success: true });
+    }
+
+    // ── CONVERT TO CASE ───────────────────────────────────────────────
     if (action === 'CONVERT_TO_CASE') {
       const appt = await Appointment.findById(appointmentId);
-      if (!appt) {
-        return NextResponse.json({ error: 'Cita no encontrada' }, { status: 404 });
-      }
+      if (!appt) return NextResponse.json({ error: 'Cita no encontrada' }, { status: 404 });
 
-      // Buscar o crear persona
       let person = await CrmPerson.findOne({
         $or: [
           { phone: appt.phone },
@@ -188,11 +257,8 @@ export async function POST(req: NextRequest) {
       await appt.save();
 
       await CrmAuditLog.create({
-        userId: user.userId,
-        userName: user.name,
-        userRole: user.role,
-        action: 'APPOINTMENT_CONVERTED_TO_CASE',
-        entity: 'CrmCase',
+        userId: user.userId, userName: user.name, userRole: user.role,
+        action: 'APPOINTMENT_CONVERTED_TO_CASE', entity: 'CrmCase',
         entityId: newCase._id.toString(),
         details: { appointmentId, caseNumber, personId: person._id.toString() },
       });

@@ -8,6 +8,10 @@ import {
   useCrmAuth,
 } from '@/lib/crm/client';
 import {
+  CrmThemeProvider,
+  useCrmTheme,
+} from '@/lib/crm/theme';
+import {
   LayoutDashboard,
   Users,
   Home,
@@ -34,6 +38,9 @@ import {
   Building2,
   Wifi,
   WifiOff,
+  FileCheck2,
+  Sun,
+  Moon,
 } from 'lucide-react';
 
 interface NavItem {
@@ -54,6 +61,7 @@ const NAV_ITEMS: NavItem[] = [
   { label: 'Operaciones y Eventos',  href: '/crm/operaciones',   icon: CalendarDays,    module: 'operaciones',    group: 'Programas' },
   { label: 'Voluntariado',           href: '/crm/voluntarios',   icon: UserCheck,       module: 'voluntarios',    group: 'Programas' },
   { label: 'Donantes y Fondos',      href: '/crm/donantes',      icon: HeartHandshake,  module: 'donantes',       group: 'Finanzas' },
+  { label: 'Certificados DIAN',      href: '/crm/certificados',  icon: FileCheck2,      module: 'certificados',   group: 'Finanzas' },
   { label: 'Finanzas y Gastos',      href: '/crm/finanzas',      icon: DollarSign,      module: 'finanzas',       group: 'Finanzas' },
   { label: 'Subvenciones',           href: '/crm/subvenciones',  icon: Award,           module: 'subvenciones',   group: 'Finanzas' },
   { label: 'Nómina y Salarios',      href: '/crm/nominas',       icon: CreditCard,      module: 'nominas',        group: 'Finanzas' },
@@ -87,8 +95,11 @@ function CrmNavigation() {
   const pathname = usePathname();
   const router = useRouter();
   const { user, loading, isFirstRun, logout, canAccess } = useCrmAuth();
+  const { theme, toggleTheme } = useCrmTheme();
   const [mobileOpen, setMobileOpen] = useState(false);
   const [pendingCitas, setPendingCitas] = useState(0);
+
+  const isLight = theme === 'light';
 
   // Salida rápida ESC
   useEffect(() => {
@@ -121,7 +132,7 @@ function CrmNavigation() {
   const isAuthRoute = pathname === '/crm/login' || pathname === '/crm/setup';
   if (isAuthRoute) return null;
 
-  if (loading) {
+  if (loading && !user) {
     return (
       <div className="fixed inset-0 bg-[#0b0f1a] flex items-center justify-center z-50">
         <div className="flex flex-col items-center gap-5">
@@ -156,13 +167,15 @@ function CrmNavigation() {
   }, {});
 
   const SidebarContent = () => (
-    <div className="flex flex-col h-full">
+    <div className={`flex flex-col h-full ${isLight ? 'bg-white text-slate-800' : 'bg-[#0b0f1a] text-slate-100'}`}>
       {/* Logo */}
-      <div className="px-5 py-4 border-b border-slate-800/80 flex items-center justify-between flex-shrink-0">
-        <Link href="/crm" className="flex items-center gap-3 group" onClick={() => setMobileOpen(false)}>
+      <div className={`px-5 py-4 border-b flex items-center justify-between flex-shrink-0 ${
+        isLight ? 'border-slate-200' : 'border-slate-800/80'
+      }`}>
+        <Link href="/crm" scroll={false} className="flex items-center gap-3 group" onClick={() => setMobileOpen(false)}>
           {/* eslint-disable-next-line @next/next/no-img-element */}
           <img src="/logo.png" alt="Senda Mujer" className="h-8 w-auto object-contain group-hover:opacity-90 transition-opacity" />
-          <span className="text-sm font-bold text-white tracking-wide">CRM</span>
+          <span className={`text-sm font-bold tracking-wide ${isLight ? 'text-slate-900' : 'text-white'}`}>CRM</span>
         </Link>
         <button
           onClick={() => (window.location.href = 'https://www.google.com')}
@@ -176,12 +189,14 @@ function CrmNavigation() {
 
       {/* User Profile Card */}
       <div className="px-4 py-3 flex-shrink-0">
-        <div className="bg-slate-800/40 border border-slate-700/40 rounded-xl p-3 flex items-center gap-3">
-          <div className="w-9 h-9 rounded-xl bg-gradient-to-br from-slate-700 to-slate-600 flex items-center justify-center font-bold text-white text-xs flex-shrink-0 border border-slate-600/50">
+        <div className={`rounded-xl p-3 flex items-center gap-3 border ${
+          isLight ? 'bg-slate-50 border-slate-200' : 'bg-slate-800/40 border-slate-700/40'
+        }`}>
+          <div className="w-9 h-9 rounded-xl bg-gradient-to-br from-rose-500 to-amber-500 flex items-center justify-center font-bold text-white text-xs flex-shrink-0 shadow-md">
             {initials}
           </div>
           <div className="flex-1 min-w-0">
-            <p className="text-xs font-semibold text-white truncate">{user.name}</p>
+            <p className={`text-xs font-semibold truncate ${isLight ? 'text-slate-900' : 'text-white'}`}>{user.name}</p>
             <span className={`inline-flex items-center gap-1 text-[10px] font-medium px-1.5 py-0.5 rounded-md border mt-0.5 ${roleInfo.color}`}>
               <span className={`w-1.5 h-1.5 rounded-full ${roleInfo.dot}`} />
               {roleInfo.label}
@@ -194,7 +209,9 @@ function CrmNavigation() {
       <nav className="flex-1 overflow-y-auto px-3 pb-2 space-y-4 scrollbar-thin scrollbar-thumb-slate-700 scrollbar-track-transparent">
         {Object.entries(groupedItems).map(([group, items]) => (
           <div key={group}>
-            <div className="px-2 pb-1.5 text-[10px] font-bold tracking-widest text-slate-500 uppercase">
+            <div className={`px-2 pb-1.5 text-[10px] font-bold tracking-widest uppercase ${
+              isLight ? 'text-slate-400' : 'text-slate-500'
+            }`}>
               {group}
             </div>
             <div className="space-y-0.5">
@@ -208,14 +225,23 @@ function CrmNavigation() {
                   <Link
                     key={item.href}
                     href={item.href}
+                    scroll={false}
                     onClick={() => setMobileOpen(false)}
                     className={`flex items-center gap-3 px-3 py-2 rounded-lg text-[12.5px] font-medium transition-all group ${
                       isActive
-                        ? 'bg-rose-500/10 text-rose-300 border border-rose-500/20'
-                        : 'text-slate-400 hover:text-slate-100 hover:bg-slate-800/60'
+                        ? isLight
+                          ? 'bg-rose-50 text-rose-600 font-semibold border border-rose-200'
+                          : 'bg-rose-500/10 text-rose-300 border border-rose-500/20'
+                        : isLight
+                          ? 'text-slate-600 hover:text-slate-900 hover:bg-slate-100'
+                          : 'text-slate-400 hover:text-slate-100 hover:bg-slate-800/60'
                     }`}
                   >
-                    <Icon className={`w-4 h-4 flex-shrink-0 transition-colors ${isActive ? 'text-rose-400' : 'text-slate-500 group-hover:text-slate-300'}`} />
+                    <Icon className={`w-4 h-4 flex-shrink-0 transition-colors ${
+                      isActive
+                        ? isLight ? 'text-rose-600' : 'text-rose-400'
+                        : isLight ? 'text-slate-400 group-hover:text-slate-600' : 'text-slate-500 group-hover:text-slate-300'
+                    }`} />
                     <span className="flex-1 truncate">{item.label}</span>
                     {isCitas && pendingCitas > 0 && (
                       <span className="flex-shrink-0 min-w-[18px] h-[18px] px-1 bg-rose-500 text-white text-[10px] font-bold rounded-full flex items-center justify-center">
@@ -232,14 +258,33 @@ function CrmNavigation() {
       </nav>
 
       {/* Footer */}
-      <div className="px-4 py-3 border-t border-slate-800/80 flex-shrink-0 space-y-2">
-        <div className="flex items-center gap-2 px-2 py-1.5 bg-slate-900/60 rounded-lg border border-slate-800/60">
-          <Shield className="w-3.5 h-3.5 text-emerald-500" />
-          <span className="text-[10px] text-slate-500">Auditoría activa · Ley 1581/2012</span>
+      <div className={`px-4 py-3 border-t flex-shrink-0 space-y-2 ${
+        isLight ? 'border-slate-200 bg-slate-50/50' : 'border-slate-800/80'
+      }`}>
+        <div className={`flex items-center justify-between px-2 py-1.5 rounded-lg border ${
+          isLight ? 'bg-white border-slate-200 text-slate-600' : 'bg-slate-900/60 border-slate-800/60 text-slate-400'
+        }`}>
+          <div className="flex items-center gap-1.5">
+            <Shield className="w-3.5 h-3.5 text-emerald-500" />
+            <span className="text-[10px]">Ley 1581 / RTE DIAN</span>
+          </div>
+          <button
+            onClick={toggleTheme}
+            className={`p-1 rounded-md transition-colors ${
+              isLight ? 'hover:bg-slate-100 text-amber-600' : 'hover:bg-slate-800 text-amber-400'
+            }`}
+            title={isLight ? 'Cambiar a Modo Oscuro' : 'Cambiar a Modo Día'}
+          >
+            {isLight ? <Moon className="w-3.5 h-3.5" /> : <Sun className="w-3.5 h-3.5" />}
+          </button>
         </div>
         <button
           onClick={() => logout()}
-          className="w-full flex items-center justify-center gap-2 px-3 py-2 bg-slate-800/60 hover:bg-rose-950/40 text-slate-400 hover:text-rose-300 border border-slate-700/50 hover:border-rose-900/40 rounded-lg text-xs font-medium transition-all"
+          className={`w-full flex items-center justify-center gap-2 px-3 py-2 rounded-lg text-xs font-medium border transition-all ${
+            isLight
+              ? 'bg-white hover:bg-rose-50 text-slate-600 hover:text-rose-600 border-slate-200 hover:border-rose-200'
+              : 'bg-slate-800/60 hover:bg-rose-950/40 text-slate-400 hover:text-rose-300 border-slate-700/50 hover:border-rose-900/40'
+          }`}
         >
           <LogOut className="w-3.5 h-3.5" />
           Cerrar Sesión
@@ -251,13 +296,23 @@ function CrmNavigation() {
   return (
     <>
       {/* Mobile Top Bar */}
-      <div className="lg:hidden fixed top-0 left-0 right-0 z-50 flex items-center justify-between bg-[#0b0f1a] border-b border-slate-800 px-4 py-3">
-        <Link href="/crm" className="flex items-center gap-2.5">
+      <div className={`lg:hidden fixed top-0 left-0 right-0 z-50 flex items-center justify-between border-b px-4 py-3 ${
+        isLight ? 'bg-white border-slate-200' : 'bg-[#0b0f1a] border-slate-800'
+      }`}>
+        <Link href="/crm" scroll={false} className="flex items-center gap-2.5">
           {/* eslint-disable-next-line @next/next/no-img-element */}
           <img src="/logo.png" alt="Senda Mujer" className="h-7 w-auto object-contain" />
-          <span className="text-sm font-bold text-white">CRM</span>
+          <span className={`text-sm font-bold ${isLight ? 'text-slate-900' : 'text-white'}`}>CRM</span>
         </Link>
         <div className="flex items-center gap-2">
+          <button
+            onClick={toggleTheme}
+            className={`p-1.5 rounded-lg border ${
+              isLight ? 'bg-slate-100 border-slate-200 text-amber-600' : 'bg-slate-800 border-slate-700 text-amber-400'
+            }`}
+          >
+            {isLight ? <Moon className="w-4 h-4" /> : <Sun className="w-4 h-4" />}
+          </button>
           <button
             onClick={() => (window.location.href = 'https://www.google.com')}
             className="flex items-center gap-1 px-2 py-1 text-[10px] font-bold text-red-400 bg-red-950/40 border border-red-900/40 rounded-md"
@@ -267,7 +322,9 @@ function CrmNavigation() {
           </button>
           <button
             onClick={() => setMobileOpen(!mobileOpen)}
-            className="p-1.5 rounded-lg bg-slate-800 text-slate-300 hover:text-white transition-colors"
+            className={`p-1.5 rounded-lg transition-colors ${
+              isLight ? 'bg-slate-100 text-slate-700' : 'bg-slate-800 text-slate-300 hover:text-white'
+            }`}
           >
             {mobileOpen ? <X className="w-5 h-5" /> : <Menu className="w-5 h-5" />}
           </button>
@@ -275,7 +332,9 @@ function CrmNavigation() {
       </div>
 
       {/* Sidebar Desktop */}
-      <aside className="hidden lg:flex fixed inset-y-0 left-0 z-40 w-60 bg-[#0b0f1a] border-r border-slate-800/80 flex-col">
+      <aside className={`hidden lg:flex fixed inset-y-0 left-0 z-40 w-60 border-r flex-col ${
+        isLight ? 'bg-white border-slate-200' : 'bg-[#0b0f1a] border-slate-800/80'
+      }`}>
         <SidebarContent />
       </aside>
 
@@ -286,7 +345,9 @@ function CrmNavigation() {
             className="fixed inset-0 bg-black/70 z-40 lg:hidden backdrop-blur-sm"
             onClick={() => setMobileOpen(false)}
           />
-          <aside className="fixed inset-y-0 left-0 z-50 w-64 bg-[#0b0f1a] border-r border-slate-800 flex flex-col lg:hidden">
+          <aside className={`fixed inset-y-0 left-0 z-50 w-64 border-r flex flex-col lg:hidden ${
+            isLight ? 'bg-white border-slate-200' : 'bg-[#0b0f1a] border-slate-800'
+          }`}>
             <SidebarContent />
           </aside>
         </>
@@ -301,8 +362,11 @@ function CrmNavigation() {
 function CrmTopBar() {
   const pathname = usePathname();
   const { user } = useCrmAuth();
+  const { theme, toggleTheme } = useCrmTheme();
   const [pendingCitas, setPendingCitas] = useState(0);
   const [online, setOnline] = useState(true);
+
+  const isLight = theme === 'light';
 
   // ✅ Hooks BEFORE any conditional return (Rules of Hooks)
   useEffect(() => {
@@ -336,20 +400,55 @@ function CrmTopBar() {
   const dateStr = now.toLocaleDateString('es-CO', { weekday: 'long', day: 'numeric', month: 'long', year: 'numeric' });
 
   return (
-    <div className="hidden lg:flex items-center justify-between px-6 py-3 bg-[#0b0f1a]/80 backdrop-blur-sm border-b border-slate-800/60 sticky top-0 z-30">
-      <p className="text-xs text-slate-500 capitalize">{dateStr}</p>
+    <div className={`hidden lg:flex items-center justify-between px-6 py-3 border-b sticky top-0 z-30 backdrop-blur-sm transition-colors ${
+      isLight ? 'bg-white/85 border-slate-200' : 'bg-[#0b0f1a]/85 border-slate-800/60'
+    }`}>
+      <p className={`text-xs capitalize ${isLight ? 'text-slate-500' : 'text-slate-400'}`}>{dateStr}</p>
       <div className="flex items-center gap-3">
         <div className="relative">
-          <Search className="w-3.5 h-3.5 absolute left-3 top-2.5 text-slate-500" />
+          <Search className="w-3.5 h-3.5 absolute left-3 top-2.5 text-slate-400" />
           <input
             type="text"
             placeholder="Buscar en el CRM..."
-            className="pl-8 pr-4 py-2 bg-slate-800/60 border border-slate-700/50 rounded-lg text-xs text-slate-300 placeholder-slate-500 focus:outline-none focus:border-rose-500/50 w-52 transition-all"
+            className={`pl-8 pr-4 py-1.5 border rounded-lg text-xs w-52 transition-all focus:outline-none focus:ring-1 focus:ring-rose-500 ${
+              isLight
+                ? 'bg-slate-50 border-slate-200 text-slate-900 placeholder:text-slate-400'
+                : 'bg-slate-800/60 border-slate-700/50 text-slate-300 placeholder:text-slate-500'
+            }`}
           />
         </div>
+
+        {/* Theme Toggle Button */}
+        <button
+          onClick={toggleTheme}
+          className={`p-2 rounded-lg border transition-all flex items-center gap-1.5 text-xs font-semibold ${
+            isLight
+              ? 'bg-slate-50 border-slate-200 text-slate-700 hover:bg-slate-100'
+              : 'bg-slate-800/60 border-slate-700/50 text-slate-300 hover:text-white'
+          }`}
+          title={isLight ? 'Cambiar a Modo Oscuro' : 'Cambiar a Modo Día'}
+        >
+          {isLight ? (
+            <>
+              <Moon className="w-3.5 h-3.5 text-indigo-600" />
+              <span className="text-[11px] text-slate-600">Noche</span>
+            </>
+          ) : (
+            <>
+              <Sun className="w-3.5 h-3.5 text-amber-400" />
+              <span className="text-[11px] text-slate-300">Día</span>
+            </>
+          )}
+        </button>
+
         <Link
           href="/crm/citas"
-          className="relative p-2 rounded-lg bg-slate-800/60 border border-slate-700/50 text-slate-400 hover:text-white hover:border-slate-600 transition-all"
+          scroll={false}
+          className={`relative p-2 rounded-lg border transition-all ${
+            isLight
+              ? 'bg-slate-50 border-slate-200 text-slate-600 hover:text-slate-900'
+              : 'bg-slate-800/60 border-slate-700/50 text-slate-400 hover:text-white'
+          }`}
           title={pendingCitas > 0 ? `${pendingCitas} cita(s) nueva(s)` : 'Citas'}
         >
           <Bell className="w-4 h-4" />
@@ -359,11 +458,14 @@ function CrmTopBar() {
             </span>
           )}
         </Link>
-        <div className="flex items-center gap-1.5 px-2 py-1.5 rounded-lg bg-slate-800/60 border border-slate-700/50">
+
+        <div className={`flex items-center gap-1.5 px-2 py-1.5 rounded-lg border ${
+          isLight ? 'bg-slate-50 border-slate-200' : 'bg-slate-800/60 border-slate-700/50'
+        }`}>
           {online
-            ? <Wifi className="w-3.5 h-3.5 text-emerald-400" />
-            : <WifiOff className="w-3.5 h-3.5 text-red-400" />}
-          <span className={`text-[10px] font-medium ${online ? 'text-emerald-400' : 'text-red-400'}`}>
+            ? <Wifi className="w-3.5 h-3.5 text-emerald-500" />
+            : <WifiOff className="w-3.5 h-3.5 text-red-500" />}
+          <span className={`text-[10px] font-medium ${online ? 'text-emerald-500' : 'text-red-500'}`}>
             {online ? 'En línea' : 'Sin conexión'}
           </span>
         </div>
@@ -378,7 +480,10 @@ function CrmTopBar() {
 function CrmBottomBar() {
   const pathname = usePathname();
   const { user } = useCrmAuth();
+  const { theme, toggleTheme } = useCrmTheme();
   const [time, setTime] = useState('');
+
+  const isLight = theme === 'light';
 
   // ✅ Hooks BEFORE any conditional return (Rules of Hooks)
   useEffect(() => {
@@ -395,27 +500,47 @@ function CrmBottomBar() {
   const roleInfo = ROLE_MAP[user.role] || { label: user.role, color: 'text-slate-300 bg-slate-800/50 border-slate-700', dot: 'bg-slate-400' };
 
   return (
-    <div className="hidden lg:flex fixed bottom-0 left-60 right-0 z-20 items-center justify-between px-6 py-1.5 bg-[#080c14] border-t border-slate-800/80 text-[11px]">
+    <div className={`hidden lg:flex fixed bottom-0 left-60 right-0 z-20 items-center justify-between px-6 py-1.5 border-t text-[11px] transition-colors ${
+      isLight ? 'bg-white/95 border-slate-200 text-slate-700' : 'bg-[#080c14]/95 border-slate-800/80 text-slate-300'
+    }`}>
       {/* Left: user + role */}
       <div className="flex items-center gap-3">
         <div className="flex items-center gap-1.5">
           <span className="w-1.5 h-1.5 rounded-full bg-emerald-400 animate-pulse" />
-          <span className="text-slate-400 font-medium">{user.name}</span>
+          <span className={`font-medium ${isLight ? 'text-slate-800' : 'text-slate-300'}`}>{user.name}</span>
         </div>
         <span className={`inline-flex items-center gap-1 px-1.5 py-0.5 rounded text-[10px] font-semibold border ${roleInfo.color}`}>
           {roleInfo.label}
         </span>
       </div>
 
-      {/* Center: Habeas Data */}
-      <div className="flex items-center gap-1.5 text-emerald-500/70">
-        <Shield className="w-3 h-3" />
-        <span className="text-[10px]">Habeas Data · Ley 1581/2012 activo</span>
+      {/* Center: Habeas Data & RTE */}
+      <div className="flex items-center gap-3">
+        <div className="flex items-center gap-1.5 text-emerald-600 dark:text-emerald-400">
+          <Shield className="w-3 h-3" />
+          <span className="text-[10px]">Habeas Data · Ley 1581/2012</span>
+        </div>
+        <span className="text-slate-400">·</span>
+        <div className="flex items-center gap-1 text-rose-500 font-semibold text-[10px]">
+          <FileCheck2 className="w-3 h-3" />
+          <span>RTE DIAN Art. 125 E.T.</span>
+        </div>
       </div>
 
-      {/* Right: time + ESC */}
+      {/* Right: theme toggle, time + ESC */}
       <div className="flex items-center gap-3">
-        <span className="text-slate-500 tabular-nums">{time}</span>
+        <button
+          onClick={toggleTheme}
+          className={`flex items-center gap-1 px-2 py-0.5 rounded text-[10px] font-medium border transition-colors ${
+            isLight
+              ? 'bg-slate-100 border-slate-200 text-slate-700 hover:bg-slate-200'
+              : 'bg-slate-800 border-slate-700 text-slate-300 hover:bg-slate-700'
+          }`}
+        >
+          {isLight ? <Moon className="w-3 h-3 text-indigo-500" /> : <Sun className="w-3 h-3 text-amber-400" />}
+          <span>{isLight ? 'Modo Día' : 'Modo Noche'}</span>
+        </button>
+        <span className="text-slate-400 font-mono tabular-nums">{time}</span>
         <button
           onClick={() => (window.location.href = 'https://www.google.com')}
           className="flex items-center gap-1 px-2 py-0.5 text-[10px] font-bold text-red-400/80 bg-red-950/30 border border-red-900/40 rounded hover:bg-red-900/50 transition-all"
@@ -434,18 +559,20 @@ function CrmBottomBar() {
 export default function CrmLayout({ children }: { children: React.ReactNode }) {
   return (
     <CrmAuthProvider>
-      <div className="min-h-screen bg-[#0d1117] text-slate-100 antialiased">
-        <CrmNavigation />
-        <div className="lg:pl-60 flex flex-col min-h-screen">
-          <CrmTopBar />
-          <main className="flex-1 pt-14 lg:pt-0 pb-0 lg:pb-8">
-            <div className="p-4 md:p-6 lg:p-8 max-w-[1400px] mx-auto">
-              {children}
-            </div>
-          </main>
+      <CrmThemeProvider>
+        <div className="min-h-screen antialiased flex flex-col">
+          <CrmNavigation />
+          <div className="lg:pl-60 flex flex-col min-h-screen flex-1">
+            <CrmTopBar />
+            <main className="flex-1 pt-14 lg:pt-0 pb-12 lg:pb-12">
+              <div className="p-4 md:p-6 lg:p-8 max-w-[1400px] mx-auto">
+                {children}
+              </div>
+            </main>
+          </div>
+          <CrmBottomBar />
         </div>
-        <CrmBottomBar />
-      </div>
+      </CrmThemeProvider>
     </CrmAuthProvider>
   );
 }
