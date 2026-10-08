@@ -229,9 +229,20 @@ export default function CertificadosDianPage() {
 
   return (
     <div className="space-y-6">
-      {/* Estilos para impresión oficial DIAN */}
+      {/* Estilos para impresión oficial DIAN - Hoja Carta Exacta (Letter Size) */}
       <style jsx global>{`
+        @page {
+          size: letter portrait;
+          margin: 8mm 12mm 8mm 12mm;
+        }
         @media print {
+          html, body {
+            background: white !important;
+            color: black !important;
+            height: auto !important;
+            overflow: visible !important;
+            font-size: 11px !important;
+          }
           body * {
             visibility: hidden;
           }
@@ -243,10 +254,13 @@ export default function CertificadosDianPage() {
             left: 0;
             top: 0;
             width: 100%;
-            margin: 0;
-            padding: 24px;
+            max-width: 100% !important;
+            margin: 0 !important;
+            padding: 0 !important;
             background: white !important;
             color: black !important;
+            page-break-after: avoid;
+            page-break-inside: avoid;
           }
           .no-print {
             display: none !important;
@@ -817,35 +831,39 @@ export default function CertificadosDianPage() {
               </div>
             </div>
 
-            {/* Documento Oficial Membretado DIAN */}
-            <div id="print-certificate-area" ref={printAreaRef} className="p-8 sm:p-12 space-y-6 text-slate-900 bg-white">
+            {/* Documento Oficial Membretado DIAN - Ajustado a Hoja Carta (Letter Size) */}
+            <div
+              id="print-certificate-area"
+              ref={printAreaRef}
+              className="p-6 sm:p-10 space-y-4 text-slate-900 bg-white text-[11px] leading-relaxed max-w-[800px] mx-auto print:p-0 print:space-y-3"
+            >
               {/* Membrete Oficial */}
-              <div className="border-b-2 border-rose-600 pb-6 flex items-start justify-between gap-4">
-                <div className="space-y-1">
-                  <div className="flex items-center gap-3">
+              <div className="border-b-2 border-rose-600 pb-3 flex items-start justify-between gap-4">
+                <div className="space-y-0.5">
+                  <div className="flex items-center gap-2.5">
                     {/* eslint-disable-next-line @next/next/no-img-element */}
-                    <img src="/logo.png" alt="Fundación Senda Mujer" className="h-12 w-auto object-contain" />
+                    <img src="/logo.png" alt="Fundación Senda Mujer" className="h-10 w-auto object-contain" />
                     <div>
-                      <h2 className="text-xl font-black text-rose-900 tracking-tight">FUNDACIÓN SENDA MUJER</h2>
-                      <p className="text-xs font-bold text-slate-700">NIT: {previewCert.issuerNit}</p>
+                      <h2 className="text-base font-black text-rose-900 tracking-tight leading-none">FUNDACIÓN SENDA MUJER</h2>
+                      <p className="text-[11px] font-bold text-slate-700">NIT: {previewCert.issuerNit}</p>
                     </div>
                   </div>
-                  <p className="text-[11px] text-slate-600 font-medium">
+                  <p className="text-[9.5px] text-slate-600 font-medium">
                     {previewCert.issuerRteStatus}
                   </p>
-                  <p className="text-[10px] text-slate-500">
+                  <p className="text-[9px] text-slate-500">
                     Sede Principal: Cartagena de Indias, Bolívar · Colombia · fundacionsendamujer.org
                   </p>
                 </div>
 
-                <div className="text-right space-y-1">
-                  <span className="inline-block px-3 py-1 bg-rose-50 border border-rose-200 text-rose-700 font-mono font-bold text-xs rounded-lg">
+                <div className="text-right space-y-0.5">
+                  <span className="inline-block px-2.5 py-0.5 bg-rose-50 border border-rose-200 text-rose-700 font-mono font-bold text-[11px] rounded">
                     {previewCert.code}
                   </span>
-                  <p className="text-[11px] text-slate-500">Año Gravable: <strong>{previewCert.fiscalYear}</strong></p>
-                  <p className="text-[11px] text-slate-500">Fecha de Expedición: <strong>{previewCert.issueDate}</strong></p>
+                  <p className="text-[10px] text-slate-600">Año Gravable: <strong>{previewCert.fiscalYear}</strong></p>
+                  <p className="text-[10px] text-slate-600">Fecha de Expedición: <strong>{previewCert.issueDate}</strong></p>
                   {previewCert.status === 'ANULADO' && (
-                    <span className="inline-block px-2.5 py-0.5 bg-red-100 border border-red-300 text-red-700 font-bold text-[10px] rounded">
+                    <span className="inline-block px-2 py-0.5 bg-red-100 border border-red-300 text-red-700 font-bold text-[9px] rounded">
                       DOCUMENTO ANULADO
                     </span>
                   )}
@@ -853,103 +871,125 @@ export default function CertificadosDianPage() {
               </div>
 
               {/* Título Principal */}
-              <div className="text-center py-2 space-y-1">
-                <h3 className="text-lg font-black text-slate-900 uppercase tracking-wide">
+              <div className="text-center py-1 space-y-0.5">
+                <h3 className="text-sm font-black text-slate-900 uppercase tracking-wide">
                   CERTIFICADO DE DONACIÓN PARA EFECTOS TRIBUTARIOS
                 </h3>
-                <p className="text-xs text-slate-600 font-medium italic">
-                  Expedido en cumplimiento de los Artículos 125-1, 125-2, 125-3, 125-4 y 125-5 del Estatuto Tributario y el Decreto 2150 de 2017
+                <p className="text-[10px] text-slate-600 font-medium italic">
+                  Expedido en cumplimiento de los Artículos 125-1 a 125-5 del Estatuto Tributario y el Decreto 2150 de 2017
                 </p>
               </div>
 
               {/* Declaración de la Representación Legal */}
-              <div className="space-y-4 text-xs leading-relaxed text-slate-800 text-justify">
+              <div className="space-y-2.5 text-[10.5px] leading-normal text-slate-800 text-justify">
                 <p>
-                  El suscrito Representante Legal y Contador Público de la <strong>FUNDACIÓN SENDA MUJER</strong>, identificada con NIT <strong>{previewCert.issuerNit}</strong>, entidad sin ánimo de lucro perteneciente al <strong>RÉGIMEN TRIBUTARIO ESPECIAL (RTE)</strong> del impuesto sobre la renta:
+                  El suscrito Representante Legal y Contador Público de la <strong>FUNDACIÓN SENDA MUJER</strong>, identificada con NIT <strong>{previewCert.issuerNit}</strong>, entidad sin ánimo de lucro calificada y perteneciente al <strong>RÉGIMEN TRIBUTARIO ESPECIAL (RTE)</strong> del impuesto sobre la renta:
                 </p>
 
-                <p className="text-center font-bold text-sm tracking-wider py-1 text-slate-900">
+                <p className="text-center font-bold text-xs tracking-wider py-0.5 text-slate-900">
                   CERTIFICAN:
                 </p>
 
                 <p>
-                  Que a título gratuito y sin que medie contraprestación alguna, se recibió una donación de:
+                  Que a título gratuito y sin que medie contraprestación alguna, se recibió una donación con el siguiente detalle:
                 </p>
 
                 {/* Cuadro de Datos del Donante y Donación */}
-                <div className="border border-slate-300 rounded-xl overflow-hidden my-3">
-                  <table className="w-full text-xs">
+                <div className="border border-slate-300 rounded-lg overflow-hidden my-2">
+                  <table className="w-full text-[10px] border-collapse">
                     <tbody>
                       <tr className="border-b border-slate-200 bg-slate-50">
-                        <td className="py-2.5 px-4 font-bold text-slate-700 w-1/3">Donante / Razón Social:</td>
-                        <td className="py-2.5 px-4 font-black text-slate-900">{previewCert.donorName}</td>
+                        <td className="py-1.5 px-3 font-bold text-slate-700 w-1/3">Donante / Razón Social:</td>
+                        <td className="py-1.5 px-3 font-black text-slate-900">{previewCert.donorName}</td>
                       </tr>
                       <tr className="border-b border-slate-200">
-                        <td className="py-2 px-4 font-bold text-slate-700">Identificación / NIT:</td>
-                        <td className="py-2 px-4 font-mono font-bold text-slate-900">{previewCert.donorDocumentType} {previewCert.donorDocumentNumber}</td>
+                        <td className="py-1.5 px-3 font-bold text-slate-700">Identificación / NIT:</td>
+                        <td className="py-1.5 px-3 font-mono font-bold text-slate-900">{previewCert.donorDocumentType} {previewCert.donorDocumentNumber}</td>
                       </tr>
                       <tr className="border-b border-slate-200 bg-slate-50">
-                        <td className="py-2 px-4 font-bold text-slate-700">Ciudad y Dirección:</td>
-                        <td className="py-2 px-4 text-slate-800">{previewCert.donorCity} {previewCert.donorAddress ? `· ${previewCert.donorAddress}` : ''}</td>
+                        <td className="py-1.5 px-3 font-bold text-slate-700">Ciudad y Dirección:</td>
+                        <td className="py-1.5 px-3 text-slate-800">{previewCert.donorCity} {previewCert.donorAddress ? `· ${previewCert.donorAddress}` : ''}</td>
                       </tr>
                       <tr className="border-b border-slate-200">
-                        <td className="py-2 px-4 font-bold text-slate-700">Fecha de la Donación:</td>
-                        <td className="py-2 px-4 text-slate-800">{previewCert.donationDate}</td>
+                        <td className="py-1.5 px-3 font-bold text-slate-700">Fecha de la Donación:</td>
+                        <td className="py-1.5 px-3 text-slate-800 font-mono">{previewCert.donationDate}</td>
                       </tr>
                       <tr className="border-b border-slate-200 bg-slate-50">
-                        <td className="py-2 px-4 font-bold text-slate-700">Tipo y Modalidad:</td>
-                        <td className="py-2 px-4 text-slate-800">{previewCert.donationType} ({previewCert.donationMethod})</td>
+                        <td className="py-1.5 px-3 font-bold text-slate-700">Tipo y Modalidad:</td>
+                        <td className="py-1.5 px-3 text-slate-800">{previewCert.donationType} ({previewCert.donationMethod})</td>
                       </tr>
                       <tr className="border-b border-slate-200">
-                        <td className="py-2.5 px-4 font-bold text-slate-700">Monto Donado:</td>
-                        <td className="py-2.5 px-4 font-black text-emerald-800 text-sm">{COP(previewCert.amount)}</td>
+                        <td className="py-1.5 px-3 font-bold text-slate-700">Monto Donado:</td>
+                        <td className="py-1.5 px-3 font-black text-emerald-800 text-xs">{COP(previewCert.amount)}</td>
                       </tr>
                       <tr className="bg-slate-50">
-                        <td className="py-2.5 px-4 font-bold text-slate-700">Valor en Letras:</td>
-                        <td className="py-2.5 px-4 font-bold text-slate-900 uppercase">{previewCert.amountInWords}</td>
+                        <td className="py-1.5 px-3 font-bold text-slate-700">Valor en Letras:</td>
+                        <td className="py-1.5 px-3 font-bold text-slate-900 uppercase">{previewCert.amountInWords}</td>
                       </tr>
                     </tbody>
                   </table>
                 </div>
 
                 {/* Destinación y Cláusulas DIAN */}
-                <div className="space-y-2.5 pt-2">
+                <div className="space-y-1.5 text-[10px]">
                   <p>
-                    <strong>1. DESTINACIÓN SOCIAL ESPECÍFICA:</strong> Los recursos donados fueron recibidos y destinados de manera exclusiva a la ejecución del programa social: <em>&ldquo;{previewCert.destinationProgram}&rdquo;</em>, el cual corresponde a una actividad meritoria de interés general en beneficio de mujeres en condición de vulnerabilidad.
+                    <strong>1. DESTINACIÓN SOCIAL:</strong> Los recursos donados fueron destinados exclusivamente a la ejecución del programa social: <em>&ldquo;{previewCert.destinationProgram}&rdquo;</em>, correspondiente a una actividad meritoria de interés general en beneficio de mujeres en condición de vulnerabilidad.
                   </p>
                   <p>
-                    <strong>2. NO CONTRAPRESTACIÓN:</strong> Se certifica expresamente que la presente donación fue efectuada a título de mera liberalidad, sin que el donante ni personas vinculadas reciban ningún beneficio, contraprestación directa o indirecta, bien o servicio por parte de la Fundación.
+                    <strong>2. NO CONTRAPRESTACIÓN:</strong> Se certifica expresamente que la presente donación fue efectuada a título de mera liberalidad, sin que el donante ni personas vinculadas reciban ningún beneficio, contraprestación directa o indirecta por parte de la Fundación.
                   </p>
                   <p>
-                    <strong>3. CUMPLIMIENTO REGIMEN TRIBUTARIO ESPECIAL:</strong> La Fundación Senda Mujer se encuentra debidamente calificada y actualizada en el Régimen Tributario Especial de la DIAN conforme a la Ley 1819 de 2016 y el Decreto Reglamentario 2150 de 2017, habilitando el descuento tributario contemplado en el Artículo 257 del Estatuto Tributario.
+                    <strong>3. RÉGIMEN TRIBUTARIO ESPECIAL:</strong> La Fundación Senda Mujer se encuentra debidamente calificada y actualizada en el RTE de la DIAN conforme a la Ley 1819 de 2016 y el Decreto 2150 de 2017, habilitando el descuento tributario del Art. 257 del E.T.
                   </p>
                 </div>
               </div>
 
               {/* Firmas Autorizadas */}
-              <div className="pt-10 grid grid-cols-2 gap-8 text-center text-xs">
-                <div className="space-y-1 border-t-2 border-slate-800 pt-3">
+              <div className="pt-6 grid grid-cols-2 gap-8 text-center text-[10px]">
+                <div className="space-y-0.5 border-t border-slate-800 pt-2">
                   <p className="font-bold text-slate-900">{previewCert.issuerLegalRep}</p>
-                  <p className="text-[11px] text-slate-600 font-semibold">Representante Legal</p>
-                  <p className="text-[10px] text-slate-500">Fundación Senda Mujer · NIT {previewCert.issuerNit}</p>
+                  <p className="text-[9.5px] text-slate-600 font-semibold">Representante Legal</p>
+                  <p className="text-[9px] text-slate-500">Fundación Senda Mujer · NIT {previewCert.issuerNit}</p>
                 </div>
 
-                <div className="space-y-1 border-t-2 border-slate-800 pt-3">
+                <div className="space-y-0.5 border-t border-slate-800 pt-2">
                   <p className="font-bold text-slate-900">{previewCert.issuerAccountant}</p>
-                  <p className="text-[11px] text-slate-600 font-semibold">Contador Público / Revisor Fiscal</p>
-                  <p className="text-[10px] text-slate-500">{previewCert.issuerAccountantTp}</p>
+                  <p className="text-[9.5px] text-slate-600 font-semibold">Contador Público / Revisor Fiscal</p>
+                  <p className="text-[9px] text-slate-500">{previewCert.issuerAccountantTp}</p>
                 </div>
               </div>
 
-              {/* Pie de Página y Sello de Verificación Hash */}
-              <div className="pt-6 border-t border-slate-200 flex items-center justify-between text-[10px] text-slate-500 font-mono">
-                <div>
-                  <p className="font-bold text-slate-700">CÓDIGO ÚNICO DE VERIFICACIÓN DIAN:</p>
-                  <p>{previewCert.verificationCode}</p>
+              {/* Pie de Página con Enlace de Verificación y QR */}
+              <div className="pt-3 border-t border-slate-200 flex items-center justify-between text-[9px] text-slate-600 font-mono">
+                <div className="space-y-0.5 max-w-[65%]">
+                  <p className="font-bold text-slate-800 uppercase">CÓDIGO HASH DE VERIFICACIÓN DIAN:</p>
+                  <p className="text-slate-600 text-[8.5px] break-all">{previewCert.verificationCode}</p>
+                  <p className="text-[8.5px] text-slate-500 pt-0.5">
+                    Verifique la veracidad y validez oficial de este documento en línea en:{' '}
+                    <a
+                      href={`https://fundacionsendamujer.org/verificar-certificado?code=${previewCert.code}`}
+                      target="_blank"
+                      rel="noopener noreferrer"
+                      className="text-rose-700 font-bold underline"
+                    >
+                      fundacionsendamujer.org/verificar-certificado?code={previewCert.code}
+                    </a>
+                  </p>
                 </div>
-                <div className="text-right">
-                  <p>Verificación pública en línea:</p>
-                  <p className="text-rose-700 font-bold">fundacionsendamujer.org</p>
+
+                <div className="text-right flex items-center gap-2">
+                  {/* eslint-disable-next-line @next/next/no-img-element */}
+                  <img
+                    src={`https://api.qrserver.com/v1/create-qr-code/?size=65x65&data=${encodeURIComponent(
+                      `https://fundacionsendamujer.org/verificar-certificado?code=${previewCert.code}`
+                    )}`}
+                    alt="QR Verificación"
+                    className="w-14 h-14 border border-slate-300 rounded p-0.5 bg-white"
+                  />
+                  <div className="text-right">
+                    <span className="block text-[8px] font-bold text-slate-500">ESCANEÉ EL QR</span>
+                    <span className="block text-[8px] text-emerald-700 font-bold">AUTENTICIDAD DIAN</span>
+                  </div>
                 </div>
               </div>
             </div>
