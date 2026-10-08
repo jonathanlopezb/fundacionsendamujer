@@ -3,10 +3,11 @@ import { requireCrmAuth } from '@/lib/crm/auth';
 import { connectToDatabase } from '@/lib/mongodb';
 import { Schema, model, models, Document } from 'mongoose';
 import { createHash, randomBytes } from 'crypto';
+import { getNextSequence, CrmAuditLog } from '@/lib/crm/models';
 
 // ── Model Definition ────────────────────────────────────────────────
 export interface ICrmTaxCertificate extends Document {
-  code: string;                  // e.g. CERT-RTE-2026-0001
+  code: string;                  // e.g. CERT-RTE-2026-00001
   fiscalYear: number;            // 2026
   issueDate: string;             // YYYY-MM-DD
   
@@ -172,14 +173,6 @@ function numberToWordsCOP(num: number): string {
   return (result.trim() + ' PESOS M/CTE.').replace(/\s+/g, ' ');
 }
 
-// Consecutivo oficial
-async function getNextCertCode(year: number): Promise<string> {
-  const Counter = models.CrmCounter ?? model('CrmCounter', new Schema({ _id: String, seq: { type: Number, default: 0 } }));
-  const key = `CERT-RTE-${year}`;
-  const doc = await Counter.findByIdAndUpdate(key, { $inc: { seq: 1 } }, { new: true, upsert: true });
-  return `CERT-RTE-${year}-${String(doc.seq).padStart(4, '0')}`;
-}
-
 // ── GET ─────────────────────────────────────────────────────────────
 export async function GET(req: NextRequest) {
   const auth = await requireCrmAuth(req);
@@ -241,9 +234,9 @@ export async function GET(req: NextRequest) {
         allCount: total,
       },
     });
-  } catch (error) {
+  } catch (error: any) {
     console.error('[certificados GET]', error);
-    return NextResponse.json({ error: 'Error al consultar certificados' }, { status: 500 });
+    return NextResponse.json({ error: error?.message || 'Error al consultar certificados' }, { status: 500 });
   }
 }
 
@@ -296,7 +289,7 @@ export async function POST(req: NextRequest) {
       }
 
       const year = fiscalYear ? parseInt(fiscalYear) : new Date(donationDate).getFullYear();
-      const code = await getNextCertCode(year);
+      const code = await getNextSequence('TAX_CERTIFICATE', 'CERT-RTE');
       const issueDate = new Date().toISOString().slice(0, 10);
 
       // Generación de Hash Único de Verificación
@@ -341,6 +334,16 @@ export async function POST(req: NextRequest) {
         createdByName: user.name,
       });
 
+      await CrmAuditLog.create({
+        userId: user.userId,
+        userName: user.name,
+        userRole: user.role,
+        action: 'TAX_CERTIFICATE_ISSUED',
+        entity: 'CrmTaxCertificate',
+        entityId: certificate._id.toString(),
+        details: { code, donorName, amount: numAmount, fiscalYear: year },
+      });
+
       return NextResponse.json({ success: true, certificate });
     }
 
@@ -366,6 +369,16 @@ export async function POST(req: NextRequest) {
       certificate.voidedBy = `${user.name} (${user.role})`;
       await certificate.save();
 
+      await CrmAuditLog.create({
+        userId: user.userId,
+        userName: user.name,
+        userRole: user.role,
+        action: 'TAX_CERTIFICATE_VOIDED',
+        entity: 'CrmTaxCertificate',
+        entityId: certificateId,
+        details: { code: certificate.code, voidReason },
+      });
+
       return NextResponse.json({ success: true, certificate });
     }
 
@@ -377,8 +390,8 @@ export async function POST(req: NextRequest) {
     }
 
     return NextResponse.json({ error: 'Acción no válida' }, { status: 400 });
-  } catch (error) {
+  } catch (error: any) {
     console.error('[certificados POST]', error);
-    return NextResponse.json({ error: 'Error al procesar certificado' }, { status: 500 });
+    return NextResponse.json({ error: error?.message || 'Error al procesar certificado' }, { status: 500 });
   }
 }

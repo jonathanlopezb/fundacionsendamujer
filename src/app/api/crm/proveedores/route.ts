@@ -76,17 +76,12 @@ const ProviderPaymentSchema = new Schema<IProviderPayment>({
   status:       { type: String, enum: ['PENDIENTE', 'PAGADO', 'RECHAZADO'], default: 'PENDIENTE' },
 }, { timestamps: true });
 
+import { getNextSequence } from '@/lib/crm/models';
+
 const Provider        = models.CrmProvider        ?? model<IProvider>('CrmProvider', ProviderSchema);
 const Contract        = models.CrmContract        ?? model<IContract>('CrmContract', ContractSchema);
 const ProviderPayment = models.CrmProviderPayment ?? model<IProviderPayment>('CrmProviderPayment', ProviderPaymentSchema);
 
-async function getNextCode(prefix: string): Promise<string> {
-  const Counter = models.CrmCounter ?? model('CrmCounter', new Schema({ _id: String, seq: { type: Number, default: 0 } }));
-  const year = new Date().getFullYear();
-  const key = `${prefix}-${year}`;
-  const doc = await Counter.findByIdAndUpdate(key, { $inc: { seq: 1 } }, { new: true, upsert: true });
-  return `${prefix}-${year}-${String(doc.seq).padStart(4, '0')}`;
-}
 
 // ── GET ──────────────────────────────────────────────────────────────
 export async function GET(req: NextRequest) {
@@ -158,7 +153,7 @@ export async function POST(req: NextRequest) {
     if (action === 'CREATE_PROVIDER') {
       const { name, nit, contactName, phone, email, category, notes } = body;
       if (!name || !nit) return NextResponse.json({ error: 'Nombre y NIT requeridos' }, { status: 400 });
-      const code = await getNextCode('PRV');
+      const code = await getNextSequence('PROVIDER', 'PRV');
       const provider = await Provider.create({ code, name, nit, contactName, phone, email, category: category ?? 'General', notes });
       return NextResponse.json({ success: true, provider });
     }
@@ -178,7 +173,7 @@ export async function POST(req: NextRequest) {
     if (action === 'CREATE_CONTRACT') {
       const { providerId, providerName, description, startDate, endDate, totalAmount } = body;
       if (!providerId || !description || !startDate) return NextResponse.json({ error: 'Faltan datos del contrato' }, { status: 400 });
-      const code = await getNextCode('CTR');
+      const code = await getNextSequence('CONTRACT', 'CTR');
       const contract = await Contract.create({ code, providerId, providerName, description, startDate, endDate, totalAmount: Number(totalAmount ?? 0) });
       return NextResponse.json({ success: true, contract });
     }
@@ -192,7 +187,7 @@ export async function POST(req: NextRequest) {
     if (action === 'CREATE_PAYMENT') {
       const { providerId, providerName, contractId, description, amount, paymentDate, method } = body;
       if (!providerId || !amount || !paymentDate) return NextResponse.json({ error: 'Proveedor, monto y fecha son requeridos' }, { status: 400 });
-      const code = await getNextCode('PAG');
+      const code = await getNextSequence('PAYMENT', 'PAG');
       const payment = await ProviderPayment.create({
         code, providerId, providerName, contractId,
         description: description ?? 'Pago a proveedor',

@@ -52,16 +52,9 @@ const PayrollSchema = new Schema<IPayroll>({
   createdBy:     { type: String, required: true },
 }, { timestamps: true });
 
-const Payroll = models.CrmPayroll ?? model<IPayroll>('CrmPayroll', PayrollSchema);
+import { getNextSequence } from '@/lib/crm/models';
 
-// Counter helper
-async function getNextCode(prefix: string): Promise<string> {
-  const Counter = models.CrmCounter ?? model('CrmCounter', new Schema({ _id: String, seq: { type: Number, default: 0 } }));
-  const year = new Date().getFullYear();
-  const key = `${prefix}-${year}`;
-  const doc = await Counter.findByIdAndUpdate(key, { $inc: { seq: 1 } }, { new: true, upsert: true });
-  return `${prefix}-${year}-${String(doc.seq).padStart(4, '0')}`;
-}
+const Payroll = models.CrmPayroll ?? model<IPayroll>('CrmPayroll', PayrollSchema);
 
 // ── GET ──────────────────────────────────────────────────────────────
 export async function GET(req: NextRequest) {
@@ -134,7 +127,7 @@ export async function POST(req: NextRequest) {
       const totalNet      = enrichedItems.reduce((s: number, i: IPayrollItem) => s + i.netPay, 0);
       const employeeCount = enrichedItems.length;
 
-      const code = await getNextCode('NOM');
+      const code = await getNextSequence('PAYROLL', 'NOM');
       const payroll = await Payroll.create({
         code,
         period,
