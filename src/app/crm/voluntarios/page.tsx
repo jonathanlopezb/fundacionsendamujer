@@ -2,7 +2,17 @@
 
 import React, { useState, useEffect } from 'react';
 import { useCrmAuth } from '@/lib/crm/client';
-import { UserCheck, Clock, PlusCircle, Award, X } from 'lucide-react';
+import {
+  UserCheck,
+  Clock,
+  PlusCircle,
+  Award,
+  X,
+  User,
+  CheckCircle2,
+  Sparkles,
+  Search,
+} from 'lucide-react';
 
 export default function CrmVoluntariosPage() {
   const { can } = useCrmAuth();
@@ -26,8 +36,17 @@ export default function CrmVoluntariosPage() {
         fetch('/api/crm/volunteers?view=volunteers'),
         fetch('/api/crm/volunteers?view=shifts'),
       ]);
-      if (resVol.ok) setVolunteers((await resVol.json()).volunteers || []);
-      if (resSh.ok) setShifts((await resSh.json()).shifts || []);
+      if (resVol.ok) {
+        const jv = await resVol.json();
+        setVolunteers(jv.volunteers || []);
+        if (jv.volunteers?.length > 0 && !shiftData.volunteerId) {
+          setShiftData((prev) => ({ ...prev, volunteerId: jv.volunteers[0]._id }));
+        }
+      }
+      if (resSh.ok) {
+        const js = await resSh.json();
+        setShifts(js.shifts || []);
+      }
     } catch (e) {
       console.error(e);
     } finally {
@@ -58,21 +77,22 @@ export default function CrmVoluntariosPage() {
 
   return (
     <div className="space-y-6">
+      {/* ── Header ── */}
       <div className="flex flex-col sm:flex-row sm:items-center justify-between gap-4 pb-4 border-b border-slate-800">
         <div>
-          <h1 className="text-xl font-bold text-white tracking-tight flex items-center gap-2">
+          <div className="flex items-center gap-2 mb-1">
             <UserCheck className="w-5 h-5 text-rose-400" />
-            Red de Voluntariado & Banco de Horas
-          </h1>
-          <p className="text-xs text-slate-400 mt-0.5">
-            Registro de horas de apoyo, asignación de turnos y certificación de voluntarias.
+            <h1 className="text-xl font-bold text-white tracking-tight">Red de Voluntariado & Banco de Horas</h1>
+          </div>
+          <p className="text-xs text-slate-400">
+            Registro de horas de apoyo comunitario, asignación de turnos y emisión de certificados.
           </p>
         </div>
 
         {can('volunteers.write') && (
           <button
             onClick={() => setModalOpen(true)}
-            className="px-3.5 py-2 bg-rose-600 hover:bg-rose-700 text-white rounded-xl text-xs font-semibold flex items-center gap-1.5 shadow-md shadow-rose-600/20 transition-all self-start sm:self-auto"
+            className="px-4 py-2 bg-gradient-to-r from-rose-500 to-rose-600 hover:from-rose-600 hover:to-rose-700 text-white rounded-xl text-xs font-bold flex items-center gap-1.5 shadow-lg shadow-rose-500/20 transition-all hover:scale-105"
           >
             <PlusCircle className="w-4 h-4" />
             <span>Registrar Turno / Horas</span>
@@ -80,132 +100,160 @@ export default function CrmVoluntariosPage() {
         )}
       </div>
 
-      <div className="flex items-center space-x-2 border-b border-slate-800 pb-2">
+      {/* ── Sub-tabs ── */}
+      <div className="border-b border-slate-800/80 flex gap-2">
         <button
           onClick={() => setActiveTab('volunteers')}
-          className={`px-3 py-1.5 rounded-lg text-xs font-semibold ${
-            activeTab === 'volunteers' ? 'bg-rose-500/10 text-rose-400 border border-rose-500/20' : 'text-slate-400 hover:text-white'
+          className={`flex items-center gap-2 py-3 px-4 text-xs font-semibold border-b-2 transition-all ${
+            activeTab === 'volunteers'
+              ? 'border-rose-500 text-rose-400 bg-rose-500/5'
+              : 'border-transparent text-slate-400 hover:text-slate-200'
           }`}
         >
-          Voluntarias Activas ({volunteers.length})
+          <User className="w-4 h-4" />
+          <span>Voluntarias Registradas ({volunteers.length})</span>
         </button>
+
         <button
           onClick={() => setActiveTab('shifts')}
-          className={`px-3 py-1.5 rounded-lg text-xs font-semibold ${
-            activeTab === 'shifts' ? 'bg-rose-500/10 text-rose-400 border border-rose-500/20' : 'text-slate-400 hover:text-white'
+          className={`flex items-center gap-2 py-3 px-4 text-xs font-semibold border-b-2 transition-all ${
+            activeTab === 'shifts'
+              ? 'border-rose-500 text-rose-400 bg-rose-500/5'
+              : 'border-transparent text-slate-400 hover:text-slate-200'
           }`}
         >
-          Historial de Turnos ({shifts.length})
+          <Clock className="w-4 h-4" />
+          <span>Historial de Turnos ({shifts.length})</span>
         </button>
       </div>
 
-      {activeTab === 'volunteers' && (
-        <div className="grid grid-cols-1 md:grid-cols-3 gap-4">
-          {volunteers.map((vol) => (
-            <div key={vol._id} className="bg-slate-900 border border-slate-800 rounded-2xl p-5 space-y-3">
-              <div className="flex items-center justify-between">
-                <span className="font-mono text-xs font-bold text-slate-400">{vol.personCode}</span>
-                <span className="text-xs font-bold text-emerald-400 flex items-center gap-1">
-                  <Clock className="w-3.5 h-3.5" />
-                  {vol.hoursTotal || 0} hrs acumuladas
-                </span>
-              </div>
-              <h3 className="text-sm font-bold text-white">{vol.personName}</h3>
-              <p className="text-xs text-rose-300 font-medium">{vol.profession}</p>
-              <div className="pt-2 border-t border-slate-800 text-[11px] text-slate-400">
-                Disponibilidad: {vol.availability}
-              </div>
+      {/* ── Tab Content ── */}
+      <div className="bg-[#161b27] border border-slate-800/80 rounded-2xl shadow-sm p-5 overflow-hidden">
+        {loading ? (
+          <div className="p-8 text-center text-slate-500 text-xs">
+            <div className="w-6 h-6 border-2 border-rose-500 border-t-transparent rounded-full animate-spin mx-auto mb-2" />
+            Cargando red de voluntarias...
+          </div>
+        ) : activeTab === 'volunteers' ? (
+          volunteers.length === 0 ? (
+            <div className="py-12 text-center text-slate-500 text-xs">
+              No hay voluntarias registradas en la base de datos aún.
             </div>
-          ))}
-        </div>
-      )}
-
-      {activeTab === 'shifts' && (
-        <div className="bg-slate-900 border border-slate-800 rounded-2xl overflow-hidden shadow-lg">
-          <table className="w-full text-left text-xs border-collapse">
-            <thead>
-              <tr className="bg-slate-950 text-slate-400 border-b border-slate-800">
-                <th className="p-3">Fecha</th>
-                <th className="p-3">Actividad</th>
-                <th className="p-3">Horas</th>
-                <th className="p-3">Evaluación</th>
-              </tr>
-            </thead>
-            <tbody className="divide-y divide-slate-800/60">
-              {shifts.map((sh) => (
-                <tr key={sh._id} className="hover:bg-slate-800/40">
-                  <td className="p-3 text-slate-300">{new Date(sh.date).toLocaleDateString('es-CO')}</td>
-                  <td className="p-3 font-semibold text-white">{sh.activity}</td>
-                  <td className="p-3 font-mono font-bold text-emerald-400">{sh.hours} horas</td>
-                  <td className="p-3 text-slate-400">{sh.evaluation}</td>
-                </tr>
+          ) : (
+            <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-4">
+              {volunteers.map((v) => (
+                <div key={v._id} className="bg-slate-900/80 border border-slate-800 rounded-xl p-4 space-y-3">
+                  <div className="flex items-center justify-between">
+                    <span className="text-xs font-bold text-white">{v.personName || 'Voluntaria'}</span>
+                    <span className="px-2 py-0.5 rounded text-[10px] font-mono bg-purple-950/60 border border-purple-800 text-purple-300">
+                      {v.hoursTotal || 0} hrs
+                    </span>
+                  </div>
+                  <p className="text-xs text-slate-400">Profesión: {v.profession || 'Por definir'}</p>
+                  <div className="pt-2 border-t border-slate-800 flex items-center justify-between text-[11px] text-slate-500">
+                    <span>Estado: {v.status}</span>
+                  </div>
+                </div>
               ))}
-            </tbody>
-          </table>
-        </div>
-      )}
+            </div>
+          )
+        ) : shifts.length === 0 ? (
+          <div className="py-12 text-center text-slate-500 text-xs">No hay turnos registrados aún.</div>
+        ) : (
+          <div className="overflow-x-auto">
+            <table className="w-full text-left border-collapse">
+              <thead>
+                <tr className="border-b border-slate-800/80 bg-slate-900/40 text-[11px] font-semibold text-slate-400 uppercase tracking-wider">
+                  <th className="py-3.5 px-4">Voluntaria</th>
+                  <th className="py-3.5 px-4">Actividad Realizada</th>
+                  <th className="py-3.5 px-4">Horas</th>
+                  <th className="py-3.5 px-4">Evaluación</th>
+                  <th className="py-3.5 px-4">Fecha</th>
+                </tr>
+              </thead>
+              <tbody className="divide-y divide-slate-800/60 text-xs text-slate-300">
+                {shifts.map((s) => (
+                  <tr key={s._id} className="hover:bg-slate-800/30 transition-colors">
+                    <td className="py-3.5 px-4 font-semibold text-white">{s.volunteerName || 'Voluntaria'}</td>
+                    <td className="py-3.5 px-4 text-slate-300">{s.activity}</td>
+                    <td className="py-3.5 px-4 font-mono font-bold text-rose-400">{s.hours} hrs</td>
+                    <td className="py-3.5 px-4 text-emerald-400 text-[11px]">{s.evaluation}</td>
+                    <td className="py-3.5 px-4 text-slate-400">
+                      {new Date(s.date || s.createdAt).toLocaleDateString('es-CO')}
+                    </td>
+                  </tr>
+                ))}
+              </tbody>
+            </table>
+          </div>
+        )}
+      </div>
 
-      {/* Modal Registrar Turno */}
+      {/* ── Modal Registrar Turno ── */}
       {modalOpen && (
         <div className="fixed inset-0 z-50 flex items-center justify-center p-4 bg-black/70 backdrop-blur-sm">
-          <div className="bg-slate-900 border border-slate-800 rounded-2xl w-full max-w-md p-6 shadow-2xl relative">
-            <div className="flex items-center justify-between pb-3 border-b border-slate-800 mb-4">
-              <h2 className="text-sm font-bold text-white flex items-center gap-2">
-                <PlusCircle className="w-4 h-4 text-rose-400" />
-                Registrar Turno de Voluntariado
-              </h2>
-              <button onClick={() => setModalOpen(false)} className="p-1 text-slate-400 hover:text-white">
+          <div className="bg-[#161b27] border border-slate-700/80 rounded-2xl w-full max-w-md shadow-2xl p-6 relative">
+            <div className="flex items-center justify-between pb-3 mb-4 border-b border-slate-800">
+              <h2 className="text-sm font-bold text-white">Registrar Turno / Horas</h2>
+              <button onClick={() => setModalOpen(false)} className="text-slate-400 hover:text-white">
                 <X className="w-4 h-4" />
               </button>
             </div>
 
-            <form onSubmit={handleRegisterShift} className="space-y-4 text-xs">
+            <form onSubmit={handleRegisterShift} className="space-y-3">
               <div>
-                <label className="block text-slate-300 font-semibold mb-1">Voluntaria *</label>
+                <label className="block text-xs font-semibold text-slate-300 mb-1">Voluntaria *</label>
                 <select
                   required
                   value={shiftData.volunteerId}
                   onChange={(e) => setShiftData({ ...shiftData, volunteerId: e.target.value })}
-                  className="w-full bg-slate-950 border border-slate-700 rounded-xl p-2.5 text-white"
+                  className="w-full bg-slate-900 border border-slate-700 rounded-xl py-2 px-3 text-xs text-white"
                 >
-                  <option value="">Seleccione voluntaria...</option>
                   {volunteers.map((v) => (
                     <option key={v._id} value={v._id}>
-                      {v.personName} ({v.profession})
+                      {v.personName || 'Voluntaria'} ({v.profession || 'General'})
                     </option>
                   ))}
                 </select>
               </div>
 
               <div>
-                <label className="block text-slate-300 font-semibold mb-1">Horas Realizadas *</label>
+                <label className="block text-xs font-semibold text-slate-300 mb-1">Actividad Realizada *</label>
                 <input
-                  type="number"
+                  type="text"
                   required
-                  value={shiftData.hours}
-                  onChange={(e) => setShiftData({ ...shiftData, hours: Number(e.target.value) })}
-                  className="w-full bg-slate-950 border border-slate-700 rounded-xl p-2.5 text-white"
+                  placeholder="Ej. Apoyo en brigada psicosocial y toma de asistencia"
+                  value={shiftData.activity}
+                  onChange={(e) => setShiftData({ ...shiftData, activity: e.target.value })}
+                  className="w-full bg-slate-900 border border-slate-700 rounded-xl py-2 px-3 text-xs text-white"
                 />
               </div>
 
               <div>
-                <label className="block text-slate-300 font-semibold mb-1">Actividad / Tarea Desarrollada *</label>
+                <label className="block text-xs font-semibold text-slate-300 mb-1">Horas de Apoyo</label>
                 <input
-                  type="text"
-                  required
-                  placeholder="Ej. Apoyo en logística taller de costura Mandela"
-                  value={shiftData.activity}
-                  onChange={(e) => setShiftData({ ...shiftData, activity: e.target.value })}
-                  className="w-full bg-slate-950 border border-slate-700 rounded-xl p-2.5 text-white"
+                  type="number"
+                  min="1"
+                  max="24"
+                  value={shiftData.hours}
+                  onChange={(e) => setShiftData({ ...shiftData, hours: parseInt(e.target.value) || 4 })}
+                  className="w-full bg-slate-900 border border-slate-700 rounded-xl py-2 px-3 text-xs text-white font-mono"
                 />
               </div>
 
-              <div className="flex items-center justify-end gap-3 pt-3 border-t border-slate-800">
-                <button type="button" onClick={() => setModalOpen(false)} className="px-3 py-2 bg-slate-800 rounded-xl">
+              <div className="pt-2 flex justify-end gap-2">
+                <button
+                  type="button"
+                  onClick={() => setModalOpen(false)}
+                  className="px-4 py-2 bg-slate-800 text-slate-300 rounded-xl text-xs"
+                >
                   Cancelar
                 </button>
-                <button type="submit" className="px-4 py-2 bg-rose-600 font-bold text-white rounded-xl">
-                  Registrar Horas
+                <button
+                  type="submit"
+                  className="px-4 py-2 bg-rose-600 hover:bg-rose-700 text-white font-bold text-xs rounded-xl shadow-lg shadow-rose-600/20"
+                >
+                  Registrar Turno
                 </button>
               </div>
             </form>

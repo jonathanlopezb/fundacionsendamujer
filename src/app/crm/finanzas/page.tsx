@@ -2,7 +2,25 @@
 
 import React, { useState, useEffect } from 'react';
 import { useCrmAuth } from '@/lib/crm/client';
-import { DollarSign, PlusCircle, CheckCircle2, AlertTriangle, ArrowRight, X } from 'lucide-react';
+import {
+  DollarSign,
+  PlusCircle,
+  CheckCircle2,
+  AlertTriangle,
+  ArrowRight,
+  X,
+  CreditCard,
+  Building,
+  Calendar,
+  FileText,
+  Clock,
+  Shield,
+  TrendingDown,
+  TrendingUp,
+} from 'lucide-react';
+
+const fmtCOP = (n: number) =>
+  new Intl.NumberFormat('es-CO', { style: 'currency', currency: 'COP', minimumFractionDigits: 0 }).format(n);
 
 export default function CrmFinanzasPage() {
   const { user, can } = useCrmAuth();
@@ -99,15 +117,13 @@ export default function CrmFinanzasPage() {
         body: JSON.stringify({
           actionType: 'register_payment',
           accountPayableId: selectedPayable._id,
-          expenseId: selectedPayable.expenseId,
-          providerName: selectedPayable.providerName,
-          amount: paymentData.amount,
-          paymentMethod: paymentData.paymentMethod,
-          reference: paymentData.reference,
+          ...paymentData,
         }),
       });
       if (res.ok) {
         setPaymentModalOpen(false);
+        setSelectedPayable(null);
+        setPaymentData({ amount: '', paymentMethod: 'Transferencia Bancaria', reference: '' });
         fetchData();
       }
     } catch (e) {
@@ -115,250 +131,336 @@ export default function CrmFinanzasPage() {
     }
   };
 
+  const totalExecuted = payments.reduce((acc, curr) => acc + (curr.amount || 0), 0);
+  const totalPending = payables
+    .filter((p) => p.status === 'PENDING')
+    .reduce((acc, curr) => acc + (curr.remainingAmount || 0), 0);
+
   return (
     <div className="space-y-6">
+      {/* ── Header ── */}
       <div className="flex flex-col sm:flex-row sm:items-center justify-between gap-4 pb-4 border-b border-slate-800">
         <div>
-          <h1 className="text-xl font-bold text-white tracking-tight flex items-center gap-2">
+          <div className="flex items-center gap-2 mb-1">
             <DollarSign className="w-5 h-5 text-rose-400" />
-            Finanzas Operativas & Ejecución Presupuestal
-          </h1>
-          <p className="text-xs text-slate-400 mt-0.5">
-            Flujo de gastos, cadena de aprobación por montos y conciliación de cuentas por pagar.
+            <h1 className="text-xl font-bold text-white tracking-tight">Finanzas Operativas & Gastos</h1>
+          </div>
+          <p className="text-xs text-slate-400">
+            Control de presupuesto, solicitudes de gasto, cuentas por pagar y desembolsos institucionales.
           </p>
         </div>
 
         {can('finance.write') && (
           <button
             onClick={() => setExpenseModalOpen(true)}
-            className="px-3.5 py-2 bg-rose-600 hover:bg-rose-700 text-white rounded-xl text-xs font-semibold flex items-center gap-1.5 shadow-md shadow-rose-600/20 transition-all self-start sm:self-auto"
+            className="px-4 py-2 bg-gradient-to-r from-rose-500 to-rose-600 hover:from-rose-600 hover:to-rose-700 text-white rounded-xl text-xs font-bold flex items-center gap-1.5 shadow-lg shadow-rose-500/20 transition-all hover:scale-105"
           >
             <PlusCircle className="w-4 h-4" />
-            <span>Registrar Gasto</span>
+            <span>Registrar Gasto / Factura</span>
           </button>
         )}
       </div>
 
-      <div className="flex items-center space-x-2 border-b border-slate-800 pb-2">
+      {/* ── KPI Summary Cards ── */}
+      <div className="grid grid-cols-1 sm:grid-cols-3 gap-4">
+        <div className="bg-[#161b27] border border-slate-800/80 rounded-2xl p-4 flex flex-col justify-between">
+          <span className="text-xs font-medium text-slate-400">Total Ejecutado / Pagado</span>
+          <div className="mt-2">
+            <div className="text-2xl font-black text-white">{fmtCOP(totalExecuted)}</div>
+            <span className="text-[11px] text-emerald-400 mt-0.5 block font-medium">Pagos soportados</span>
+          </div>
+        </div>
+
+        <div className="bg-[#161b27] border border-slate-800/80 rounded-2xl p-4 flex flex-col justify-between">
+          <span className="text-xs font-medium text-slate-400">Cuentas por Pagar Pendientes</span>
+          <div className="mt-2">
+            <div className="text-2xl font-black text-white">{fmtCOP(totalPending)}</div>
+            <span className="text-[11px] text-amber-400 mt-0.5 block font-medium">Compromisos vigentes</span>
+          </div>
+        </div>
+
+        <div className="bg-[#161b27] border border-slate-800/80 rounded-2xl p-4 flex flex-col justify-between">
+          <span className="text-xs font-medium text-slate-400">Solicitudes en Revisión</span>
+          <div className="mt-2">
+            <div className="text-2xl font-black text-white">
+              {expenses.filter((e) => e.status === 'IN_REVIEW' || e.status === 'DRAFT').length}
+            </div>
+            <span className="text-[11px] text-purple-400 mt-0.5 block font-medium">Flujo de aprobación</span>
+          </div>
+        </div>
+      </div>
+
+      {/* ── Sub-tabs ── */}
+      <div className="border-b border-slate-800/80 flex gap-2">
         <button
           onClick={() => setActiveTab('expenses')}
-          className={`px-3 py-1.5 rounded-lg text-xs font-semibold ${
-            activeTab === 'expenses' ? 'bg-rose-500/10 text-rose-400 border border-rose-500/20' : 'text-slate-400 hover:text-white'
+          className={`flex items-center gap-2 py-3 px-4 text-xs font-semibold border-b-2 transition-all ${
+            activeTab === 'expenses'
+              ? 'border-rose-500 text-rose-400 bg-rose-500/5'
+              : 'border-transparent text-slate-400 hover:text-slate-200'
           }`}
         >
-          Gastos y Aprobaciones ({expenses.length})
+          <FileText className="w-4 h-4" />
+          <span>Gastos y Solicitudes ({expenses.length})</span>
         </button>
+
         <button
           onClick={() => setActiveTab('payables')}
-          className={`px-3 py-1.5 rounded-lg text-xs font-semibold ${
-            activeTab === 'payables' ? 'bg-rose-500/10 text-rose-400 border border-rose-500/20' : 'text-slate-400 hover:text-white'
+          className={`flex items-center gap-2 py-3 px-4 text-xs font-semibold border-b-2 transition-all ${
+            activeTab === 'payables'
+              ? 'border-rose-500 text-rose-400 bg-rose-500/5'
+              : 'border-transparent text-slate-400 hover:text-slate-200'
           }`}
         >
-          Cuentas por Pagar ({payables.length})
+          <CreditCard className="w-4 h-4" />
+          <span>Cuentas por Pagar ({payables.length})</span>
         </button>
+
         <button
           onClick={() => setActiveTab('payments')}
-          className={`px-3 py-1.5 rounded-lg text-xs font-semibold ${
-            activeTab === 'payments' ? 'bg-rose-500/10 text-rose-400 border border-rose-500/20' : 'text-slate-400 hover:text-white'
+          className={`flex items-center gap-2 py-3 px-4 text-xs font-semibold border-b-2 transition-all ${
+            activeTab === 'payments'
+              ? 'border-rose-500 text-rose-400 bg-rose-500/5'
+              : 'border-transparent text-slate-400 hover:text-slate-200'
           }`}
         >
-          Pagos Realizados ({payments.length})
+          <CheckCircle2 className="w-4 h-4" />
+          <span>Comprobantes de Pago ({payments.length})</span>
         </button>
       </div>
 
-      {activeTab === 'expenses' && (
-        <div className="bg-slate-900 border border-slate-800 rounded-2xl overflow-hidden shadow-lg">
-          <div className="overflow-x-auto">
-            <table className="w-full text-left text-xs border-collapse">
-              <thead>
-                <tr className="bg-slate-950 text-slate-400 border-b border-slate-800">
-                  <th className="p-3">Código</th>
-                  <th className="p-3">Concepto</th>
-                  <th className="p-3">Proveedor</th>
-                  <th className="p-3">Monto</th>
-                  <th className="p-3">Registrado Por</th>
-                  <th className="p-3">Estado</th>
-                  <th className="p-3 text-right">Acción</th>
-                </tr>
-              </thead>
-              <tbody className="divide-y divide-slate-800/60">
-                {expenses.map((exp) => (
-                  <tr key={exp._id} className="hover:bg-slate-800/40">
-                    <td className="p-3 font-mono font-bold text-rose-400">{exp.expenseNumber}</td>
-                    <td className="p-3 font-semibold text-white">
-                      {exp.concept} <span className="text-[10px] text-slate-400 block font-normal">{exp.category}</span>
-                    </td>
-                    <td className="p-3 text-slate-300">{exp.providerName}</td>
-                    <td className="p-3 font-mono font-bold text-emerald-400">
-                      ${Number(exp.amount).toLocaleString('es-CO')} COP
-                    </td>
-                    <td className="p-3 text-slate-400">{exp.responsibleUserName}</td>
-                    <td className="p-3">
-                      <span
-                        className={`text-[10px] px-2 py-0.5 rounded font-semibold ${
-                          exp.status === 'APPROVED'
-                            ? 'bg-emerald-950 text-emerald-300 border border-emerald-800'
-                            : exp.status === 'PAID'
-                            ? 'bg-blue-950 text-blue-300 border border-blue-800'
-                            : exp.status === 'REJECTED'
-                            ? 'bg-red-950 text-red-300 border border-red-800'
-                            : 'bg-amber-950 text-amber-300 border border-amber-800'
-                        }`}
-                      >
-                        {exp.status}
-                      </span>
-                    </td>
-                    <td className="p-3 text-right">
-                      {exp.status === 'IN_REVIEW' && (can('finance.approve_basic') || can('finance.approve_high')) && (
-                        <div className="inline-flex gap-1.5">
-                          <button
-                            onClick={() => handleApproveExpense(exp._id, 'APPROVED')}
-                            className="px-2 py-1 bg-emerald-600 hover:bg-emerald-500 text-white rounded text-[11px] font-bold"
-                          >
-                            Aprobar
-                          </button>
-                          <button
-                            onClick={() => handleApproveExpense(exp._id, 'REJECTED')}
-                            className="px-2 py-1 bg-red-600 hover:bg-red-500 text-white rounded text-[11px] font-bold"
-                          >
-                            Rechazar
-                          </button>
-                        </div>
-                      )}
-                    </td>
-                  </tr>
-                ))}
-              </tbody>
-            </table>
+      {/* ── Content ── */}
+      <div className="bg-[#161b27] border border-slate-800/80 rounded-2xl shadow-sm overflow-hidden">
+        {loading ? (
+          <div className="p-8 text-center text-slate-500 text-xs">
+            <div className="w-6 h-6 border-2 border-rose-500 border-t-transparent rounded-full animate-spin mx-auto mb-2" />
+            Cargando registros financieros...
           </div>
-        </div>
-      )}
-
-      {activeTab === 'payables' && (
-        <div className="bg-slate-900 border border-slate-800 rounded-2xl overflow-hidden shadow-lg">
-          <div className="overflow-x-auto">
-            <table className="w-full text-left text-xs border-collapse">
-              <thead>
-                <tr className="bg-slate-950 text-slate-400 border-b border-slate-800">
-                  <th className="p-3">Proveedor</th>
-                  <th className="p-3">Concepto</th>
-                  <th className="p-3">Total</th>
-                  <th className="p-3">Saldo Pendiente</th>
-                  <th className="p-3">Vencimiento</th>
-                  <th className="p-3">Estado</th>
-                  <th className="p-3 text-right">Acción</th>
-                </tr>
-              </thead>
-              <tbody className="divide-y divide-slate-800/60">
-                {payables.map((pay) => (
-                  <tr key={pay._id} className="hover:bg-slate-800/40">
-                    <td className="p-3 font-bold text-white">{pay.providerName}</td>
-                    <td className="p-3 text-slate-300">{pay.concept}</td>
-                    <td className="p-3 font-mono">${Number(pay.totalAmount).toLocaleString('es-CO')}</td>
-                    <td className="p-3 font-mono font-bold text-rose-400">${Number(pay.remainingAmount).toLocaleString('es-CO')}</td>
-                    <td className="p-3 text-slate-400">{new Date(pay.dueDate).toLocaleDateString('es-CO')}</td>
-                    <td className="p-3">
-                      <span className="text-[10px] px-2 py-0.5 rounded bg-slate-800 text-slate-300 font-semibold">
-                        {pay.status}
-                      </span>
-                    </td>
-                    <td className="p-3 text-right">
-                      {pay.remainingAmount > 0 && (
-                        <button
-                          onClick={() => {
-                            setSelectedPayable(pay);
-                            setPaymentData({ ...paymentData, amount: String(pay.remainingAmount) });
-                            setPaymentModalOpen(true);
-                          }}
-                          className="px-2.5 py-1 bg-rose-600 hover:bg-rose-500 text-white rounded text-[11px] font-bold"
+        ) : activeTab === 'expenses' ? (
+          expenses.length === 0 ? (
+            <div className="p-12 text-center text-slate-500 text-xs">No hay gastos registrados aún.</div>
+          ) : (
+            <div className="overflow-x-auto">
+              <table className="w-full text-left border-collapse">
+                <thead>
+                  <tr className="border-b border-slate-800/80 bg-slate-900/40 text-[11px] font-semibold text-slate-400 uppercase tracking-wider">
+                    <th className="py-3.5 px-4">Código / Concepto</th>
+                    <th className="py-3.5 px-4">Proveedor</th>
+                    <th className="py-3.5 px-4">Monto</th>
+                    <th className="py-3.5 px-4">Estado</th>
+                    <th className="py-3.5 px-4 text-right">Acciones</th>
+                  </tr>
+                </thead>
+                <tbody className="divide-y divide-slate-800/60 text-xs text-slate-300">
+                  {expenses.map((exp) => (
+                    <tr key={exp._id} className="hover:bg-slate-800/30 transition-colors">
+                      <td className="py-3.5 px-4">
+                        <span className="font-mono font-bold text-white text-[11px] block">{exp.expenseNumber}</span>
+                        <span className="text-slate-300 text-xs">{exp.concept}</span>
+                      </td>
+                      <td className="py-3.5 px-4 text-slate-400">{exp.providerName || 'N/A'}</td>
+                      <td className="py-3.5 px-4 font-mono font-bold text-white text-xs">{fmtCOP(exp.amount)}</td>
+                      <td className="py-3.5 px-4">
+                        <span
+                          className={`px-2 py-0.5 rounded-full text-[10px] font-medium ${
+                            exp.status === 'APPROVED'
+                              ? 'bg-emerald-950/60 border border-emerald-800 text-emerald-300'
+                              : exp.status === 'REJECTED'
+                              ? 'bg-red-950/60 border border-red-800 text-red-300'
+                              : 'bg-amber-950/60 border border-amber-800 text-amber-300'
+                          }`}
                         >
-                          Pagar
-                        </button>
-                      )}
-                    </td>
+                          {exp.status}
+                        </span>
+                      </td>
+                      <td className="py-3.5 px-4 text-right">
+                        {(can('finance.approve_basic') || can('finance.approve_high')) && exp.status === 'IN_REVIEW' && (
+                          <div className="flex items-center justify-end gap-1.5">
+                            <button
+                              onClick={() => handleApproveExpense(exp._id, 'APPROVED')}
+                              className="px-2.5 py-1 bg-emerald-600 hover:bg-emerald-700 text-white rounded-lg text-[11px] font-bold"
+                            >
+                              Aprobar
+                            </button>
+                            <button
+                              onClick={() => handleApproveExpense(exp._id, 'REJECTED')}
+                              className="px-2.5 py-1 bg-red-900/60 hover:bg-red-800 text-red-200 rounded-lg text-[11px] font-medium"
+                            >
+                              Rechazar
+                            </button>
+                          </div>
+                        )}
+                      </td>
+                    </tr>
+                  ))}
+                </tbody>
+              </table>
+            </div>
+          )
+        ) : activeTab === 'payables' ? (
+          payables.length === 0 ? (
+            <div className="p-12 text-center text-slate-500 text-xs">No hay cuentas por pagar registradas.</div>
+          ) : (
+            <div className="overflow-x-auto">
+              <table className="w-full text-left border-collapse">
+                <thead>
+                  <tr className="border-b border-slate-800/80 bg-slate-900/40 text-[11px] font-semibold text-slate-400 uppercase tracking-wider">
+                    <th className="py-3.5 px-4">Concepto / Obligación</th>
+                    <th className="py-3.5 px-4">Total Obligación</th>
+                    <th className="py-3.5 px-4">Saldo Pendiente</th>
+                    <th className="py-3.5 px-4">Estado</th>
+                    <th className="py-3.5 px-4 text-right">Acción</th>
                   </tr>
-                ))}
-              </tbody>
-            </table>
-          </div>
-        </div>
-      )}
+                </thead>
+                <tbody className="divide-y divide-slate-800/60 text-xs text-slate-300">
+                  {payables.map((pay) => (
+                    <tr key={pay._id} className="hover:bg-slate-800/30 transition-colors">
+                      <td className="py-3.5 px-4 text-white font-medium">{pay.concept}</td>
+                      <td className="py-3.5 px-4 font-mono text-slate-300">{fmtCOP(pay.totalAmount)}</td>
+                      <td className="py-3.5 px-4 font-mono font-bold text-amber-400">{fmtCOP(pay.remainingAmount)}</td>
+                      <td className="py-3.5 px-4">
+                        <span className="px-2 py-0.5 rounded-full text-[10px] font-medium bg-slate-800 border border-slate-700 text-slate-300">
+                          {pay.status}
+                        </span>
+                      </td>
+                      <td className="py-3.5 px-4 text-right">
+                        {can('finance.write') && pay.status === 'PENDING' && (
+                          <button
+                            onClick={() => {
+                              setSelectedPayable(pay);
+                              setPaymentData({ ...paymentData, amount: pay.remainingAmount?.toString() || '' });
+                              setPaymentModalOpen(true);
+                            }}
+                            className="px-3 py-1.5 bg-emerald-600 hover:bg-emerald-700 text-white rounded-lg text-xs font-bold inline-flex items-center gap-1"
+                          >
+                            <span>Pagar</span>
+                            <ArrowRight className="w-3.5 h-3.5" />
+                          </button>
+                        )}
+                      </td>
+                    </tr>
+                  ))}
+                </tbody>
+              </table>
+            </div>
+          )
+        ) : (
+          payments.length === 0 ? (
+            <div className="p-12 text-center text-slate-500 text-xs">No hay comprobantes de pago registrados.</div>
+          ) : (
+            <div className="divide-y divide-slate-800/60">
+              {payments.map((pmt) => (
+                <div key={pmt._id} className="p-4 flex items-center justify-between hover:bg-slate-800/30 transition-colors">
+                  <div>
+                    <span className="font-mono font-bold text-white text-xs block">{pmt.paymentNumber}</span>
+                    <span className="text-[11px] text-slate-400">
+                      Método: {pmt.paymentMethod} · Ref: {pmt.reference || 'N/A'}
+                    </span>
+                    <span className="text-[10px] text-slate-500 block">
+                      Fecha: {new Date(pmt.createdAt).toLocaleDateString('es-CO')}
+                    </span>
+                  </div>
+                  <div className="text-right">
+                    <span className="text-xs font-bold text-emerald-400 font-mono block">{fmtCOP(pmt.amount)}</span>
+                    <span className="text-[10px] text-emerald-500 font-medium">Ejecutado</span>
+                  </div>
+                </div>
+              ))}
+            </div>
+          )
+        )}
+      </div>
 
-      {/* Modal Registrar Gasto */}
+      {/* ── Modal Nuevo Gasto ── */}
       {expenseModalOpen && (
         <div className="fixed inset-0 z-50 flex items-center justify-center p-4 bg-black/70 backdrop-blur-sm">
-          <div className="bg-slate-900 border border-slate-800 rounded-2xl w-full max-w-md p-6 shadow-2xl relative">
-            <div className="flex items-center justify-between pb-3 border-b border-slate-800 mb-4">
-              <h2 className="text-sm font-bold text-white flex items-center gap-2">
-                <PlusCircle className="w-4 h-4 text-rose-400" />
-                Registrar Gasto Operativo
-              </h2>
-              <button onClick={() => setExpenseModalOpen(false)} className="p-1 text-slate-400 hover:text-white">
+          <div className="bg-[#161b27] border border-slate-700/80 rounded-2xl w-full max-w-md shadow-2xl p-6 relative">
+            <div className="flex items-center justify-between pb-3 mb-4 border-b border-slate-800">
+              <h2 className="text-sm font-bold text-white">Registrar Solicitud de Gasto</h2>
+              <button onClick={() => setExpenseModalOpen(false)} className="text-slate-400 hover:text-white">
                 <X className="w-4 h-4" />
               </button>
             </div>
 
-            <form onSubmit={handleCreateExpense} className="space-y-4 text-xs">
+            <form onSubmit={handleCreateExpense} className="space-y-3">
               <div>
-                <label className="block text-slate-300 font-semibold mb-1">Categoría</label>
-                <select
-                  value={formData.category}
-                  onChange={(e) => setFormData({ ...formData, category: e.target.value })}
-                  className="w-full bg-slate-950 border border-slate-700 rounded-xl p-2.5 text-white"
-                >
-                  <option value="MATERIALS">Materiales e Insumos CAM</option>
-                  <option value="HONORARIOS">Honorarios Profesionales</option>
-                  <option value="TRANSPORTE">Transporte y Logística</option>
-                  <option value="ALIMENTACION">Alimentación y Refrigerios</option>
-                  <option value="MEDICAMENTOS">Salud y Medicamentos</option>
-                  <option value="DOTACION">Dotación y Ayudas</option>
-                  <option value="OTROS">Otros Gastos Operativos</option>
-                </select>
-              </div>
-
-              <div>
-                <label className="block text-slate-300 font-semibold mb-1">Concepto Detallado *</label>
+                <label className="block text-xs font-semibold text-slate-300 mb-1">Concepto del Gasto *</label>
                 <input
                   type="text"
                   required
-                  placeholder="Ej. Telas e hilos para taller de costura Mandela"
+                  placeholder="Ej. Telas e insumos para taller CAM modistería"
                   value={formData.concept}
                   onChange={(e) => setFormData({ ...formData, concept: e.target.value })}
-                  className="w-full bg-slate-950 border border-slate-700 rounded-xl p-2.5 text-white"
+                  className="w-full bg-slate-900 border border-slate-700 rounded-xl py-2 px-3 text-xs text-white"
                 />
               </div>
 
               <div className="grid grid-cols-2 gap-3">
                 <div>
-                  <label className="block text-slate-300 font-semibold mb-1">Proveedor / Beneficiario *</label>
-                  <input
-                    type="text"
-                    required
-                    placeholder="Ej. Distribuidora Textil Caribe"
-                    value={formData.providerName}
-                    onChange={(e) => setFormData({ ...formData, providerName: e.target.value })}
-                    className="w-full bg-slate-950 border border-slate-700 rounded-xl p-2.5 text-white"
-                  />
-                </div>
-                <div>
-                  <label className="block text-slate-300 font-semibold mb-1">Monto COP *</label>
+                  <label className="block text-xs font-semibold text-slate-300 mb-1">Monto (COP) *</label>
                   <input
                     type="number"
                     required
-                    placeholder="Ej. 450000"
+                    min="1000"
+                    placeholder="600000"
                     value={formData.amount}
                     onChange={(e) => setFormData({ ...formData, amount: e.target.value })}
-                    className="w-full bg-slate-950 border border-slate-700 rounded-xl p-2.5 text-white"
+                    className="w-full bg-slate-900 border border-slate-700 rounded-xl py-2 px-3 text-xs text-white font-mono"
+                  />
+                </div>
+                <div>
+                  <label className="block text-xs font-semibold text-slate-300 mb-1">Categoría</label>
+                  <select
+                    value={formData.category}
+                    onChange={(e) => setFormData({ ...formData, category: e.target.value })}
+                    className="w-full bg-slate-900 border border-slate-700 rounded-xl py-2 px-3 text-xs text-white"
+                  >
+                    <option value="MATERIALS">Materiales & Insumos</option>
+                    <option value="SERVICES">Servicios Profesionales</option>
+                    <option value="TRANSPORT">Transporte & Logística</option>
+                    <option value="FOOD">Refrigerios & Alimentación</option>
+                    <option value="RENT">Alquiler de Espacios</option>
+                    <option value="OTHER">Otros Gastos</option>
+                  </select>
+                </div>
+              </div>
+
+              <div className="grid grid-cols-2 gap-3">
+                <div>
+                  <label className="block text-xs font-semibold text-slate-300 mb-1">Proveedor</label>
+                  <input
+                    type="text"
+                    placeholder="Textiles del Caribe S.A.S"
+                    value={formData.providerName}
+                    onChange={(e) => setFormData({ ...formData, providerName: e.target.value })}
+                    className="w-full bg-slate-900 border border-slate-700 rounded-xl py-2 px-3 text-xs text-white"
+                  />
+                </div>
+                <div>
+                  <label className="block text-xs font-semibold text-slate-300 mb-1">NIT / Cédula</label>
+                  <input
+                    type="text"
+                    placeholder="900123456-7"
+                    value={formData.providerNit}
+                    onChange={(e) => setFormData({ ...formData, providerNit: e.target.value })}
+                    className="w-full bg-slate-900 border border-slate-700 rounded-xl py-2 px-3 text-xs text-white"
                   />
                 </div>
               </div>
 
-              <div className="flex items-center justify-end gap-3 pt-3 border-t border-slate-800">
-                <button type="button" onClick={() => setExpenseModalOpen(false)} className="px-3 py-2 bg-slate-800 rounded-xl">
+              <div className="pt-2 flex justify-end gap-2">
+                <button
+                  type="button"
+                  onClick={() => setExpenseModalOpen(false)}
+                  className="px-4 py-2 bg-slate-800 text-slate-300 rounded-xl text-xs"
+                >
                   Cancelar
                 </button>
-                <button type="submit" className="px-4 py-2 bg-rose-600 font-bold text-white rounded-xl">
-                  Enviar a Revisión
+                <button
+                  type="submit"
+                  className="px-4 py-2 bg-rose-600 hover:bg-rose-700 text-white font-bold text-xs rounded-xl shadow-lg shadow-rose-600/20"
+                >
+                  Crear Solicitud
                 </button>
               </div>
             </form>
@@ -366,68 +468,75 @@ export default function CrmFinanzasPage() {
         </div>
       )}
 
-      {/* Modal Registrar Pago */}
-      {paymentModalOpen && selectedPayable && (
+      {/* ── Modal Registrar Pago ── */}
+      {paymentModalOpen && (
         <div className="fixed inset-0 z-50 flex items-center justify-center p-4 bg-black/70 backdrop-blur-sm">
-          <div className="bg-slate-900 border border-slate-800 rounded-2xl w-full max-w-md p-6 shadow-2xl relative">
-            <div className="flex items-center justify-between pb-3 border-b border-slate-800 mb-4">
-              <h2 className="text-sm font-bold text-white flex items-center gap-2">
-                <DollarSign className="w-4 h-4 text-emerald-400" />
-                Registrar Pago a Proveedor
-              </h2>
-              <button onClick={() => setPaymentModalOpen(false)} className="p-1 text-slate-400 hover:text-white">
+          <div className="bg-[#161b27] border border-slate-700/80 rounded-2xl w-full max-w-md shadow-2xl p-6 relative">
+            <div className="flex items-center justify-between pb-3 mb-4 border-b border-slate-800">
+              <h2 className="text-sm font-bold text-white">Registrar Comprobante de Pago</h2>
+              <button onClick={() => setPaymentModalOpen(false)} className="text-slate-400 hover:text-white">
                 <X className="w-4 h-4" />
               </button>
             </div>
 
-            <form onSubmit={handleRegisterPayment} className="space-y-4 text-xs">
-              <div className="p-3 bg-slate-950 rounded-xl text-xs space-y-1">
-                <div>Proveedor: <strong className="text-white">{selectedPayable.providerName}</strong></div>
-                <div>Concepto: <span className="text-slate-300">{selectedPayable.concept}</span></div>
-                <div>Saldo Pendiente: <strong className="text-rose-400 font-mono">${Number(selectedPayable.remainingAmount).toLocaleString('es-CO')} COP</strong></div>
+            <form onSubmit={handleRegisterPayment} className="space-y-3">
+              <div>
+                <label className="block text-xs font-semibold text-slate-300 mb-1">Concepto a Pagar</label>
+                <div className="p-2.5 bg-slate-900 rounded-xl text-xs text-slate-300 font-medium border border-slate-800">
+                  {selectedPayable?.concept}
+                </div>
+              </div>
+
+              <div className="grid grid-cols-2 gap-3">
+                <div>
+                  <label className="block text-xs font-semibold text-slate-300 mb-1">Monto a Pagar (COP) *</label>
+                  <input
+                    type="number"
+                    required
+                    value={paymentData.amount}
+                    onChange={(e) => setPaymentData({ ...paymentData, amount: e.target.value })}
+                    className="w-full bg-slate-900 border border-slate-700 rounded-xl py-2 px-3 text-xs text-white font-mono"
+                  />
+                </div>
+                <div>
+                  <label className="block text-xs font-semibold text-slate-300 mb-1">Medio</label>
+                  <select
+                    value={paymentData.paymentMethod}
+                    onChange={(e) => setPaymentData({ ...paymentData, paymentMethod: e.target.value })}
+                    className="w-full bg-slate-900 border border-slate-700 rounded-xl py-2 px-3 text-xs text-white"
+                  >
+                    <option value="Transferencia Bancaria">Transferencia Bancaria</option>
+                    <option value="Efectivo / Caja Menor">Efectivo / Caja Menor</option>
+                    <option value="PSE / Nequi">PSE / Nequi / Daviplata</option>
+                    <option value="Cheque">Cheque</option>
+                  </select>
+                </div>
               </div>
 
               <div>
-                <label className="block text-slate-300 font-semibold mb-1">Monto a Pagar *</label>
-                <input
-                  type="number"
-                  required
-                  value={paymentData.amount}
-                  onChange={(e) => setPaymentData({ ...paymentData, amount: e.target.value })}
-                  className="w-full bg-slate-950 border border-slate-700 rounded-xl p-2.5 text-white font-mono font-bold"
-                />
-              </div>
-
-              <div>
-                <label className="block text-slate-300 font-semibold mb-1">Medio de Pago</label>
-                <select
-                  value={paymentData.paymentMethod}
-                  onChange={(e) => setPaymentData({ ...paymentData, paymentMethod: e.target.value })}
-                  className="w-full bg-slate-950 border border-slate-700 rounded-xl p-2.5 text-white"
-                >
-                  <option value="Transferencia Bancaria Bancolombia">Transferencia Bancaria Bancolombia</option>
-                  <option value="Efectivo de Caja Menor">Efectivo de Caja Menor</option>
-                  <option value="Cheque">Cheque</option>
-                </select>
-              </div>
-
-              <div>
-                <label className="block text-slate-300 font-semibold mb-1">Comprobante / Referencia</label>
+                <label className="block text-xs font-semibold text-slate-300 mb-1">No. Referencia / Comprobante</label>
                 <input
                   type="text"
-                  placeholder="Ej. Aprobación #987654"
+                  placeholder="Ej. TR-994821"
                   value={paymentData.reference}
                   onChange={(e) => setPaymentData({ ...paymentData, reference: e.target.value })}
-                  className="w-full bg-slate-950 border border-slate-700 rounded-xl p-2.5 text-white"
+                  className="w-full bg-slate-900 border border-slate-700 rounded-xl py-2 px-3 text-xs text-white"
                 />
               </div>
 
-              <div className="flex items-center justify-end gap-3 pt-3 border-t border-slate-800">
-                <button type="button" onClick={() => setPaymentModalOpen(false)} className="px-3 py-2 bg-slate-800 rounded-xl">
+              <div className="pt-2 flex justify-end gap-2">
+                <button
+                  type="button"
+                  onClick={() => setPaymentModalOpen(false)}
+                  className="px-4 py-2 bg-slate-800 text-slate-300 rounded-xl text-xs"
+                >
                   Cancelar
                 </button>
-                <button type="submit" className="px-4 py-2 bg-emerald-600 font-bold text-white rounded-xl">
-                  Registrar Pago
+                <button
+                  type="submit"
+                  className="px-4 py-2 bg-emerald-600 hover:bg-emerald-700 text-white font-bold text-xs rounded-xl shadow-lg shadow-emerald-600/20"
+                >
+                  Confirmar Desembolso
                 </button>
               </div>
             </form>

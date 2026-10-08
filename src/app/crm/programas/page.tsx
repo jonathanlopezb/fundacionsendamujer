@@ -2,7 +2,19 @@
 
 import React, { useState, useEffect } from 'react';
 import { useCrmAuth } from '@/lib/crm/client';
-import { Layers, PlusCircle, CheckCircle2, Users, BookOpen, X } from 'lucide-react';
+import {
+  Layers,
+  PlusCircle,
+  CheckCircle2,
+  Users,
+  BookOpen,
+  X,
+  Sparkles,
+  Calendar,
+  CheckSquare,
+  Award,
+  ArrowUpRight,
+} from 'lucide-react';
 
 export default function CrmProgramasPage() {
   const { can } = useCrmAuth();
@@ -18,7 +30,7 @@ export default function CrmProgramasPage() {
   const [enrollData, setEnrollData] = useState({
     personId: '',
     programId: '',
-    productiveLine: 'Costura y Confección',
+    productiveLine: 'SEWING',
     cohortId: '2026-I',
     notes: '',
   });
@@ -35,6 +47,9 @@ export default function CrmProgramasPage() {
       if (resProg.ok) {
         const jp = await resProg.json();
         setPrograms(jp.programs || []);
+        if (jp.programs?.length > 0 && !enrollData.programId) {
+          setEnrollData((prev) => ({ ...prev, programId: jp.programs[0]._id }));
+        }
       }
       if (resEnroll.ok) {
         const je = await resEnroll.json();
@@ -43,6 +58,9 @@ export default function CrmProgramasPage() {
       if (resPeople.ok) {
         const jpe = await resPeople.json();
         setPeople(jpe.people || []);
+        if (jpe.people?.length > 0 && !enrollData.personId) {
+          setEnrollData((prev) => ({ ...prev, personId: jpe.people[0]._id }));
+        }
       }
     } catch (err) {
       console.error('Error al cargar programas:', err);
@@ -75,15 +93,25 @@ export default function CrmProgramasPage() {
     }
   };
 
+  const lineNames: Record<string, string> = {
+    SEWING: 'Modistería & Confección',
+    BAKING: 'Repostería & Panadería',
+    SUBLIMATION: 'Estampado & Sublimación',
+    GARDENING: 'Huertas Urbanas',
+    CRAFTS: 'Artesanías & Manualidades',
+    OTHER: 'Formación General',
+  };
+
   return (
     <div className="space-y-6">
+      {/* ── Header ── */}
       <div className="flex flex-col sm:flex-row sm:items-center justify-between gap-4 pb-4 border-b border-slate-800">
         <div>
-          <h1 className="text-xl font-bold text-white tracking-tight flex items-center gap-2">
+          <div className="flex items-center gap-2 mb-1">
             <Layers className="w-5 h-5 text-rose-400" />
-            Programas & Líneas Productivas CAM
-          </h1>
-          <p className="text-xs text-slate-400 mt-0.5">
+            <h1 className="text-xl font-bold text-white tracking-tight">Programas & Formación Productiva CAM</h1>
+          </div>
+          <p className="text-xs text-slate-400">
             Centro de Apoyo a la Mujer (CAM), Ruta THEMIS y proyectos de autonomía económica.
           </p>
         </div>
@@ -91,7 +119,7 @@ export default function CrmProgramasPage() {
         {can('programs.write') && (
           <button
             onClick={() => setModalOpen(true)}
-            className="px-3.5 py-2 bg-rose-600 hover:bg-rose-700 text-white rounded-xl text-xs font-semibold flex items-center gap-1.5 shadow-md shadow-rose-600/20 transition-all self-start sm:self-auto"
+            className="px-4 py-2 bg-gradient-to-r from-rose-500 to-rose-600 hover:from-rose-600 hover:to-rose-700 text-white rounded-xl text-xs font-bold flex items-center gap-1.5 shadow-lg shadow-rose-500/20 transition-all hover:scale-105"
           >
             <PlusCircle className="w-4 h-4" />
             <span>Inscribir en Línea CAM</span>
@@ -99,123 +127,137 @@ export default function CrmProgramasPage() {
         )}
       </div>
 
-      <div className="flex items-center space-x-2 border-b border-slate-800 pb-2">
+      {/* ── Sub-tabs ── */}
+      <div className="border-b border-slate-800/80 flex gap-2">
         <button
           onClick={() => setActiveTab('programs')}
-          className={`px-3 py-1.5 rounded-lg text-xs font-semibold ${
-            activeTab === 'programs' ? 'bg-rose-500/10 text-rose-400 border border-rose-500/20' : 'text-slate-400 hover:text-white'
+          className={`flex items-center gap-2 py-3 px-4 text-xs font-semibold border-b-2 transition-all ${
+            activeTab === 'programs'
+              ? 'border-rose-500 text-rose-400 bg-rose-500/5'
+              : 'border-transparent text-slate-400 hover:text-slate-200'
           }`}
         >
-          Catálogo Institucional ({programs.length})
+          <BookOpen className="w-4 h-4" />
+          <span>Catálogo de Programas ({programs.length})</span>
         </button>
+
         <button
           onClick={() => setActiveTab('enrollments')}
-          className={`px-3 py-1.5 rounded-lg text-xs font-semibold ${
-            activeTab === 'enrollments' ? 'bg-rose-500/10 text-rose-400 border border-rose-500/20' : 'text-slate-400 hover:text-white'
+          className={`flex items-center gap-2 py-3 px-4 text-xs font-semibold border-b-2 transition-all ${
+            activeTab === 'enrollments'
+              ? 'border-rose-500 text-rose-400 bg-rose-500/5'
+              : 'border-transparent text-slate-400 hover:text-slate-200'
           }`}
         >
-          Participantes Inscritas ({enrollments.length})
+          <Users className="w-4 h-4" />
+          <span>Participantes Inscritas ({enrollments.length})</span>
         </button>
       </div>
 
-      {activeTab === 'programs' && (
-        <div className="grid grid-cols-1 md:grid-cols-3 gap-4">
-          {programs.map((p) => (
-            <div key={p._id} className="bg-slate-900 border border-slate-800 rounded-2xl p-5 space-y-3">
-              <div className="flex items-center justify-between">
-                <span className="font-mono text-xs font-bold text-rose-400 px-2 py-0.5 bg-rose-500/10 rounded">
-                  {p.code}
-                </span>
-                <span className="text-[10px] px-2 py-0.5 bg-emerald-950 text-emerald-300 border border-emerald-800 rounded font-semibold">
-                  ACTIVO
-                </span>
-              </div>
-              <h3 className="text-sm font-bold text-white">{p.name}</h3>
-              <p className="text-xs text-slate-400 line-clamp-3">{p.description}</p>
-              <div className="pt-2 border-t border-slate-800 text-[11px] text-slate-500">
-                Población: {p.targetPopulation}
-              </div>
+      {/* ── Content ── */}
+      <div className="bg-[#161b27] border border-slate-800/80 rounded-2xl shadow-sm p-5 overflow-hidden">
+        {loading ? (
+          <div className="p-8 text-center text-slate-500 text-xs">
+            <div className="w-6 h-6 border-2 border-rose-500 border-t-transparent rounded-full animate-spin mx-auto mb-2" />
+            Cargando programas...
+          </div>
+        ) : activeTab === 'programs' ? (
+          programs.length === 0 ? (
+            <div className="py-12 text-center text-slate-500 text-xs">No hay programas registrados aún.</div>
+          ) : (
+            <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-4">
+              {programs.map((p) => (
+                <div key={p._id} className="bg-slate-900/80 border border-slate-800 rounded-xl p-4 flex flex-col justify-between space-y-3">
+                  <div>
+                    <div className="flex items-center justify-between">
+                      <span className="px-2 py-0.5 rounded text-[10px] font-mono font-bold bg-rose-500/10 text-rose-400 border border-rose-500/20">
+                        {p.code}
+                      </span>
+                      <span className="text-[10px] text-emerald-400 font-semibold">{p.status}</span>
+                    </div>
+                    <h3 className="text-sm font-bold text-white mt-2">{p.name}</h3>
+                    <p className="text-xs text-slate-400 mt-1 line-clamp-2">{p.description}</p>
+                  </div>
+                  <div className="pt-2 border-t border-slate-800 text-[11px] text-slate-500">
+                    Población: {p.targetPopulation || 'Mujeres en vulnerabilidad'}
+                  </div>
+                </div>
+              ))}
             </div>
-          ))}
-        </div>
-      )}
-
-      {activeTab === 'enrollments' && (
-        <div className="bg-slate-900 border border-slate-800 rounded-2xl overflow-hidden shadow-lg">
+          )
+        ) : enrollments.length === 0 ? (
+          <div className="py-12 text-center text-slate-500 text-xs">No hay inscripciones registradas.</div>
+        ) : (
           <div className="overflow-x-auto">
-            <table className="w-full text-left text-xs border-collapse">
+            <table className="w-full text-left border-collapse">
               <thead>
-                <tr className="bg-slate-950 text-slate-400 border-b border-slate-800">
-                  <th className="p-3">Participante</th>
-                  <th className="p-3">Línea Productiva</th>
-                  <th className="p-3">Cohorte</th>
-                  <th className="p-3">Estado</th>
-                  <th className="p-3">Fecha Inscripción</th>
+                <tr className="border-b border-slate-800/80 bg-slate-900/40 text-[11px] font-semibold text-slate-400 uppercase tracking-wider">
+                  <th className="py-3.5 px-4">Participante</th>
+                  <th className="py-3.5 px-4">Programa</th>
+                  <th className="py-3.5 px-4">Línea Productiva</th>
+                  <th className="py-3.5 px-4">Cohorte</th>
+                  <th className="py-3.5 px-4">Estado</th>
                 </tr>
               </thead>
-              <tbody className="divide-y divide-slate-800/60">
+              <tbody className="divide-y divide-slate-800/60 text-xs text-slate-300">
                 {enrollments.map((e) => (
-                  <tr key={e._id} className="hover:bg-slate-800/40">
-                    <td className="p-3 font-semibold text-white">
-                      {e.personName} <span className="font-mono text-[10px] text-slate-400 block">{e.personCode}</span>
+                  <tr key={e._id} className="hover:bg-slate-800/30 transition-colors">
+                    <td className="py-3.5 px-4 font-semibold text-white">{e.personName || 'Participante'}</td>
+                    <td className="py-3.5 px-4 text-slate-300">{e.programCode || 'CAM'}</td>
+                    <td className="py-3.5 px-4">
+                      <span className="px-2 py-0.5 rounded-full text-[10px] font-medium bg-purple-950/60 border border-purple-800 text-purple-300">
+                        {lineNames[e.productiveLine] || e.productiveLine}
+                      </span>
                     </td>
-                    <td className="p-3 text-slate-200">{e.productiveLine}</td>
-                    <td className="p-3 text-slate-400 font-mono">{e.cohortId || '2026-I'}</td>
-                    <td className="p-3">
-                      <span className="text-[10px] px-2 py-0.5 rounded bg-teal-950 text-teal-300 border border-teal-800 font-semibold">
+                    <td className="py-3.5 px-4 font-mono text-slate-400">{e.cohortId || '2026-I'}</td>
+                    <td className="py-3.5 px-4">
+                      <span className="px-2 py-0.5 rounded-full text-[10px] font-medium bg-emerald-950/60 border border-emerald-800 text-emerald-300">
                         {e.status}
                       </span>
                     </td>
-                    <td className="p-3 text-slate-400">{new Date(e.enrolledAt).toLocaleDateString('es-CO')}</td>
                   </tr>
                 ))}
               </tbody>
             </table>
           </div>
-        </div>
-      )}
+        )}
+      </div>
 
-      {/* Modal Inscripción */}
+      {/* ── Modal Inscribir ── */}
       {modalOpen && (
         <div className="fixed inset-0 z-50 flex items-center justify-center p-4 bg-black/70 backdrop-blur-sm">
-          <div className="bg-slate-900 border border-slate-800 rounded-2xl w-full max-w-md p-6 shadow-2xl relative">
-            <div className="flex items-center justify-between pb-3 border-b border-slate-800 mb-4">
-              <h2 className="text-sm font-bold text-white flex items-center gap-2">
-                <PlusCircle className="w-4 h-4 text-rose-400" />
-                Inscribir Participante en Programa
-              </h2>
-              <button onClick={() => setModalOpen(false)} className="p-1 text-slate-400 hover:text-white">
+          <div className="bg-[#161b27] border border-slate-700/80 rounded-2xl w-full max-w-md shadow-2xl p-6 relative">
+            <div className="flex items-center justify-between pb-3 mb-4 border-b border-slate-800">
+              <h2 className="text-sm font-bold text-white">Inscribir en Programa CAM</h2>
+              <button onClick={() => setModalOpen(false)} className="text-slate-400 hover:text-white">
                 <X className="w-4 h-4" />
               </button>
             </div>
 
-            <form onSubmit={handleEnroll} className="space-y-4 text-xs">
+            <form onSubmit={handleEnroll} className="space-y-3">
               <div>
-                <label className="block text-slate-300 font-semibold mb-1">Participante *</label>
+                <label className="block text-xs font-semibold text-slate-300 mb-1">Participante *</label>
                 <select
                   required
                   value={enrollData.personId}
                   onChange={(e) => setEnrollData({ ...enrollData, personId: e.target.value })}
-                  className="w-full bg-slate-950 border border-slate-700 rounded-xl p-2.5 text-white"
+                  className="w-full bg-slate-900 border border-slate-700 rounded-xl py-2 px-3 text-xs text-white"
                 >
-                  <option value="">Seleccione participante...</option>
                   {people.map((p) => (
                     <option key={p._id} value={p._id}>
-                      {p.code} - {p.firstName} {p.lastName}
+                      {p.firstName} {p.lastName} — {p.documentNumberMasked || '•••'}
                     </option>
                   ))}
                 </select>
               </div>
 
               <div>
-                <label className="block text-slate-300 font-semibold mb-1">Programa Institucional *</label>
+                <label className="block text-xs font-semibold text-slate-300 mb-1">Programa</label>
                 <select
-                  required
                   value={enrollData.programId}
                   onChange={(e) => setEnrollData({ ...enrollData, programId: e.target.value })}
-                  className="w-full bg-slate-950 border border-slate-700 rounded-xl p-2.5 text-white"
+                  className="w-full bg-slate-900 border border-slate-700 rounded-xl py-2 px-3 text-xs text-white"
                 >
-                  <option value="">Seleccione programa...</option>
                   {programs.map((p) => (
                     <option key={p._id} value={p._id}>
                       {p.code} - {p.name}
@@ -225,28 +267,34 @@ export default function CrmProgramasPage() {
               </div>
 
               <div>
-                <label className="block text-slate-300 font-semibold mb-1">Línea Productiva / Área</label>
+                <label className="block text-xs font-semibold text-slate-300 mb-1">Línea Productiva (CAM)</label>
                 <select
                   value={enrollData.productiveLine}
                   onChange={(e) => setEnrollData({ ...enrollData, productiveLine: e.target.value })}
-                  className="w-full bg-slate-950 border border-slate-700 rounded-xl p-2.5 text-white"
+                  className="w-full bg-slate-900 border border-slate-700 rounded-xl py-2 px-3 text-xs text-white"
                 >
-                  <option value="Costura y Confección">Costura y Confección</option>
-                  <option value="Panadería y Repostería">Panadería y Repostería</option>
-                  <option value="Sublimación y Estampado">Sublimación y Estampado</option>
-                  <option value="Huertas Caseras y Agroecología">Huertas Caseras y Agroecología</option>
-                  <option value="Piscicultura y Cría Menor">Piscicultura y Cría Menor</option>
-                  <option value="Manualidades y Artesanías">Manualidades y Artesanías</option>
-                  <option value="Liderazgo Comunitario">Liderazgo Comunitario</option>
-                  <option value="Habilidades Digitales">Habilidades Digitales</option>
+                  <option value="SEWING">Modistería & Confección</option>
+                  <option value="BAKING">Repostería & Panadería</option>
+                  <option value="SUBLIMATION">Estampado & Sublimación</option>
+                  <option value="GARDENING">Huertas Urbanas</option>
+                  <option value="CRAFTS">Artesanías & Manualidades</option>
+                  <option value="OTHER">Formación General</option>
                 </select>
               </div>
 
-              <div className="flex items-center justify-end gap-3 pt-3 border-t border-slate-800">
-                <button type="button" onClick={() => setModalOpen(false)} className="px-3 py-2 bg-slate-800 rounded-xl">
+              <div className="pt-2 flex justify-end gap-2">
+                <button
+                  type="button"
+                  onClick={() => setModalOpen(false)}
+                  className="px-4 py-2 bg-slate-800 text-slate-300 rounded-xl text-xs"
+                >
                   Cancelar
                 </button>
-                <button type="submit" disabled={creating} className="px-4 py-2 bg-rose-600 font-bold text-white rounded-xl">
+                <button
+                  type="submit"
+                  disabled={creating}
+                  className="px-4 py-2 bg-rose-600 hover:bg-rose-700 text-white font-bold text-xs rounded-xl shadow-lg shadow-rose-600/20"
+                >
                   {creating ? 'Inscribiendo...' : 'Confirmar Inscripción'}
                 </button>
               </div>
