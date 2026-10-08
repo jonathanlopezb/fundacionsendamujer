@@ -52,7 +52,7 @@ export default function AcademiaNavbar({
         <div className="flex items-center gap-6">
           <Link href="/academia" className="flex items-center gap-2.5 group">
             <img
-              src="/logo.png"
+              src="/logo-white.jpg"
               alt="Fundación Senda Mujer"
               className="h-12 sm:h-15 w-auto object-contain transition-transform duration-300 group-hover:scale-105 drop-shadow-md py-0.5"
             />

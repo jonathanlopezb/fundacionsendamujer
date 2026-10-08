@@ -138,7 +138,7 @@ function CrmNavigation() {
         <div className="flex flex-col items-center gap-5">
           <div className="relative">
             {/* eslint-disable-next-line @next/next/no-img-element */}
-            <img src="/logo.png" alt="Senda Mujer" className="h-14 w-auto object-contain" />
+            <img src="/logo-white.jpg" alt="Senda Mujer" className="h-14 w-auto object-contain" />
             <div className="absolute -bottom-1 -right-1 w-4 h-4 bg-emerald-400 rounded-full border-2 border-[#0b0f1a] animate-pulse" />
           </div>
           <div className="text-center">
@@ -174,7 +174,7 @@ function CrmNavigation() {
       }`}>
         <Link href="/crm" scroll={false} className="flex items-center gap-3 group" onClick={() => setMobileOpen(false)}>
           {/* eslint-disable-next-line @next/next/no-img-element */}
-          <img src="/logo.png" alt="Senda Mujer" className="h-8 w-auto object-contain group-hover:opacity-90 transition-opacity" />
+          <img src={isLight ? '/logo.png' : '/logo-white.jpg'} alt="Senda Mujer" className="h-8 w-auto object-contain group-hover:opacity-90 transition-opacity" />
           <span className={`text-sm font-bold tracking-wide ${isLight ? 'text-slate-900' : 'text-white'}`}>CRM</span>
         </Link>
         <button
@@ -301,7 +301,7 @@ function CrmNavigation() {
       }`}>
         <Link href="/crm" scroll={false} className="flex items-center gap-2.5">
           {/* eslint-disable-next-line @next/next/no-img-element */}
-          <img src="/logo.png" alt="Senda Mujer" className="h-7 w-auto object-contain" />
+          <img src={isLight ? '/logo.png' : '/logo-white.jpg'} alt="Senda Mujer" className="h-7 w-auto object-contain" />
           <span className={`text-sm font-bold ${isLight ? 'text-slate-900' : 'text-white'}`}>CRM</span>
         </Link>
         <div className="flex items-center gap-2">

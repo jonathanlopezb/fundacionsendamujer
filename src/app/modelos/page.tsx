@@ -1,4 +1,6 @@
-import type { Metadata } from 'next';
+'use client';
+
+import React from 'react';
 import Link from 'next/link';
 import Image from 'next/image';
 import { 
@@ -21,97 +23,87 @@ import {
   Network,
   Plus
 } from 'lucide-react';
-
-export const metadata: Metadata = {
-  title: 'Modelos de Acompañamiento | CAM y THEMIS',
-  description:
-    'Dos modelos, una ruta de acompañamiento: CAM (Capacitación, Acompañamiento y Mercadeo) y THEMIS (orientación jurídica con enfoque de género y derechos).',
-  openGraph: {
-    title: 'Modelos de Acompañamiento | Fundación Senda Mujer',
-    description:
-      'Transformamos las necesidades de cada mujer en rutas de orientación, fortalecimiento y acceso a oportunidades en Cartagena.',
-    url: 'https://fundacionsendamujer.org/modelos',
-    images: [{ url: 'https://fundacionsendamujer.org/logo.png', width: 1200, height: 630, alt: 'Fundación Senda Mujer' }],
-  },
-};
-
-const CAM_PASOS = [
-  { n: '01', title: 'Escuchamos', desc: 'Conocemos tus necesidades, intereses y capacidades.' },
-  { n: '02', title: 'Identificamos', desc: 'Definimos prioridades y oportunidades.' },
-  { n: '03', title: 'Acompañamos', desc: 'Activamos redes y brindamos orientación continua.' },
-  { n: '04', title: 'Hacemos seguimiento', desc: 'Evaluamos avances y nuevos retos.' },
-];
-
-const LINEAS_PRODUCTIVAS = [
-  {
-    nombre: 'Confección y modistería',
-    img: 'https://images.unsplash.com/photo-1558769132-cb1aea458c5e?auto=format&fit=crop&w=800&q=80',
-    icon: Scissors,
-    color: '#B72D78',
-  },
-  {
-    nombre: 'Huertas',
-    img: 'https://images.unsplash.com/photo-1592417817098-8f3d6eb22509?auto=format&fit=crop&w=800&q=80',
-    icon: Sprout,
-    color: '#657C3A',
-  },
-  {
-    nombre: 'Piscicultura',
-    img: 'https://images.unsplash.com/photo-1544551763-46a013bb70d5?auto=format&fit=crop&w=800&q=80',
-    icon: Fish,
-    color: '#2D7AB7',
-  },
-  {
-    nombre: 'Repostería',
-    img: 'https://images.unsplash.com/photo-1578985545062-69928b1d9587?auto=format&fit=crop&w=800&q=80',
-    icon: CakeSlice,
-    color: '#C47E1A',
-  },
-  {
-    nombre: 'Artesanías',
-    img: 'https://images.unsplash.com/photo-1513519245088-0e12902e5a38?auto=format&fit=crop&w=800&q=80',
-    icon: Palette,
-    color: '#7B3AC4',
-  },
-  {
-    nombre: 'Avicultura',
-    img: 'https://images.unsplash.com/photo-1548550023-2bdb3c5beed7?auto=format&fit=crop&w=800&q=80',
-    icon: Bird,
-    color: '#C4A41A',
-  },
-];
-
-const RUTA_MERCADO = [
-  {
-    titulo: 'Aprendemos',
-    img: 'https://images.unsplash.com/photo-1522202176988-66273c2fd55f?auto=format&fit=crop&w=600&q=80',
-    icon: BookOpen,
-  },
-  {
-    titulo: 'Producimos',
-    img: 'https://images.unsplash.com/photo-1581091226825-a6a2a5aee158?auto=format&fit=crop&w=600&q=80',
-    icon: Scissors,
-  },
-  {
-    titulo: 'Presentamos',
-    img: 'https://images.unsplash.com/photo-1534452203293-494d7ddbf7e0?auto=format&fit=crop&w=600&q=80',
-    icon: ShoppingBag,
-  },
-  {
-    titulo: 'Comercializamos',
-    img: 'https://images.unsplash.com/photo-1556742049-0a67c5576a88?auto=format&fit=crop&w=600&q=80',
-    icon: Users,
-  },
-];
-
-const THEMIS_PRINCIPIOS = [
-  { n: '01', title: 'Información jurídica comprensible', icon: FileText },
-  { n: '02', title: 'Decisiones libres e informadas', icon: ShieldCheck },
-  { n: '03', title: 'Confidencialidad y no revictimización', icon: Lock },
-  { n: '04', title: 'Articulación con rutas competentes', icon: Network },
-];
+import { useLanguage } from '@/context/LanguageContext';
 
 export default function ModelosPage() {
+  const { t } = useLanguage();
+
+  const CAM_PASOS = [
+    { n: '01', title: t('modelos.step1_t'), desc: t('modelos.step1_d') },
+    { n: '02', title: t('modelos.step2_t'), desc: t('modelos.step2_d') },
+    { n: '03', title: t('modelos.step3_t'), desc: t('modelos.step3_d') },
+    { n: '04', title: t('modelos.step4_t'), desc: t('modelos.step4_d') },
+  ];
+
+  const LINEAS_PRODUCTIVAS = [
+    {
+      nombre: t('modelos.prod_1'),
+      img: 'https://images.unsplash.com/photo-1558769132-cb1aea458c5e?auto=format&fit=crop&w=800&q=80',
+      icon: Scissors,
+      color: '#B72D78',
+    },
+    {
+      nombre: t('modelos.prod_2'),
+      img: 'https://images.unsplash.com/photo-1592417817098-8f3d6eb22509?auto=format&fit=crop&w=800&q=80',
+      icon: Sprout,
+      color: '#657C3A',
+    },
+    {
+      nombre: t('modelos.prod_3'),
+      img: 'https://images.unsplash.com/photo-1544551763-46a013bb70d5?auto=format&fit=crop&w=800&q=80',
+      icon: Fish,
+      color: '#2D7AB7',
+    },
+    {
+      nombre: t('modelos.prod_4'),
+      img: 'https://images.unsplash.com/photo-1578985545062-69928b1d9587?auto=format&fit=crop&w=800&q=80',
+      icon: CakeSlice,
+      color: '#C47E1A',
+    },
+    {
+      nombre: t('modelos.prod_5'),
+      img: 'https://images.unsplash.com/photo-1513519245088-0e12902e5a38?auto=format&fit=crop&w=800&q=80',
+      icon: Palette,
+      color: '#7B3AC4',
+    },
+    {
+      nombre: t('modelos.prod_6'),
+      img: 'https://images.unsplash.com/photo-1548550023-2bdb3c5beed7?auto=format&fit=crop&w=800&q=80',
+      icon: Bird,
+      color: '#C4A41A',
+    },
+  ];
+
+  const RUTA_MERCADO = [
+    {
+      titulo: t('modelos.r1'),
+      img: 'https://images.unsplash.com/photo-1522202176988-66273c2fd55f?auto=format&fit=crop&w=600&q=80',
+      icon: BookOpen,
+    },
+    {
+      titulo: t('modelos.r2'),
+      img: 'https://images.unsplash.com/photo-1581091226825-a6a2a5aee158?auto=format&fit=crop&w=600&q=80',
+      icon: Scissors,
+    },
+    {
+      titulo: t('modelos.r3'),
+      img: 'https://images.unsplash.com/photo-1534452203293-494d7ddbf7e0?auto=format&fit=crop&w=600&q=80',
+      icon: ShoppingBag,
+    },
+    {
+      titulo: t('modelos.r4'),
+      img: 'https://images.unsplash.com/photo-1556742049-0a67c5576a88?auto=format&fit=crop&w=600&q=80',
+      icon: Users,
+    },
+  ];
+
+  const THEMIS_PRINCIPIOS = [
+    { n: '01', title: t('modelos.th_p1'), icon: FileText },
+    { n: '02', title: t('modelos.th_p2'), icon: ShieldCheck },
+    { n: '03', title: t('modelos.th_p3'), icon: Lock },
+    { n: '04', title: t('modelos.th_p4'), icon: Network },
+  ];
+
   return (
     <div className="bg-[#FAF7F2] text-[#2E2630] font-sans antialiased selection:bg-[#B72D78]/20">
       
@@ -124,18 +116,18 @@ export default function ModelosPage() {
             <div className="lg:col-span-6 space-y-6">
               <div className="inline-flex items-center gap-2">
                 <span className="text-[11px] font-bold uppercase tracking-[0.2em] text-[#B72D78]">
-                  CÓMO ACOMPAÑAMOS
+                  {t('modelos.hero_eyebrow')}
                 </span>
                 <span className="h-px w-8 bg-[#B72D78]/40" />
               </div>
               
               <h1 className="font-serif text-4xl font-semibold leading-[1.08] tracking-tight text-[#2E2630] sm:text-5xl lg:text-6xl">
-                Dos modelos.<br />
-                <span className="text-[#451D42]">Una ruta de acompañamiento.</span>
+                {t('modelos.hero_h1_1')}<br />
+                <span className="text-[#451D42]">{t('modelos.hero_h1_2')}</span>
               </h1>
               
               <p className="max-w-xl text-base leading-relaxed text-[#6B5D68] sm:text-lg">
-                En Fundación Senda Mujer transformamos las necesidades de cada mujer en rutas de orientación, fortalecimiento y acceso a oportunidades.
+                {t('modelos.hero_lead')}
               </p>
               
               <div className="flex flex-wrap items-center gap-4 pt-2">
@@ -143,13 +135,13 @@ export default function ModelosPage() {
                   href="#cam"
                   className="inline-flex items-center gap-2 rounded-full bg-[#451D42] px-6 py-3.5 text-sm font-semibold text-white shadow-sm transition hover:bg-[#B72D78] hover:shadow"
                 >
-                  Conocer CAM <ArrowRight className="h-4 w-4" />
+                  {t('modelos.btn_cam')} <ArrowRight className="h-4 w-4" />
                 </a>
                 <a
                   href="#themis"
                   className="inline-flex items-center gap-2 rounded-full border border-[#451D42]/30 bg-transparent px-6 py-3.5 text-sm font-semibold text-[#451D42] transition hover:bg-[#451D42]/5"
                 >
-                  Conocer THEMIS <ArrowRight className="h-4 w-4" />
+                  {t('modelos.btn_themis')} <ArrowRight className="h-4 w-4" />
                 </a>
               </div>
             </div>
@@ -178,8 +170,8 @@ export default function ModelosPage() {
           <div className="grid gap-6 lg:grid-cols-12 lg:items-center">
             
             <div className="lg:col-span-4">
-              <h2 className="font-serif text-2xl font-bold text-[#2E2630]">Nuestros modelos</h2>
-              <p className="mt-1 text-sm text-[#6B5D68]">Dos caminos, un mismo propósito: tu bienestar y autonomía.</p>
+              <h2 className="font-serif text-2xl font-bold text-[#2E2630]">{t('modelos.sec_title')}</h2>
+              <p className="mt-1 text-sm text-[#6B5D68]">{t('modelos.sec_desc')}</p>
             </div>
 
             <div className="lg:col-span-8 grid gap-4 sm:grid-cols-2">
@@ -193,7 +185,7 @@ export default function ModelosPage() {
                   </div>
                   <div>
                     <h3 className="text-base font-bold text-[#2E2630] group-hover:text-[#B72D78]">CAM</h3>
-                    <p className="text-xs text-[#6B5D68]">Capacitación · Acompañamiento · Mercadeo</p>
+                    <p className="text-xs text-[#6B5D68]">{t('modelos.cam_sub')}</p>
                   </div>
                 </div>
                 <ArrowRight className="h-4 w-4 text-[#B72D78] transition group-hover:translate-x-1" />
@@ -209,7 +201,7 @@ export default function ModelosPage() {
                   </div>
                   <div>
                     <h3 className="text-base font-bold text-white">THEMIS</h3>
-                    <p className="text-xs text-white/70">Acompañamiento jurídico</p>
+                    <p className="text-xs text-white/70">{t('modelos.themis_sub')}</p>
                   </div>
                 </div>
                 <ArrowRight className="h-4 w-4 text-white/80 transition group-hover:translate-x-1" />
@@ -227,18 +219,18 @@ export default function ModelosPage() {
           <div className="flex flex-col md:flex-row md:items-end justify-between gap-6 pb-12">
             <div>
               <span className="text-[11px] font-bold uppercase tracking-[0.2em] text-[#B72D78]">
-                MODELO CAM
+                {t('modelos.cam_sub')}
               </span>
               <h2 className="mt-2 font-serif text-3xl font-bold text-[#2E2630] sm:text-4xl">
-                Capacitación · Acompañamiento · Mercadeo
+                {t('modelos.cam_sub')}
               </h2>
               <p className="mt-2 max-w-2xl text-base text-[#6B5D68]">
-                Un modelo que fortalece conocimientos, acompaña procesos y conecta capacidades con oportunidades.
+                {t('modelos.cam_hero_desc')}
               </p>
             </div>
             <div className="text-right hidden sm:block">
               <span className="font-serif italic text-xl text-[#8E2866] block">
-                Mujeres que transforman comunidades ♡
+                {t('modelos.cam_quote')}
               </span>
             </div>
           </div>
@@ -262,8 +254,8 @@ export default function ModelosPage() {
                     <BookOpen className="h-5 w-5" />
                   </div>
                   <div>
-                    <h3 className="font-serif text-lg font-bold text-[#2E2630]">Capacitación</h3>
-                    <p className="text-xs text-[#6B5D68]">Aprender para crecer.</p>
+                    <h3 className="font-serif text-lg font-bold text-[#2E2630]">{t('modelos.pilar1_title')}</h3>
+                    <p className="text-xs text-[#6B5D68]">{t('modelos.pilar1_sub')}</p>
                   </div>
                 </div>
               </div>
@@ -286,8 +278,8 @@ export default function ModelosPage() {
                     <Users className="h-5 w-5" />
                   </div>
                   <div>
-                    <h3 className="font-serif text-lg font-bold text-[#2E2630]">Acompañamiento</h3>
-                    <p className="text-xs text-[#6B5D68]">Juntas en cada paso.</p>
+                    <h3 className="font-serif text-lg font-bold text-[#2E2630]">{t('modelos.pilar2_title')}</h3>
+                    <p className="text-xs text-[#6B5D68]">{t('modelos.pilar2_sub')}</p>
                   </div>
                 </div>
               </div>
@@ -310,8 +302,8 @@ export default function ModelosPage() {
                     <ShoppingBag className="h-5 w-5" />
                   </div>
                   <div>
-                    <h3 className="font-serif text-lg font-bold text-[#2E2630]">Mercadeo</h3>
-                    <p className="text-xs text-[#6B5D68]">Del producto a la oportunidad.</p>
+                    <h3 className="font-serif text-lg font-bold text-[#2E2630]">{t('modelos.pilar3_title')}</h3>
+                    <p className="text-xs text-[#6B5D68]">{t('modelos.pilar3_sub')}</p>
                   </div>
                 </div>
               </div>
@@ -326,8 +318,8 @@ export default function ModelosPage() {
       <section className="border-y border-[#E8E0D7] bg-[#F5EFE7] py-16 lg:py-20">
         <div className="senda-shell">
           <div>
-            <h2 className="font-serif text-3xl font-bold text-[#2E2630]">¿Cómo funciona CAM?</h2>
-            <p className="mt-1 text-sm text-[#6B5D68]">Un proceso cercano, humano y estructurado.</p>
+            <h2 className="font-serif text-3xl font-bold text-[#2E2630]">{t('modelos.how_cam_title')}</h2>
+            <p className="mt-1 text-sm text-[#6B5D68]">{t('modelos.how_cam_desc')}</p>
           </div>
 
           <div className="mt-12 grid gap-6 sm:grid-cols-2 lg:grid-cols-4">
@@ -349,12 +341,12 @@ export default function ModelosPage() {
         </div>
       </section>
 
-      {/* ── 5. LÍNEAS PRODUCTIVAS (FOTOS REALES) ── */}
+      {/* ── 5. LÍNEAS PRODUCTIVAS ── */}
       <section className="py-16 lg:py-24">
         <div className="senda-shell">
           <div>
-            <h2 className="font-serif text-3xl font-bold text-[#2E2630]">Líneas productivas</h2>
-            <p className="mt-1 text-sm text-[#6B5D68]">Capacidades que se convierten en oportunidades.</p>
+            <h2 className="font-serif text-3xl font-bold text-[#2E2630]">{t('modelos.prod_title')}</h2>
+            <p className="mt-1 text-sm text-[#6B5D68]">{t('modelos.prod_desc')}</p>
           </div>
 
           <div className="mt-10 grid gap-6 sm:grid-cols-2 lg:grid-cols-3">
@@ -398,10 +390,8 @@ export default function ModelosPage() {
       <section className="border-y border-[#E8E0D7] bg-[#F5EFE7] py-16 lg:py-20">
         <div className="senda-shell">
           <div>
-            <h2 className="font-serif text-3xl font-bold text-[#2E2630]">Del aprendizaje al mercado</h2>
-            <p className="mt-1 text-sm text-[#6B5D68]">
-              Una ruta que transforma conocimiento en capacidad y capacidad en oportunidades.
-            </p>
+            <h2 className="font-serif text-3xl font-bold text-[#2E2630]">{t('modelos.route_title')}</h2>
+            <p className="mt-1 text-sm text-[#6B5D68]">{t('modelos.route_desc')}</p>
           </div>
 
           <div className="mt-10 grid gap-4 grid-cols-2 lg:grid-cols-4">
@@ -439,20 +429,18 @@ export default function ModelosPage() {
         <div className="senda-shell">
           <div className="grid gap-12 lg:grid-cols-12 lg:items-center">
             
-            {/* Columna Izquierda: Título y descripción */}
             <div className="lg:col-span-5 space-y-4">
               <span className="text-[11px] font-bold uppercase tracking-[0.2em] text-[#B72D78]">
-                MODELO THEMIS
+                {t('modelos.themis_eyebrow')}
               </span>
               <h2 className="font-serif text-3xl font-bold leading-tight text-[#2E2630] sm:text-4xl">
-                Acompañamiento jurídico con enfoque de género y derechos.
+                {t('modelos.themis_title')}
               </h2>
               <p className="text-sm leading-relaxed text-[#6B5D68]">
-                Brindamos orientación jurídica, acompañamiento integral y acceso a rutas de atención, para que cada mujer conozca sus derechos y pueda tomar decisiones libres e informadas.
+                {t('modelos.themis_desc')}
               </p>
             </div>
 
-            {/* Columna Centro: Foto Asesoría */}
             <div className="lg:col-span-4 relative">
               <div className="relative aspect-[4/3] sm:aspect-[4/3] w-full overflow-hidden rounded-3xl shadow-md border border-[#E8E0D7]">
                 <Image
@@ -465,7 +453,6 @@ export default function ModelosPage() {
               </div>
             </div>
 
-            {/* Columna Derecha: 4 Principios */}
             <div className="lg:col-span-3 space-y-4">
               {THEMIS_PRINCIPIOS.map((p) => {
                 const Icon = p.icon;
@@ -494,45 +481,42 @@ export default function ModelosPage() {
             
             <div className="lg:col-span-4 space-y-3">
               <h2 className="font-serif text-2xl font-bold text-[#2E2630] sm:text-3xl">
-                Dos modelos que se complementan
+                {t('modelos.comp_title')}
               </h2>
               <p className="text-sm leading-relaxed text-[#6B5D68]">
-                Algunas necesidades requieren fortalecer capacidades. Otras requieren orientación para ejercer derechos. En Senda Mujer, ambos caminos pueden formar parte de un acompañamiento integral.
+                {t('modelos.comp_desc')}
               </p>
             </div>
 
             <div className="lg:col-span-8 flex flex-col md:flex-row items-center gap-4">
               
-              {/* Card CAM */}
               <div className="w-full rounded-3xl border border-[#E8E0D7] bg-[#FCEBF4] p-6 text-[#2E2630]">
                 <div className="flex items-center gap-2 text-[#B72D78]">
                   <BriefcaseBusiness className="h-5 w-5" />
                   <span className="font-bold text-sm">CAM</span>
                 </div>
                 <ul className="mt-4 space-y-2 text-xs text-[#523F4C]">
-                  <li className="flex items-center gap-2"><span>•</span> Capacitación</li>
-                  <li className="flex items-center gap-2"><span>•</span> Acompañamiento</li>
-                  <li className="flex items-center gap-2"><span>•</span> Mercadeo</li>
-                  <li className="font-semibold text-[#B72D78] pt-1">Fortalecimiento de capacidades</li>
+                  <li className="flex items-center gap-2"><span>•</span> {t('modelos.pilar1_title')}</li>
+                  <li className="flex items-center gap-2"><span>•</span> {t('modelos.pilar2_title')}</li>
+                  <li className="flex items-center gap-2"><span>•</span> {t('modelos.pilar3_title')}</li>
+                  <li className="font-semibold text-[#B72D78] pt-1">{t('modelos.comp_cam_foot')}</li>
                 </ul>
               </div>
 
-              {/* Plus separator */}
               <div className="flex h-10 w-10 flex-shrink-0 items-center justify-center rounded-full bg-[#451D42] text-white">
                 <Plus className="h-5 w-5" />
               </div>
 
-              {/* Card THEMIS */}
               <div className="w-full rounded-3xl border border-[#E8E0D7] bg-[#EFEAF2] p-6 text-[#2E2630]">
                 <div className="flex items-center gap-2 text-[#451D42]">
                   <Scale className="h-5 w-5" />
                   <span className="font-bold text-sm">THEMIS</span>
                 </div>
                 <ul className="mt-4 space-y-2 text-xs text-[#443842]">
-                  <li className="flex items-center gap-2"><span>•</span> Orientación jurídica</li>
-                  <li className="flex items-center gap-2"><span>•</span> Información</li>
-                  <li className="flex items-center gap-2"><span>•</span> Decisiones informadas</li>
-                  <li className="font-semibold text-[#451D42] pt-1">Acceso a rutas</li>
+                  <li className="flex items-center gap-2"><span>•</span> {t('modelos.themis_sub')}</li>
+                  <li className="flex items-center gap-2"><span>•</span> {t('modelos.th_p1')}</li>
+                  <li className="flex items-center gap-2"><span>•</span> {t('modelos.th_p2')}</li>
+                  <li className="font-semibold text-[#451D42] pt-1">{t('modelos.comp_themis_foot')}</li>
                 </ul>
               </div>
 
@@ -542,31 +526,31 @@ export default function ModelosPage() {
         </div>
       </section>
 
-      {/* ── 9. CTA FINAL: ¿CUÁL ES TU SIGUIENTE PASO? ── */}
+      {/* ── 9. CTA FINAL ── */}
       <section className="bg-[#451D42] py-16 lg:py-20 text-white relative overflow-hidden">
         <div className="senda-shell text-center relative z-10">
-          <h2 className="font-serif text-3xl font-bold sm:text-4xl">¿Cuál es tu siguiente paso?</h2>
+          <h2 className="font-serif text-3xl font-bold sm:text-4xl">{t('modelos.cta_title')}</h2>
           
           <div className="mt-8 flex flex-wrap justify-center gap-4">
             <Link
               href="/ayuda"
               className="inline-flex items-center gap-2 rounded-full bg-[#B72D78] px-6 py-3.5 text-sm font-semibold text-white shadow transition hover:bg-[#9c2364]"
             >
-              🙋‍♀️ Necesito orientación
+              {t('modelos.cta_btn1')}
             </Link>
             
             <Link
               href="/programas"
               className="inline-flex items-center gap-2 rounded-full border border-white/30 bg-white/10 px-6 py-3.5 text-sm font-semibold text-white transition hover:bg-white/20"
             >
-              📋 Quiero conocer los programas
+              {t('modelos.cta_btn2')}
             </Link>
 
             <Link
               href="/donar"
               className="inline-flex items-center gap-2 rounded-full bg-[#657C3A] px-6 py-3.5 text-sm font-semibold text-white shadow transition hover:bg-[#52652e]"
             >
-              💚 Quiero apoyar a Senda Mujer
+              {t('modelos.cta_btn3')}
             </Link>
           </div>
         </div>

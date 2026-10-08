@@ -76,7 +76,7 @@ function VerificationContent() {
         <div className="max-w-5xl mx-auto px-4 py-3.5 flex items-center justify-between">
           <Link href="/" className="flex items-center gap-3 group">
             {/* eslint-disable-next-line @next/next/no-img-element */}
-            <img src="/logo.png" alt="Fundación Senda Mujer" className="h-9 w-auto object-contain group-hover:opacity-90 transition-opacity" />
+            <img src="/logo-white.jpg" alt="Fundación Senda Mujer" className="h-9 w-auto object-contain group-hover:opacity-90 transition-opacity" />
             <div>
               <span className="font-bold text-sm text-white tracking-wide block">FUNDACIÓN SENDA MUJER</span>
               <span className="text-[10px] text-rose-400 font-semibold tracking-wider block">PORTAL OFICIAL DE VERIFICACIÓN DIAN</span>

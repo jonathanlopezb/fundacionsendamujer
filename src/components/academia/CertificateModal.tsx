@@ -40,7 +40,7 @@ export default function CertificateModal({ userName, courseTitle, courseCategory
           <div className="flex items-center justify-between border-b border-pink-500/20 pb-4">
             <div className="text-left flex items-center gap-2">
               <img
-                src="/logo.png"
+                src="/logo-white.jpg"
                 alt="Fundación Senda Mujer"
                 className="h-7 sm:h-9 w-auto object-contain"
               />

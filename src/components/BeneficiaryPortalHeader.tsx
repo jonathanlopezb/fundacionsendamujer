@@ -20,7 +20,7 @@ export default function BeneficiaryPortalHeader({ user, onLogout, onSOS, onIncog
         <div className="flex items-center gap-3">
           <Link href="/" className="flex items-center gap-2 group">
             <img
-              src="/logo.png"
+              src="/logo-white.jpg"
               alt="Fundación Senda Mujer"
               className="h-9 w-auto object-contain transition-transform group-hover:scale-105"
             />

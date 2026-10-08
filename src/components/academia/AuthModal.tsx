@@ -39,7 +39,7 @@ export default function AuthModal({ mode, onClose, onLogin, onSwitchMode }: Prop
         {/* Header */}
         <div className="space-y-3 mb-6">
           <img
-            src="/logo.png"
+            src="/logo-white.jpg"
             alt="Fundación Senda Mujer"
             className="h-9 w-auto object-contain"
           />

@@ -420,7 +420,7 @@ export default function AcademiaAdminPage() {
       <header className="sticky top-0 z-40 bg-[#160623]/95 backdrop-blur-md border-b border-white/10 px-4 sm:px-8 py-4 flex flex-col md:flex-row md:items-center justify-between gap-4 shadow-xl">
         <div className="flex items-center gap-4">
           <img
-            src="/logo.png"
+            src="/logo-white.jpg"
             alt="Fundación Senda Mujer"
             className="h-11 sm:h-12 w-auto object-contain transition-transform group-hover:scale-105 drop-shadow-md"
           />

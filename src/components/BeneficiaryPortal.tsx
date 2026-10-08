@@ -588,7 +588,7 @@ export default function BeneficiaryPortal({ onOpenSOS, onOpenIncognito }: Benefi
       <footer className="bg-[#14021f] border-t border-pink-500/20 text-pink-200/70 text-xs py-8 px-4 text-center">
         <div className="max-w-7xl mx-auto flex flex-col sm:flex-row justify-between items-center gap-4">
           <div className="flex items-center gap-2">
-            <img src="/logo.png" alt="Fundación Senda Mujer" className="h-7 w-auto object-contain" />
+            <img src="/logo-white.jpg" alt="Fundación Senda Mujer" className="h-7 w-auto object-contain" />
             <span className="font-extrabold text-white">Portal de Beneficiarias</span>
           </div>
           <p className="text-[11px]">

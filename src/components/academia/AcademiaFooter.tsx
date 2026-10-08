@@ -11,7 +11,7 @@ export default function AcademiaFooter() {
         {/* Brand info */}
         <div className="flex items-center gap-3">
           <img
-            src="/logo.png"
+            src="/logo-white.jpg"
             alt="Fundación Senda Mujer"
             className="h-8 w-auto object-contain"
           />

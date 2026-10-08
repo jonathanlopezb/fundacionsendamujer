@@ -1,6 +1,7 @@
 import type { Metadata, Viewport } from 'next';
 import './globals.css';
 import SiteShell from '@/components/SiteShell';
+import { LanguageProvider } from '@/context/LanguageContext';
 
 const siteUrl = 'https://fundacionsendamujer.org';
 
@@ -13,7 +14,7 @@ export const metadata: Metadata = {
   robots: { index: true, follow: true, googleBot: { index: true, follow: true, 'max-image-preview': 'large', 'max-snippet': -1, 'max-video-preview': -1 } },
   openGraph: { type: 'website', locale: 'es_CO', url: siteUrl, siteName: 'Fundación Senda Mujer', title: 'Fundación Senda Mujer | Mujeres, derechos y acompañamiento en Cartagena', description: 'Acompañamiento integral para mujeres y niñas en Cartagena. Acompañamos · Protegemos · Transformamos.', images: [{ url: `${siteUrl}/logo.png`, width: 1200, height: 630, alt: 'Fundación Senda Mujer — Acompañamos, Protegemos, Transformamos' }] },
   twitter: { card: 'summary_large_image', title: 'Fundación Senda Mujer', description: 'Acompañamiento integral para mujeres y niñas en Cartagena. Acompañamos · Protegemos · Transformamos.', images: [`${siteUrl}/logo.png`] },
-  icons: { icon: '/logo.png', apple: '/logo.png' },
+  icons: { icon: '/favicon.ico', apple: '/logo.png' },
 };
 
 export const viewport: Viewport = { themeColor: '#52166F', width: 'device-width', initialScale: 1 };
@@ -26,5 +27,5 @@ const structuredData = {
 };
 
 export default function RootLayout({ children }: Readonly<{ children: React.ReactNode }>) {
-  return <html lang="es-CO" className="scroll-smooth"><body className="bg-[#FDF8FA] text-slate-800 antialiased min-h-screen flex flex-col justify-between"><script type="application/ld+json" dangerouslySetInnerHTML={{ __html: JSON.stringify(structuredData).replace(/</g, '\\u003c') }} /><SiteShell>{children}</SiteShell></body></html>;
+  return <html lang="es-CO" className="scroll-smooth"><body className="bg-[#FDF8FA] text-slate-800 antialiased min-h-screen flex flex-col justify-between"><script type="application/ld+json" dangerouslySetInnerHTML={{ __html: JSON.stringify(structuredData).replace(/</g, '\\u003c') }} /><LanguageProvider><SiteShell>{children}</SiteShell></LanguageProvider></body></html>;
 }
