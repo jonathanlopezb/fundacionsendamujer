@@ -304,10 +304,7 @@ function CrmTopBar() {
   const [pendingCitas, setPendingCitas] = useState(0);
   const [online, setOnline] = useState(true);
 
-  const isAuthRoute = pathname === '/crm/login' || pathname === '/crm/setup';
-  if (isAuthRoute) return null;
-
-  // eslint-disable-next-line react-hooks/rules-of-hooks
+  // ✅ Hooks BEFORE any conditional return (Rules of Hooks)
   useEffect(() => {
     if (!user) return;
     const fetchPending = async () => {
@@ -321,7 +318,7 @@ function CrmTopBar() {
     };
     fetchPending();
     const interval = setInterval(fetchPending, 60_000);
-    const onOnline = () => setOnline(true);
+    const onOnline  = () => setOnline(true);
     const onOffline = () => setOnline(false);
     window.addEventListener('online', onOnline);
     window.addEventListener('offline', onOffline);
@@ -330,8 +327,10 @@ function CrmTopBar() {
       window.removeEventListener('online', onOnline);
       window.removeEventListener('offline', onOffline);
     };
-  // eslint-disable-next-line react-hooks/exhaustive-deps
   }, [user]);
+
+  const isAuthRoute = pathname === '/crm/login' || pathname === '/crm/setup';
+  if (isAuthRoute) return null;
 
   const now = new Date();
   const dateStr = now.toLocaleDateString('es-CO', { weekday: 'long', day: 'numeric', month: 'long', year: 'numeric' });
@@ -381,10 +380,7 @@ function CrmBottomBar() {
   const { user } = useCrmAuth();
   const [time, setTime] = useState('');
 
-  const isAuthRoute = pathname === '/crm/login' || pathname === '/crm/setup';
-  if (isAuthRoute || !user) return null;
-
-  // eslint-disable-next-line react-hooks/rules-of-hooks
+  // ✅ Hooks BEFORE any conditional return (Rules of Hooks)
   useEffect(() => {
     const tick = () =>
       setTime(new Date().toLocaleTimeString('es-CO', { hour: '2-digit', minute: '2-digit', second: '2-digit' }));
@@ -392,6 +388,9 @@ function CrmBottomBar() {
     const t = setInterval(tick, 1000);
     return () => clearInterval(t);
   }, []);
+
+  const isAuthRoute = pathname === '/crm/login' || pathname === '/crm/setup';
+  if (isAuthRoute || !user) return null;
 
   const roleInfo = ROLE_MAP[user.role] || { label: user.role, color: 'text-slate-300 bg-slate-800/50 border-slate-700', dot: 'bg-slate-400' };
 
