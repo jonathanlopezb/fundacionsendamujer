@@ -93,6 +93,55 @@ export async function GET(req: NextRequest) {
         .lean();
     }
 
+    // Tendencia mensual — últimos 6 meses
+    const sixMonthsAgo = new Date();
+    sixMonthsAgo.setMonth(sixMonthsAgo.getMonth() - 5);
+    sixMonthsAgo.setDate(1);
+    sixMonthsAgo.setHours(0, 0, 0, 0);
+
+    const MONTH_LABELS = ['Ene','Feb','Mar','Abr','May','Jun','Jul','Ago','Sep','Oct','Nov','Dic'];
+
+    const [casesByMonth, personasByMonth, donationsByMonth] = await Promise.all([
+      CrmCase.aggregate([
+        { $match: { createdAt: { $gte: sixMonthsAgo } } },
+        { $group: { _id: { y: { $year: '$createdAt' }, m: { $month: '$createdAt' } }, count: { $sum: 1 } } },
+        { $sort: { '_id.y': 1, '_id.m': 1 } },
+      ]),
+      CrmPerson.aggregate([
+        { $match: { createdAt: { $gte: sixMonthsAgo } } },
+        { $group: { _id: { y: { $year: '$createdAt' }, m: { $month: '$createdAt' } }, count: { $sum: 1 } } },
+        { $sort: { '_id.y': 1, '_id.m': 1 } },
+      ]),
+      (['SUPER_ADMIN', 'DIRECTORA', 'GESTOR_DONANTES', 'GESTOR_FINANCIERO', 'COORDINADOR'].includes(user.role)
+        ? CrmDonation.aggregate([
+            { $match: { receivedAt: { $gte: sixMonthsAgo }, status: 'CONFIRMED' } },
+            { $group: { _id: { y: { $year: '$receivedAt' }, m: { $month: '$receivedAt' } }, total: { $sum: '$amount' } } },
+            { $sort: { '_id.y': 1, '_id.m': 1 } },
+          ])
+        : Promise.resolve([])),
+    ]);
+
+    // Construir array de 6 meses
+    const monthlyTrend: any[] = [];
+    for (let i = 5; i >= 0; i--) {
+      const d = new Date();
+      d.setMonth(d.getMonth() - i);
+      const y = d.getFullYear();
+      const m = d.getMonth() + 1;
+      const mes = MONTH_LABELS[m - 1];
+      const casos = casesByMonth.find((x: any) => x._id.y === y && x._id.m === m)?.count || 0;
+      const personas = personasByMonth.find((x: any) => x._id.y === y && x._id.m === m)?.count || 0;
+      const donaciones = donationsByMonth.find((x: any) => x._id.y === y && x._id.m === m)?.total || 0;
+      monthlyTrend.push({ mes, casos, personas, donaciones });
+    }
+
+    // Casos por tipo
+    const caseTypeAgg = await CrmCase.aggregate([
+      { $group: { _id: '$type', value: { $sum: 1 } } },
+      { $sort: { value: -1 } },
+    ]);
+    const casesByType = caseTypeAgg.map((x: any) => ({ name: x._id || 'Sin tipo', value: x.value }));
+
     return NextResponse.json({
       metrics: {
         totalPeople,
@@ -110,9 +159,12 @@ export async function GET(req: NextRequest) {
       pendingTasks,
       recentCases,
       recentDonations,
+      monthlyTrend,
+      casesByType,
     });
   } catch (error: any) {
     console.error('Error al generar métricas del dashboard CRM:', error);
     return NextResponse.json({ error: 'Error al consultar métricas del dashboard' }, { status: 500 });
   }
 }
+
